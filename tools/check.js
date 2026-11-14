@@ -107,6 +107,23 @@ jsFiles.forEach(f => {
   console.log('biến toàn cục: ' + seen.size + ' tên · trùng: ' + dupes.length);
 }
 
+/* ---------- 5c. deterministic build ----------
+   The build must produce byte-identical output from the same sources, or CI
+   can never assert "the committed build matches src/", and two deploys of one
+   commit get different ETags. The usual culprit is embedding `now()`.
+   Verified the hard way: a wall-clock timestamp in the Worker made
+   `git diff --exit-code` fail on every push. */
+{
+  const worker = fs.readFileSync(path.join(ROOT, 'dist', '_worker.mjs'), 'utf8');
+  const stamp = (worker.match(/const BUILT_AT = '([^']*)'/) || [, ''])[1];
+  const isEpoch = stamp === '1970-01-01T00:00:00Z';
+  const isSupplied = !!process.env.SOURCE_DATE_EPOCH;
+  if (!isEpoch && !isSupplied) {
+    failWith('dist/_worker.mjs nhúng giờ thực (' + stamp + ') — bản dựng sẽ không tất định');
+  }
+  console.log('tất định: builtAt = ' + stamp);
+}
+
 /* ---------- 6. router ↔ hàm render ---------- */
 const appSrc = fs.readFileSync(path.join(SRC, 'app.js'), 'utf8');
 const routes = [...appSrc.matchAll(/p\[0\]\s*===\s*'([a-z0-9]+)'[\s\S]{0,40}?render([A-Za-z0-9_]+)\(/g)]

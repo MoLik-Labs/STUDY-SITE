@@ -19,7 +19,7 @@
 
 const VERSION = '11.7';
 const BUILD = 'aff6caa1ab98';
-const BUILT_AT = '2026-11-14T16:43:53Z';
+const BUILT_AT = '1970-01-01T00:00:00Z';
 
 /* JSON trả về được dựng sẵn: cùng nội dung cho mọi người, trừ `at`.
    `at` là thời điểm bản dựng, KHÔNG phải thời điểm gọi — nghĩa là phản hồi

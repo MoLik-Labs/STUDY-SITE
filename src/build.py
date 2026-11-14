@@ -479,14 +479,26 @@ if '--dist' in sys.argv:
     # Worker: một tệp duy nhất, tên bắt đầu bằng "_" nên Cloudflare KHÔNG phục
     # vụ nó như tài nguyên tĩnh — mã nguồn không lộ ra ngoài.
     code = io.open(os.path.join(HERE, 'worker.template.js'), encoding='utf-8').read()
-    # Build id + timestamp are baked in, so /__version answers without reading
-    # index.html and without touching the network.
-    import datetime
+    # Build id is baked in, so /__version answers without reading index.html
+    # and without touching the network.
+    #
+    # There is deliberately NO wall-clock timestamp here. A build that embeds
+    # `now()` produces a different file on every run, so `git diff` never
+    # settles, CI cannot assert "the committed build matches src/", and two
+    # deploys of the same commit get different bytes (and different ETags).
+    # The build id already identifies the build; SOURCE_DATE_EPOCH lets us
+    # report a time when the caller supplies a reproducible one.
+    stamp = os.environ.get('SOURCE_DATE_EPOCH', '0')
+    try:
+        import datetime
+        built_at = datetime.datetime.fromtimestamp(int(stamp), datetime.timezone.utc)
+    except Exception:
+        import datetime
+        built_at = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
     stamped = (code
                .replace('__VERSION__', VERSION)
                .replace('__BUILD_ID__', build_id)
-               .replace('__BUILT_AT__', datetime.datetime.now(datetime.timezone.utc)
-                        .replace(microsecond=0).isoformat().replace('+00:00', 'Z')))
+               .replace('__BUILT_AT__', built_at.isoformat().replace('+00:00', 'Z')))
     if '__BUILD_ID__' in stamped or '__BUILT_AT__' in stamped:
         raise SystemExit('worker template placeholders not substituted')
     io.open(os.path.join(dist, '_worker.mjs'), 'w', encoding='utf-8').write(stamped)

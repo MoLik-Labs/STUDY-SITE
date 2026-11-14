@@ -239,6 +239,8 @@ async function handle(method, pathname, headers) {
   ok('/__version tất định giữa hai lần gọi', v1 === v2);
   ok('/__version có builtAt của bản dựng, không phải lúc gọi',
     /"builtAt":"\d{4}-\d\d-\d\dT/.test(v1), v1.slice(0, 90));
+  ok('/__version KHÔNG chứa giờ thực (bản dựng phải tất định)',
+    /"builtAt":"1970-01-01T00:00:00Z"/.test(v1), v1.slice(0, 90));
 
   /* (c) ETag: khớp thì 304, kể cả khi client gửi W/ hoặc danh sách */
   const withTag = await handle('GET', '/__version');

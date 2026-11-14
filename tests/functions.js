@@ -65,7 +65,11 @@ const ok = (n, c, note) => results.push({ n, pass: !!c, note: note === undefined
   ok('version khớp index.html', body.version === metaVer, body.version + ' vs ' + metaVer);
   ok('build khớp build-id', body.build === metaBuild, body.build + ' vs ' + metaBuild);
   ok('có nhãn runtime', body.runtime === 'cloudflare', body.runtime);
+  /* builtAt được phép là epoch: bản dựng cố tình KHÔNG nhúng giờ thực, nếu
+     không thì hai lần build cùng một commit ra hai tệp khác nhau và CI không
+     thể khẳng định bản commit khớp với src/. */
   ok('có mốc thời gian ISO của BẢN DỰNG', /^\d{4}-\d\d-\d\dT/.test(body.builtAt || ''), body.builtAt);
+  ok('builtAt không đổi giữa hai lần build (tất định)', body.builtAt === '1970-01-01T00:00:00Z', body.builtAt);
   ok('không còn trường `at` đổi theo từng lần gọi', body.at === undefined);
 
   /* --- ETag / 304 --- */

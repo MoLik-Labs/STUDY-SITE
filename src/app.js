@@ -474,6 +474,7 @@ function renderLesson(dn,sn,pane){
         <div class="lesson-meta">
           <span>${s.label} · ${s.time} · ${d.title} · ${s.v.length} bài giảng</span>
           ${done?'<span class="tag" style="border-color:#a9c1ad;color:var(--green)">đã học</span>':''}
+          <a class="tag tag-share" href="#/share/lesson/${d.n}/${s.n}">${tl('lesson_share')}</a>
         </div>
         <div class="seg" role="tablist">
           <button role="tab" data-pane="learn" aria-selected="${P==='learn'}">Bài giảng</button>
@@ -1381,6 +1382,7 @@ function render(){
   if(p[0]==='progress') return renderProgress();
   if(p[0]==='game') return renderGame();
   if(p[0]==='special') return renderSpecial();
+  if(p[0]==='share'&&p[1]==='lesson'&&p[2]&&p[3]) return renderShareLesson(p[2],p[3]);
   if(p[0]==='share') return renderShare();
   if(p[0]==='grades') return renderGrades(p[1]);
   if(p[0]==='weekly') return renderWeekly();

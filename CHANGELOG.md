@@ -43,6 +43,27 @@ Pixel và Góc Vật lí, thêm thiệp khoe tiến độ.
 - **Hằng số + tiền tố SI**.
 - **Thang 12 cụm công thức** dùng chung hộp Leitner với thẻ ghi nhớ.
 
+### Chia sẻ bài học `#/share/lesson/<ngày>/<ca>`
+- **Đường dẫn thật cho từng bài**: `#/lesson/3/2` vốn đã là URL, nên phần khó
+  không phải là tạo link — mà là làm cho link đó *đáng mở*. Trang chia sẻ đưa ra
+  ba thứ, tất cả sinh ngay trên máy: link, **mã QR (SVG)**, và **một tệp `.html`
+  tự chứa** mở được offline.
+- Tệp `.html` không có script, không phông chữ ngoài, không ảnh — gửi cho người
+  không chắc có trang này. Cũng chính là bản in: `@media print` cho ra tờ A4 sạch.
+- Nút "Chia sẻ bài này" nằm ngay trong đầu mỗi bài học.
+- **Mã QR tự viết** (byte mode, ECC mức M, chuẩn ISO/IEC 18004 v1–10). Không dùng
+  thư viện CDN vì một trang chạy offline không nên chết khi CDN chết.
+- Ba lỗi trong chính bộ mã hoá này, tìm bằng cách giải mã lại bằng `jsQR`:
+  1. **Khối format-info bị viết ngược (x,y)** → **cả 8 phiên bản đều không quét
+     được**, nhưng hình vẫn trông y hệt mã QR. Không có cách nào phát hiện bằng mắt.
+  2. **Thiếu khối version-info** ở v7+ → v1–v6 quét tốt, v7–v10 câm lặng. Chỉ lộ
+     ra với URL dài.
+  3. **Dòng timing bị ghi đè** ở ô (8,6) và (6,8) khi "giữ chỗ" vùng format.
+- `TextEncoder` bị bỏ: tự mã hoá UTF-8 bốn dòng, để QR tạo được ở mọi môi trường
+  (kể cả môi trường không có global đó).
+- Kiểm thử: **88 bước** (thêm 25), gồm cả kiểm tra đủ 3 mẫu định vị 7×7, dòng
+  timing, khối version, và tệp chia sẻ không cần mạng.
+
 ### Khoe tiến độ `#/share`
 - Thiệp 1200×630 vẽ bằng `<canvas>` trên máy, không tải lên đâu.
 - Chỉ có **số liệu học**: chuỗi, thẻ đã thuộc, giờ, ca, ĐTB, mức kế hoạch, cấp.

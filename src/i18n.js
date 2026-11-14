@@ -53,6 +53,7 @@ const I18N = {
   nav_game: { vi: 'Đấu trường Pixel', en: 'Pixel Arena' },
   nav_special: { vi: 'Góc Vật lí', en: 'Physics Lab' },
   nav_share: { vi: 'Khoe tiến độ', en: 'Share progress' },
+  lesson_share: { vi: 'Chia sẻ bài này', en: 'Share this lesson' },
 
   more: { vi: 'Khám phá', en: 'Explore' },
   search_ph: { vi: 'Tìm bài, công thức, câu hỏi', en: 'Search lessons, formulas, questions' },

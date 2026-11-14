@@ -233,6 +233,88 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
     w.document.querySelectorAll('.gm-foe-card').length);
   ok('#/game draws pixel sprites', w.document.querySelectorAll('.gm-foe-card .px').length === 4);
 
+
+  /* =========================================================
+     6. shareable lessons
+     ---------------------------------------------------------
+     The QR encoder is the risky part: a broken one still *looks* like a
+     QR code, so nothing on screen tells you it is unscannable. These
+     checks decode nothing (no decoder here), but they pin the properties
+     that, when wrong, made every scan fail while I was building it:
+     the format-info block and the version block have to be written in
+     (x, y) order, and versions 7+ need the version block at all.
+     ========================================================= */
+  const qs = ev('qrEncode("https://example.com/#/lesson/3/2")');
+  ok('qr: encodes a real lesson link', qs && qs.size >= 21, qs && qs.size);
+  ok('qr: size is 4v+17', qs && (qs.size - 17) % 4 === 0, qs && qs.size);
+
+  /* the three finder patterns must be present, in the three corners */
+  /* A finder is a 7x7 block: 3x3 dark inside a light ring inside a dark
+     border, with the centre at (cx, cy). Checking a 5x5 would pass on a
+     half-rendered pattern, so it is checked at full size. */
+  const finderAt = (m, cx, cy) => {
+    for (let dy = -3; dy <= 3; dy++) for (let dx = -3; dx <= 3; dx++) {
+      const d = Math.max(Math.abs(dx), Math.abs(dy));
+      const want = (d === 0 || d === 1 || d === 3) ? 1 : 0;
+      if (m[cy + dy][cx + dx] !== want) return false;
+    }
+    return true;
+  };
+  const n = qs.size;
+  ok('qr: finder top-left', finderAt(qs.cells, 3, 3));
+  ok('qr: finder top-right', finderAt(qs.cells, n - 4, 3));
+  ok('qr: finder bottom-left', finderAt(qs.cells, 3, n - 4));
+  let timingOk = true;
+  for (let i = 8; i < n - 8; i++) if (qs.cells[6][i] !== (i % 2 === 0 ? 1 : 0)) timingOk = false;
+  ok('qr: timing line alternates', timingOk);
+  ok('qr: dark module set', qs.cells[n - 8][8] === 1);
+
+  /* a long URL forces version 7+, which needs the version block */
+  const big = ev('qrEncode("' + 'x'.repeat(150) + '")');
+  ok('qr: long text reaches v7+', big && big.size >= 45, big && big.size);
+  let vbits = 0;
+  for (let i = 0; i < 18; i++) vbits += big.cells[Math.floor(i / 3)][big.size - 11 + (i % 3)];
+  ok('qr: version block is written for v7+', vbits > 0 && vbits < 18, vbits + '/18 set');
+
+  /* lesson link + text + file */
+  ev('studyState();');
+  const L = ev('shLessonData(3,2)');
+  ok('share: finds a real lesson', L && L.title && L.d === 3 && L.s === 2, L && L.title);
+  ok('share: keeps the formula', L && typeof L.f === 'string' && L.f.length > 0);
+  const txt = ev('shLessonText(shLessonData(3,2), false)');
+  ok('share: text has the link', /#\/lesson\/3\/2/.test(txt), txt.split('\n').pop());
+  ok('share: text has no raw HTML tags', !/[<>]/.test(txt.replace(/https?:[^\s]*/g, '')), txt.slice(0, 60));
+  /* Assert the conversion itself rather than the sample lesson — that lesson
+     happens to use only subscripts, so a superscript check on it was testing
+     the wrong thing. */
+  const strip = ev('shStripTags("F<sup>2</sup> = F<sub>1</sub><sup>2</sup> + v<sup>3</sup>")');
+  ok('share: sup 2/3 become real characters', /²/.test(strip) && /³/.test(strip), strip);
+  ok('share: subscripts survive as plain text', /F1²/.test(strip), strip);
+  ok('share: no tags left after stripping', !/[<>]/.test(strip), strip);
+  ok('share: real lesson formula loses its tags',
+    !/[<>]/.test(ev('shStripTags(shLessonData(3,2).f)')), ev('shStripTags(shLessonData(3,2).f)'));
+  const file = ev('shLessonFile(shLessonData(3,2), false)');
+  ok('share: file is a complete document', /^<!doctype html>/i.test(file) && /<\/html>/.test(file));
+  ok('share: file needs no script', !/<script/i.test(file));
+  ok('share: file needs no network', !/(https?:)?\/\/(fonts|cdn|unpkg)/i.test(file));
+
+  /* the route renders, with a QR in it */
+  w.location.hash = '#/__blank__';
+  await wait(20);
+  w.location.hash = '#/share/lesson/3/2';
+  await wait(200);
+  const sm = w.document.querySelector('#main');
+  ok('#/share/lesson/3/2 renders', sm && sm.innerHTML.length > 1200, sm ? sm.innerHTML.length : 0);
+  ok('#/share/lesson has a QR svg', !!w.document.querySelector('.shl-qr svg'));
+  ok('#/share/lesson shows the copyable link', !!w.document.querySelector('#shlUrl'));
+  ok('#/share/lesson offers a file download', !!w.document.querySelector('#shlFile'));
+  w.location.hash = '#/__blank__';
+  await wait(20);
+  w.location.hash = '#/share/lesson/999/9';
+  await wait(150);
+  ok('#/share/lesson with a bad id does not crash', !!w.document.querySelector('#main') &&
+    w.document.querySelector('#main').innerHTML.length > 200);
+
   const pass = results.filter(r => r.pass).length;
   results.filter(r => !r.pass).forEach(r => console.log('  ✗ ' + r.n + (r.note ? ' — ' + r.note : '')));
   console.log(`\n${pass}/${results.length} bước đạt` + (pass === results.length ? '  ✓' : ''));

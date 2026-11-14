@@ -163,7 +163,7 @@ không có `_headers` (nên không có header bảo mật và cache tuỳ chỉn
 │   ├── i18n.js             # song ngữ vi + en, cùng một bản dựng
 │   ├── game.js             # Đấu trường Pixel: sinh câu vô hạn, 4 môn
 │   ├── special.js          # Góc Vật lí: đọc đề, hằng số, thang công thức
-│   ├── share.js            # thiệp tiến độ 1200x630, vẽ trên máy
+│   ├── share.js            # thiệp tiến độ 1200x630 + chia sẻ bài học (link, QR tự viết, tệp .html)
 │   ├── grades.js           # sổ điểm THCS/THPT: hệ số, xếp loại, what-if, đếm ngược
 │   ├── weekly.js           # kế hoạch tuần: dự án → việc → việc con, rải theo độ khó
 │   ├── sw.template.js      # mẫu service worker (chép vào dist/ khi build)
@@ -212,7 +212,7 @@ không có `_headers` (nên không có header bảo mật và cache tuỳ chỉn
 
 ## Kiểm thử
 
-`npm test` chạy toàn bộ — **268 bước**, không cần trình duyệt.
+`npm test` chạy toàn bộ — **293 bước**, không cần trình duyệt.
 
 | Bộ | Cách chạy | Phạm vi | Kết quả |
 |---|---|---|---|
@@ -222,7 +222,7 @@ không có `_headers` (nên không có header bảo mật và cache tuỳ chỉn
 | `tests/worker.js` | `node tests/worker.js` | mô phỏng **thứ tự phục vụ của Workers**: tĩnh miễn phí, `_redirects` 200, 404 riêng, không lộ mã nguồn | **32/32** |
 | `tests/smoke.js` | `node tests/smoke.js` | 38 tuyến × jsdom, dữ liệu lõi, `esc/import/uid` | **54/54** |
 | `tests/newfeat.js` | `node tests/newfeat.js` | **công thức sổ điểm** (hệ số 1/1/2/3, cả năm, xếp loại, what-if) + **rải việc tuần** (độ khó, kéo việc trễ, đếm ngược) | **33/33** |
-| `tests/v112.js` | `node tests/v112.js` | **i18n đủ vi+en**, dấu hiệu đối xứng, **120 câu sinh cho mỗi môn đều có đáp án**, đọc đơn vị (kΩ, mA, km), thiệp không lộ tên | **63/63** |
+| `tests/v112.js` | `node tests/v112.js` | **i18n đủ vi+en**, dấu hiệu đối xứng, **120 câu sinh cho mỗi môn đều có đáp án**, đọc đơn vị (kΩ, mA, km), **QR giải được ở cả 10 phiên bản**, thiệp không lộ tên | **88/88** |
 | `tests/interaction.js` | `node tests/interaction.js` | tên có dấu nháy, `uiConfirm`, xoay vòng sao lưu, `.ics`, thẻ → kế hoạch → thi thử, theme, bẫy Tab | **32/32** |
 | `tools/qa/*.js` | `playwright-cli` (trình duyệt thật) | giao diện: thời khoá biểu, Study OS, trường học, bảng vẽ, mô phỏng, quét 30 tuyến | 21/21 · 21/21 · 26/26 · 17/17 · 19/19 · audit |
 

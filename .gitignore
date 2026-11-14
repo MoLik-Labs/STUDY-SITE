@@ -5,7 +5,9 @@ desktop.ini
 
 # công cụ
 node_modules/
-package-lock.json
+# package-lock.json ĐƯỢC commit: Cloudflare Workers Builds chạy `npm ci`, và
+# `npm ci` từ chối chạy khi không có lockfile → build hỏng sau ~7 giây với
+# thông báo khó hiểu. Khoá phiên bản cũng làm bản dựng lặp lại được.
 .playwright-cli/
 __pycache__/
 *.pyc

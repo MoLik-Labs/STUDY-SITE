@@ -1,7 +1,94 @@
 # Changelog
 
 Định dạng theo [Keep a Changelog](https://keepachangelog.com/vi/1.1.0/), phiên bản theo [SemVer](https://semver.org/lang/vi/).
-Mọi thay đổi lớn đều có kiểm thử: `npm test` (check tĩnh + CSP + Worker + mô phỏng Workers + 83 bước jsdom).
+Mọi thay đổi lớn đều có kiểm thử: `npm test` (check tĩnh + CSP + Worker + mô phỏng Workers + 1848 bước jsdom).
+
+## [11.8.0] — 2026-11-14
+
+Bản này không thêm tính năng. Nó sửa **những chỗ dữ liệu của người dùng có thể
+mất mà không ai báo** — loại lỗi tệ nhất trong một app học tập, vì người dùng
+chỉ phát hiện sau khi đã học xong một buổi.
+
+### Mất tiến độ trong im lặng
+
+`AppStore.write()` nuốt mọi ngoại lệ và không trả về gì. Khi localStorage đầy
+(hoàn toàn thực tế: bản chính + 3 bản dự phòng, mỗi bản một bản sao đầy đủ),
+lệnh ghi ném `QuotaExceededError`, bị nuốt, và **giao diện vẫn báo "Đã lưu"**.
+Đo được trước khi sửa: 1 lần ghi, 0 thông báo, 0 lưu.
+
+- `write()` giờ **trả về true/false**; `save()` đọc kết quả và báo cho người dùng;
+- khi hết chỗ, **tự bỏ 3 bản dự phòng cũ để cứu bản chính** (bản chính là thứ
+  được đọc khi mở app; dự phòng là thứ bỏ được) rồi ghi lại;
+- hỏng hẳn thì phát `store:issue`, hiện toast *"Bộ nhớ trình duyệt đã đầy —
+  tiến độ mới chưa lưu được…"* và **một khối cảnh báo trong Cài đặt → Dữ liệu**
+  kèm giờ hỏng và lời khuyên xuất tệp ngay;
+- `AppStore.health()` công bố lỗi gần nhất để giao diện đọc được.
+
+### Nhập tệp sao lưu: 3 lỗi
+
+- **ô nhiễm prototype**: `importText()` trả nguyên object trong tệp, kể cả khoá
+  `__proto__` / `constructor`. Giờ có **danh sách trắng 25 khoá** + bộ lọc đệ quy
+  bỏ mọi khoá nguy hiểm ở mọi độ sâu, chặn vòng lặp, chặn độ sâu và số nút.
+- **trộn đáp án cũ**: `Object.assign(state, s)` để lại câu trả lời của máy cũ
+  bên cạnh câu của tệp. Hai máy trùng id câu hỏi thì **đáp án đúng bị đáp án cũ
+  đè**. Giờ `ans`/`done`/`prefs`/`doneAt` được **thay cả bảng**, các trường khác
+  vẫn gộp.
+- **không giới hạn kích thước**: một tệp 200 MB làm treo tab trước khi kịp báo
+  "sai định dạng". Giờ từ chối trước khi `JSON.parse` ở ngưỡng 4 MB.
+- giao diện **nói thật** khi tệp có phần bỏ đi: *"Đã nhập 42 câu trả lời · bỏ 3
+  mục không hợp lệ"* thay vì "thành công" chung chung.
+
+### Dữ liệu sai kiểu làm trắng trang
+
+Ba lỗi thật, tìm bằng cách tiêm 13 dạng hỏng qua đúng đường người dùng
+(`localStorage → readSync → loadState`) rồi đi hết 39 tuyến:
+
+- `done: null` → `doneCount()` ném lỗi → mất thanh ray, trang chủ và **mọi**
+  thanh tiến độ, trong khi Cài đặt vẫn báo lưu bình thường;
+- `school: "x"` → `Object.keys(S.lessons)` ném lỗi → chết trang Bài của tôi;
+- `school: {}` → `lessonList()` / `lessonById()` ném lỗi.
+
+Sửa ở **một cửa**: `AppStore.coerce()` chuẩn hoá kiểu cho mọi lần đọc
+(localStorage, bản dự phòng, cookie, IndexedDB), `schoolState()` kiểm tra kiểu
+thay vì chỉ kiểm tra null, và các chỗ đọc nóng dùng `doneMap()`. Thêm
+`tests/resilience.js`: **17 dạng hỏng × 39 tuyến × 2 điều kiện + đường nhập tệp
+= 1399 bước**.
+
+### Vòng xoay bản dự phòng và lịch sử
+
+- Bản sao lưu chỉ được tạo sau **20 giây** kể từ lần ghi đầu — một phiên ngắn
+  chưa kịp có bản dự phòng nào, hỏng một lần là mất trắng. Giờ vòng xoay được
+  **mồi ngay** khi chưa có bản dự phòng.
+- Dọn lịch sử IndexedDB cũ chạy `while` 20 vòng, **mỗi vòng xoá cả object store
+  rồi chèn lại toàn bộ**. Giờ cắt một lần rồi ghi lại.
+
+### Điều hướng: 48 lối ra phẳng → một thanh có nhóm
+
+Thanh ray trước đây có **48 liên kết phẳng**, trong đó **6 lối bị lặp**
+(Máy giải, Bảng mạch, Thí nghiệm, Vật lí, Học hôm nay, Khoá học) và **9 tuyến
+không có lối vào nào** (thư viện, sổ tay, đề thi, hỏi đáp, ôn câu sai, máy giải,
+bảng mạch, thí nghiệm, tiến độ).
+
+- thanh ray giờ chỉ còn **phần dùng hằng ngày, không lặp**;
+- phần còn lại nằm trong **ngăn kéo chia 5 nhóm có tiêu đề** (Vật lí · Học ·
+  Trường lớp · Nội dung · Tuỳ biến), đóng sẵn, mở/đóng được và **nhớ trạng thái**;
+- tự **mở sẵn** khi tuyến đang mở chỉ nằm trong ngăn kéo, nếu không người dùng
+  vào thẳng `#/papers` sẽ thấy không có mục nào được chọn;
+- **quy tắc kiểm tra mới** bắt liên kết nội bộ trỏ tới tuyến không tồn tại — và
+  nó bắt được một liên kết chết thật (`#/nested`) ngay khi viết ra.
+
+### Hiệu năng
+
+`renderTop` / `renderRail` / `renderHome` chỉ dựng lại khi dấu hiệu đổi, có
+kiểm tra khung còn sống trong DOM (tái sử dụng markup đã bị trang khác xoá là
+cách im lặng nhất để trang trắng). Dấu hiệu của trang chủ **có cả tuyến đang
+mở** — hash lạ rơi xuống chính hàm đó, thiếu tuyến là trang cũ sống sót.
+A/B trên bản build thật: **1.4–1.6× nhanh hơn** khi đi lại giữa các trang.
+
+### Kiểm thử
+
+`npm test` giờ **1848 bước**: 8 bộ, thêm `resilience`; quy tắc tĩnh thứ 9
+(liên kết chết) với ca kiểm tra ngược để chắc nó bắt được lỗi thật.
 
 ## [11.7.0] — 2026-11-14
 

@@ -152,10 +152,66 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
     state.note['x'] = 'ghi chú "có nháy"';
     const dump = JSON.parse(JSON.stringify(state));
     const back = AppStore.importText(JSON.stringify({ app: 'vat-li-9', v: 1, state: dump }));
-    return { done: back && back.done['d1s1'], note: back && back.note['x'] };
+    return { done: back && back.state.done['d1s1'], note: back && back.state.note['x'] };
   })()`);
   ok('sao lưu giữ tiến độ', rt.done === 1);
   ok('sao lưu giữ ghi chú có dấu nháy', rt.note === 'ghi chú "có nháy"', rt.note);
+
+  /* ---------- 6b. nhập tệp không được là lỗ hổng ---------- */
+  const safe = w.eval(`(() => {
+    const raw = '{"ans":{"a":{"ok":true}},"prefs":{},"__proto__":{"PWNED":1},"constructor":{"bad":1},"junk":"x"}';
+    const dirty = JSON.stringify({ state: JSON.parse(raw) });
+    const got = AppStore.importText(dirty);
+    return { keys: got ? Object.keys(got.state).sort().join(',') : '',
+      dropped: got ? got.dropped.length : -1, leak: ({}).PWNED !== undefined };
+  })()`);
+  /* Bản nhập được chuẩn hoá kiểu (coerce) nên sẽ có thêm khoá rỗng mặc định —
+     điều phải kiểm tra là khoá ĐỘC không lọt vào, không phải danh sách y hệt. */
+  ok('nhập tệp bỏ __proto__ và khoá lạ',
+    safe.dropped === 3 && /(^|,)ans(,|$)/.test(safe.keys) && /(^|,)prefs(,|$)/.test(safe.keys)
+      && !/__proto__|constructor|junk/.test(safe.keys),
+    safe.keys + ' / bỏ ' + safe.dropped);
+  ok('nhập tệp không làm bẩn prototype', safe.leak === false);
+
+  const merged = w.eval(`(() => {
+    state.ans = { old: { ok: false } };
+    const got = AppStore.importText(JSON.stringify({ state: { ans: { fresh: { ok: true } } } }));
+    return Object.keys(AppStore.merge(state, got.state).ans).join(',');
+  })()`);
+  ok('nhập tệp thay cả bảng câu trả lời (không trộn đáp án cũ)', merged === 'fresh', merged);
+  ok('tệp rác bị từ chối',
+    w.eval(`AppStore.importText(JSON.stringify({ state: { unrelated: 1 } })) === null`));
+  ok('tệp quá lớn bị từ chối trước khi parse',
+    w.eval(`AppStore.importText('x'.repeat(5 * 1024 * 1024)) === null`));
+
+  /* ---------- 6c. hết chỗ lưu phải nói ra, và phải tự cứu ---------- */
+  const quota = w.eval(`(() => {
+    const real = Storage.prototype.setItem;
+    const set = (k, v) => real.call(localStorage, k, v);
+    localStorage.removeItem('vnl9.b1'); localStorage.removeItem('vnl9.b2');
+    set('vnl9.b1', 'cu'); set('vnl9.b2', 'cu2');
+    let hit = 0;
+    Storage.prototype.setItem = function (k, v) {
+      if (k === 'vnl9.v2' && hit++ < 1) {
+        const e = new Error('q'); e.name = 'QuotaExceededError'; throw e;
+      }
+      return real.call(this, k, v);
+    };
+    const recovered = AppStore.write({ ans: { a: 1 } });
+    const backupsDropped = !localStorage.getItem('vnl9.b1');
+    Storage.prototype.setItem = function () {
+      const e = new Error('q'); e.name = 'QuotaExceededError'; throw e;
+    };
+    let told = null;
+    window.toast = m => { told = m; };
+    const honest = AppStore.write({ ans: { b: 1 } });
+    Storage.prototype.setItem = real;
+    return { recovered, backupsDropped, honest, told: told || '', fail: !!AppStore.health().fail };
+  })()`);
+  ok('hết chỗ: tự bỏ bản dự phòng để cứu bản chính', quota.recovered === true && quota.backupsDropped);
+  ok('hết chỗ hoàn toàn: write() trả false thay vì im lặng', quota.honest === false);
+  ok('hết chỗ hoàn toàn: người dùng được báo', /đầy|Không lưu được/.test(quota.told), quota.told);
+  ok('sức khoẻ kho lưu ghi nhận lỗi', quota.fail === true);
 
   /* ---------- 7. luồng học cốt lõi: thẻ → kế hoạch → thi thử ---------- */
   await go('#/cards');

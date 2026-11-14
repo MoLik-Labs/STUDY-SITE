@@ -124,7 +124,8 @@ function todayStrip() {
 
 /* ---------- ước lượng thời gian còn lại theo nhịp thực tế ---------- */
 function etaText() {
-  const done = Object.keys(state.done || {}).filter(k => state.done[k]).length;
+  const dm = doneMap();
+  const done = Object.keys(dm).filter(k => dm[k]).length;
   const left = TOTAL_SESS - done;
   if (left <= 0) return 'Đã học hết 52 ca — quay lại ôn cách quãng để giữ kiến thức.';
   const days = Object.keys(state.days || {}).filter(d => (state.days[d] || 0) > 0).length;
@@ -197,7 +198,7 @@ function planCard() {
 /* ---------- phiên học hôm nay: 3 việc, đo được ---------- */
 function nextSessionLink() {
   for (const d of DAYS) for (const s of d.sessions)
-    if (!state.done[sid(d.n, s.n)]) return sessionHref(d.n, s.n);
+    if (!doneMap()[sid(d.n, s.n)]) return sessionHref(d.n, s.n);
   return '#/review';
 }
 function routineState() {

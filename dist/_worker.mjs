@@ -17,8 +17,8 @@
        nên giao diện 404 chỉ có một bản.
    ========================================================= */
 
-const VERSION = '11.7';
-const BUILD = 'aff6caa1ab98';
+const VERSION = '11.8';
+const BUILD = '65e9fce7317d';
 const BUILT_AT = '1970-01-01T00:00:00Z';
 
 /* JSON trả về được dựng sẵn: cùng nội dung cho mọi người, trừ `at`.

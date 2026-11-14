@@ -172,6 +172,36 @@ console.log(`router: ${routes.length} tuyến · ${new Set(routes.map(r => r.fn)
   });
   console.log(`khám phá: ${entries.length} lối vào · ${routed.size} tuyến không tham số · thiếu: ${[...routed].filter(h => !seen.has(h)).length}`);
 }
+/* ---------- 6d. lối ra nội bộ phải trỏ tới tuyến có thật ----------
+   Bắt được lỗi đã lọt trước đây: ngăn kéo ray có "#/nested" trong khi router
+   không hề có tuyến đó. Một liên kết chết tệ hơn không có liên kết. */
+{
+  const routesSet = new Set(routes.map(r => r.route));
+  const paramRoutes = ['lesson', 'day', 'subject', 'read', 'vid'];
+  const bad = [];
+  jsFiles.forEach(f => {
+    const text = fs.readFileSync(path.join(SRC, f), 'utf8');
+    [...text.matchAll(/href=\\?"(#[a-z0-9\/-]*)\\?"/g)].forEach(m => {
+      const href = m[1];
+      if (href === '#' || href === '#/') return;
+      const seg = href.replace(/^#\//, '').split('/');
+      if (!seg[0] || seg[0].startsWith('__')) return;
+      if (routesSet.has(seg[0])) return;
+      if (paramRoutes.includes(seg[0]) && seg.length > 1) return;
+      bad.push(f + ': ' + href);
+    });
+    /* chỉ quét mảng lối vào ['#/...', 'nhãn'] — không quét mã màu '#3f8f57' */
+    [...text.matchAll(/\[\s*'(#\/[a-z0-9\/-]*)'/g)].forEach(m => {
+      if (m[1] === '#/') return;
+      const seg = m[1].replace(/^#\//, '').split('/');
+      if (routesSet.has(seg[0]) || paramRoutes.includes(seg[0])) return;
+      bad.push(f + ': ' + m[1] + ' (trong bảng lối vào)');
+    });
+  });
+  if (bad.length) bad.forEach(b => failWith('liên kết nội bộ chết — ' + b));
+  else console.log('liên kết nội bộ: 0 chết');
+}
+
 templateFiles.forEach(f => {
   if (!buildPy.includes(f)) failWith(`src/${f} không được src/build.py dùng — mẫu chết?`);
 });

@@ -13,7 +13,7 @@ lộ trình 13 ngày, thẻ ghi nhớ lặp lại cách quãng, sổ điểm đ�
 > giải mạch điện, đồng hồ tập trung… Tất cả nằm trong **một tệp `index.html`**, chạy offline, dữ liệu lưu trong máy bạn.
 
 <p>
-  <img alt="version" src="https://img.shields.io/badge/version-11.7-bordeaux">
+  <img alt="version" src="https://img.shields.io/badge/version-11.8-bordeaux">
   <img alt="single file" src="https://img.shields.io/badge/build-1%20tệp%20HTML-1f1c17">
   <img alt="offline" src="https://img.shields.io/badge/offline-100%25-4a6b3a">
   <img alt="license" src="https://img.shields.io/badge/license-MIT-8b2e22">

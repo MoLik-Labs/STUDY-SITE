@@ -91,7 +91,7 @@ function renderPhysics() {
   const next = (() => {
     for (const d of DAYS) {
       for (const s of d.sessions) {
-        if (!state.done[sid(d.n, s.n)]) return { d, s };
+        if (!doneMap()[sid(d.n, s.n)]) return { d, s };
       }
     }
     return null;

@@ -3,6 +3,65 @@
 Định dạng theo [Keep a Changelog](https://keepachangelog.com/vi/1.1.0/), phiên bản theo [SemVer](https://semver.org/lang/vi/).
 Mọi thay đổi lớn đều có kiểm thử: `npm test` (check tĩnh + CSP + Worker + mô phỏng Workers + 83 bước jsdom).
 
+## [11.4.0] — 2026-11-14
+
+### Kế hoạch tuần — làm lại theo [beaverplans.com](https://beaverplans.com/)
+
+Bản 11.2 có bảng tuần nhưng **không phải một công cụ lập kế hoạch**: không kéo
+được việc, không chốt được tuần, không tái dùng được kế hoạch cũ, và mọi tuần
+đều hiện cùng một danh sách. Bản này dựng lại phần vận hành cho đúng cách một
+tuần thật sự được lên kế hoạch và kết thúc.
+
+**Vì sao phải thêm `s.w` (tuần của từng việc).** Trước đây "tuần này / tuần sau"
+chỉ là cái nhãn trên cùng bảy cột — mọi việc xuất hiện ở mọi tuần, nên **không
+tuần nào chốt được**. Giờ mỗi việc con thuộc về một tuần cụ thể. Đây là thay đổi
+gốc, mọi thứ dưới đây dựa vào nó.
+
+**Sáu thao tác mới, mỗi thao tác là một chuyển trạng thái thật:**
+- **Kéo thả** việc sang ngày khác. Kéo qua ranh giới tuần thì việc đổi luôn tuần,
+  không biến mất khỏi cả hai chỗ.
+- **← → trên bàn phím** để dời việc. Kéo thả không dùng được với nhiều người;
+  bàn phím phải tới được cùng một thao tác.
+- **Copy plan / Paste plan**: chép cấu trúc dự án → việc → việc con sang tuần
+  khác. Cố ý **không** chép dấu đã xong — kế hoạch chưa làm không phải kế hoạch
+  đã xong. Dán trùng tên thì xếp vào dự án cũ, không tạo dự án thứ hai.
+- **Move work**: dời từng việc chưa xong bằng cách sửa chữ trong danh sách gợi ý
+  (`T3  đọc lý thuyết`). Mỗi việc có nhà riêng, không dồn hết sang thứ Ba.
+- **End week**: chốt tuần, mang việc còn lại sang tuần sau, để lại dấu vết
+  (`x/y việc · n việc mang sang`). Vứt việc đi là cách dạy người ta giấu việc.
+- **Dồn một ngày** cho cả một việc có nhiều việc con — việc năm mảnh thường là
+  một buổi làm, kéo từng mảnh là làm việc vô ích.
+
+**Thiết kế lại màn hình.** Bản cũ là một bảng điều khiển: năm ô KPI, hai bảng
+lớn, mọi thứ cùng kêu. Bản mới theo beaverplans: **một con số mạnh** (phần trăm),
+một câu nói đúng sự thật ("Còn 1 ngày — 6 việc đang chờ"), **đường kẻ thay vì
+hộp**, và độ khó là **một chữ** (khó / vừa / dễ) chứ không phải chấm chấm.
+
+**Ngày trống có hướng dẫn 3 bước.** Bảy cột trống không giải thích được gì —
+beaverplans thêm hướng dẫn vì lý do đó, bản này cũng vậy: dự án → việc → việc con,
+kèm ví dụ và một nút bắt đầu.
+
+**Gắn bài học (thứ beaverplans không có).** Mỗi việc gắn được vào một ca học
+trong lộ trình 52 ca; bấm "mở →" là vào thẳng bài. Tìm không dấu ("hieu dien"
+ra "Dòng điện, hiệu điện thế"). Đây là chỗ bản clone vượt bản gốc: beaverplans
+không có bài nào để mở.
+
+**Rải việc cân theo sức** thay cho rải đều: việc khó trước, nhưng không nhồi quá
+một ngưỡng, và **thà để trống một ngày còn hơn nhồi**. Có thanh tải mỗi ngày
+(dễ 1 · vừa 2 · khó 3) và cảnh báo khi một ngày sắp bị bỏ.
+
+### Sửa lỗi
+- Không tuần nào chốt được (thiếu phạm vi tuần trên từng việc).
+- Ô tìm bài học lọc bằng chuỗi chưa chuẩn hoá → gõ có dấu không ra kết quả.
+
+### Kiểm thử
+- `tests/newfeat.js`: **61 bước** (thêm 28) — dời việc trong và qua tuần, copy/paste
+  không tạo dự án trùng, chốt tuần mang đúng số việc, rải cân chỉ dùng ngày được
+  bật, và hướng dẫn chỉ hiện khi tuần thật sự trống.
+- Tổng: **315 bước** xanh.
+
+---
+
 ## [11.3.0] — 2026-11-14
 
 **Study Focus Fox.** Đổi tên, làm bộ nhận diện, thêm tiếng Anh, thêm Đấu trường

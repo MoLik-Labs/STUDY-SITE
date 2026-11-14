@@ -381,3 +381,92 @@ function explMenuBody() {
     ${g.items.map(it => `<a href="${it.href}" data-nav="${it.href}" role="menuitem">${esc(explName(it))}</a>`).join('')}
   </div>`).join('');
 }
+
+/* ---------------- "đi tiếp" ----------------
+   Mọi trang công cụ đều là ngõ cụt: người dùng vào #/cards rồi chỉ còn thanh
+   trên để thoát. Trên điện thoại, thanh trên nghĩa là mở ngăn kéo — ba thao
+   tác để đi tiếp một việc hiển nhiên.
+
+   Quy tắc chọn, theo thứ tự:
+     1. OVERRIDE — luồng có bước kế tiếp rõ ràng (làm đề xong → xem câu sai).
+     2. Hai mục anh em trong cùng nhóm — cùng loại việc, nên gần như luôn đúng.
+     3. Trang nhóm (Vật lí / Khám phá) làm lối thoát cuối.
+
+   Tối đa 3 gợi ý: quá ba thì thành một menu nữa, mà sản phẩm đã có menu rồi. */
+const EXPL_NEXT = {
+  '#/exam': ['#/review', '#/stats'],
+  '#/practice': ['#/cards', '#/review'],
+  '#/review': ['#/cards', '#/progress'],
+  '#/flash': ['#/cards', '#/notes'],
+  '#/calc': ['#/solve', '#/special'],
+  '#/build': ['#/builder', '#/lab'],
+  '#/builder': ['#/build', '#/lab'],
+  '#/lab': ['#/sim', '#/build'],
+  '#/sim': ['#/lab', '#/physics'],
+  '#/notes': ['#/flash', '#/library'],
+  '#/library': ['#/notes', '#/papers'],
+  '#/papers': ['#/exam', '#/solve'],
+  '#/cards': ['#/practice', '#/study'],
+  '#/focus': ['#/weekly', '#/study'],
+  '#/weekly': ['#/plan', '#/timetable'],
+  '#/plan': ['#/weekly', '#/calendar'],
+  '#/timetable': ['#/calendar', '#/weekly'],
+  '#/calendar': ['#/timetable', '#/weekly'],
+  '#/grades': ['#/progress', '#/study'],
+  '#/progress': ['#/stats', '#/share'],
+  '#/stats': ['#/progress', '#/share'],
+  '#/share': ['#/progress', '#/game'],
+  '#/game': ['#/cards', '#/practice'],
+  '#/studio': ['#/mine', '#/subjects'],
+  '#/mine': ['#/studio', '#/files'],
+  '#/files': ['#/studio', '#/mine'],
+  '#/settings': ['#/discover', '#/about'],
+  '#/about': ['#/discover', '#/physics'],
+  '#/discover': ['#/physics', '#/study'],
+  '#/physics': ['#/study', '#/calc'],
+  '#/study': ['#/cards', '#/weekly'],
+};
+
+function explNextFor(hash) {
+  const cur = String(hash || '').split('?')[0];
+  const out = [];
+  const push = h => {
+    if (!h || h === cur || out.includes(h)) return;
+    const hit = explToolAt(h) || (h === '#/' ? { item: { href: '#/' } } : null);
+    if (!hit) return;
+    out.push(h);
+  };
+  (EXPL_NEXT[cur] || []).forEach(push);
+  /* anh em trong cùng nhóm */
+  const g = EXPLORE_GROUPS.find(gr => gr.items.some(it => it.href === cur));
+  if (g) g.items.forEach(it => { if (out.length < 3) push(it.href); });
+  if (out.length < 3) push('#/physics');
+  if (out.length < 3) push('#/discover');
+  return out.slice(0, 3);
+}
+
+/* Nhãn cho dải "đi tiếp"; tiêu đề nhóm lấy từ bảng nên không bao giờ lệch. */
+function explNextLabel(href) {
+  if (href === '#/') return explLang() === 'en' ? '13-day plan' : 'Lộ trình 13 ngày';
+  const hit = explToolAt(href);
+  return hit ? explName(hit.item) : href;
+}
+
+function explNextHtml(hash) {
+  const list = explNextFor(hash);
+  if (!list.length) return '';
+  return `<section class="wrap next-steps" aria-label="Đi tiếp">
+    <div class="ns-h"><span class="kicker">Đi tiếp</span>
+      <a href="#/discover">Mọi lối vào →</a></div>
+    <div class="ns-grid">
+      ${list.map((h, i) => {
+        const hit = explToolAt(h);
+        const why = i === 0 ? 'bước kế tiếp' : (hit && hit.item.need ? hit.item.need : '');
+        return `<a class="ns-card${i === 0 ? ' ns-first' : ''}" href="${h}">
+          <b>${esc(explNextLabel(h))}</b>
+          <span>${esc((why || '').slice(0, 62))}</span>
+        </a>`;
+      }).join('')}
+    </div>
+  </section>`;
+}

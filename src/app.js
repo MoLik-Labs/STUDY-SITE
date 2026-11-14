@@ -136,8 +136,8 @@ function renderTop(){
   const dc=doneCount();
   $('#top').innerHTML=`
     <div class="topbar-in">
-      <button class="menu-btn" id="menuBtn" aria-label="Mở danh sách ngày">☰</button>
-      <a class="brand" href="#/" aria-label="${BRAND.name} — về trang chủ">
+      <button class="menu-btn" id="menuBtn" aria-label="${tl('more')}" aria-expanded="false">☰</button>
+      <a class="brand" href="${(typeof prefs==='function'&&prefs().start)||'#/'}" aria-label="${BRAND.name}">
         <span class="brand-mk" aria-hidden="true">${GM_SPRITE_MARK}</span>
         <span class="brand-tx"><b>${BRAND.name}</b><span>${tl('brand_sub')}</span></span>
       </a>
@@ -151,9 +151,15 @@ function renderTop(){
       <a class="scope-chip" href="#/subjects" title="Đổi lớp và môn">
         <b>Lớp ${schoolState().grade}</b><span>${(SUBJECTS.find(x => x.id === schoolState().subj) || { name: 'Vật lí' }).name}</span>
       </a>
+      <a class="tb-phys" href="#/physics" aria-label="${tl('nav_physics')}" title="${tl('nav_physics')}">
+        <b>${tl('nav_physics')}</b><span>${dc}/${TOTAL_SESS}</span>
+      </a>
       <button class="tb-btn" data-nav="#/calc">${tl('btn_calc')}</button>
       <button class="tb-btn" data-nav="#/sim">${tl('btn_sim')}</button>
       <button class="tb-btn" data-nav="#/exam">${tl('btn_exam')}</button>
+      <a class="tb-gear" href="#/settings" aria-label="${tl('nav_settings')}" title="${tl('nav_settings')}">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="2.4"/><path d="M8 1.6v1.6M8 12.8v1.6M1.6 8h1.6M12.8 8h1.6M3.5 3.5l1.1 1.1M11.4 11.4l1.1 1.1M12.5 3.5l-1.1 1.1M4.6 11.4l-1.1 1.1"/></svg>
+      </a>
       <a class="tb-key" href="#/discover" aria-label="${tl('nav_discover')}">${tl('more')} ▾</a>
       <span class="tb-more">
         <button class="tb-btn" id="tbMoreBtn" aria-expanded="false" aria-controls="tbMenu" aria-haspopup="true">${tl('more')} ▾</button>
@@ -248,6 +254,19 @@ function renderRail(){
   const onS=h0.startsWith('#/subjects')||h0.startsWith('#/subject/')||h0.startsWith('#/read/');
   const mineN=(typeof allLessons==='function')?allLessons().filter(l=>l.own).length:0;
   $('#rail').innerHTML=`
+    ${(typeof prefs !== 'function' || prefs().railStart !== false) ? `<div class="rail-phys${h0.startsWith('#/physics')||h0==='#/'||h0===''||h0.startsWith('#/day/')||h0.startsWith('#/lesson/')?' on':''}">
+      <a class="rp-main" href="#/physics">
+        <span class="rp-k">${tl('nav_physics')}</span>
+        <b>Vật lí 9 · ${dc}/${TOTAL_SESS} ca</b>
+        <span class="rp-bar"><i style="width:${TOTAL_SESS?Math.round(dc/TOTAL_SESS*100):0}%"></i></span>
+      </a>
+      <div class="rp-links">
+        <a href="#/" class="${h0==='#/'||h0===''?'on':''}">Lộ trình 13 ngày</a>
+        <a href="#/calc">Máy giải</a>
+        <a href="#/build">Bảng mạch</a>
+        <a href="#/lab">Thí nghiệm</a>
+      </div>
+    </div>` : ''}
     <div class="rail-study">
       <a href="#/study" class="rs-main${h0.startsWith('#/study')?' on':''}"><b>${tl('nav_study')}</b><span>${tl('rail_today_sub')}</span></a>
       <div class="rs-links">
@@ -305,8 +324,20 @@ function renderRail(){
 ========================================================= */
 function renderHome(){
   const dc=doneCount();
+  /* "Học tiếp" phải trỏ về chỗ bạn vừa rời đi, không phải ca trống đầu tiên.
+     Trước đây mở ca 5 cần mua, đóng tab, mở lại thì nút đưa về ca 1 — người
+     dùng mất chỗ đang học, đúng lúc họ muốn tiếp tục nhất. state.last đã được
+     ghi mỗi lần vào ca nhưng không ai đọc. */
   let next=null;
-  for(const d of DAYS){ for(const s of d.sessions){ if(!state.done[sid(d.n,s.n)]){ next={d,s}; break; } } if(next) break; }
+  const last=state.last;
+  if(last&&last.d){
+    const ld=DAYS.find(d=>d.n===+last.d);
+    const ls=ld&&ld.sessions.find(s=>s.n===+last.s);
+    if(ld&&ls&&!state.done[sid(ld.n,ls.n)]) next={d:ld,s:ls};
+  }
+  if(!next){
+    for(const d of DAYS){ for(const s of d.sessions){ if(!state.done[sid(d.n,s.n)]){ next={d,s}; break; } } if(next) break; }
+  }
   const byPhase={I:[],II:[],III:[],IV:[]};
   DAYS.forEach(d=>byPhase[d.phase].push(d));
   $('#main').innerHTML=`
@@ -325,6 +356,17 @@ function renderHome(){
       ${typeof etaText==='function'?`<p class="eta">${etaText()}</p>`:''}
       <p class="hero-sign">Biên soạn &amp; thiết kế: <a href="https://github.com/MoLik-Labs/STUDY-SITE" target="_blank" rel="noopener">@its.fox_</a>
         <span>·</span> <a href="#/about">về trang này</a></p>
+      <a class="hero-phys" href="#/physics">
+        <span class="hp-l">
+          <span class="kicker">${tl('nav_physics')} · ${dc}/${TOTAL_SESS} ca</span>
+          <b>Vào mục Vật lí</b>
+          <span class="hp-sub">Lộ trình 13 ngày · máy giải 16 dạng · bảng mạch · phòng thí nghiệm · 8 công cụ</span>
+        </span>
+        <span class="hp-r">
+          <span class="hp-bar"><i style="width:${TOTAL_SESS?Math.round(dc/TOTAL_SESS*100):0}%"></i></span>
+          <u>Mở →</u>
+        </span>
+      </a>
       <a class="hero-study" href="#/study">
         <span class="hs-l">
           <span class="kicker">Trung tâm tự học</span>
@@ -334,11 +376,12 @@ function renderHome(){
         <span class="hs-r"><em id="hsMin">0</em><i>phút hôm nay</i><u>Mở →</u></span>
       </a>
       ${typeof examBanner==='function' && typeof examRestore==='function' ? examBanner(examRestore()) : ''}
+      ${typeof syIfThenHtml==='function'?syIfThenHtml():''}
       ${typeof todayStrip==='function'?todayStrip():''}
       ${typeof routineCard==='function'?routineCard():''}
       ${next?`<a class="continue" href="${sessionHref(next.d.n,next.s.n)}">
         <div>
-          <span class="kicker">${dc?'Học tiếp':'Bắt đầu'}</span>
+          <span class="kicker">${state.last&&state.last.d*1===next.d.n&&state.last.s*1===next.s.n?'Đang học dở':'Học tiếp'}</span>
           <h3>${next.s.title}</h3>
           <p>Ngày ${String(next.d.n).padStart(2,'0')} · ${next.s.label} · ${next.d.title}</p>
         </div>
@@ -1328,6 +1371,40 @@ function openSearchOverlay(){
   $$('.ov-row',d).forEach(r=>r.onclick=()=>{const h=r.dataset.href;close();go(h);});
 }
 
+/* Mọi trang dựng xong đều đi qua đây: thêm dải "Đi tiếp" ở cuối trang.
+   Làm ở một chỗ thay vì sửa 30 hàm render — và nhờ vậy không trang nào
+   quên (trước đây 24 trang là ngõ cụt: chỉ còn thanh trên để thoát). */
+/* Quay lại: nút thật trên trang, không bắt người dùng mò nút Back của trình
+   duyệt — trên web app, nút đó thường rời khỏi trang này luôn. */
+function routeBack(){
+  const main=$('#main');
+  if(!main) return;
+  const path=(location.hash||'#/').replace(/^#/,'').split('?')[0];
+  const root=(path.split('/').filter(Boolean)[0])||'';
+  if(!root||root==='discover') return;          /* trang chủ và Khám phá không cần lùi */
+  if(main.querySelector('.pg-back')) return;
+  const a=document.createElement('a');
+  a.className='pg-back'; a.href='#/discover';
+  a.innerHTML='<span aria-hidden="true">←</span> Khám phá';
+  a.setAttribute('aria-label','Về trang Khám phá');
+  main.insertBefore(a, main.firstChild);
+}
+
+function routeNext(){
+  const main=$('#main');
+  if(!main) return;
+  routeBack();
+  if(main.querySelector('.next-steps')) return;      /* đã có, không thêm lần nữa */
+  const host=document.createElement('div');
+  host.innerHTML=(typeof explNextHtml==='function')?explNextHtml(location.hash):'';
+  const node=host.firstElementChild;
+  if(node) main.appendChild(node);
+}
+function routeOut(){
+  routeNext();
+  return undefined;
+}
+
 /* =========================================================
    ROUTER
 ========================================================= */
@@ -1359,48 +1436,48 @@ function render(){
   if(mainEl&&document.activeElement&&document.activeElement!==document.body&&!mainEl.contains(document.activeElement)){
     mainEl.setAttribute('tabindex','-1'); try{mainEl.focus({preventScroll:true});}catch(e){}
   }
-  if(p[0]==='lesson'&&p[1]&&p[2]) return renderLesson(p[1],p[2],qp.get('pane')||state.pane);
-  if(p[0]==='day'&&p[1]) return renderDay(p[1]);
-  if(p[0]==='discover') return renderDiscover(qp.get('q')||'');
-  if(p[0]==='library') return renderLibrary();
-  if(p[0]==='notes') return renderNotes(qp.get('q')||'');
-  if(p[0]==='papers') return renderPapers();
-  if(p[0]==='qa') return renderQA(qp.get('q')||'');
-  if(p[0]==='exam') return renderExam();
-  if(p[0]==='review') return renderReview();
-  if(p[0]==='solve') return renderSolve(p[1]===undefined?undefined:+p[1]);
-  if(p[0]==='flash') return renderFlash();
-  if(p[0]==='stats') return renderStats();
-  if(p[0]==='calc') return renderCalc();
-  if(p[0]==='build') return renderBoard();
-  if(p[0]==='builder') return renderBuild();
-  if(p[0]==='sim') return renderSim();
-  if(p[0]==='subjects') return renderShelf();
-  if(p[0]==='subject'&&p[1]&&p[2]) return renderSubject(+p[1],p[2]);
-  if(p[0]==='read'&&p[1]) return renderRead(p[1]);
-  if(p[0]==='studio') return renderStudio(p[1]||null);
-  if(p[0]==='mine') return renderMine();
-  if(p[0]==='files') return renderFiles();
-  if(p[0]==='study') return renderStudy();
-  if(p[0]==='cards') return renderCards();
-  if(p[0]==='practice') return renderPractice();
-  if(p[0]==='plan') return renderPlan();
-  if(p[0]==='focus') return renderFocus();
-  if(p[0]==='progress') return renderProgress();
-  if(p[0]==='game') return renderGame();
-  if(p[0]==='physics') return renderPhysics();
-  if(p[0]==='special') return renderSpecial();
-  if(p[0]==='share'&&p[1]==='lesson'&&p[2]&&p[3]) return renderShareLesson(p[2],p[3]);
-  if(p[0]==='share') return renderShare();
-  if(p[0]==='grades') return renderGrades(p[1]);
-  if(p[0]==='weekly') return renderWeekly();
-  if(p[0]==='timetable') return renderTimetable();
-  if(p[0]==='calendar') return renderCalendar();
-  if(p[0]==='about') return renderAbout();
-  if(p[0]==='lab') return renderLab();
-  if(p[0]==='sheet') return renderSheet();
-  if(p[0]==='settings') return renderSettings();
-  if(p[0]==='vid'&&p[1]){ renderHome(); setTimeout(()=>openVideoModal(p[1]),60); return; }
+  if(p[0]==='lesson'&&p[1]&&p[2]) return routeOut(renderLesson(p[1],p[2],qp.get('pane')||state.pane));
+  if(p[0]==='day'&&p[1]) return routeOut(renderDay(p[1]));
+  if(p[0]==='discover') return routeOut(renderDiscover(qp.get('q')||''));
+  if(p[0]==='library') return routeOut(renderLibrary());
+  if(p[0]==='notes') return routeOut(renderNotes(qp.get('q')||''));
+  if(p[0]==='papers') return routeOut(renderPapers());
+  if(p[0]==='qa') return routeOut(renderQA(qp.get('q')||''));
+  if(p[0]==='exam') return routeOut(renderExam());
+  if(p[0]==='review') return routeOut(renderReview());
+  if(p[0]==='solve') return routeOut(renderSolve(p[1]===undefined?undefined:+p[1]));
+  if(p[0]==='flash') return routeOut(renderFlash());
+  if(p[0]==='stats') return routeOut(renderStats());
+  if(p[0]==='calc') return routeOut(renderCalc());
+  if(p[0]==='build') return routeOut(renderBoard());
+  if(p[0]==='builder') return routeOut(renderBuild());
+  if(p[0]==='sim') return routeOut(renderSim());
+  if(p[0]==='subjects') return routeOut(renderShelf());
+  if(p[0]==='subject'&&p[1]&&p[2]) return routeOut(renderSubject(+p[1],p[2]));
+  if(p[0]==='read'&&p[1]) return routeOut(renderRead(p[1]));
+  if(p[0]==='studio') return routeOut(renderStudio(p[1]||null));
+  if(p[0]==='mine') return routeOut(renderMine());
+  if(p[0]==='files') return routeOut(renderFiles());
+  if(p[0]==='study') return routeOut(renderStudy());
+  if(p[0]==='cards') return routeOut(renderCards());
+  if(p[0]==='practice') return routeOut(renderPractice());
+  if(p[0]==='plan') return routeOut(renderPlan());
+  if(p[0]==='focus') return routeOut(renderFocus());
+  if(p[0]==='progress') return routeOut(renderProgress());
+  if(p[0]==='game') return routeOut(renderGame());
+  if(p[0]==='physics') return routeOut(renderPhysics());
+  if(p[0]==='special') return routeOut(renderSpecial());
+  if(p[0]==='share'&&p[1]==='lesson'&&p[2]&&p[3]) return routeOut(renderShareLesson(p[2],p[3]));
+  if(p[0]==='share') return routeOut(renderShare());
+  if(p[0]==='grades') return routeOut(renderGrades(p[1]));
+  if(p[0]==='weekly') return routeOut(renderWeekly());
+  if(p[0]==='timetable') return routeOut(renderTimetable());
+  if(p[0]==='calendar') return routeOut(renderCalendar());
+  if(p[0]==='about') return routeOut(renderAbout());
+  if(p[0]==='lab') return routeOut(renderLab());
+  if(p[0]==='sheet') return routeOut(renderSheet());
+  if(p[0]==='settings') return routeOut(renderSettings());
+  if(p[0]==='vid'&&p[1]){ renderHome(); routeNext(); setTimeout(()=>openVideoModal(p[1]),60); return; }
   return renderHome();
 }
 

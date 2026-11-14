@@ -208,6 +208,83 @@ async function handle(method, pathname, headers) {
   }
   ok('luồng học bình thường tốn 0 request động', billed === 0, billed + ' request');
 
+
+  /* =========================================================
+     9. /__version — bốn thứ từng sai, giờ phải đúng
+     ---------------------------------------------------------
+     (a) Nó từng fetch nội bộ /index.html (1,1 MB) rồi regex để lấy phiên bản.
+         Một endpoint kiểm tra phiên bản mà phụ thuộc mạng thì chính nó hỏng
+         đầu tiên khi mạng có vấn đề — và nó tốn CPU của Worker mỗi lần gọi.
+     (b) `at: new Date()` khiến hai lần gọi cho hai kết quả khác nhau, nên
+         ETag không bao giờ khớp và 304 không bao giờ xảy ra.
+     (c) If-None-Match của trình duyệt thật gửi kèm W/ và đôi khi cả danh sách.
+         So sánh nguyên chuỗi thì không bao giờ thấy khớp.
+     (d) HEAD phải trả cùng header nhưng không có body.
+     ========================================================= */
+
+  /* (a) không được chạm mạng khi trả lời */
+  {
+    let netCalls = 0;
+    const realFetch = globalThis.fetch;
+    globalThis.fetch = async () => { netCalls++; throw new Error('network used'); };
+    const r = await handle('GET', '/__version');
+    globalThis.fetch = realFetch;
+    ok('/__version không dùng mạng', netCalls === 0, netCalls + ' lần fetch');
+    ok('/__version vẫn 200 khi mạng bị chặn', r.status === 200, r.status);
+  }
+
+  /* (b) hai lần gọi phải giống hệt nhau (nên cache/ETag mới có nghĩa) */
+  const v1 = await (await handle('GET', '/__version')).res.text();
+  const v2 = await (await handle('GET', '/__version')).res.text();
+  ok('/__version tất định giữa hai lần gọi', v1 === v2);
+  ok('/__version có builtAt của bản dựng, không phải lúc gọi',
+    /"builtAt":"\d{4}-\d\d-\d\dT/.test(v1), v1.slice(0, 90));
+
+  /* (c) ETag: khớp thì 304, kể cả khi client gửi W/ hoặc danh sách */
+  const withTag = await handle('GET', '/__version');
+  const tag = withTag.res.headers.get('ETag');
+  ok('/__version có ETag', !!tag, tag);
+  /* tag đã có tiền tố W/ rồi — ghép thêm lần nữa sẽ ra "W/W/…" và không
+     trình duyệt nào gửi như vậy. Đây là lỗi của test, không phải của Worker. */
+  for (const inm of [tag, tag.replace(/^W\//, ''), 'W/' + tag.replace(/^W\//, ''), '"other", ' + tag]) {
+    const r = await handle('GET', '/__version', { 'If-None-Match': inm });
+    ok('If-None-Match khớp → 304 (' + inm.slice(0, 18) + ')', r.status === 304, r.status);
+  }
+  const stale = await handle('GET', '/__version', { 'If-None-Match': 'W/"cu"' });
+  ok('ETag cũ → 200 kèm dữ liệu mới', stale.status === 200, stale.status);
+
+  /* (d) HEAD: cùng header, không body */
+  const h2 = await handle('HEAD', '/__version');
+  ok('HEAD /__version có ETag', !!h2.res.headers.get('ETag'));
+  ok('HEAD /__version không có body', (await h2.res.text()) === '');
+
+  /* 405 phải kèm Allow, nếu không client không biết được phép gì */
+  const p405 = await handle('PUT', '/__version');
+  ok('PUT /__version → 405', p405.status === 405, p405.status);
+  ok('405 kèm header Allow', (p405.res.headers.get('Allow') || '').includes('GET'), p405.res.headers.get('Allow'));
+
+  /* ---------- 10. CSP gửi bằng HEADER, và chỉ một dòng ---------- */
+  {
+    const hd = fs.readFileSync(path.join(DIST, '_headers'), 'utf8');
+    const lines = hd.split('\n').filter(l => /^\s+Content-Security-Policy:/i.test(l));
+    ok('_headers có Content-Security-Policy', lines.length === 1, lines.length + ' dòng');
+    const val = (lines[0] || '').replace(/^\s*Content-Security-Policy:\s*/i, '');
+    /* directive chỉ được đặt một lần; lặp lại thì trình duyệt chỉ dùng cái đầu */
+    const dirs = {};
+    val.split(';').forEach(d => {
+      const k = d.trim().split(/\s+/)[0].toLowerCase();
+      if (k) dirs[k] = (dirs[k] || 0) + 1;
+    });
+    const dup = Object.keys(dirs).filter(k => dirs[k] > 1);
+    ok('CSP không lặp directive', dup.length === 0, dup.join(', '));
+    ok('CSP có frame-ancestors (chỉ header mới đặt được)', /\bframe-ancestors\b/.test(val));
+    /* chú thích trong khối luật phải dùng '#', không dùng /* *\/ */
+    const inRule = hd.split('\n').filter(l => /^\s{2}\S/.test(l) && !/^\s{2}[A-Za-z-]+:/.test(l));
+    ok('mọi dòng thụt lề trong _headers là header hợp lệ', inRule.length === 0, inRule.slice(0, 2).join(' | '));
+    const parsed = sf.headers['Content-Security-Policy'] || '';
+    ok('CSP đọc được qua bộ phân tích của Cloudflare', parsed.includes("default-src"), parsed.slice(0, 30));
+  }
+
   const pass = results.filter(r => r.pass).length;
   results.filter(r => !r.pass).forEach(r => console.log('  ✗ ' + r.n + (r.note ? ' — ' + r.note : '')));
   console.log(`\n${pass}/${results.length} bước đạt` + (pass === results.length ? '  ✓' : ''));

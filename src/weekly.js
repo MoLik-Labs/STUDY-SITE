@@ -574,13 +574,14 @@ function renderWeekly() {
   $('#main').innerHTML = `<section class="wrap wide sy-page">
     <div class="wk-top">
       <div class="wk-top-l">
+        <span class="kicker">Kế hoạch tuần · ${st.all || 0} việc · ${st.pct || 0}%</span>
+        <h1 class="wk-h1">${headline}</h1>
         <div class="wk-nav">
           <button class="wk-arrow" id="wkPrev" aria-label="Tuần trước">‹</button>
           <span class="wk-range">${rangeVN}${off === 0 ? ' · tuần này' : off > 0 ? ' · tuần sau' : ' · tuần trước'}</span>
           <button class="wk-arrow" id="wkNext" aria-label="Tuần sau">›</button>
           ${off !== 0 ? '<button class="wk-today" id="wkThis">về tuần này</button>' : ''}
         </div>
-        <p class="wk-headline">${headline}</p>
       </div>
       <div class="wk-top-r">
         <div class="wk-prog">
@@ -588,10 +589,10 @@ function renderWeekly() {
           <span class="wk-prog-n">${st.done}/${st.all} việc</span>
         </div>
         <div class="wk-tools">
-          <button class="wk-chip-btn" id="wkCopy" title="Sao chép kế hoạch tuần này thành văn bản">Copy plan</button>
-          <button class="wk-chip-btn" id="wkPaste" title="Dán kế hoạch đã sao chép">Paste plan</button>
-          <button class="wk-chip-btn" id="wkMove" ${openN ? '' : 'disabled'} title="Dời từng việc chưa xong sang ngày khác">Move work${openN ? ' · ' + openN : ''}</button>
-          <button class="wk-chip-btn wk-end" id="wkEnd" title="Chốt tuần và mang việc còn lại sang tuần sau">End week</button>
+          <button class="wk-chip-btn" id="wkCopy" title="Sao chép kế hoạch tuần này thành văn bản">Sao chép tuần</button>
+          <button class="wk-chip-btn" id="wkPaste" title="Dán kế hoạch đã sao chép">Dán tuần</button>
+          <button class="wk-chip-btn" id="wkMove" ${openN ? '' : 'disabled'} title="Dời từng việc chưa xong sang ngày khác">Dời việc${openN ? ' · ' + openN : ''}</button>
+          <button class="wk-chip-btn wk-end" id="wkEnd" title="Chốt tuần và mang việc còn lại sang tuần sau">Chốt tuần</button>
         </div>
       </div>
     </div>

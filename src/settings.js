@@ -22,7 +22,16 @@ const ACCENTS = ['', '#8b2e22', '#2f5f92', '#4a6b3a', '#a85a1c', '#7a3f8c', '#0f
 
 const DEF_PREFS = {
   theme: 'paper', accent: '', fs: 1, density: 'cozy', radius: 'sharp',
-  motion: true, hl: true
+  motion: true, hl: true,
+  /* reading comfort — the three things that decide whether a long lesson is
+     readable, which is the whole product */
+  measure: 68,      /* characters per line */
+  line: 1.62,       /* line-height */
+  underline: false, /* underline every link (a real accessibility need) */
+  /* navigation */
+  start: '#/physics', /* what the brand/tab opens */
+  railStart: true,    /* rail opens on the physics block */
+  reduceData: false,  /* save less to localStorage (slow devices) */
 };
 
 function prefs() {
@@ -40,7 +49,11 @@ function applyPrefs() {
   root.style.setProperty('--fs', String(p.fs || 1));
   if (p.accent) root.style.setProperty('--accent', p.accent);
   else root.style.removeProperty('--accent');
-  try { localStorage.setItem(PREFS_KEY, JSON.stringify({ theme: p.theme, fs: p.fs, accent: p.accent, density: p.density, radius: p.radius, motion: p.motion })); } catch (e) {}
+  root.style.setProperty('--measure', (p.measure || 68) + 'ch');
+  root.style.setProperty('--lh', String(p.line || 1.62));
+  root.setAttribute('data-underline', p.underline ? 'on' : 'off');
+  root.setAttribute('data-reduce', p.reduceData ? 'on' : 'off');
+  try { localStorage.setItem(PREFS_KEY, JSON.stringify({ theme: p.theme, fs: p.fs, accent: p.accent, density: p.density, radius: p.radius, motion: p.motion, measure: p.measure, line: p.line, underline: p.underline })); } catch (e) {}
 }
 
 function setPref(k, v) {
@@ -62,12 +75,22 @@ function renderSettings() {
   const c = typeof pomoCfg === 'function' ? pomoCfg() : { presets: [[25, 5], [50, 10], [15, 3]] };
   const st = AppStore.status();
 
+  const SEC = [
+    ['00', 'Ngôn ngữ', 'lang'], ['01', 'Giao diện', 'ui'],
+    ['02', 'Đọc', 'read'], ['02b', 'Mục tiêu & trợ năng', 'more'],
+    ['03', 'Bắt đầu', 'start'], ['04', 'Pomodoro', 'pomo'],
+    ['05', 'Dữ liệu của bạn', 'data'],
+  ];
   $('#main').innerHTML = `<section class="wrap wide">
     ${pageHead('Tuỳ biến', 'Chỉnh web theo mắt và nhịp học của bạn',
-      'Mọi thứ dưới đây lưu ngay vào máy — ở 3 tầng khác nhau, kèm lịch sử phiên bản. Không phải cache: đóng trình duyệt, tắt máy vẫn còn.')}
-
-    <div class="set-grid">
-      <section class="set-sec">
+      'Mọi thay đổi áp dụng ngay và lưu vào máy ở ba tầng, kèm lịch sử phiên bản. Không phải cache — đóng trình duyệt, tắt máy vẫn còn.')}
+    <div class="set-page">
+      <nav class="set-nav" aria-label="Mục tuỳ biến">
+        <span class="set-nav-h">Mục</span>
+        ${SEC.map(([n, t, id]) => `<a href="#/settings?s=${id}" data-snav="${id}"><b>${n}</b>${t}</a>`).join('')}
+      </nav>
+      <div class="set-body set-grid">
+      <section class="set-sec" id="set-lang">
         <div class="set-h"><span class="kicker">00 · ${tl('lang_label')}</span><span class="muted">vi · en</span></div>
         <div class="lang-row">
           <button class="lang-btn${i18nLang() === 'vi' ? ' on' : ''}" data-lang="vi" lang="vi">
@@ -78,7 +101,7 @@ function renderSettings() {
         <p class="sy-note">${tl('lang_note')}</p>
       </section>
 
-      <section class="set-sec">
+      <section class="set-sec" id="set-ui">
         <div class="set-h"><span class="kicker">01 · Giao diện</span><span class="muted">${THEMES.length} bộ màu</span></div>
         <div class="theme-grid">
           ${THEMES.map(t => `<button class="theme-card${p.theme === t.id ? ' on' : ''}" data-theme-pick="${t.id}">
@@ -93,7 +116,7 @@ function renderSettings() {
         </div>
       </section>
 
-      <section class="set-sec">
+      <section class="set-sec" id="set-more">
         <div class="set-h"><span class="kicker">02 · Màu nhấn</span><span class="muted">nút, gạch chân, số</span></div>
         <div class="acc-row">
           ${ACCENTS.map(a => `<button class="acc-dot${p.accent === a ? ' on' : ''}" data-accent="${a}"
@@ -126,8 +149,49 @@ function renderSettings() {
         </div>
       </section>
 
-      <section class="set-sec" id="setPomo">
-        <div class="set-h"><span class="kicker">03 · Pomodoro</span><span class="muted">tự đặt giờ và kiểu</span></div>
+      <section class="set-sec" id="set-read">
+        <div class="set-h"><span class="kicker">02 · Đọc</span><span class="muted">cỡ chữ và độ dài dòng</span></div>
+        <p class="set-row-note">Ba thứ quyết định một bài dài có đọc nổi hay không. Đổi ở đây là đổi cho mọi trang đọc bài.</p>
+        <div class="set-row">
+          <span class="set-l">Độ dài dòng</span>
+          <div class="set-range">
+            <input type="range" min="48" max="92" step="4" value="${p.measure || 68}" data-measure aria-label="Số ký tự mỗi dòng">
+            <em id="measureOut">${p.measure || 68} ký tự</em>
+          </div>
+        </div>
+        <div class="set-row">
+          <span class="set-l">Giãn dòng</span>
+          <div class="seg">${[['1.5', 'Chặt'], ['1.62', 'Vừa'], ['1.8', 'Thoáng'], ['2', 'Rất thoáng']].map(([v, t]) =>
+            `<button data-line="${v}" class="${String(p.line) === v ? 'on' : ''}">${t}</button>`).join('')}</div>
+        </div>
+        <div class="set-row">
+          <span class="set-l">Gạch chân liên kết</span>
+          <div class="seg">${[['on', 'Có'], ['off', 'Không']].map(([v, t]) =>
+            `<button data-underline="${v}" class="${String(!!p.underline) === String(v === 'on') ? 'on' : ''}">${t}</button>`).join('')}</div>
+        </div>
+        <div class="read-preview" aria-hidden="true">
+          <span class="kicker">Xem trước</span>
+          <p>Định luật Ôm: cường độ dòng điện qua một đoạn dây dẫn tỉ lệ thuận với hiệu điện thế giữa hai đầu đoạn dây và tỉ lệ nghịch với điện trở của nó.</p>
+        </div>
+      </section>
+
+      <section class="set-sec" id="set-start">
+        <div class="set-h"><span class="kicker">02b · Bắt đầu</span><span class="muted">mở web thì vào đâu</span></div>
+        <p class="set-row-note">Vật lí vẫn là mặc định. Nếu bạn dùng chủ yếu phần Trường học thì đổi ở đây — nút thương hiệu và tab mới sẽ mở đúng trang đó.</p>
+        <div class="set-row">
+          <span class="set-l">Trang mở đầu</span>
+          <div class="seg">${[['#/physics', 'Vật lí'], ['#/study', 'Học hôm nay'], ['#/subjects', 'Lớp & môn'], ['#/', 'Lộ trình 13 ngày']].map(([v, t]) =>
+            `<button data-start="${v}" class="${(p.start || '#/physics') === v ? 'on' : ''}">${t}</button>`).join('')}</div>
+        </div>
+        <div class="set-row">
+          <span class="set-l">Ngăn kéo mở bằng</span>
+          <div class="seg">${[['on', 'Mục Vật lí'], ['off', 'Danh sách ngày']].map(([v, t]) =>
+            `<button data-railstart="${v}" class="${String(p.railStart !== false) === String(v === 'on') ? 'on' : ''}">${t}</button>`).join('')}</div>
+        </div>
+      </section>
+
+      <section class="set-sec" id="set-pomo">
+        <div class="set-h"><span class="kicker">04 · Pomodoro</span><span class="muted">tự đặt giờ và kiểu</span></div>
         <div class="pm-grid">
           ${c.presets.map((pr, i) => `<div class="pm-preset">
             <span class="pm-i">Ô ${i + 1}</span>
@@ -158,8 +222,8 @@ function renderSettings() {
         </div>
       </section>
 
-      <section class="set-sec">
-        <div class="set-h"><span class="kicker">04 · Dữ liệu của bạn</span>
+      <section class="set-sec" id="set-data">
+        <div class="set-h"><span class="kicker">05 · Dữ liệu của bạn</span>
           <span class="muted">${st.idb ? 'đang lưu 3 tầng' : 'đang lưu 2 tầng'}</span></div>
         <div class="store-grid">
           <div class="store-cell"><b>${(st.ls / 1024).toFixed(1)} KB</b><span>máy này (bộ nhớ trình duyệt)</span><i class="${st.ls ? 'ok' : 'bad'}">${st.ls ? 'đang ghi' : 'trống'}</i></div>
@@ -181,6 +245,7 @@ function renderSettings() {
           <button class="btn ghost sm" id="setWipe">Xoá toàn bộ dữ liệu</button>
         </div>
       </section>
+      </div>
     </div>
   </section>`;
 
@@ -203,6 +268,42 @@ function renderSettings() {
     sel(b, '[data-goal]');
     toast('Mục tiêu mỗi ngày: ' + state.goal + ' câu');
   });
+
+  /* --- đọc --- */
+  const meas = $('[data-measure]');
+  if (meas) meas.oninput = () => {
+    const v = +meas.value;
+    const out = $('#measureOut'); if (out) out.textContent = v + ' ký tự';
+    document.documentElement.style.setProperty('--measure', v + 'ch');
+  };
+  if (meas) meas.onchange = () => { setPref('measure', +meas.value); toast('Độ dài dòng: ' + meas.value + ' ký tự'); };
+  $$('[data-line]').forEach(b => b.onclick = () => {
+    setPref('line', +b.dataset.line); sel(b, '[data-line]');
+  });
+  $$('[data-underline]').forEach(b => b.onclick = () => {
+    setPref('underline', b.dataset.underline === 'on'); sel(b, '[data-underline]');
+  });
+
+  /* --- bắt đầu --- */
+  $$('[data-start]').forEach(b => b.onclick = () => {
+    setPref('start', b.dataset.start); sel(b, '[data-start]');
+    toast('Trang mở đầu: ' + b.textContent.trim());
+  });
+  $$('[data-railstart]').forEach(b => b.onclick = () => {
+    setPref('railStart', b.dataset.railstart === 'on'); sel(b, '[data-railstart]');
+  });
+
+  /* --- mục lục bên trái --- */
+  $$('[data-snav]').forEach(a => a.onclick = e => {
+    e.preventDefault();
+    const host = $('#set-' + a.dataset.snav);
+    if (host) host.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    $$('[data-snav]').forEach(x => x.classList.toggle('on', x === a));
+  });
+  const wantSec = new URLSearchParams((location.hash.split('?')[1] || '')).get('s');
+  const firstNav = $(`[data-snav="${wantSec || 'lang'}"]`);
+  if (firstNav) firstNav.classList.add('on');
+  if (wantSec) { const host = $('#set-' + wantSec); if (host) setTimeout(() => host.scrollIntoView({ block: 'start' }), 30); }
 
   /* --- pomodoro --- */
   $$('[data-preset]').forEach(inp => inp.onchange = () => {

@@ -3,6 +3,100 @@
 Định dạng theo [Keep a Changelog](https://keepachangelog.com/vi/1.1.0/), phiên bản theo [SemVer](https://semver.org/lang/vi/).
 Mọi thay đổi lớn đều có kiểm thử: `npm test` (check tĩnh + CSP + Worker + mô phỏng Workers + 83 bước jsdom).
 
+## [11.7.0] — 2026-11-14
+
+### Vật lí đứng đầu — và luôn đứng đầu
+
+Trước đây muốn vào Vật lí phải mở menu **Khám phá** rồi tìm giữa 36 mục, dù
+Vật lí là nội dung lớn nhất sản phẩm (52 ca, 236 bài giảng, 8 công cụ). Giờ:
+
+- **nút riêng trên thanh trên**, nền màu nhấn, kèm tiến độ `7/52` — không thể
+  không thấy;
+- **khối đầu tiên trong ngăn kéo** có thanh tiến độ và bốn lối tắt;
+- **thẻ đầu tiên trên trang chủ**, trước cả thẻ tự học;
+- nhưng vẫn **đổi được** trong Tuỳ biến nếu bạn dùng phần Trường học nhiều hơn.
+  Mặc định là Vật lí; áp đặt thì không.
+
+### Tuỳ biến — mục bị bỏ quên
+
+Sáu mục không có mục lục, chữ phụ dưới ngưỡng tương phản, và **không có chỗ nào
+đổi cách đọc bài**. Giờ:
+
+- **cột mục lục dính bên trái** (thành thanh ngang trên điện thoại), đường dẫn
+  sâu `#/settings?s=read` mở đúng mục;
+- **mục Đọc mới**: độ dài dòng 48–92 ký tự, giãn dòng 1.5–2.0, gạch chân liên
+  kết — cả ba áp vào **bài đọc thật**, có ô xem trước;
+- **mục Bắt đầu mới**: chọn trang mở đầu và kiểu ngăn kéo;
+- chữ phụ `--ink-3` từ **4.21:1 lên 5.26:1** (AA cho chữ thường, trước đó trượt);
+- **132 khai báo cỡ chữ 7–8.5px gộp thành một biến `--micro`**, và nó **co theo
+  cỡ chữ người dùng chọn** — trước đây chọn "Rất lớn" vẫn có nhãn 7px.
+
+### Tâm lí học: "nếu … thì …"
+
+Việc duy nhất trong tâm lí học hành vi có bằng chứng mạnh và lặp lại được là
+**ý định thực hiện** (Gollwitzer; meta-analysis Gollwitzer & Sheeran 2006,
+~94 nghiên cứu, d ≈ 0.65). Người viết "nếu <tình huống> thì tôi <hành động>"
+làm đúng kế hoạch nhiều hơn hẳn người chỉ đặt mục tiêu.
+
+Đặt trong sản phẩm, có chủ đích:
+
+- hỏi ở **trang Học hôm nay** — lúc người dùng đang định học, không phải lúc
+  onboarding (hỏi lúc onboarding chỉ tạo ra một câu điền cho xong);
+- **ba ô có gợi ý**, không phải một ô văn xuôi — văn xuôi tự do không gắn được
+  với dấu hiệu nào;
+- **hiện lại trên trang chủ** — chính việc nhìn lại là phần có tác dụng;
+- **tối đa hai câu**, xoá được, "Để sau" thì không hỏi lại.
+
+### Điều hướng: hết ngõ cụt
+
+Đo được: **24 trong 36 trang là ngõ cụt** — chỉ còn thanh trên để thoát, mà
+trên điện thoại nghĩa là mở ngăn kéo. Giờ mọi trang con có **dải "Đi tiếp"**
+(3 gợi ý, gợi ý đầu là bước kế tiếp thật: làm đề xong → xem câu sai) và **nút
+lùi**. `#/weekly` là trang duy nhất không có `<h1>` — đã có.
+
+**Học tiếp giờ trỏ đúng chỗ đang dở.** `state.last` được ghi mỗi lần vào ca
+nhưng **không ai đọc**: mở ca 5, đóng tab, mở lại thì nút đưa về ca 1. Giờ nút
+đọc `state.last` và ghi rõ "Đang học dở".
+
+Nút công cụ của trang tuần còn là tiếng Anh (*Copy plan*, *End week*) giữa giao
+diện tiếng Việt — đã dịch.
+
+### Logo: vẽ lại bằng cách nhìn
+
+Ba phiên bản trước được vẽ ra **thật** ở 16, 24, 32 và 48 px rồi soi cạnh nhau
+(không đoán). Bản cũ để lộ một mảng kem chéo trông như vết xước; các bản thử
+nghiệm đều ra **mèo** hoặc **mặt nạ**. Bản chốt:
+
+- tai quét từ mép ngoài lên, đỉnh 1px — tam giác dựng đứng đọc thành mèo;
+- mắt 2×2 **lệch vào trong**, dưới chân tai — mắt giữa làm con vật "nhìn chằm
+  chằm", mắt lệch ra ngoài thành mặt nạ;
+- mõm kem hẹp ở cằm rồi mở rộng — mảng kem rộng đọc thành miệng bị cắt;
+- **biểu tượng tab giờ chính là dấu cáo**, sinh từ cùng một lưới 16×16 với
+  logo trên trang. Trước đây tab là **chữ số "9"** trong khi sản phẩm là con cáo.
+
+### Backend
+
+- **`/__version` không còn đọc `index.html`.** Trước đây mỗi lần gọi nó fetch
+  nội bộ 1,1 MB HTML rồi regex — một endpoint kiểm tra phiên bản mà phụ thuộc
+  mạng thì chính nó hỏng đầu tiên khi mạng có vấn đề. Giờ bản dựng nhúng sẵn
+  version + build-id + thời điểm.
+- **ETag có tác dụng**: `at: new Date()` khiến hai lần gọi khác nhau nên 304
+  không bao giờ xảy ra. Giờ phản hồi tất định, so khớp `If-None-Match` đúng
+  cách (chấp nhận `W/`, danh sách tag).
+- **CSP gửi bằng header**, không chỉ `<meta>` — meta không đặt được
+  `frame-ancestors` và chỉ có hiệu lực sau khi bắt đầu đọc HTML. Cả hai sinh từ
+  **cùng một chuỗi**.
+- Thêm `X-DNS-Prefetch-Control`, `X-Permitted-Cross-Domain-Policies`; 404 không
+  bị cache; HEAD không có body; 405 có `Allow`.
+- **Bẫy đã mắc và đã sửa:** chú thích `/* */` nằm *trong* khối luật của
+  `_headers` bị Cloudflare đọc thành tên header rác. `tests/worker.js` bắt được
+  ngay. Từ đó có luật kiểm: mọi dòng thụt lề trong `_headers` phải là header.
+
+**432 bước kiểm thử** (trước 377), 39 tuyến × 9 dạng dữ liệu hỏng = **0 ngoại
+lệ**, tương phản chữ **0 lỗi AA**, bản dựng tất định.
+
+---
+
 ## [11.6.0] — 2026-11-14
 
 ### Ba lỗi thật trong mục Khám phá

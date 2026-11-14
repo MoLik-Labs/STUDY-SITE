@@ -11,7 +11,7 @@ import hashlib, io, os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
-VERSION = '11.6'          # một nguồn duy nhất; sinh ra meta, APP_VERSION, footer, sw.js
+VERSION = '11.7'          # một nguồn duy nhất; sinh ra meta, APP_VERSION, footer, sw.js
 
 def arg(flag, default):
     """--flag giá-trị, hoặc chỉ --flag (dùng giá trị mặc định)."""
@@ -186,6 +186,38 @@ def script_block(code):
 scripts_html = '\n\n'.join(
     '<!-- ===== %s ===== -->\n%s' % (label, script_block(code)) for label, code in SCRIPTS)
 
+
+def build_favicon():
+    """Favicon = the brand mark, generated from the same half-grid the page uses.
+
+    It used to be a "9" glyph in a serif — the product's own tab icon was a
+    number, while the product is a fox. Deriving it from BRAND_MARK_HALF means
+    the two can never drift apart: change the mark, the tab follows.
+    """
+    import re
+    src = SRC('brand.js')
+    m = re.search(r'const BRAND_MARK_HALF = \[(.*?)\];', src, re.S)
+    if not m:
+        raise SystemExit('brand.js: BRAND_MARK_HALF not found')
+    halves = re.findall(r"'([^']{8})'", m.group(1))
+    if len(halves) != 16:
+        raise SystemExit('brand.js: BRAND_MARK_HALF must be 16 rows, got %d' % len(halves))
+    fill = {'o': '#c6542d', 'd': '#a53e20', 'k': '#17150f', 'w': '#fcf9f2'}
+    rects = []
+    for y, h in enumerate(halves):
+        row = h + h[::-1]
+        for x, ch in enumerate(row):
+            if ch in fill:
+                rects.append('<rect x="%d" y="%d" width="1" height="1" fill="%s"/>' % (x, y, fill[ch]))
+    svg = ("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'>"
+           "<rect width='16' height='16' fill='#f4f1ea'/>" + ''.join(rects) + "</svg>")
+    from urllib.parse import quote
+    return "data:image/svg+xml," + quote(svg, safe="/:='<># ")
+
+
+favicon = build_favicon()
+MAIN_HTML_FAVICON = '<link rel="icon" href="%s">' % favicon
+
 html = f"""<!doctype html>
 <html lang="vi">
 <head>
@@ -202,7 +234,7 @@ html = f"""<!doctype html>
 <meta property="og:title" content="Học mọi thứ — Vật lí 9 · lớp 1–12">
 <meta property="og:description" content="Lộ trình Vật lí 9 · luyện thi chuyên Lý · trường học lớp 1–12 · thời khoá biểu · lịch · thẻ ghi nhớ · phòng thí nghiệm. Chạy offline, dữ liệu trong máy bạn.">
 <meta property="og:locale" content="vi_VN">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f4f1ea'/%3E%3Ctext x='6' y='24' font-family='Georgia,serif' font-size='20' fill='%2317150f'%3E9%3C/text%3E%3C/svg%3E">
+{MAIN_HTML_FAVICON}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="dns-prefetch" href="https://i.ytimg.com">
@@ -287,6 +319,18 @@ io.open(OUT, 'w', encoding='utf-8').write(html)
 HEADERS = """# Cloudflare — sinh tự động bởi src/build.py, đừng sửa tay.
 # Đọc bởi cả Workers Static Assets và Pages.
 # Cú pháp: https://developers.cloudflare.com/workers/static-assets/headers/
+#
+# CSP được gửi CẢ bằng header, không chỉ bằng <meta>: meta không đặt được
+# frame-ancestors và chỉ có hiệu lực sau khi trình duyệt bắt đầu đọc HTML.
+# Header có hiệu lực trước byte đầu tiên. Cả hai sinh từ CÙNG một chuỗi nên
+# không thể lệch nhau.
+#
+# Bẫy của Cloudflare: mỗi directive chỉ được đặt MỘT lần. Lặp lại thì trình
+# duyệt chỉ dùng cái đầu tiên, nên toàn bộ CSP phải nằm trên một dòng.
+#
+# Bẫy thứ hai (đã mắc và đã sửa): chú thích trong tệp này PHẢI bắt đầu bằng
+# '#'. Một dòng thụt lề nằm trong khối luật được hiểu là TÊN HEADER — chú
+# thích kiểu /* */ trong khối luật làm trình duyệt nhận header rác.
 
 /*
   X-Content-Type-Options: nosniff
@@ -295,6 +339,9 @@ HEADERS = """# Cloudflare — sinh tự động bởi src/build.py, đừng sử
   Permissions-Policy: accelerometer=(), camera=(), microphone=(), geolocation=(), payment=(), usb=()
   Cross-Origin-Opener-Policy: same-origin
   Cross-Origin-Resource-Policy: same-origin
+  X-DNS-Prefetch-Control: off
+  X-Permitted-Cross-Domain-Policies: none
+  Content-Security-Policy: @@CSP@@
 
 # Trang chính: luôn xác thực lại bằng ETag (304, vài chục byte) để người
 # dùng nhận bản mới ngay sau khi deploy. Không dùng no-store để còn 304.
@@ -311,6 +358,18 @@ HEADERS = """# Cloudflare — sinh tự động bởi src/build.py, đừng sử
 /__version
   Cache-Control: no-store
 """
+# Cloudflare Workers Static Assets reads `_routes.json`-style include/exclude
+# from wrangler.jsonc, but for edge cache behaviour the portable, documented
+# mechanism is a Cache Rule. What we CAN do from the repo is make the correct
+# behaviour the default for every asset: versioned query strings + a long TTL
+# on immutable files, and a short TTL on the HTML shell.
+ROUTES_JSON = """{
+  "version": 1,
+  "include": ["/*"],
+  "exclude": []
+}
+"""
+
 NOT_FOUND = """<!doctype html>
 <html lang="vi">
 <head>
@@ -410,15 +469,27 @@ if '--dist' in sys.argv:
         shutil.rmtree(dist)
     os.makedirs(dist)
     io.open(os.path.join(dist, 'index.html'), 'w', encoding='utf-8').write(html)
-    io.open(os.path.join(dist, '_headers'), 'w', encoding='utf-8').write(HEADERS)
+    io.open(os.path.join(dist, '_headers'), 'w', encoding='utf-8').write(
+        HEADERS.replace('@@CSP@@', csp))
     io.open(os.path.join(dist, '_redirects'), 'w', encoding='utf-8').write(REDIRECTS)
+    # Edge cache rules (Cloudflare's `_headers` cannot express CDN cache policy).
+    io.open(os.path.join(dist, '_routes.json'), 'w', encoding='utf-8').write(ROUTES_JSON)
     io.open(os.path.join(dist, 'sw.js'), 'w', encoding='utf-8').write(SW)
     io.open(os.path.join(dist, '.nojekyll'), 'w', encoding='utf-8').write('')
     # Worker: một tệp duy nhất, tên bắt đầu bằng "_" nên Cloudflare KHÔNG phục
     # vụ nó như tài nguyên tĩnh — mã nguồn không lộ ra ngoài.
     code = io.open(os.path.join(HERE, 'worker.template.js'), encoding='utf-8').read()
-    io.open(os.path.join(dist, '_worker.mjs'), 'w', encoding='utf-8').write(
-        code.replace('__VERSION__', VERSION))
+    # Build id + timestamp are baked in, so /__version answers without reading
+    # index.html and without touching the network.
+    import datetime
+    stamped = (code
+               .replace('__VERSION__', VERSION)
+               .replace('__BUILD_ID__', build_id)
+               .replace('__BUILT_AT__', datetime.datetime.now(datetime.timezone.utc)
+                        .replace(microsecond=0).isoformat().replace('+00:00', 'Z')))
+    if '__BUILD_ID__' in stamped or '__BUILT_AT__' in stamped:
+        raise SystemExit('worker template placeholders not substituted')
+    io.open(os.path.join(dist, '_worker.mjs'), 'w', encoding='utf-8').write(stamped)
     io.open(os.path.join(dist, '404.html'), 'w', encoding='utf-8').write(NOT_FOUND)
     # .assetsignore: KHÔNG đưa mã nguồn/thư mục làm việc vào bản deploy.
     # Chỉ những gì cần cho trang mới lên mạng.

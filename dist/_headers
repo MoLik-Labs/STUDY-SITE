@@ -1,6 +1,18 @@
 # Cloudflare — sinh tự động bởi src/build.py, đừng sửa tay.
 # Đọc bởi cả Workers Static Assets và Pages.
 # Cú pháp: https://developers.cloudflare.com/workers/static-assets/headers/
+#
+# CSP được gửi CẢ bằng header, không chỉ bằng <meta>: meta không đặt được
+# frame-ancestors và chỉ có hiệu lực sau khi trình duyệt bắt đầu đọc HTML.
+# Header có hiệu lực trước byte đầu tiên. Cả hai sinh từ CÙNG một chuỗi nên
+# không thể lệch nhau.
+#
+# Bẫy của Cloudflare: mỗi directive chỉ được đặt MỘT lần. Lặp lại thì trình
+# duyệt chỉ dùng cái đầu tiên, nên toàn bộ CSP phải nằm trên một dòng.
+#
+# Bẫy thứ hai (đã mắc và đã sửa): chú thích trong tệp này PHẢI bắt đầu bằng
+# '#'. Một dòng thụt lề nằm trong khối luật được hiểu là TÊN HEADER — chú
+# thích kiểu /* */ trong khối luật làm trình duyệt nhận header rác.
 
 /*
   X-Content-Type-Options: nosniff
@@ -9,6 +21,9 @@
   Permissions-Policy: accelerometer=(), camera=(), microphone=(), geolocation=(), payment=(), usb=()
   Cross-Origin-Opener-Policy: same-origin
   Cross-Origin-Resource-Policy: same-origin
+  X-DNS-Prefetch-Control: off
+  X-Permitted-Cross-Domain-Policies: none
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-bG06IHf8q1JxTaRB+a0o1jIY3+RlI51d5FLPEcKmUow=' 'sha256-CVgmugMy9TWKCz0mYkLD7pECAcciabLcLfhp88vbBaU=' 'sha256-3tSK5oOt7ZtKE2JWKIdqprAOQe4ZOGVIQ+7XgzbaagE=' 'sha256-hs7iv7v+wWKa4Z4Pf5wJvS317atX3bhvKh5P50DFcqw=' 'sha256-aMtr8XuGuEGMIQ6rBr5IXvocJ8q5MhwhrrBrSsG2j/8=' 'sha256-4pUTEvTFXxWutvcNlUDZZgv+AWLyCTY7vDl/j2ncrr4=' 'sha256-MQA/gWaqYGlO5k5thSxJGbBXVyZ2ZXR7Cg35sFVrVQI=' 'sha256-ePiswlIw6N7/zdko+T66aXwIrWRHK1a8758tVo73UHU=' 'sha256-o5ZbQ+Gm8t0fENxCxdBdwpZFv8PdX7rg9kd1TNkt7FI=' 'sha256-5/CVUgkQ0vznR38tQ+PUt7G5pn/t64jAcgC1B2tXNxM=' 'sha256-xMwhvsW/8uycu3vXsLq5A4Vj05VrTElDxWqg0zQODvE=' 'sha256-zR2juYBM48ha9oTis1Y3k3oOpy+o01QYxWRfYOmroos='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' 'sha256-SBjEneLsSgiISHI5A18Or3zqKBjud3xt1eC2lt8YCKo=' https://fonts.googleapis.com; style-src-attr 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://i.ytimg.com https://*.ytimg.com blob:; media-src 'self' blob: https:; frame-src https://www.youtube-nocookie.com https://www.youtube.com; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'; upgrade-insecure-requests
 
 # Trang chính: luôn xác thực lại bằng ETag (304, vài chục byte) để người
 # dùng nhận bản mới ngay sau khi deploy. Không dùng no-store để còn 304.

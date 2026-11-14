@@ -2,11 +2,11 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-T3t9GpP3XnRts+uwbiGz0akmb1fKbRI1yccDJbwe+Ek=' 'sha256-fALrYnrybyE+saRuVp+aEdvZu6ZKe5V2TzZtWxVxF9U=' 'sha256-hVlZl4DmsgwBdjrs6goQ5ATdQahsssaUyrCSIMR+NYM=' 'sha256-UTQRkhRSntgRz9hCraez3ns8MfzFBe1wYAOnljbm1Q0=' 'sha256-lFx75/lKuUjhjvM83ZF7W7HAMrD4eMh6OxSqMlCyAVM=' 'sha256-wK8yByPVNIfnHbpi+dmHWXXhHTm6BZUyB7CIptplLjU='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' 'sha256-HJ29zyc3lmVyY2jIl3F9Gh7PQs1R9FqawBTW0LvtHFg=' https://fonts.googleapis.com; style-src-attr 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://i.ytimg.com https://*.ytimg.com blob:; media-src 'self' blob: https:; frame-src https://www.youtube-nocookie.com https://www.youtube.com; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'; upgrade-insecure-requests">
-<meta name="build-id" content="a6f60fed131f">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-T3t9GpP3XnRts+uwbiGz0akmb1fKbRI1yccDJbwe+Ek=' 'sha256-fALrYnrybyE+saRuVp+aEdvZu6ZKe5V2TzZtWxVxF9U=' 'sha256-hVlZl4DmsgwBdjrs6goQ5ATdQahsssaUyrCSIMR+NYM=' 'sha256-L8mKqOTWm0JvRiqwyuqvbvgYLux9XdvNu4H1xdJm4qI=' 'sha256-K81ByfXYlS/nsDZFSiuPTJRSlaJuPcdlTPs3wgdXLBY=' 'sha256-wK8yByPVNIfnHbpi+dmHWXXhHTm6BZUyB7CIptplLjU='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' 'sha256-w3hFvls4ExObkGsUvjmvmRDX6IF5dcn0ISEv67L+hpg=' https://fonts.googleapis.com; style-src-attr 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://i.ytimg.com https://*.ytimg.com blob:; media-src 'self' blob: https:; frame-src https://www.youtube-nocookie.com https://www.youtube.com; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'; upgrade-insecure-requests">
+<meta name="build-id" content="198f27d4accf">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Học mọi thứ — Vật lí 9 · lớp 1–12 · @nggkhaiz</title>
-<meta name="app-version" content="11.1">
+<meta name="app-version" content="11.2">
 <meta name="description" content="Một trang để học mọi thứ: lộ trình Vật lí 9, trường học lớp 1–12, thẻ ghi nhớ cách quãng, luyện đề tự tạo, kế hoạch học, thời khoá biểu và lịch học. Tác giả @nggkhaiz — github.com/Ngg.Khaiz.">
 <meta name="theme-color" content="#f4f1ea" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#12110e" media="(prefers-color-scheme: dark)">
@@ -2633,6 +2633,165 @@ html[data-theme="pixelnight"] .rs-main:hover{background:var(--card)}
 .sy-count.empty i{color:var(--ink2)}
 
 .foot-v{font-variant-numeric:tabular-nums;letter-spacing:.08em;font-size:11px;color:var(--ink2);border:1px solid color-mix(in srgb,var(--ink) 18%,transparent);padding:1px 6px}
+
+/* =========================================================
+   SỔ ĐIỂM  #/grades
+   Bảng điểm kiểu sổ điểm giấy: cột hệ số, dòng môn, điểm trung bình
+   in đậm ở cuối — nhưng tính đúng công thức và đổi ngay khi sửa.
+   ========================================================= */
+.gd-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:16px 0 12px;
+  border-bottom:1px solid var(--rule);padding-bottom:10px}
+.gd-tabs{display:flex;gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.gd-tab{background:var(--card);border:0;padding:7px 14px;font-family:var(--mono);font-size:9.5px;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);cursor:pointer}
+.gd-tab:hover{color:var(--ink);background:var(--paper)}
+.gd-tab.on{background:var(--ink);color:var(--paper)}
+.gd-target{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:9px;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.gd-target input{width:64px;border:1px solid var(--rule);background:var(--paper);padding:5px 7px;
+  font-family:var(--mono);font-size:12px;color:var(--ink)}
+
+.gd-list{border:1px solid var(--rule);background:var(--rule);display:flex;flex-direction:column;gap:1px}
+.gd-row{background:var(--card);padding:11px 13px}
+.gd-row-h{display:flex;align-items:baseline;gap:9px}
+.gd-name{font-family:var(--serif);font-size:15.5px;font-weight:500;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+.gd-avg{font-family:var(--mono);font-size:15px;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.gd-avg.none{color:var(--ink-3);font-size:12px}
+.gd-del{border:0;background:none;color:var(--ink-3);font-size:15px;line-height:1;cursor:pointer;
+  padding:2px 5px;margin-left:2px}
+.gd-del:hover{color:var(--accent);background:var(--accent-soft)}
+.gd-marks{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px}
+.gd-kind{display:flex;align-items:center;gap:6px}
+.gd-kind-h{font-family:var(--mono);font-size:8px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink-3);min-width:52px}
+.gd-kind-h i{font-style:normal;color:var(--accent)}
+.gd-pills{display:flex;gap:3px;flex-wrap:wrap;align-items:center}
+.gd-pill{font-family:var(--mono);font-size:11px;font-variant-numeric:tabular-nums;
+  background:var(--paper);border:1px solid var(--rule);color:var(--ink);padding:2px 7px;cursor:pointer}
+.gd-pill:hover{border-color:var(--accent);color:var(--accent);text-decoration:line-through}
+.gd-add{width:20px;height:20px;border:1px dashed var(--rule-2);background:none;color:var(--ink-3);
+  font-size:12px;line-height:1;cursor:pointer;padding:0}
+.gd-add:hover{border-color:var(--accent);color:var(--accent);border-style:solid}
+.gd-if{font-family:var(--mono);font-size:9px;letter-spacing:.03em;color:var(--ink-3);margin:7px 0 0}
+.gd-if b{color:var(--accent);font-size:11px}
+.gd-if.bad{color:#b3402f}
+.gd-empty{border:1px dashed var(--rule-2);padding:22px;text-align:center}
+.gd-empty p{margin:0;color:var(--ink-2);font-size:13px}
+.gd-addrow{display:flex;gap:8px;margin-top:14px}
+.gd-addrow input{flex:1;border:1px solid var(--rule);background:var(--paper);padding:9px 11px;
+  font-family:var(--sans);font-size:13.5px;color:var(--ink)}
+.gd-weak{margin-top:16px}
+.gd-weak-r{display:grid;grid-template-columns:minmax(0,1fr) 62px auto;gap:10px;align-items:baseline;
+  padding:8px 0;border-bottom:1px solid var(--rule)}
+.gd-weak-r:last-child{border-bottom:0}
+.gd-weak-v{font-family:var(--mono);font-size:13px;text-align:right}
+.gd-weak-go{font-family:var(--mono);font-size:9px;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--accent);text-decoration:none;white-space:nowrap}
+.gd-weak-go:hover{text-decoration:underline}
+.gd-cfg{margin-top:20px;border-top:1px solid var(--rule);padding-top:12px}
+.gd-cfg summary{font-family:var(--mono);font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--ink-2);cursor:pointer}
+.gd-cfg summary:hover{color:var(--accent)}
+.gd-cfg-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:12px}
+
+/* =========================================================
+   KẾ HOẠCH TUẦN  #/weekly
+   7 cột như một tờ lịch treo tường. Việc con là chip nhỏ, độ khó
+   thể hiện bằng độ đậm của chữ — đọc được mà không cần chú giải.
+   ========================================================= */
+.wk-head{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin:14px 0}
+.wk-board{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:1px;
+  background:var(--rule);border:1px solid var(--rule)}
+.wk-col{background:var(--card);display:flex;flex-direction:column;min-height:210px}
+.wk-col.past{background:var(--card-2)}
+.wk-col.off{background:color-mix(in srgb,var(--rule) 40%,var(--paper));opacity:.55}
+.wk-col.today{box-shadow:inset 0 3px 0 var(--accent)}
+.wk-col-h{display:flex;align-items:baseline;gap:5px;padding:8px 9px 6px;border-bottom:1px solid var(--rule)}
+.wk-d{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink)}
+.wk-date{font-family:var(--mono);font-size:8px;color:var(--ink-3)}
+.wk-n{margin-left:auto;font-family:var(--mono);font-size:8px;color:var(--ink-3);
+  font-variant-numeric:tabular-nums}
+.wk-col-b{padding:6px;display:flex;flex-direction:column;gap:4px;flex:1}
+.wk-empty{font-size:10px;color:var(--ink-3);text-align:center;padding:10px 0}
+.wk-item{display:grid;grid-template-columns:15px minmax(0,1fr);gap:5px;align-items:start;
+  background:var(--paper);border:1px solid var(--rule);padding:5px 6px}
+.wk-item.ok{opacity:.5}
+.wk-item.ok .wk-t b{text-decoration:line-through}
+.wk-check{width:14px;height:14px;border:1px solid var(--rule-2);background:var(--card);
+  font-size:9px;line-height:1;cursor:pointer;padding:0;color:var(--accent);margin-top:1px}
+.wk-item.ok .wk-check{background:var(--accent);color:var(--paper);border-color:var(--accent)}
+.wk-t b{display:block;font-size:10.5px;line-height:1.35;font-weight:400;color:var(--ink)}
+.wk-t b.d1{font-weight:400;color:var(--ink-2)}
+.wk-t b.d2{font-weight:500}
+.wk-t b.d3{font-weight:700}
+.wk-t i{display:block;font-style:normal;font-family:var(--mono);font-size:7.5px;
+  letter-spacing:.03em;color:var(--ink-3);margin-top:2px;line-height:1.35}
+.wk-t i a{color:var(--accent);text-decoration:none}
+.wk-t i a:hover{text-decoration:underline}
+.wk-add-sub{border:0;border-top:1px dashed var(--rule);background:none;color:var(--ink-3);
+  font-size:11px;cursor:pointer;padding:3px;width:100%}
+.wk-add-sub:hover{color:var(--accent);background:var(--paper)}
+.wk-lower{margin-top:18px}
+.wk-prj{border-bottom:1px solid var(--rule);padding:9px 0}
+.wk-prj:last-of-type{border-bottom:0}
+.wk-prj>summary{display:flex;align-items:baseline;gap:8px;cursor:pointer;list-style:none}
+.wk-prj>summary::-webkit-details-marker{display:none}
+.wk-prj-n{font-family:var(--serif);font-size:14.5px;font-weight:500}
+.wk-prj-c{font-family:var(--mono);font-size:9px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.wk-task{padding:7px 0 7px 12px;border-left:1px solid var(--rule);margin:6px 0 0 3px}
+.wk-task-h{display:flex;align-items:baseline;gap:8px}
+.wk-task-t{font-size:12px;color:var(--ink-2);flex:1;min-width:0}
+.wk-link{font-family:var(--mono);font-size:8px;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--accent);text-decoration:none;white-space:nowrap}
+.wk-task-x{border:0;background:none;color:var(--ink-3);font-size:12px;cursor:pointer;padding:0 3px}
+.wk-task-x:hover{color:var(--accent)}
+.wk-subs{display:flex;gap:3px;flex-wrap:wrap;margin-top:5px}
+.wk-chip{display:inline-flex;align-items:baseline;gap:4px;background:var(--paper);
+  border:1px solid var(--rule);padding:2px 6px;font-size:9.5px}
+.wk-chip b{font-weight:400;color:var(--ink-2)}
+.wk-chip.d3 b{font-weight:600;color:var(--ink)}
+.wk-chip.ok{opacity:.45}
+.wk-chip.ok b{text-decoration:line-through}
+.wk-chip i{font-style:normal;font-family:var(--mono);font-size:7px;color:var(--ink-3)}
+.wk-empty-note{font-size:10px;color:var(--ink-3);font-style:italic}
+.wk-split,.wk-addtask{margin-top:6px;font-size:9px!important;padding:3px 8px!important}
+.wk-days{display:flex;gap:3px;margin:8px 0 12px}
+.wk-day{flex:1;border:1px solid var(--rule);background:var(--paper);color:var(--ink-3);
+  font-family:var(--mono);font-size:9px;padding:6px 0;cursor:pointer;letter-spacing:.05em}
+.wk-day.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.wk-bars{height:76px;margin-top:4px}
+
+@media(max-width:1000px){
+  .wk-board{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .gd-cfg-grid{grid-template-columns:repeat(2,1fr)}
+  .gd-marks{gap:9px}
+}
+@media(max-width:640px){
+  .wk-board{grid-template-columns:1fr}
+  .wk-col{min-height:0}
+  .gd-kind-h{min-width:44px}
+  .gd-mark-row{font-size:8px}
+}
+
+/* ---- đếm ngược + tính khả thi của kế hoạch ---- */
+.pl-feas{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:10px 0 4px;
+  border:1px solid var(--rule);border-left:3px solid var(--ink-3);background:var(--card);
+  padding:9px 12px;font-size:11.5px;color:var(--ink-2)}
+.pl-feas-ok{border-left-color:#2f6b3f}
+.pl-feas-tight{border-left-color:#b98a2e}
+.pl-feas-over{border-left-color:#b3402f;background:color-mix(in srgb,#b3402f 5%,var(--card))}
+.pl-feas-t b{font-family:var(--serif);font-size:13px;font-weight:500;color:var(--ink)}
+.cd{font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink-3);border-right:1px solid var(--rule);padding-right:12px;white-space:nowrap}
+.cd b{font-family:var(--serif);font-size:19px;font-weight:500;color:var(--ink);
+  letter-spacing:0;padding:0 2px}
+.cd-soon b{color:var(--accent)}
+.cd-now{color:var(--accent);font-weight:700}
+.cd-past{color:var(--ink-3);font-style:italic}
+
+.pg-k-l{color:var(--accent);text-decoration:none}
+.pg-k-l:hover{text-decoration:underline}
 </style>
 </head>
 <body>
@@ -2654,7 +2813,7 @@ html[data-theme="pixelnight"] .rs-main:hover{background:var(--card)}
       <em>·</em>
       <a href="#/about">giới thiệu</a>
       <em>·</em>
-      <span class="foot-v" title="phiên bản">v11.1</span>
+      <span class="foot-v" title="phiên bản">v11.2</span>
     </span>
   </div>
 </footer>
@@ -4591,7 +4750,7 @@ if(P.accent)document.documentElement.style.setProperty('--accent',P.accent);
 
 <!-- ===== ỨNG DỤNG ===== -->
 <script>/* phiên bản — sinh từ src/build.py */
-const APP_VERSION = '11.1';
+const APP_VERSION = '11.2';
 /* =========================================================
    KHO LƯU BỀN — không phụ thuộc cache
    4 tầng:
@@ -4970,6 +5129,8 @@ function renderTop(){
           <a data-nav="#/cards" role="menuitem">Thẻ ghi nhớ</a>
           <a data-nav="#/practice" role="menuitem">Luyện đề tự tạo</a>
           <a data-nav="#/plan" role="menuitem">Kế hoạch học</a>
+          <a data-nav="#/weekly" role="menuitem">Kế hoạch tuần</a>
+          <a data-nav="#/grades" role="menuitem">Sổ điểm</a>
           <a data-nav="#/focus" role="menuitem">Đồng hồ tập trung</a>
           <a data-nav="#/timetable" role="menuitem">Thời khoá biểu</a>
           <a data-nav="#/calendar" role="menuitem">Lịch học</a>
@@ -5044,7 +5205,9 @@ function renderRail(){
       <div class="rs-links">
         <a href="#/cards" class="${h0.startsWith('#/cards')?'on':''}">Thẻ ghi nhớ${(typeof syDue==='function'&&syDue().length)?'<i>'+syDue().length+'</i>':''}</a>
         <a href="#/practice" class="${h0.startsWith('#/practice')?'on':''}">Luyện đề</a>
-        <a href="#/plan" class="${h0.startsWith('#/plan')?'on':''}">Kế hoạch</a>
+        <a href="#/plan" class="${h0.startsWith('#/plan')&&!h0.startsWith('#/weekly')?'on':''}">Kế hoạch</a>
+        <a href="#/weekly" class="${h0.startsWith('#/weekly')?'on':''}">Tuần này</a>
+        <a href="#/grades" class="${h0.startsWith('#/grades')?'on':''}">Sổ điểm</a>
         <a href="#/focus" class="${h0.startsWith('#/focus')?'on':''}">Tập trung</a>
         <a href="#/timetable" class="${h0.startsWith('#/timetable')?'on':''}">Thời khoá biểu</a>
         <a href="#/calendar" class="${h0.startsWith('#/calendar')?'on':''}">Lịch</a>
@@ -6179,6 +6342,8 @@ function render(){
   if(p[0]==='plan') return renderPlan();
   if(p[0]==='focus') return renderFocus();
   if(p[0]==='progress') return renderProgress();
+  if(p[0]==='grades') return renderGrades(p[1]);
+  if(p[0]==='weekly') return renderWeekly();
   if(p[0]==='timetable') return renderTimetable();
   if(p[0]==='calendar') return renderCalendar();
   if(p[0]==='about') return renderAbout();
@@ -12708,6 +12873,17 @@ function syPlanBody(plan, todayKey) {
         <div class="sy-ring-t"><b>${pct}%</b><span>hoàn thành</span></div>
       </div>
     </div>
+    ${(() => {
+      const fe = (typeof gdFeasible === 'function') ? gdFeasible(plan) : null;
+      const cd = (typeof gdCountdown === 'function') ? gdCountdown(plan.examISO, 'Ngày thi') : '';
+      if (!fe && !cd) return '';
+      const txt = { ok: 'Vừa sức', tight: 'Sát nút', over: 'Quá tải' }[fe ? fe.status : 'ok'];
+      const detail = fe
+        ? `còn ${fe.totalLeft} mục trong ${fe.daysLeft} ngày · ${fe.perDay} phút/ngày đủ khoảng ${fe.capacity} mục`
+        : '';
+      return `<div class="pl-feas pl-feas-${fe ? fe.status : 'ok'}">
+        ${cd}<span class="pl-feas-t"><b>${txt}</b> — ${detail}</span></div>`;
+    })()}
     <div class="pl-days">
       ${plan.days.map(d => {
     const isToday = d.date === todayKey;
@@ -13016,6 +13192,16 @@ function renderProgress() {
       <div class="pg-k"><span class="kicker">Thẻ đã thuộc</span><b>${mastered}</b><em>/ ${S.cards.length} thẻ</em></div>
       <div class="pg-k"><span class="kicker">Độ chính xác</span><b>${accAll.total ? Math.round(accAll.right / accAll.total * 100) + '%' : '—'}</b><em>${accAll.total} câu đã chấm</em></div>
       <div class="pg-k"><span class="kicker">Đề đã làm</span><b>${S.results.length}</b><em>lượt luyện</em></div>
+      ${(() => {
+      if (typeof gdTermAvg !== 'function') return '';
+      const g = gdTermAvg('hk1'), g2 = gdTermAvg('hk2');
+      if (g === null && g2 === null) return '';
+      const use = g2 !== null ? g2 : g;
+      const rk = gdRank(use);
+      return `<div class="pg-k"><span class="kicker">Điểm TB</span>
+        <b style="${rk ? 'color:' + rk.color : ''}">${use.toFixed(1)}</b>
+        <em><a href="#/grades" class="pg-k-l">sổ điểm →</a></em></div>`;
+    })()}
     </div>
 
     <div class="pg-advice">
@@ -14906,6 +15092,815 @@ function maybeWelcome() {
   d.onclick = e => { if (e.target === d) close(); };
   document.addEventListener('keydown', function escW(e) {
     if (e.key === 'Escape') { close(); document.removeEventListener('keydown', escW); }
+  });
+}
+
+/* =========================================================
+   SỔ ĐIỂM — tính điểm trung bình môn đúng cách của THCS/THPT
+   ---------------------------------------------------------
+   Nghiên cứu từ các trang học tập (Power Planner "GPA + What If?",
+   MyStudyLife "grade tracking", Study-Track "course insights") rồi
+   đối chiếu với quy chế của Bộ GD&ĐT Việt Nam:
+
+     · Điểm miệng (hệ số 1)
+     · Điểm kiểm tra 15 phút (hệ số 1)
+     · Điểm kiểm tra 1 tiết (hệ số 2)
+     · Điểm thi học kì   (hệ số 3)
+
+     ĐTB môn học kì = Σ(điểm × hệ số) / Σ(hệ số)
+     ĐTB môn cả năm = (ĐTB HK1 + 2 × ĐTB HK2) / 3
+
+   Điểm khác biệt so với các app nước ngoài: hệ số là **cấu hình được**,
+   vì mỗi trường có thể khác (có nơi 15 phút hệ số 1 nhưng 4 cột, có nơi
+   dùng hệ số khác cho môn chuyên). Trang này không áp đặt một công thức
+   duy nhất — bạn sửa được hệ số và thấy kết quả đổi ngay.
+
+   Phần "what if" lấy từ Power Planner: cho biết **cần bao nhiêu điểm** ở
+   bài kiểm tra tiếp theo để đạt mức mong muốn. Đây là câu hỏi học sinh
+   thật sự hỏi, không phải "điểm của tôi là bao nhiêu".
+   ========================================================= */
+
+/* ---------- cấu hình hệ số (sửa được, lưu trong máy) ---------- */
+const GD_KINDS = [
+  { id: 'mouth', name: 'Miệng', short: 'M', w: 1, max: 1 },
+  { id: 'p15', name: '15 phút', short: '15′', w: 1, max: 1 },
+  { id: 'p45', name: '1 tiết', short: '45′', w: 2, max: 1 },
+  { id: 'sem', name: 'Học kì', short: 'HK', w: 3, max: 1 },
+];
+const GD_TERMS = [{ id: 'hk1', name: 'Học kì I' }, { id: 'hk2', name: 'Học kì II' }];
+
+/* Học lực theo Thông tư 22/2021 (áp dụng cho lớp 6–12 từ 2021). */
+const GD_RANKS = [
+  { at: 8.0, code: 'T', name: 'Tốt', color: '#2f6b3f' },
+  { at: 6.5, code: 'K', name: 'Khá', color: '#3f6b8f' },
+  { at: 5.0, code: 'Đ', name: 'Đạt', color: '#b98a2e' },
+  { at: 3.5, code: 'C', name: 'Chưa đạt', color: '#b3402f' },
+  { at: -1, code: 'Y', name: 'Yếu', color: '#8b2e22' },
+];
+
+function gdState() {
+  if (!state.grades || typeof state.grades !== 'object') state.grades = {};
+  const G = state.grades;
+  if (!Array.isArray(G.rows)) G.rows = [];
+  if (!G.w || typeof G.w !== 'object') G.w = { mouth: 1, p15: 1, p45: 2, sem: 3 };
+  GD_KINDS.forEach(k => {
+    const v = +G.w[k.id];
+    if (!isFinite(v) || v < 0 || v > 10) G.w[k.id] = k.w;
+  });
+  if (!G.year) G.year = '2026-2027';
+  if (!G.target) G.target = 8.0;            /* mức học lực muốn đạt */
+  return G;
+}
+
+const gdWeight = kind => +gdState().w[kind] || 0;
+
+/* Điểm trung bình một hàng (một môn, một học kì) */
+function gdAvg(row, term) {
+  let sum = 0, wsum = 0;
+  (row.marks || []).forEach(m => {
+    if (m.term !== term) return;
+    const w = gdWeight(m.kind);
+    if (!w) return;
+    sum += (+m.v) * w;
+    wsum += w;
+  });
+  return wsum ? sum / wsum : null;
+}
+
+/* Điểm trung bình cả năm của một hàng */
+function gdYearAvg(row) {
+  const a = gdAvg(row, 'hk1'), b = gdAvg(row, 'hk2');
+  if (a === null && b === null) return null;
+  if (a === null) return b;
+  if (b === null) return a;
+  return (a + 2 * b) / 3;
+}
+
+function gdRank(v) {
+  if (v === null || v === undefined) return null;
+  return GD_RANKS.find(r => v >= r.at) || GD_RANKS[GD_RANKS.length - 1];
+}
+
+/* Điểm trung bình chung học kì = trung bình cộng ĐTB các môn (làm tròn 1 số lẻ) */
+function gdTermAvg(term) {
+  const G = gdState();
+  const vals = G.rows.map(r => gdAvg(r, term)).filter(v => v !== null);
+  if (!vals.length) return null;
+  /* quy chế: ĐTB chung làm tròn tới 1 chữ số thập phân */
+  return Math.round(vals.reduce((a, b) => a + b, 0) / vals.length * 10) / 10;
+}
+
+/* "What if": cần bao nhiêu điểm ở bài tiếp theo để đạt mục tiêu */
+function gdWhatIf(row, term) {
+  const G = gdState();
+  const target = +G.target || 8;
+  const cur = gdAvg(row, term);
+  if (cur === null) return null;
+  /* giả định bài tiếp theo là 1 tiết (hệ số 2) — loại phổ biến nhất */
+  const w = gdWeight('p45') || 2;
+  let sum = 0, wsum = 0;
+  (row.marks || []).forEach(m => {
+    if (m.term !== term) return;
+    const ww = gdWeight(m.kind);
+    if (!ww) return;
+    sum += (+m.v) * ww; wsum += ww;
+  });
+  const need = (target * (wsum + w) - sum) / w;
+  return {
+    need: Math.max(0, Math.min(10, need)),
+    reachable: need <= 10,
+    already: cur >= target,
+    w,
+  };
+}
+
+/* ---------- thao tác ---------- */
+function gdRow(name, subjectId) {
+  const G = gdState();
+  const r = { id: 'g' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), name, s: subjectId || '', marks: [] };
+  G.rows.push(r);
+  save();
+  return r;
+}
+
+function gdAddMark(rowId, kind, v, term) {
+  const G = gdState();
+  const row = G.rows.find(r => r.id === rowId);
+  if (!row) return false;
+  const val = Math.max(0, Math.min(10, +v));
+  if (!isFinite(val)) return false;
+  row.marks = row.marks || [];
+  row.marks.push({ kind, v: Math.round(val * 10) / 10, term: term || 'hk1', at: Date.now() });
+  save();
+  return true;
+}
+
+function gdDelMark(rowId, idx) {
+  const G = gdState();
+  const row = G.rows.find(r => r.id === rowId);
+  if (!row || !row.marks || !row.marks[idx]) return false;
+  row.marks.splice(idx, 1);
+  save();
+  return true;
+}
+
+/* Gợi ý tên môn từ danh mục có sẵn, để không phải gõ tay */
+function gdSuggestSubjects(grade) {
+  try {
+    if (typeof subjectsFor === 'function') {
+      const subs = subjectsFor(grade || (state.school && state.school.grade) || 9);
+      if (subs && subs.length) return subs.map(s => ({ id: s.id, name: s.name }));
+    }
+  } catch (e) { }
+  return [];
+}
+
+/* =========================================================
+   ROUTE · SỔ ĐIỂM  #/grades
+   ========================================================= */
+function renderGrades(termArg) {
+  const G = gdState();
+  const term = termArg === 'hk2' ? 'hk2' : 'hk1';
+  const termName = GD_TERMS.find(t => t.id === term).name;
+  const tAvg = gdTermAvg(term);
+  const yAvg = (() => {
+    const vals = G.rows.map(gdYearAvg).filter(v => v !== null);
+    return vals.length ? Math.round(vals.reduce((a, b) => a + b, 0) / vals.length * 10) / 10 : null;
+  })();
+  const rank = gdRank(yAvg);
+  const target = +G.target || 8;
+  const targetRank = gdRank(target);
+
+  /* môn yếu nhất — nơi một điểm số tốt tạo ra khác biệt lớn nhất */
+  const weak = G.rows
+    .map(r => ({ r, v: gdAvg(r, term) }))
+    .filter(x => x.v !== null)
+    .sort((a, b) => a.v - b.v)
+    .slice(0, 3);
+
+  const rowHtml = r => {
+    const a = gdAvg(r, term);
+    const rk = gdRank(a);
+    const wi = gdWhatIf(r, term);
+    const marks = (r.marks || []).map((m, i) => ({ m, i })).filter(x => x.m.term === term);
+    return `<div class="gd-row" data-row="${r.id}">
+      <div class="gd-row-h">
+        <span class="gd-name">${esc(r.name)}</span>
+        <span class="grow"></span>
+        <span class="gd-avg${a === null ? ' none' : ''}" style="${rk ? 'color:' + rk.color : ''}">${a === null ? '—' : a.toFixed(2)}</span>
+        <button class="gd-del" data-del="${r.id}" title="Xoá môn" aria-label="Xoá môn ${esc(r.name)}">×</button>
+      </div>
+      <div class="gd-marks">
+        ${GD_KINDS.map(k => {
+      const list = marks.filter(x => x.m.kind === k.id);
+      const w = gdWeight(k.id);
+      return `<div class="gd-kind">
+            <span class="gd-kind-h">${k.name}${w !== 1 ? ` <i>×${w}</i>` : ''}</span>
+            <span class="gd-pills">${list.map(x =>
+        `<button class="gd-pill" data-rm="${r.id}:${x.i}" title="Bấm để xoá điểm này">${x.m.v}</button>`).join('')}
+              <button class="gd-add" data-add="${r.id}:${k.id}" aria-label="Thêm điểm ${k.name} cho ${esc(r.name)}">+</button>
+            </span>
+          </div>`;
+    }).join('')}
+      </div>
+      ${wi && !wi.already && wi.reachable ? `<p class="gd-if">Cần <b>${wi.need.toFixed(1)}</b> điểm 1 tiết nữa để đạt ${target.toFixed(1)}</p>` : ''}
+      ${wi && !wi.reachable ? `<p class="gd-if bad">Mục tiêu ${target.toFixed(1)} không còn đạt được ở ${termName} — cần kéo điểm học kì còn lại</p>` : ''}
+    </div>`;
+  };
+
+  $('#main').innerHTML = `<section class="wrap wide sy-page">
+    ${pageHead('Sổ điểm · THCS &amp; THPT',
+    yAvg === null ? 'chưa có điểm nào' : 'trung bình cả năm ' + yAvg.toFixed(1) + (rank ? ' · học lực ' + rank.name : ''),
+    'Nhập điểm miệng, 15 phút, 1 tiết và học kì — máy tính đúng công thức hệ số của Bộ GD&amp;ĐT. Nút “cần bao nhiêu điểm” cho biết chính xác bài kiểm tra tới phải được mấy điểm để đạt mức bạn muốn.')}
+
+    <div class="pg-kpi">
+      <div class="pg-k"><span class="kicker">${termName}</span><b>${tAvg === null ? '—' : tAvg.toFixed(1)}</b><em>${G.rows.length} môn</em></div>
+      <div class="pg-k"><span class="kicker">Cả năm</span><b>${yAvg === null ? '—' : yAvg.toFixed(1)}</b><em>HK1 + 2×HK2</em></div>
+      <div class="pg-k"><span class="kicker">Học lực</span><b style="${rank ? 'color:' + rank.color : ''}">${rank ? rank.name : '—'}</b><em>theo TT 22/2021</em></div>
+      <div class="pg-k"><span class="kicker">Mục tiêu</span><b>${target.toFixed(1)}</b><em>${targetRank ? targetRank.name : ''}</em></div>
+      <div class="pg-k"><span class="kicker">Điểm đã nhập</span><b>${G.rows.reduce((a, r) => a + (r.marks || []).length, 0)}</b><em>đầu điểm</em></div>
+    </div>
+
+    <div class="gd-bar">
+      <div class="gd-tabs" role="tablist">
+        ${GD_TERMS.map(t => `<button class="gd-tab${t.id === term ? ' on' : ''}" role="tab" aria-selected="${t.id === term}" data-term="${t.id}">${t.name}</button>`).join('')}
+      </div>
+      <span class="grow"></span>
+      <label class="gd-target"><span>Mục tiêu</span>
+        <input id="gdTarget" type="number" min="0" max="10" step="0.1" value="${target}"></label>
+    </div>
+
+    ${G.rows.length ? `<div class="gd-list">${G.rows.map(rowHtml).join('')}</div>`
+      : `<div class="gd-empty">
+          <p><b>Chưa có môn nào.</b> Thêm môn đầu tiên rồi nhập điểm — mọi thứ lưu trong máy bạn.</p>
+        </div>`}
+
+    <div class="gd-addrow">
+      <input id="gdNew" type="text" list="gdSubs" placeholder="Tên môn — ví dụ: Vật lí">
+      <datalist id="gdSubs">${gdSuggestSubjects().map(s => `<option value="${esc(s.name)}">`).join('')}</datalist>
+      <button class="btn" id="gdAdd">Thêm môn</button>
+    </div>
+
+    ${weak.length ? `<div class="sy-box gd-weak">
+      <div class="sy-box-h"><span class="kicker">Nên chú ý nhất · ${termName}</span></div>
+      ${weak.map(x => `<div class="gd-weak-r">
+        <span class="gd-name">${esc(x.r.name)}</span>
+        <span class="gd-weak-v" style="color:${(gdRank(x.v) || {}).color || 'inherit'}">${x.v.toFixed(2)}</span>
+        <a class="gd-weak-go" href="#/plan">lập kế hoạch →</a>
+      </div>`).join('')}
+    </div>` : ''}
+
+    <details class="gd-cfg">
+      <summary>Hệ số &amp; cách tính</summary>
+      <p class="sy-note">Mỗi trường có thể đặt hệ số khác nhau. Sửa ở đây là mọi điểm trung bình đổi theo ngay — không phải nhập lại điểm.</p>
+      <div class="gd-cfg-grid">
+        ${GD_KINDS.map(k => `<label class="st-row"><span>${k.name}</span>
+          <input type="number" min="0" max="10" step="1" value="${gdWeight(k.id)}" data-w="${k.id}"></label>`).join('')}
+      </div>
+      <p class="sy-note">ĐTB học kì = Σ(điểm × hệ số) ÷ Σ(hệ số). ĐTB cả năm = (HK1 + 2 × HK2) ÷ 3.
+        Xếp loại theo TT 22/2021: Tốt ≥ 8,0 · Khá ≥ 6,5 · Đạt ≥ 5,0 · Chưa đạt ≥ 3,5.</p>
+    </details>
+  </section>`;
+
+  /* ---------- tương tác ---------- */
+  $$('.gd-tab').forEach(b => {
+    b.onclick = () => go('#/grades/' + b.dataset.term);
+  });
+
+  const tgt = $('#gdTarget');
+  if (tgt) tgt.onchange = () => {
+    G.target = Math.max(0, Math.min(10, +tgt.value || 8));
+    save(); renderGrades(term);
+    toast('Mục tiêu: ' + G.target.toFixed(1));
+  };
+
+  $$('[data-w]').forEach(inp => {
+    inp.onchange = () => {
+      const v = +inp.value;
+      if (!isFinite(v) || v < 0 || v > 10) return;
+      G.w[inp.dataset.w] = v; save(); renderGrades(term);
+    };
+  });
+
+  $$('[data-add]').forEach(b => {
+    b.onclick = () => {
+      const [rowId, kind] = b.dataset.add.split(':');
+      const row = G.rows.find(r => r.id === rowId);
+      if (!row) return;
+      uiPrompt(`Điểm ${GD_KINDS.find(k => k.id === kind).name} · ${row.name}`, '', v => {
+        if (v === null || v === '' || v === undefined) return;
+        if (!gdAddMark(rowId, kind, v, term)) return toast('Điểm phải từ 0 đến 10');
+        renderGrades(term);
+      }, { type: 'number', min: 0, max: 10, step: 0.1, okText: 'Thêm điểm' });
+    };
+  });
+
+  $$('[data-rm]').forEach(b => {
+    b.onclick = () => {
+      const [rowId, idx] = b.dataset.rm.split(':');
+      if (!gdDelMark(rowId, +idx)) return;
+      renderGrades(term);
+    };
+  });
+
+  $$('[data-del]').forEach(b => {
+    b.onclick = () => {
+      const id = b.dataset.del;
+      const row = G.rows.find(r => r.id === id);
+      if (!row) return;
+      uiConfirm('Xoá môn', `Xoá <b>${esc(row.name)}</b> và ${(row.marks || []).length} đầu điểm của môn này?`, () => {
+        G.rows = G.rows.filter(r => r.id !== id);
+        save(); renderGrades(term); toast('Đã xoá ' + row.name);
+      }, { danger: true, okText: 'Xoá môn' });
+    };
+  });
+
+  const add = $('#gdAdd'), inp2 = $('#gdNew');
+  const doAdd = () => {
+    const name = (inp2.value || '').trim();
+    if (!name) return toast('Nhập tên môn trước đã');
+    if (G.rows.some(r => r.name.toLowerCase() === name.toLowerCase())) return toast('Môn này đã có trong sổ');
+    const sug = gdSuggestSubjects().find(s => s.name.toLowerCase() === name.toLowerCase());
+    gdRow(name, sug ? sug.id : '');
+    renderGrades(term);
+    toast('Đã thêm ' + name);
+  };
+  if (add) add.onclick = doAdd;
+  if (inp2) inp2.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); doAdd(); } };
+}
+
+
+/* =========================================================
+   ĐẾM NGƯỢC + TÍNH KHẢ THI
+   ---------------------------------------------------------
+   Ý lấy từ Shovel ("Time Cushion: is this schedule even possible?")
+   và Sora ("exam countdown"), nhưng làm bằng dữ liệu có thật trong máy:
+   số bài còn lại, số phút mỗi ngày bạn khai, và số ngày thật còn lại.
+
+   Câu trả lời quan trọng không phải "còn 14 ngày" mà là
+   "14 ngày này có đủ không?" — nên hàm dưới trả về cả hai.
+   ========================================================= */
+
+/* Số ngày còn lại tới một mốc ISO (tính theo ngày lịch, không theo giờ) */
+function gdDaysLeft(iso) {
+  if (!iso) return null;
+  const end = new Date(iso + 'T23:59:59');
+  if (isNaN(end)) return null;
+  const a = new Date(); a.setHours(0, 0, 0, 0);
+  const b = new Date(end); b.setHours(0, 0, 0, 0);
+  return Math.round((b - a) / 864e5);
+}
+
+/* Khả thi của một kế hoạch: cần bao nhiêu phút mỗi ngày so với bạn khai */
+function gdFeasible(plan) {
+  if (!plan || !plan.days) return null;
+  const S = studyState();
+  S.planDone = S.planDone || {};
+  const today = syDayKey();
+  const left = [];
+  plan.days.forEach(d => {
+    if (d.date < today) return;
+    const open = d.items.filter(it => !S.planDone[it.key]);
+    if (open.length) left.push({ date: d.date, n: open.length });
+  });
+  const totalLeft = left.reduce((a, x) => a + x.n, 0);
+  const daysLeft = left.length;
+  const perDay = plan.min || 60;
+  /* một mục (đọc bài / luyện đề) ước khoảng 1/3 số phút mỗi ngày */
+  const capacity = perDay / 3 * daysLeft;
+  const ratio = capacity ? totalLeft / capacity : 0;
+  return {
+    totalLeft, daysLeft, perDay, capacity: Math.round(capacity),
+    ratio,
+    status: ratio <= 0.85 ? 'ok' : ratio <= 1.15 ? 'tight' : 'over',
+  };
+}
+
+/* Dòng đếm ngược dùng được ở nhiều trang */
+function gdCountdown(iso, label) {
+  const d = gdDaysLeft(iso);
+  if (d === null) return '';
+  if (d < 0) return `<span class="cd cd-past">${esc(label || 'Mốc')} đã qua ${-d} ngày</span>`;
+  if (d === 0) return `<span class="cd cd-now">${esc(label || 'Mốc')} là <b>hôm nay</b></span>`;
+  return `<span class="cd${d <= 7 ? ' cd-soon' : ''}">${esc(label || 'Mốc')} còn <b>${d}</b> ngày</span>`;
+}
+
+/* =========================================================
+   BÀN LẬP KẾ HOẠCH TUẦN — học theo mô hình của beaverplans.com
+   ---------------------------------------------------------
+   Beaverplans (một planner tuần tối giản cho học sinh) có một ý rất đúng:
+   đừng bắt người học nghĩ bằng "task rời rạc", hãy bắt họ nghĩ bằng **dự án**.
+
+        Dự án  →  việc  →  việc con  →  rải vào các ngày trong tuần
+
+   Mỗi việc con được gắn một độ khó (dễ / vừa / khó) và được rải vào đúng
+   những ngày bạn nói mình có thể học. Đó là toàn bộ cơ chế — và nó đủ, vì
+   vấn đề của học sinh không phải thiếu tính năng mà là thiếu chỗ để bắt đầu.
+
+   Bản này thêm hai thứ beaverplans không có, hợp với bối cảnh Việt Nam:
+     · Nối thẳng vào bài học trong máy  (#/read/… , #/practice, #/cards)
+     · Kéo việc trễ sang hôm nay thay vì bỏ mặc — "không mất việc nào"
+
+   Lưu trong state.weekly. Không gửi đi đâu.
+   ========================================================= */
+
+const WK_DAYS = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
+const WK_DAY_FULL = ['Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy', 'Chủ nhật'];
+
+/* thứ Hai = 0 ... Chủ nhật = 6 */
+const wkDow = (d = new Date()) => (d.getDay() + 6) % 7;
+/* ISO của thứ Hai tuần chứa ngày d */
+function wkMonday(d = new Date()) {
+  const x = new Date(d);
+  x.setHours(12, 0, 0, 0);
+  x.setTime(x.getTime() - wkDow(x) * 864e5);
+  return x;
+}
+function wkDateOf(dayIdx, weekOffset) {
+  const x = wkMonday();
+  x.setTime(x.getTime() + ((weekOffset || 0) * 7 + dayIdx) * 864e5);
+  return x;
+}
+
+function wkState() {
+  if (!state.weekly || typeof state.weekly !== 'object') state.weekly = {};
+  const W = state.weekly;
+  if (!Array.isArray(W.projects)) W.projects = [];
+  if (!W.days || typeof W.days !== 'object') W.days = {};   /* mặc định học cả tuần */
+  if (W.days && !Object.keys(W.days).length) W.days = { 0: 1, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1 };
+  if (!isFinite(W.offset)) W.offset = 0;
+  return W;
+}
+
+const wkPrj = id => wkState().projects.find(p => p.id === id);
+const wkTaskDone = (prj, taskId) => !!(prj.done && prj.done[taskId]);
+
+function wkAddProject(name, color) {
+  const W = wkState();
+  const p = {
+    id: 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
+    name: name, color: color || '', at: Date.now(),
+    tasks: [], done: {},
+  };
+  W.projects.push(p);
+  save();
+  return p;
+}
+
+function wkAddTask(prjId, title, opt) {
+  const p = wkPrj(prjId);
+  if (!p) return null;
+  opt = opt || {};
+  const t = {
+    id: 't' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
+    title: title,
+    link: opt.link || '',
+    subs: [],           /* [{id, title, diff, day}] */
+    at: Date.now(),
+  };
+  p.tasks.push(t);
+  save();
+  return t;
+}
+
+/* Đọc tiền tố "khó:", "vừa:", "dễ:" ở đầu tên việc.
+   Đặt ở đây — tầng dữ liệu — để mọi đường nhập đều hiểu như nhau:
+   ô "+" theo từng ngày, hộp "Chia việc con", và cả khi nhập tay sau này. */
+function wkParseDiff(raw) {
+  const s = String(raw || '').trim();
+  const m = s.match(/^(khó|kho|vừa|vua|dễ|de)\s*[:：]\s*(.+)$/i);
+  if (!m) return null;
+  const k = norm(m[1]);
+  return { diff: k === 'kho' ? 3 : (k === 'de' ? 1 : 2), title: m[2].trim() };
+}
+
+function wkAddSub(prjId, taskId, title, diff, day) {
+  const p = wkPrj(prjId);
+  if (!p) return null;
+  const t = p.tasks.find(x => x.id === taskId);
+  if (!t) return null;
+  /* tiền tố trong tên thắng tham số diff — người dùng gõ gì thì hiểu nấy */
+  const pre = wkParseDiff(title);
+  if (pre) { title = pre.title; diff = pre.diff; }
+  const s = {
+    id: 's' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
+    title: title, diff: Math.max(1, Math.min(3, +diff || 2)),
+    /* day === null/undefined nghĩa là "chưa xếp" — để wkAutoSpread rải sau.
+       Không được mặc định về 0, nếu không mọi việc dồn hết vào thứ Hai. */
+    day: (day === null || day === undefined || day === '') ? null
+      : Math.max(0, Math.min(6, +day || 0)),
+  };
+  t.subs.push(s);
+  save();
+  return s;
+}
+
+/* Rải đều các việc con chưa có ngày vào những ngày bạn có thể học.
+   Việc "khó" được đặt lên đầu tuần — khi còn sức. */
+function wkAutoSpread(prjId) {
+  const p = wkPrj(prjId);
+  if (!p) return 0;
+  const W = wkState();
+  const days = Object.keys(W.days).filter(d => W.days[d]).map(Number).sort((a, b) => a - b);
+  if (!days.length) return 0;
+  const pool = [];
+  p.tasks.forEach(t => t.subs.forEach(s => { if (s.day === undefined || s.day === null) pool.push(s); }));
+  if (!pool.length) return 0;
+  pool.sort((a, b) => (b.diff || 2) - (a.diff || 2));
+  /* Việc khó trước → ngày đầu danh sách. Nhưng với 3 việc và 7 ngày, rải xen kẽ
+     sẽ đặt việc thứ ba vào giữa tuần, làm chữ "khó nhất ở đầu tuần" thành sai.
+     Nên: chừng nào còn việc thì điền liên tiếp từng ngày, mỗi ngày đủ suất rồi
+     mới sang ngày kế. Như vậy thứ tự khó→dễ luôn trùng thứ tự thời gian. */
+  const perDay = Math.max(1, Math.ceil(pool.length / days.length));
+  pool.forEach((s, i) => { s.day = days[Math.min(days.length - 1, Math.floor(i / perDay))]; });
+  save();
+  return pool.length;
+}
+
+/* Gom toàn bộ việc con của một tuần thành 7 cột */
+function wkPlan(weekOffset) {
+  const W = wkState();
+  const off = weekOffset === undefined ? W.offset : weekOffset;
+  const cols = WK_DAYS.map((d, i) => ({ day: i, label: d, date: wkDateOf(i, off), items: [] }));
+  W.projects.forEach(p => {
+    (p.tasks || []).forEach(t => {
+      (t.subs || []).forEach(s => {
+        if (s.day === undefined || s.day === null) return;
+        const col = cols[s.day];
+        if (!col) return;
+        col.items.push({ prj: p, task: t, sub: s, done: wkTaskDone(p, s.id) });
+      });
+    });
+  });
+  return cols;
+}
+
+/* Số việc còn lại / đã xong trong tuần đang xem */
+function wkStats(off) {
+  const cols = wkPlan(off);
+  let all = 0, done = 0;
+  cols.forEach(c => c.items.forEach(it => { all++; if (it.done) done++; }));
+  return { all, done, left: all - done, pct: all ? Math.round(done / all * 100) : 0 };
+}
+
+/* Việc trễ: nằm ở ngày đã qua mà chưa xong */
+function wkOverdue() {
+  const W = wkState();
+  const todayIdx = wkDow();
+  const out = [];
+  wkPlan().forEach(c => {
+    if (c.day >= todayIdx) return;
+    c.items.forEach(it => { if (!it.done) out.push(it); });
+  });
+  return out;
+}
+
+/* Kéo mọi việc trễ về hôm nay — "không mất việc nào" */
+function wkPullOverdue() {
+  const list = wkOverdue();
+  if (!list.length) return 0;
+  const todayIdx = wkDow();
+  list.forEach(it => { it.sub.day = todayIdx; });
+  save();
+  return list.length;
+}
+
+function wkToggle(prjId, subId) {
+  const p = wkPrj(prjId);
+  if (!p) return false;
+  p.done = p.done || {};
+  if (p.done[subId]) delete p.done[subId];
+  else p.done[subId] = Date.now();
+  save();
+  return true;
+}
+
+/* =========================================================
+   ROUTE · KẾ HOẠCH TUẦN  #/weekly
+   ========================================================= */
+function renderWeekly() {
+  const W = wkState();
+  const off = W.offset;
+  const cols = wkPlan(off);
+  const st = wkStats(off);
+  const overdue = wkOverdue();
+  const todayIdx = wkDow();
+  const showToday = off === 0;
+  const monday = wkDateOf(0, off);
+  const sunday = wkDateOf(6, off);
+  const rangeVN = monday.getDate() + '/' + (monday.getMonth() + 1) + ' – ' + sunday.getDate() + '/' + (sunday.getMonth() + 1);
+  const left = Math.max(0, 6 - todayIdx);
+
+  const subHtml = it => `<div class="wk-item${it.done ? ' ok' : ''}" data-prj="${it.prj.id}" data-sub="${it.sub.id}">
+      <button class="wk-check" aria-label="${it.done ? 'Bỏ đánh dấu' : 'Đánh dấu xong'}: ${esc(it.sub.title)}">${it.done ? '✓' : ''}</button>
+      <span class="wk-t">
+        <b class="d${it.sub.diff}">${esc(it.sub.title)}</b>
+        <i>${esc(it.prj.name)}${it.task.link ? ` · <a href="${esc(it.task.link)}">mở bài</a>` : ''}</i>
+      </span>
+    </div>`;
+
+  const colHtml = c => {
+    const isToday = showToday && c.day === todayIdx;
+    const past = showToday && c.day < todayIdx;
+    const open = W.days[c.day];
+    return `<div class="wk-col${isToday ? ' today' : ''}${past ? ' past' : ''}${open ? '' : ' off'}">
+      <div class="wk-col-h">
+        <span class="wk-d">${c.label}</span>
+        <span class="wk-date">${c.date.getDate()}/${c.date.getMonth() + 1}</span>
+        ${c.items.length ? `<span class="wk-n">${c.items.filter(i => i.done).length}/${c.items.length}</span>` : ''}
+      </div>
+      <div class="wk-col-b">
+        ${c.items.length ? c.items.map(subHtml).join('') : '<span class="wk-empty">—</span>'}
+      </div>
+      <button class="wk-add-sub" data-day="${c.day}" aria-label="Thêm việc cho ${WK_DAY_FULL[c.day]}">+</button>
+    </div>`;
+  };
+
+  $('#main').innerHTML = `<section class="wrap wide sy-page">
+    ${pageHead('Kế hoạch tuần',
+    rangeVN + ' · ' + st.done + '/' + st.all + ' việc' + (st.all ? ' · còn ' + (100 - st.pct) + '%' : ' · tuần mới'),
+    'Nghĩ theo dự án, không theo từng việc rời. Mỗi dự án có việc, mỗi việc chia thành việc con rải vào các ngày bạn có thể học — việc khó xếp lên đầu tuần khi còn sức.')}
+
+    <div class="pg-kpi">
+      <div class="pg-k"><span class="kicker">Tuần này</span><b>${st.done}/${st.all}</b><em>việc con</em></div>
+      <div class="pg-k"><span class="kicker">Đã xong</span><b>${st.pct}%</b><em>${st.left} việc còn lại</em></div>
+      <div class="pg-k"><span class="kicker">Còn</span><b>${left}</b><em>ngày tới cuối tuần</em></div>
+      <div class="pg-k"><span class="kicker">Trễ</span><b style="${overdue.length ? 'color:#b3402f' : ''}">${overdue.length}</b><em>việc chưa xong</em></div>
+      <div class="pg-k"><span class="kicker">Dự án</span><b>${W.projects.length}</b><em>đang theo</em></div>
+    </div>
+
+    <div class="wk-head">
+      <button class="btn ghost sm" id="wkPrev" aria-label="Tuần trước">←</button>
+      <button class="btn ghost sm" id="wkThis">Tuần này</button>
+      <button class="btn ghost sm" id="wkNext" aria-label="Tuần sau">→</button>
+      <span class="grow"></span>
+      ${overdue.length ? `<button class="btn sm" id="wkPull">Kéo ${overdue.length} việc trễ về hôm nay</button>` : ''}
+      <button class="btn sm" id="wkNewPrj">+ Dự án</button>
+    </div>
+
+    <div class="wk-board">
+      ${cols.map(colHtml).join('')}
+    </div>
+
+    <div class="sy-grid2 wk-lower">
+      <div class="sy-box">
+        <div class="sy-box-h"><span class="kicker">Dự án &amp; việc</span>
+          <span class="grow"></span>
+          <span class="sy-legend">bấm vào dòng để thêm việc con</span></div>
+        ${W.projects.length ? W.projects.map(p => {
+    const total = p.tasks.reduce((a, t) => a + t.subs.length, 0);
+    const done = p.tasks.reduce((a, t) => a + t.subs.filter(s => wkTaskDone(p, s.id)).length, 0);
+    return `<details class="wk-prj" open>
+            <summary>
+              <span class="wk-prj-n">${esc(p.name)}</span>
+              <span class="grow"></span>
+              <span class="wk-prj-c">${done}/${total}</span>
+              <button class="gd-del" data-delprj="${p.id}" title="Xoá dự án" aria-label="Xoá dự án ${esc(p.name)}">×</button>
+            </summary>
+            ${p.tasks.length ? p.tasks.map(t => `<div class="wk-task">
+              <div class="wk-task-h">
+                <span class="wk-task-t">${esc(t.title)}</span>
+                ${t.link ? `<a class="wk-link" href="${esc(t.link)}">mở →</a>` : ''}
+                <button class="wk-task-x" data-deltask="${p.id}:${t.id}" aria-label="Xoá việc">×</button>
+              </div>
+              <div class="wk-subs">
+                ${t.subs.map(s => `<span class="wk-chip d${s.diff}${wkTaskDone(p, s.id) ? ' ok' : ''}">
+                  <b>${esc(s.title)}</b><i>${WK_DAYS[s.day] || '?'}</i></span>`).join('') || '<span class="wk-empty-note">chưa chia việc con</span>'}
+              </div>
+              <button class="btn ghost sm wk-split" data-split="${p.id}:${t.id}">Chia việc con</button>
+            </div>`).join('') : '<p class="sy-note">Chưa có việc nào. Thêm việc đầu tiên bên dưới.</p>'}
+            <button class="btn ghost sm wk-addtask" data-addtask="${p.id}">+ Việc cho dự án này</button>
+          </details>`;
+  }).join('') : `<p class="sy-note">Chưa có dự án. Một dự án là thứ bạn đang làm trong tuần — “Ôn thi giữa kì Lí”, “Đọc hết chương 3”.</p>
+        <button class="btn sm" id="wkNewPrj2">+ Dự án đầu tiên</button>`}
+      </div>
+
+      <div class="sy-box">
+        <div class="sy-box-h"><span class="kicker">Ngày tôi có thể học</span></div>
+        <p class="sy-note" style="margin-top:0">Việc con chỉ được rải vào những ngày được bật. Tắt bớt ngày là cách trung thực nhất để kế hoạch không tự lừa mình.</p>
+        <div class="wk-days">
+          ${WK_DAYS.map((d, i) => `<button class="wk-day${W.days[i] ? ' on' : ''}" data-wday="${i}"
+            aria-pressed="${!!W.days[i]}">${d}</button>`).join('')}
+        </div>
+        <div class="pg-bars wk-bars">
+          ${cols.map(c => {
+    const max = Math.max(1, ...cols.map(x => x.items.length));
+    return `<div class="pg-bcol"><div class="pg-bwrap"><i class="cur" style="height:${Math.round(c.items.length / max * 100)}%"></i></div>
+              <span>${c.label}</span><em>${c.items.length}</em></div>`;
+  }).join('')}
+        </div>
+        <p class="sy-note">Việc khó nên nằm ở đầu tuần: đó là lúc bạn còn sức nhất, và trễ một việc dễ thì dễ cứu hơn trễ một việc khó.</p>
+      </div>
+    </div>
+  </section>`;
+
+  /* ---------- tương tác ---------- */
+  $('#wkPrev').onclick = () => { W.offset--; save(); renderWeekly(); };
+  $('#wkNext').onclick = () => { W.offset++; save(); renderWeekly(); };
+  $('#wkThis').onclick = () => { W.offset = 0; save(); renderWeekly(); };
+
+  const pull = $('#wkPull');
+  if (pull) pull.onclick = () => {
+    const n = wkPullOverdue();
+    renderWeekly();
+    toast(n ? 'Đã kéo ' + n + ' việc trễ về hôm nay' : 'Không còn việc trễ');
+  };
+
+  const newPrj = () => uiPrompt('Dự án mới', '', v => {
+    if (!v) return;
+    wkAddProject(v.trim());
+    renderWeekly();
+    toast('Đã tạo dự án ' + v.trim());
+  }, { hint: 'Ví dụ: Ôn thi giữa kì I môn Vật lí', okText: 'Tạo dự án' });
+  const b1 = $('#wkNewPrj'), b2 = $('#wkNewPrj2');
+  if (b1) b1.onclick = newPrj;
+  if (b2) b2.onclick = newPrj;
+
+  $$('[data-wday]').forEach(b => {
+    b.onclick = () => {
+      const i = +b.dataset.wday;
+      if (W.days[i]) delete W.days[i]; else W.days[i] = 1;
+      save(); renderWeekly();
+    };
+  });
+
+  $$('[data-delprj]').forEach(b => {
+    b.onclick = e => {
+      e.preventDefault(); e.stopPropagation();
+      const id = b.dataset.delprj;
+      const p = wkPrj(id);
+      if (!p) return;
+      uiConfirm('Xoá dự án', `Xoá <b>${esc(p.name)}</b> cùng ${p.tasks.length} việc và mọi dấu đã xong?`, () => {
+        W.projects = W.projects.filter(x => x.id !== id);
+        save(); renderWeekly(); toast('Đã xoá dự án');
+      }, { danger: true, okText: 'Xoá dự án' });
+    };
+  });
+
+  $$('[data-deltask]').forEach(b => {
+    b.onclick = () => {
+      const [pid, tid] = b.dataset.deltask.split(':');
+      const p = wkPrj(pid);
+      if (!p) return;
+      p.tasks = p.tasks.filter(t => t.id !== tid);
+      save(); renderWeekly();
+    };
+  });
+
+  $$('[data-addtask]').forEach(b => {
+    b.onclick = () => uiPrompt('Việc mới', '', v => {
+      if (!v) return;
+      wkAddTask(b.dataset.addtask, v.trim());
+      renderWeekly();
+    }, { hint: 'Một việc là phần của dự án — ví dụ: “Đọc chương 3”', okText: 'Thêm việc' });
+  });
+
+  $$('[data-split]').forEach(b => {
+    b.onclick = () => {
+      const [pid, tid] = b.dataset.split.split(':');
+      const p = wkPrj(pid);
+      const t = p && p.tasks.find(x => x.id === tid);
+      if (!t) return;
+      uiPrompt('Chia thành việc con', '', v => {
+        if (!v) return;
+        /* nhiều dòng = nhiều việc con, rải tự động */
+        const parts = v.split('\n').map(s => s.trim()).filter(Boolean);
+        parts.forEach(s => wkAddSub(pid, tid, s, 2, undefined));
+        wkAutoSpread(pid);
+        renderWeekly();
+        toast('Đã thêm ' + parts.length + ' việc con và rải vào các ngày bạn có thể học');
+      }, {
+        multiline: true,
+        hint: 'Mỗi dòng một việc con. Thêm “khó:” hoặc “dễ:” ở đầu dòng để đặt độ khó — việc khó tự lên đầu tuần.',
+        okText: 'Chia và rải',
+      });
+    };
+  });
+
+  $$('[data-day]').forEach(b => {
+    b.onclick = () => {
+      if (!W.projects.length) return newPrj();
+      const day = +b.dataset.day;
+      uiPrompt('Việc cho ' + WK_DAY_FULL[day], '', v => {
+        if (!v) return;
+        /* thêm nhanh vào dự án đầu tiên; nếu có nhiều thì hỏi */
+        const p = W.projects[0];
+        let t = p.tasks[p.tasks.length - 1];
+        if (!t) t = wkAddTask(p.id, 'Việc trong tuần');
+        wkAddSub(p.id, t.id, v.trim(), 2, day);
+        renderWeekly();
+      }, { hint: 'Việc này sẽ nằm ở ' + WK_DAY_FULL[day] + '.', okText: 'Thêm' });
+    };
+  });
+
+  /* bấm vào một việc con = đánh dấu xong */
+  $$('.wk-item').forEach(el => {
+    const btn = el.querySelector('.wk-check');
+    const flip = () => {
+      if (!wkToggle(el.dataset.prj, el.dataset.sub)) return;
+      renderWeekly();
+    };
+    if (btn) btn.onclick = flip;
   });
 }
 

@@ -43,7 +43,7 @@ const ROUTES = [
   '#/calc', '#/build', '#/builder', '#/sim', '#/subjects', '#/subject/9/vatli', '#/read/seed0',
   '#/studio', '#/mine', '#/files', '#/study', '#/cards', '#/practice', '#/plan',
   '#/focus', '#/progress', '#/timetable', '#/calendar', '#/about', '#/flash',
-  '#/settings', '#/lab', '#/sheet'
+  '#/settings', '#/lab', '#/sheet', '#/grades', '#/grades/hk2', '#/weekly'
 ];
 
 const results = [];

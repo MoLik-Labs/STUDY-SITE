@@ -763,6 +763,17 @@ function syPlanBody(plan, todayKey) {
         <div class="sy-ring-t"><b>${pct}%</b><span>hoàn thành</span></div>
       </div>
     </div>
+    ${(() => {
+      const fe = (typeof gdFeasible === 'function') ? gdFeasible(plan) : null;
+      const cd = (typeof gdCountdown === 'function') ? gdCountdown(plan.examISO, 'Ngày thi') : '';
+      if (!fe && !cd) return '';
+      const txt = { ok: 'Vừa sức', tight: 'Sát nút', over: 'Quá tải' }[fe ? fe.status : 'ok'];
+      const detail = fe
+        ? `còn ${fe.totalLeft} mục trong ${fe.daysLeft} ngày · ${fe.perDay} phút/ngày đủ khoảng ${fe.capacity} mục`
+        : '';
+      return `<div class="pl-feas pl-feas-${fe ? fe.status : 'ok'}">
+        ${cd}<span class="pl-feas-t"><b>${txt}</b> — ${detail}</span></div>`;
+    })()}
     <div class="pl-days">
       ${plan.days.map(d => {
     const isToday = d.date === todayKey;
@@ -1071,6 +1082,16 @@ function renderProgress() {
       <div class="pg-k"><span class="kicker">Thẻ đã thuộc</span><b>${mastered}</b><em>/ ${S.cards.length} thẻ</em></div>
       <div class="pg-k"><span class="kicker">Độ chính xác</span><b>${accAll.total ? Math.round(accAll.right / accAll.total * 100) + '%' : '—'}</b><em>${accAll.total} câu đã chấm</em></div>
       <div class="pg-k"><span class="kicker">Đề đã làm</span><b>${S.results.length}</b><em>lượt luyện</em></div>
+      ${(() => {
+      if (typeof gdTermAvg !== 'function') return '';
+      const g = gdTermAvg('hk1'), g2 = gdTermAvg('hk2');
+      if (g === null && g2 === null) return '';
+      const use = g2 !== null ? g2 : g;
+      const rk = gdRank(use);
+      return `<div class="pg-k"><span class="kicker">Điểm TB</span>
+        <b style="${rk ? 'color:' + rk.color : ''}">${use.toFixed(1)}</b>
+        <em><a href="#/grades" class="pg-k-l">sổ điểm →</a></em></div>`;
+    })()}
     </div>
 
     <div class="pg-advice">

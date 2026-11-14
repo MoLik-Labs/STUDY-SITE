@@ -11,7 +11,7 @@ import hashlib, io, os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
-VERSION = '11.1'          # một nguồn duy nhất; sinh ra meta, APP_VERSION, footer, sw.js
+VERSION = '11.2'          # một nguồn duy nhất; sinh ra meta, APP_VERSION, footer, sw.js
 
 def arg(flag, default):
     """--flag giá-trị, hoặc chỉ --flag (dùng giá trị mặc định)."""
@@ -79,6 +79,8 @@ lab = SRC('lab.js')
 engine = SRC('engine.js')
 store = SRC('store.js')
 settings = SRC('settings.js')
+grades = SRC('grades.js')      # sổ điểm THCS/THPT — hệ số VN + what-if
+weekly = SRC('weekly.js')      # bàn lập kế hoạch tuần — dự án → việc → việc con
 cf = SRC('cloudflare.js')     # đăng ký service worker + trạng thái mạng
 
 ver_js = "/* phiên bản — sinh từ src/build.py */\nconst APP_VERSION = '" + VERSION + "';"
@@ -91,7 +93,7 @@ SCRIPTS = [
     ('MÁY GIẢI · MẠCH · NHẠC · POMODORO · PHÒNG THÍ NGHIỆM',
      solver + '\n' + teacher + '\n' + board + '\n' + builder + '\n' + sim + '\n' + school + '\n'
      + seed_more + '\n' + study + '\n' + sched + '\n' + music + '\n' + pomo + '\n'
-     + settings + '\n' + lab),
+     + settings + '\n' + grades + '\n' + weekly + '\n' + lab),
 ]
 
 # Áp giao diện trước khi vẽ để không nháy trắng — cũng là một khối inline.
@@ -326,6 +328,10 @@ REDIRECTS = """# Cloudflare — sinh tự động bởi src/build.py, đừng s�
 /focus/      /  200
 /progress    /  200
 /progress/   /  200
+/grades      /  200
+/grades/     /  200
+/weekly      /  200
+/weekly/     /  200
 /timetable   /  200
 /timetable/  /  200
 /calendar    /  200

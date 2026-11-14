@@ -26,8 +26,8 @@ hai con số: *băng thông tĩnh miễn phí không giới hạn* và *có máy
 
 | Chỉ số | Giá trị | Ghi chú |
 |---|---|---|
-| `index.html` thô | **984 KB** | một tệp, không chia nhỏ |
-| `index.html` qua Brotli | **216 KB** | Cloudflare tự nén, miễn phí |
+| `index.html` thô | **1.029 KB** | một tệp, không chia nhỏ |
+| `index.html` qua Brotli | **~230 KB** | Cloudflare tự nén, miễn phí |
 | Số tệp phải phục vụ | **5** | index · 404 · sw.js · _headers · _redirects |
 | Yêu cầu mạng lần đầu | **1** | sau đó font từ Google |
 | Yêu cầu mạng lần hai | **0** | service worker đã cache |
@@ -297,12 +297,13 @@ npm test
 | `tests/csp.js` | 28 | **hash CSP khớp từng khối**, không `unsafe-inline` cho script, `_headers`, `_redirects`, `sw.js`, `404.html`, `.assetsignore`, `_worker.mjs` |
 | `tests/functions.js` | 20 + 6 | chạy thật `__version`: JSON, ETag, 304, 405; kiểm `wrangler.jsonc` khớp `dist/` |
 | `tests/worker.js` | 32 | **mô phỏng thứ tự phục vụ của Workers**: tĩnh miễn phí, `_redirects`, 404, không lộ mã nguồn |
-| `tests/smoke.js` | 51 | 35 tuyến trong jsdom, dữ liệu lõi |
+| `tests/smoke.js` | 54 | 38 tuyến trong jsdom, dữ liệu lõi |
 | `tests/interaction.js` | 32 | dấu nháy, `uiConfirm`, sao lưu, `.ics`, luồng học, theme, bẫy Tab |
+| `tests/newfeat.js` | 33 | công thức sổ điểm (hệ số, cả năm, xếp loại, what-if) + rải việc tuần |
 
 CI chạy đúng bộ này và **chặn merge** nếu `index.html` không khớp bản dựng lại.
 
-Tổng: **163 bước** kiểm (28 + 20 + 6 + 32 + 51 + 32), cộng 4 nhóm của `tools/check.js`.
+Tổng: **205 bước** kiểm (28 + 20 + 6 + 32 + 54 + 32 + 33), cộng 4 nhóm của `tools/check.js`.
 
 ---
 

@@ -5,7 +5,7 @@
 > giải mạch điện, đồng hồ tập trung… Tất cả nằm trong **một tệp `index.html`**, chạy offline, dữ liệu lưu trong máy bạn.
 
 <p>
-  <img alt="version" src="https://img.shields.io/badge/version-11.1-bordeaux">
+  <img alt="version" src="https://img.shields.io/badge/version-11.2-bordeaux">
   <img alt="single file" src="https://img.shields.io/badge/build-1%20tệp%20HTML-1f1c17">
   <img alt="offline" src="https://img.shields.io/badge/offline-100%25-4a6b3a">
   <img alt="license" src="https://img.shields.io/badge/license-MIT-8b2e22">
@@ -151,6 +151,8 @@ không có `_headers` (nên không có header bảo mật và cache tuỳ chỉn
 │   ├── app.js              # router, trang chủ, đọc bài, tìm kiếm ⌘K
 │   ├── app.css             # toàn bộ giao diện + 13 theme
 │   ├── cloudflare.js       # service worker, trạng thái ngoại tuyến
+│   ├── grades.js           # sổ điểm THCS/THPT: hệ số, xếp loại, what-if, đếm ngược
+│   ├── weekly.js           # kế hoạch tuần: dự án → việc → việc con, rải theo độ khó
 │   ├── sw.template.js      # mẫu service worker (chép vào dist/ khi build)
 │   ├── worker.template.js  # Worker: GET /__version + trang 404 (→ dist/_worker.mjs)
 │   ├── store.js            # lưu bền 4 tầng: localStorage · IndexedDB · cookie · tệp
@@ -197,7 +199,7 @@ không có `_headers` (nên không có header bảo mật và cache tuỳ chỉn
 
 ## Kiểm thử
 
-`npm test` chạy toàn bộ — **163 bước**, không cần trình duyệt.
+`npm test` chạy toàn bộ — **205 bước**, không cần trình duyệt.
 
 | Bộ | Cách chạy | Phạm vi | Kết quả |
 |---|---|---|---|
@@ -205,7 +207,8 @@ không có `_headers` (nên không có header bảo mật và cache tuỳ chỉn
 | `tests/csp.js` | `node tests/csp.js` | **hash CSP khớp từng khối script/style**, không `unsafe-inline` cho script, `_headers`, `_redirects`, `sw.js`, `404.html`, `.assetsignore` | **28/28** |
 | `tests/functions.js` | `node tests/functions.js` | chạy thật `dist/_worker.mjs`: JSON, ETag, 304, 405, chịu lỗi; `wrangler.jsonc` khớp `dist/` | **20/20 + 6** |
 | `tests/worker.js` | `node tests/worker.js` | mô phỏng **thứ tự phục vụ của Workers**: tĩnh miễn phí, `_redirects` 200, 404 riêng, không lộ mã nguồn | **32/32** |
-| `tests/smoke.js` | `node tests/smoke.js` | 35 tuyến × jsdom, dữ liệu lõi, `esc/import/uid` | **51/51** |
+| `tests/smoke.js` | `node tests/smoke.js` | 38 tuyến × jsdom, dữ liệu lõi, `esc/import/uid` | **54/54** |
+| `tests/newfeat.js` | `node tests/newfeat.js` | **công thức sổ điểm** (hệ số 1/1/2/3, cả năm, xếp loại, what-if) + **rải việc tuần** (độ khó, kéo việc trễ, đếm ngược) | **33/33** |
 | `tests/interaction.js` | `node tests/interaction.js` | tên có dấu nháy, `uiConfirm`, xoay vòng sao lưu, `.ics`, thẻ → kế hoạch → thi thử, theme, bẫy Tab | **32/32** |
 | `tools/qa/*.js` | `playwright-cli` (trình duyệt thật) | giao diện: thời khoá biểu, Study OS, trường học, bảng vẽ, mô phỏng, quét 30 tuyến | 21/21 · 21/21 · 26/26 · 17/17 · 19/19 · audit |
 

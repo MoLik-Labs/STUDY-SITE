@@ -1,6 +1,6 @@
 {
   "name": "vat-li-9-study-os",
-  "version": "11.1.0",
+  "version": "11.2.0",
   "private": true,
   "description": "Web tự học mọi thứ: Vật lí 9 & luyện thi chuyên Lý, trường học lớp 1-12, thời khoá biểu, kế hoạch, lịch, phòng thí nghiệm — tất cả trong một tệp HTML chạy offline.",
   "keywords": [
@@ -23,7 +23,7 @@
   "scripts": {
     "build": "python3 src/build.py --dist",
     "check": "node tools/check.js",
-    "test": "python3 src/build.py --dist && node tools/check.js && node tests/csp.js && node tests/functions.js && node tests/worker.js && node tests/smoke.js && node tests/interaction.js",
+    "test": "python3 src/build.py --dist && node tools/check.js && node tests/csp.js && node tests/functions.js && node tests/worker.js && node tests/smoke.js && node tests/interaction.js && node tests/newfeat.js",
     "serve": "python3 -m http.server 8124 --directory dist",
     "deploy": "python3 src/build.py --dist && npx wrangler deploy",
     "preview": "python3 src/build.py --dist && npx wrangler dev"

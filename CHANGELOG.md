@@ -3,6 +3,46 @@
 Định dạng theo [Keep a Changelog](https://keepachangelog.com/vi/1.1.0/), phiên bản theo [SemVer](https://semver.org/lang/vi/).
 Mọi thay đổi lớn đều có kiểm thử: `npm test` (check tĩnh + CSP + Worker + mô phỏng Workers + 83 bước jsdom).
 
+## [11.2.0] — 2026-11-14
+
+Nghiên cứu 15+ trang học tập đang chạy tốt (beaverplans, MyStudyLife, Power Planner,
+Shovel, Todait, Study-Track, StudyTracker, Mindomax…), rồi lấy **cơ chế** đúng với
+bối cảnh Việt Nam thay vì bắt chước giao diện.
+
+### Mới · Sổ điểm `#/grades`
+- **Đúng quy chế Bộ GD&ĐT**: miệng & 15 phút hệ số 1, 1 tiết hệ số 2, học kì hệ số 3.
+  ĐTB môn = Σ(điểm × hệ số) ÷ Σ(hệ số); **cả năm = (HK1 + 2 × HK2) ÷ 3**.
+- **Hệ số sửa được** — mỗi trường một khác; sửa là mọi con số đổi ngay, không nhập lại điểm.
+  Đây là chỗ các app nước ngoài (GPA thang 4.0 theo tín chỉ) không làm được cho học sinh VN.
+- **Xếp loại theo TT 22/2021**: Tốt ≥ 8,0 · Khá ≥ 6,5 · Đạt ≥ 5,0 · Chưa đạt ≥ 3,5.
+- **"Cần bao nhiêu điểm"** (what-if, học từ Power Planner): cho biết bài 1 tiết tới phải
+  được mấy điểm để đạt mục tiêu — và **nói thẳng khi mục tiêu đã bất khả thi**.
+- Dòng "nên chú ý nhất": 3 môn thấp nhất, nối thẳng sang `#/plan`.
+- KPI điểm TB xuất hiện cả ở `#/progress`, có liên kết về sổ điểm.
+
+### Mới · Kế hoạch tuần `#/weekly`
+- Mô hình của **beaverplans**: `dự án → việc → việc con → rải vào ngày`.
+- **Rải theo độ khó**: việc **khó nhất lên đầu tuần** (lúc còn sức), giảm dần.
+  Gõ `khó:` / `vừa:` / `dễ:` ở đầu tên việc là đặt được độ khó — hiểu ở mọi đường nhập,
+  kể cả dấu hai chấm full-width.
+- **Chọn ngày mình có thể học**: tắt T7/CN là cách trung thực nhất để kế hoạch không tự lừa.
+- **Kéo việc trễ về hôm nay** — không mất việc nào (khác beaverplans, vốn bỏ mặc việc cũ).
+- Việc con nối được vào bài học trong máy (`#/read/…`), không phải gõ lại.
+
+### Mới · Đếm ngược & tính khả thi (học từ Shovel, Sora, Todait)
+- Kế hoạch học hiện **"còn N ngày"** ngay trên đầu trang, tô đậm khi ≤ 7 ngày.
+- **"Vừa sức / Sát nút / Quá tải"**: so số mục còn lại với số phút bạn khai × số ngày thật
+  còn lại — trả lời "kế hoạch này có làm kịp không", không chỉ "còn mấy ngày".
+
+### Kiểm thử
+- **`tests/newfeat.js` (mới, 33 bước)** khoá công thức bằng số thật: ví dụ sách giáo khoa
+  109/14 = 7,7857 (nhiều trang web in 7,714 — đó là 108/14, tính nhẩm sai), đổi hệ số,
+  cả năm, xếp loại, what-if, rải việc theo độ khó, kéo việc trễ.
+- `tests/smoke.js` thêm 3 tuyến → **54 bước**. Tổng **205 bước** xanh.
+- Build vẫn tất định (hai lần dựng byte-identical).
+
+---
+
 ## [11.1.0] — 2026-11-14
 
 **Chuyển sang Cloudflare Workers Static Assets** sau khi so sánh có bằng chứng với Pages, Vercel,

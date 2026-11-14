@@ -37,6 +37,7 @@ jobs:
           npm install --no-save --no-audit --no-fund jsdom
           node tests/smoke.js
           node tests/interaction.js
+          node tests/newfeat.js
 
       - name: Cloudflare — Worker /__version (ETag, 304, 405, 404)
         run: node tests/functions.js

@@ -1,7 +1,7 @@
 # Bàn giao kỹ thuật — Học mọi thứ · v10.0
 
 Tài liệu này là “bộ nhớ” của dự án: đọc hết là có thể sửa, mở rộng và kiểm thử mà không cần hỏi lại.
-Cập nhật lần cuối: **2026-11-14** · phiên bản **11.1.0** · build ~985 KB thô / ~216 KB Brotli
+Cập nhật lần cuối: **2026-11-14** · phiên bản **11.2.0** · build ~1.029 KB thô / ~230 KB Brotli
 
 ---
 

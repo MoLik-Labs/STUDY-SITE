@@ -158,6 +158,8 @@ function renderTop(){
           <a data-nav="#/cards" role="menuitem">Thẻ ghi nhớ</a>
           <a data-nav="#/practice" role="menuitem">Luyện đề tự tạo</a>
           <a data-nav="#/plan" role="menuitem">Kế hoạch học</a>
+          <a data-nav="#/weekly" role="menuitem">Kế hoạch tuần</a>
+          <a data-nav="#/grades" role="menuitem">Sổ điểm</a>
           <a data-nav="#/focus" role="menuitem">Đồng hồ tập trung</a>
           <a data-nav="#/timetable" role="menuitem">Thời khoá biểu</a>
           <a data-nav="#/calendar" role="menuitem">Lịch học</a>
@@ -232,7 +234,9 @@ function renderRail(){
       <div class="rs-links">
         <a href="#/cards" class="${h0.startsWith('#/cards')?'on':''}">Thẻ ghi nhớ${(typeof syDue==='function'&&syDue().length)?'<i>'+syDue().length+'</i>':''}</a>
         <a href="#/practice" class="${h0.startsWith('#/practice')?'on':''}">Luyện đề</a>
-        <a href="#/plan" class="${h0.startsWith('#/plan')?'on':''}">Kế hoạch</a>
+        <a href="#/plan" class="${h0.startsWith('#/plan')&&!h0.startsWith('#/weekly')?'on':''}">Kế hoạch</a>
+        <a href="#/weekly" class="${h0.startsWith('#/weekly')?'on':''}">Tuần này</a>
+        <a href="#/grades" class="${h0.startsWith('#/grades')?'on':''}">Sổ điểm</a>
         <a href="#/focus" class="${h0.startsWith('#/focus')?'on':''}">Tập trung</a>
         <a href="#/timetable" class="${h0.startsWith('#/timetable')?'on':''}">Thời khoá biểu</a>
         <a href="#/calendar" class="${h0.startsWith('#/calendar')?'on':''}">Lịch</a>
@@ -1367,6 +1371,8 @@ function render(){
   if(p[0]==='plan') return renderPlan();
   if(p[0]==='focus') return renderFocus();
   if(p[0]==='progress') return renderProgress();
+  if(p[0]==='grades') return renderGrades(p[1]);
+  if(p[0]==='weekly') return renderWeekly();
   if(p[0]==='timetable') return renderTimetable();
   if(p[0]==='calendar') return renderCalendar();
   if(p[0]==='about') return renderAbout();

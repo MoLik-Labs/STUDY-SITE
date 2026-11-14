@@ -6,11 +6,15 @@
 
 /* ---------- helpers ---------- */
 const ALLQ=QS;
-const wrongList=()=>ALLQ.filter(q=>state.ans[q.id]&&!state.ans[q.id].ok);
+const wrongList=()=>ALLQ.filter(q=>{const a=ansOf(q.id);return a&&!a.ok;});
 const reviewList=()=>typeof dueList==='function'?dueList():wrongList();
 const answerStats=()=>{
-  const a=Object.values(state.ans);
-  return {n:a.length, ok:a.filter(x=>x.ok).length};
+  /* đếm qua ansOf: một mục null trong state.ans làm Object.values().filter
+     ném lỗi và cả trang Thống kê trắng. */
+  const keys=Object.keys(state.ans||{});
+  let ok=0, n=0;
+  keys.forEach(k=>{ const a=ansOf(k); if(a){ n++; if(a.ok) ok++; } });
+  return {n, ok};
 };
 function pageHead(kicker,h1,p){
   return `<div class="page-head"><span class="kicker">${kicker}</span>
@@ -318,7 +322,7 @@ function renderReview(){
         </span></div>`;
     const slot=$('#revSlot');
     renderQuestion(slot,q,{revealed:false,picked:undefined,onAnswer:ok=>{
-      const a=state.ans[q.id];
+      const a=ansOf(q.id);
       if(a){
         const box=Math.min(4,a.box||0);
         toast(ok?`Đúng · lên hộp ${box+1}${SRS_DAYS[box]?` — ôn lại sau ${SRS_DAYS[box]} ngày`:' — ôn lại sau 21 ngày'}`
@@ -446,7 +450,7 @@ function renderFlash(){
 function renderStats(){
   const st=answerStats();
   const byT={};
-  ALLQ.forEach(q=>{const k=q.t;byT[k]=byT[k]||{n:0,seen:0,ok:0};byT[k].n++;const a=state.ans[q.id];if(a){byT[k].seen++;if(a.ok)byT[k].ok++;}});
+  ALLQ.forEach(q=>{const k=q.t;byT[k]=byT[k]||{n:0,seen:0,ok:0};byT[k].n++;const a=ansOf(q.id);if(a){byT[k].seen++;if(a.ok)byT[k].ok++;}});
   const runs=(state.runs||[]).slice().reverse();
   $('#main').innerHTML=`<section class="wrap wide">
     ${pageHead('Tiến độ','Toàn bộ số liệu học tập của bạn','Lưu trong trình duyệt này. Không có tài khoản, không gửi dữ liệu đi đâu.')}

@@ -118,6 +118,43 @@ routes.forEach(({ route, fn }) => {
   }
 });
 console.log(`router: ${routes.length} tuyến · ${new Set(routes.map(r => r.fn)).size} hàm render`);
+
+/* ---------- 6b. Khám phá: single source of truth for navigation ----------
+   #/discover is the one table of every destination. If it drifts from the
+   router, a page quietly exists with no way to find it — which is exactly how
+   the old rail/popup/palette lists ended up disagreeing with each other.
+   Rules:
+     · every parameterless route must appear in EXPLORE_GROUPS;
+     · every entry must point at a route that really exists;
+     · no duplicates, and the label/`need` text must be present (a bare name
+       was the original usability problem). */
+{
+  const explSrc = fs.readFileSync(path.join(SRC, 'explore.js'), 'utf8');
+  const entries = [...explSrc.matchAll(/\{\s*href:\s*'(#[^']*)'\s*,\s*vi:\s*'([^']*)'\s*,\s*en:\s*'([^']*)'\s*,\s*need:\s*'([^']*)'/g)]
+    .map(m => ({ href: m[1], vi: m[2], en: m[3], need: m[4] }));
+  if (!entries.length) failWith('explore.js: không đọc được bảng EXPLORE_GROUPS');
+
+  /* routes that REQUIRE a parameter cannot be opened from a list of links, so
+     they are excluded; #/discover is excluded because it is this page and it
+     already has its own button in the topbar and the rail. */
+  const routed = new Set(routes
+    .filter(r => !/^(lesson|day|subject|read|vid)$/.test(r.route))
+    .map(r => '#/' + r.route)
+    .filter(h => h !== '#/discover'));
+  /* the home page is the default route and does not appear as p[0]==='…' */
+  routed.add('#/');
+  const seen = new Set();
+  entries.forEach(e => {
+    if (seen.has(e.href)) failWith('explore.js: mục trùng ' + e.href);
+    seen.add(e.href);
+    if (!e.vi || !e.en || !e.need) failWith('explore.js: mục thiếu nhãn hoặc thiếu "khi nào dùng": ' + e.href);
+    if (!routed.has(e.href)) failWith('explore.js: ' + e.href + ' không phải tuyến có thật trong router');
+  });
+  routed.forEach(h => {
+    if (!seen.has(h)) failWith('Khám phá thiếu lối vào ' + h + ' — trang này không tìm thấy được từ đâu');
+  });
+  console.log(`khám phá: ${entries.length} lối vào · ${routed.size} tuyến không tham số · thiếu: ${[...routed].filter(h => !seen.has(h)).length}`);
+}
 templateFiles.forEach(f => {
   if (!buildPy.includes(f)) failWith(`src/${f} không được src/build.py dùng — mẫu chết?`);
 });

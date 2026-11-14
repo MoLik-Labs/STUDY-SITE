@@ -3231,3 +3231,110 @@ html[data-theme="pixelnight"] .rs-main:hover{background:var(--card)}
   .ph-next{grid-template-columns:1fr auto}
   .ph-next-t{grid-column:1/-1}
 }
+
+/* ============================================================
+   KHÁM PHÁ — trang #/discover + popup thanh trên
+   Pixel-art flavour: hard rules, mono labels, no soft shadows.
+   ============================================================ */
+.expl-page{padding-bottom:80px}
+.expl-search{display:flex;align-items:center;gap:10px;border:1px solid var(--ink);background:var(--card);
+  padding:10px 12px;margin-top:20px}
+.expl-search svg{width:15px;height:15px;stroke:var(--ink-3);fill:none;stroke-width:1.7;flex:none}
+.expl-search input{flex:1;min-width:0;border:0;background:none;font:inherit;font-size:15px;color:var(--ink);outline:none}
+.expl-search kbd{font-family:var(--mono);font-size:9px;letter-spacing:.1em;border:1px solid var(--rule-2);
+  padding:2px 5px;color:var(--ink-3);flex:none}
+.expl-search:focus-within{border-color:var(--accent);box-shadow:2px 2px 0 var(--accent-soft)}
+
+.expl-top{display:grid;grid-template-columns:minmax(0,1.6fr) repeat(auto-fit,minmax(150px,.6fr));gap:1px;
+  background:var(--rule);border:1px solid var(--rule);margin-top:22px}
+.expl-resume{background:var(--card);padding:16px 18px;display:flex;flex-direction:column;gap:3px;min-width:0}
+.expl-resume:hover{background:var(--paper)}
+.expl-resume b{font-family:var(--serif);font-size:19px;font-weight:600;line-height:1.25;
+  overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.expl-resume i{font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);font-style:normal}
+.expl-resume em{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--accent);font-style:normal;margin-top:6px}
+.expl-due{background:var(--card);padding:16px 18px;display:flex;flex-direction:column;justify-content:center;gap:2px}
+.expl-due:hover{background:var(--paper)}
+.expl-due b{font-family:var(--serif);font-size:26px;font-weight:400;line-height:1;color:var(--accent)}
+.expl-due span{font-size:12px;color:var(--ink-2)}
+.expl-due em{font-family:var(--mono);font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);font-style:normal;margin-top:5px}
+
+.expl-empty-top{border:1px dashed var(--rule-2);background:var(--card-2);padding:20px 22px;margin-top:22px}
+.expl-empty-top b{font-family:var(--serif);font-size:17px}
+.expl-empty-top p{margin:5px 0 12px;font-size:13px;color:var(--ink-2);max-width:52ch}
+
+.expl-sec{margin-top:30px}
+.expl-sec-h{display:flex;align-items:baseline;gap:10px;border-bottom:1px solid var(--ink);padding-bottom:6px;margin-bottom:1px}
+.expl-sec-h .kicker{color:var(--ink)}
+.expl-sec-h em{font-family:var(--mono);font-size:9px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);font-style:normal;margin-left:auto}
+.expl-sec-h a{font-family:var(--mono);font-size:9px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3)}
+.expl-sec-h a:hover{color:var(--accent)}
+
+.expl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-top:0}
+.expl-card{background:var(--card);padding:13px 15px 14px;display:flex;flex-direction:column;gap:4px;
+  min-height:78px;transition:background .12s}
+.expl-card:hover{background:var(--paper)}
+.expl-card b{font-family:var(--serif);font-size:15px;font-weight:600;line-height:1.3}
+.expl-card span{font-size:11.5px;line-height:1.5;color:var(--ink-3)}
+.expl-card:hover b{color:var(--accent)}
+
+.expl-recent{display:flex;gap:1px;background:var(--rule);border:1px solid var(--rule);border-top:0;
+  flex-wrap:wrap}
+.expl-recent a{background:var(--card);padding:10px 13px;min-width:170px;flex:1}
+.expl-recent a:hover{background:var(--paper)}
+.expl-recent b{display:block;font-size:13px;font-weight:600}
+.expl-recent i{display:block;font-size:10.5px;color:var(--ink-3);font-style:normal;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.expl-out{margin-top:18px;border:1px solid var(--rule)}
+.expl-h{display:flex;align-items:baseline;gap:12px;padding:9px 13px;background:var(--card-2);border-bottom:1px solid var(--rule)}
+.expl-h .kicker{color:var(--ink-2)}
+.expl-clear{font-family:var(--mono);font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);margin-left:auto}
+.expl-clear:hover{color:var(--accent)}
+.expl-row{display:grid;grid-template-columns:82px minmax(0,1fr) minmax(0,.9fr) 18px;gap:12px;align-items:baseline;
+  padding:10px 13px;border-bottom:1px solid var(--rule);background:var(--card)}
+.expl-row:last-child{border-bottom:0}
+.expl-row:hover,.expl-row.on{background:var(--paper)}
+.expl-row.on{box-shadow:inset 3px 0 0 var(--accent)}
+.expl-row .k{font-family:var(--mono);font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.expl-row .t{font-size:13.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.expl-row .d{font-size:11.5px;color:var(--ink-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.expl-row .go{font-family:var(--mono);color:var(--ink-3);text-align:right}
+.expl-row:hover .go{color:var(--accent)}
+.expl-none{padding:22px 18px;background:var(--card)}
+.expl-none b{font-family:var(--serif);font-size:16px}
+.expl-none p{margin:5px 0 12px;font-size:12.5px;color:var(--ink-2)}
+
+/* ---- popup Khám phá (thanh trên) ---- */
+.tb-menu{max-height:min(74vh,620px);overflow:auto;min-width:300px;columns:2;column-gap:0;padding:0}
+/* .tb-menu.on ở trên đặt display:flex — flex container BỎ QUA columns, nên hai cột
+   không bao giờ hiện ra. Đổi sang block để thuộc tính columns có tác dụng. */
+.tb-menu.on{display:block}
+.tb-menu .tm-head{column-span:all;padding:10px 12px;border-bottom:1px solid var(--rule)}
+.tb-menu .tm-all b{display:block;font-family:var(--serif);font-size:14px;font-weight:600;color:var(--ink)}
+.tb-menu .tm-all span{display:block;font-size:10.5px;color:var(--ink-3);margin-top:1px}
+.tb-menu .tm-all:hover b{color:var(--accent)}
+.tb-menu .tm-grp{break-inside:avoid;padding:6px 4px 8px}
+.tb-menu .tm-2{columns:2;column-gap:0;break-inside:avoid}
+.tb-menu .tm-2 a{break-inside:avoid;white-space:nowrap}
+.tb-menu .tm-lbl{display:block;font-family:var(--mono);font-size:8.5px;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--ink-3);padding:6px 9px 4px}
+.tb-menu a[data-nav]{display:block;break-inside:avoid}
+.tb-menu a[data-nav]:hover,.tb-menu a[data-nav]:focus-visible{background:var(--paper);color:var(--accent)}
+@media(max-width:760px){
+  .tb-menu{columns:1;min-width:0;width:min(88vw,320px)}
+  .expl-top{grid-template-columns:1fr}
+  .expl-row{grid-template-columns:70px minmax(0,1fr) 16px}
+  .expl-row .d{display:none}
+  .expl-grid{grid-template-columns:1fr}
+  .expl-search input{font-size:14px}
+}
+
+/* Nút Khám phá phải sống trên điện thoại: sáu .tb-btn bị ẩn ở ≤760px nên trước
+   đây màn hình hẹp không có lối vào công cụ nào ngoài ngăn kéo ☰. */
+.tb-key{display:none;font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--ink);border:1px solid var(--ink);padding:5px 8px;white-space:nowrap;background:var(--card)}
+.tb-key:hover{background:var(--ink);color:var(--paper)}
+/* ≤980px: nút Khám phá gọn thay cho popup. Hai nút cùng tên cạnh nhau là lỗi. */
+@media(max-width:980px){.tb-key{display:inline-block}.tb-more{display:none}}
+@media(max-width:560px){.tb-key{padding:4px 7px;font-size:9.5px}}

@@ -626,6 +626,7 @@ function renderRead(id) {
     uiConfirm('Xoá bài học', `Xoá <b>${esc(l.t)}</b>? Không hoàn tác được.`, () => {
       const S = schoolState();
       Object.keys(S.lessons).forEach(k => { S.lessons[k] = S.lessons[k].filter(x => x.id !== l.id); });
+      if (typeof window !== 'undefined') window.EXPL_INDEX = null;
       save(); toast('Đã xoá bài'); location.hash = '#/subject/' + l.g + '/' + l.s;
     }, { danger: true, okText: 'Xoá bài' });
   };
@@ -891,6 +892,7 @@ function renderStudio(id) {
         S2.lessons[oldKey] = (S2.lessons[oldKey] || []).filter(x => x.id !== editing.id);
         S2.lessons[key].push(rec);
       }
+      if (typeof window !== 'undefined') window.EXPL_INDEX = null;
       save(); toast('Đã lưu thay đổi'); location.hash = '#/read/' + editing.id;
     } else {
       const rec = {
@@ -898,6 +900,7 @@ function renderStudio(id) {
         blocks: draft.blocks, files: draft.files, at: Date.now()
       };
       S2.lessons[key].push(rec);
+      if (typeof window !== 'undefined') window.EXPL_INDEX = null;
       save(); toast('Đã xuất bản bài mới');
       location.hash = '#/read/' + rec.id;
     }
@@ -993,6 +996,7 @@ async function renderFiles() {
   const files = (await FileStore.all()).sort((a, b) => b.at - a.at);
   window.__filesCache = files.map(f => ({ id: f.id, name: f.name, size: f.size }));
   if (typeof PAL_INDEX_CACHE !== 'undefined') PAL_INDEX_CACHE = null;
+  if (typeof window !== 'undefined') window.EXPL_INDEX = null;
   const S = (schoolState().soft = schoolState().soft || {});
 
   const thumb = {};

@@ -1,7 +1,7 @@
 # Bàn giao kỹ thuật — Học mọi thứ · v10.0
 
 Tài liệu này là “bộ nhớ” của dự án: đọc hết là có thể sửa, mở rộng và kiểm thử mà không cần hỏi lại.
-Cập nhật lần cuối: **2026-11-14** · phiên bản **10.1.0** · build **998.631 B**
+Cập nhật lần cuối: **2026-11-14** · phiên bản **11.0.0** · build ~985 KB thô / ~215 KB Brotli
 
 ---
 
@@ -49,6 +49,25 @@ python3 src/build.py --base X --out Y
 node tools/check.js                  # cú pháp, CSS, hộp thoại gốc, mã chết, router
 npm test                             # build + check + 51 + 32 bước jsdom
 ```
+
+---
+
+### 2.1 Build sinh thêm những gì
+
+`python3 src/build.py --dist` không chỉ ghép JS. Nó còn:
+
+| Việc | Vì sao |
+|---|---|
+| Băm **SHA-256 mọi khối `<script>` / `<style>`** và nhúng vào `<meta http-equiv="Content-Security-Policy">` | CSP nghiêm mà không cần `'unsafe-inline'` |
+| Sinh `_headers` | header bảo mật + chiến lược cache cho Cloudflare Pages |
+| Sinh `_redirects` | mọi đường dẫn con trả `index.html` (router dùng hash) |
+| Chép `src/sw.template.js` → `dist/sw.js`, thay `__VERSION__` | mỗi deploy là một cache mới |
+| Tính `build_id` (băm 12 ký tự của HTML) → `<meta name="build-id">` | Pages Function dùng làm ETag cho `/__version` |
+
+**Quy tắc vàng:** không sửa `index.html` bằng tay. Hash CSP tính từ nội dung, sửa tay là CSP
+lệch → **trang trắng**. `npm test` sẽ bắt lỗi này ở `tests/csp.js`.
+
+Chi tiết triển khai Cloudflare: [`docs/CLOUDFLARE.md`](CLOUDFLARE.md).
 
 ---
 
@@ -140,6 +159,21 @@ Router nằm cuối `src/app.js` — một chuỗi `if (p[0]===…) return rende
 ---
 
 ## 5. Giao diện
+
+### 5.0 CSP — những gì được phép
+
+| Loại | Cho phép | Ghi chú |
+|---|---|---|
+| `<script>` | chỉ 6 khối inline của bản build (khớp hash) + `'self'` | không `unsafe-inline`, không `unsafe-eval` |
+| `<style>` | khối duy nhất của bản build (khớp hash) | `style-src-elem` |
+| thuộc tính `style="…"` | `'unsafe-inline'` | **cần thiết**: 140+ chỗ (màu ô TKB, thanh tiến độ, vị trí hình vẽ). CSS không chạy được JS; `img/connect/form` đều bị chặn |
+| ảnh | `'self' data: i.ytimg.com *.ytimg.com blob:` | ảnh bìa video YouTube |
+| iframe | `youtube-nocookie.com`, `youtube.com` | khung phát bài giảng |
+| `connect-src` | `'self'` | chỉ `/__version`; **không** gọi API ngoài |
+
+Thêm một origin mới (ví dụ dịch vụ ảnh khác) thì phải sửa `src/build.py` **và** `tests/csp.js`,
+nếu không `npm test` sẽ báo “origin không nằm trong CSP”.
+
 
 - Token: `--paper` (nền trang), `--card`, `--ink` (chữ chính), `--ink2` (chữ phụ), `--accent`, `--line`.
   Không hard-code màu; luôn dùng biến để theme đổi được.

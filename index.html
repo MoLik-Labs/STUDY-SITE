@@ -2,16 +2,26 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-T3t9GpP3XnRts+uwbiGz0akmb1fKbRI1yccDJbwe+Ek=' 'sha256-fALrYnrybyE+saRuVp+aEdvZu6ZKe5V2TzZtWxVxF9U=' 'sha256-hVlZl4DmsgwBdjrs6goQ5ATdQahsssaUyrCSIMR+NYM=' 'sha256-o4+ilVf54vKylvXBYs/XTkoPBV88qaD1yL3cebXq2aE=' 'sha256-awqTcrsKt0d6y7vkstVWLSfJxKiXtgFedc6OrXZUgGM=' 'sha256-93rNzuLhyLwwcdRMAW4VtAWhADIaPE6dnpO2U/ucV3s='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' 'sha256-HJ29zyc3lmVyY2jIl3F9Gh7PQs1R9FqawBTW0LvtHFg=' https://fonts.googleapis.com; style-src-attr 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://i.ytimg.com https://*.ytimg.com blob:; media-src 'self' blob: https:; frame-src https://www.youtube-nocookie.com https://www.youtube.com; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'; upgrade-insecure-requests">
+<meta name="build-id" content="f914fab7df05">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Học mọi thứ — Vật lí 9 · lớp 1–12 · @nggkhaiz</title>
-<meta name="app-version" content="10.1">
+<meta name="app-version" content="11.0">
 <meta name="description" content="Một trang để học mọi thứ: lộ trình Vật lí 9, trường học lớp 1–12, thẻ ghi nhớ cách quãng, luyện đề tự tạo, kế hoạch học, thời khoá biểu và lịch học. Tác giả @nggkhaiz — github.com/Ngg.Khaiz.">
+<meta name="theme-color" content="#f4f1ea" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#12110e" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="light dark">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Học mọi thứ — Vật lí 9 · lớp 1–12">
+<meta property="og:description" content="Lộ trình Vật lí 9 · luyện thi chuyên Lý · trường học lớp 1–12 · thời khoá biểu · lịch · thẻ ghi nhớ · phòng thí nghiệm. Chạy offline, dữ liệu trong máy bạn.">
+<meta property="og:locale" content="vi_VN">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f4f1ea'/%3E%3Ctext x='6' y='24' font-family='Georgia,serif' font-size='20' fill='%2317150f'%3E9%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
-<style>
-/* ============ TOKENS ============ */
+<link rel="dns-prefetch" href="https://i.ytimg.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600&family=JetBrains+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>/* ============ TOKENS ============ */
 :root{
   --heat1:#e6ded0; --heat2:#cfc3ae; --heat3:#a98f74; --heat4:#8b2e22;
   --paper:#f4f1ea; --card:#fbfaf6; --card-2:#efeade;
@@ -357,6 +367,13 @@ p{margin:0}
 /* toast */
 .toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);background:var(--ink);color:var(--paper);padding:9px 16px;font-size:12.5px;opacity:0;pointer-events:none;transition:.25s;z-index:120}
 .toast.on{opacity:1;transform:translate(-50%,0)}
+/* thanh báo ngoại tuyến — chỉ hiện khi mất mạng */
+.net-badge{position:fixed;left:0;right:0;bottom:0;margin:0;z-index:130;text-align:center;
+  padding:6px 14px;background:var(--heat4);color:#fff;font-size:11.5px;letter-spacing:.01em}
+.net-badge[hidden]{display:none}
+.ab-env{margin-top:18px;padding:12px 14px;border:1px solid var(--rule);background:var(--card)}
+.ab-env p{margin:4px 0 0;font-size:12.5px;color:var(--ink-2)}
+@media print{.net-badge{display:none!important}}
 
 /* ============ RESPONSIVE ============ */
 @media(max-width:1180px){
@@ -2616,19 +2633,7 @@ html[data-theme="pixelnight"] .rs-main:hover{background:var(--card)}
 .sy-count.empty i{color:var(--ink2)}
 
 .foot-v{font-variant-numeric:tabular-nums;letter-spacing:.08em;font-size:11px;color:var(--ink2);border:1px solid color-mix(in srgb,var(--ink) 18%,transparent);padding:1px 6px}
-
 </style>
-<script>
-/* áp màu trước khi vẽ để không nháy trắng */
-try{var P=JSON.parse(localStorage.getItem('vnl9.prefs')||'{}');
-if(P.theme)document.documentElement.setAttribute('data-theme',P.theme);
-if(P.density)document.documentElement.setAttribute('data-density',P.density);
-if(P.radius)document.documentElement.setAttribute('data-radius',P.radius);
-if(P.motion===false)document.documentElement.setAttribute('data-motion','off');
-if(P.fs)document.documentElement.style.setProperty('--fs',String(P.fs));
-if(P.accent)document.documentElement.style.setProperty('--accent',P.accent);
-}catch(e){}
-</script>
 </head>
 <body>
 <a class="skip" href="#main">Tới nội dung chính</a>
@@ -2649,16 +2654,16 @@ if(P.accent)document.documentElement.style.setProperty('--accent',P.accent);
       <em>·</em>
       <a href="#/about">giới thiệu</a>
       <em>·</em>
-      <span class="foot-v" title="phiên bản">v10.1</span>
+      <span class="foot-v" title="phiên bản">v11.0</span>
     </span>
   </div>
 </footer>
 <div class="toast" aria-live="polite"></div>
+<p class="net-badge" id="netBadge" role="status" aria-live="polite" hidden></p>
 <noscript><div class="wrap" style="padding:40px 20px"><h1>Cần bật JavaScript</h1><p>Trang này chạy hoàn toàn phía trình duyệt, không cần máy chủ.</p></div></noscript>
 
-<script>
-/* ===== DỮ LIỆU LỘ TRÌNH ===== */
-const TOPICS=[
+<!-- ===== DỮ LIỆU LỘ TRÌNH ===== -->
+<script>const TOPICS=[
  {id:1,n:'01',name:'Chuyển động cơ học',sub:'Lớp 8 · tốc độ, nhiều vật, tính tương đối',scope:'cut',
   why:'Ảnh 1 có, Ảnh 2 cắt. Vẫn giữ 1 ngày vì đề Chuyên gần như năm nào cũng có câu hai vật gặp nhau hoặc cộng vận tốc.'},
  {id:2,n:'02',name:'Áp suất &amp; lực đẩy Archimedes',sub:'Lớp 8 · rắn, lỏng, khí, bình thông nhau, hợp lực',scope:'cut',
@@ -3328,12 +3333,10 @@ const NOTES=[
 const PAPER_KINDS={chuyen:'Chuyên Lý vào 10',hsg:'HSG tỉnh & thành phố',chuyende:'Chuyên đề & thực nghiệm',hk:'Học kì',pdf:'PDF tải về'};
 const PAPER_BANK=[{"reg": "Bà Rịa – Vũng Tàu","kind": "chuyen","y": 2026,"note": "Đề chính thức","vid": "rymccP4bEJg","tags": [5,6],"src": "Si Ha - Vật Lí Thầy Sĩ Official","vt": "GIẢI ĐỀ THI VÀO 10 CHUYÊN LÍ - BÀ RỊA VŨNG TÀU 2025-2026","star": false},{"reg": "Bình Định","kind": "chuyen","y": 2026,"note": "Câu 6 — điện","vid": "EuklitvjVEE","tags": [6],"src": "Si Ha - Vật Lí Thầy Sĩ Official","vt": "GIẢI ĐỀ THI VÀO 10 CHUYÊN LÍ - BÌNH ĐỊNH 2025-2026 (Câu 6)","star": false},{"reg": "Bình Định","kind": "hsg","y": 2026,"note": "Đề số 4","vid": "Gc4Ida3yxok","tags": [5,6],"src": "Nguyễn Hữu Lộc","vt": "Vật lí 9 chuyên","star": false},{"reg": "Chuyên Hùng Vương — Phú Thọ","kind": "chuyen","y": 2026,"note": "Thi thử","vid": "QDp8uk4c_bA","tags": [5,6],"src": "Lớp Học Vật Lí Hà Đông","vt": "Chữa đề thi thử chuyên Hùng Vương Phú Thọ","star": false},{"reg": "Chuyên KHTN Huế","kind": "chuyen","y": 2026,"note": "Đề chính thức","vid": "u7Y1zGj2-UU","tags": [4,5,6],"src": "Si Ha - Vật Lí Thầy Sĩ Official","vt": "GIẢI ĐỀ THI VÀO 10 CHUYÊN LÍ THPT CHUYÊN KHOA HỌC HUẾ 2025 2026","star": false},{"reg": "Chuyên KHTN Hà Nội","kind": "chuyen","y": 2026,"note": "Khảo sát vào chuyên","vid": "iW6GeOXci2s","tags": [3,5,6],"src": "Thầy Lê Trung Tiến","vt": "Lý 9: Khảo Sát thi vào chuyên Lý KHTN HN 2025-2026","star": true},{"reg": "Chuyên Phan Bội Châu — Nghệ An","kind": "chuyen","y": 2026,"note": "Đề vừa thi","vid": "cgLzbjm_MaE","tags": [5,6],"src": "Lớp Học Vật Lí Hà Đông","vt": "Khai Bút Chữa Đề Chuyên Phan Bội Châu Nghệ An Vừa Thi","star": false},{"reg": "Chuyên Sư phạm Hà Nội","kind": "chuyen","y": 2026,"note": "Thi thử lần 2","vid": "Lj893y7X3n8","tags": [5,6],"src": "Si Ha - Vật Lí Thầy Sĩ Official","vt": "GIẢI ĐỀ THI VÀO 10 CHUYÊN LÍ - THPT Chuyên SPHN - Thi thử Lần 2 2025-2026  #vatlithaysi","star": false},{"reg": "Chuyên ĐHSP Hà Nội","kind": "chuyen","y": 2026,"note": "Thi thử lần 1","vid": "VM97m4GIMR0","tags": [5,6],"src": "Si Ha - Vật Lí Thầy Sĩ Official","vt": "GIẢI ĐỀ THI VÀO 10 CHUYÊN LÍ - THPT CHUYÊN ĐHSP HÀ NỘI - THI THỬ L1 2025-2026","star": false},{"reg": "Hà Nam","kind": "chuyen","y": 2026,"note": "Đề chính thức","vid": "S8X4z9KTNAU","tags": [5,6],"src": "Si Ha - Vật Lí Thầy Sĩ Official","vt": "GIẢI ĐỀ THI VÀO 10 CHUYÊN LÍ THPT CHUYÊN Hà Nam 2025 2026","star": false},{"reg": "Hà Nam","kind": "chuyen","y": 2026,"note": "Bản chữa khác","vid": "QB6-RW5CrEQ","tags": [5,6],"src": "Si Ha - Vật Lí Thầy Sĩ Official","vt": "Giải đề thi vào 10 Chuyên Vật Lí-Hà Nam (2025-2026)","star": false},{"reg": "Hà Tĩnh","kind": "chuyen","y": 2026,"note": "Đề chính thức","vid": "sw_gQrQVe3E","tags": [5,6],"src": "Si Ha - Vật Lí Thầy Sĩ Official","vt": "GIẢI ĐỀ THI VÀO 10 CHUYÊN LÍ - Hà Tĩnh 2025-2026","star": false},{"reg": "Hưng Yên","kind": "hsg","y": 2026,"note": "HSG tỉnh","vid": "6S8ppzn5gxI","tags": [5,6],"src": "Si Ha - Vật Lí Thầy Sĩ Official","vt": "HSG9 Giải đề thi HSG Vật Lí 9 Hưng Yên 2025-2026 (P1)","star": false},{"reg": "PTNK TP.HCM","kind": "chuyen","y": 2026,"note": "Đề chính thức","vid": "6Rf6WTfD1S0","tags": [5,6],"src": "TRUNK YEE PHẠM","vt": "[THI VÀO CHUYÊN LÝ 10 PTNK] - CHỮA ĐỀ 2025 - 2026","star": false},{"reg": "TP.HCM","kind": "hsg","y": 2026,"note": "HSG thành phố","vid": "793w6tothqc","tags": [4,5,6],"src": "Vật Lý- Thầy Hoàng Tiến","vt": "ĐỀ THI HSG 2025-2026 VẬT LÝ TP HCM","star": false},{"reg": "Thanh Hóa","kind": "hsg","y": 2026,"note": "Câu phân loại","vid": "xHYosJGzI-Q","tags": [4,5,6],"src": "Vật Lý- Thầy Hoàng Tiến","vt": "❎CHỮA CÂU PHÂN LOẠI HS ĐỀ THI HSG CẤP TỈNH THANH HÓA 2025-2026.","star": false},{"reg": "Thanh Hóa (chuyên)","kind": "chuyen","y": 2026,"note": "Đề chính thức","vid": "pKp9OaS5w_I","tags": [5,6],"src": "Si Ha - Vật Lí Thầy Sĩ Official","vt": "GIẢI ĐỀ THI VÀO 10 CHUYÊN LÍ THPT CHUYÊN Thanh Hóa 2025-2026","star": false},{"reg": "Thái Bình","kind": "chuyen","y": 2026,"note": "Đề chính thức","vid": "4kIl2GLprE0","tags": [5,6],"src": "Si Ha - Vật Lí Thầy Sĩ Official","vt": "GIẢI ĐỀ THI VÀO 10 CHUYÊN LÍ - Thái Bình 2025-2026","star": true},{"reg": "Vĩnh Phúc","kind": "chuyen","y": 2026,"note": "Đề chính thức","vid": "sY83-Ny-NRM","tags": [5,6],"src": "Si Ha - Vật Lí Thầy Sĩ Official","vt": "GIẢI ĐỀ THI VÀO 10 CHUYÊN LÍ - VĨNH PHÚC 2025-2026 - Phần 1","star": false},{"reg": "Đà Nẵng","kind": "chuyen","y": 2026,"note": "Đề chính thức","vid": "Zxm6szRyFQA","tags": [5,6],"src": "Si Ha - Vật Lí Thầy Sĩ Official","vt": "GIẢI ĐỀ THI VÀO 10 CHUYÊN LÍ - ĐÀ NẴNG 2025-2026","star": false},{"reg": "Đắk Lắk","kind": "chuyen","y": 2026,"note": "Đề chính thức","vid": "P8uO0cu6Fww","tags": [5,6],"src": "Si Ha - Vật Lí Thầy Sĩ Official","vt": "GIẢI ĐỀ THI VÀO 10 CHUYÊN LÍ - ĐĂK LĂK 2025-2026","star": false},{"reg": "Đồng Nai","kind": "chuyen","y": 2026,"note": "Đề chính thức","vid": "fk_iUQmNlg8","tags": [5,6],"src": "Si Ha - Vật Lí Thầy Sĩ Official","vt": "Giải chi tiết Đề thi vào 10 chuyên Lí - Đồng Nai 2025–2026","star": false},{"reg": "Đồng Tháp","kind": "chuyen","y": 2026,"note": "Đề chính thức","vid": "-MN59owdtxc","tags": [5,6],"src": "Si Ha - Vật Lí Thầy Sĩ Official","vt": "Giải chi tiết Đề thi vào 10 chuyên Lí - Đồng Tháp 2025–2026","star": false},{"reg": "Câu quang học — form đề mới","kind": "chuyende","y": 2025,"note": "Câu quang","vid": "IblmRnOFMRk","tags": [4],"src": "Thầy Đỗ Văn Đoàn (Toán Lý THCS.)","vt": "Đề HSG Môn Vật Lý 9 Năm Học 2024-2025","star": false},{"reg": "Câu điện học — HSG 2024–2025","kind": "chuyende","y": 2025,"note": "Câu điện","vid": "L1lua6KC6wQ","tags": [5,6],"src": "Thầy Đỗ Văn Đoàn (Toán Lý THCS.)","vt": "CÂU ĐIỆN HỌC HAY ĐỀ HSG VẬT LÝ 9 NĂM HỌC 2024-2025","star": false},{"reg": "HSG tỉnh — đề 2024–2025","kind": "hsg","y": 2025,"note": "Đề tổng hợp","vid": "SujeoFdG7-Q","tags": [5,6],"src": "Dang Huu Luyen","vt": "ĐỀ HSG Tỉnh Lí 9 THCS 2024 2025","star": false},{"reg": "KHTN 9 — giữa kì 1","kind": "hk","y": 2025,"note": "Đề 1","vid": "2xc5g7b1xrs","tags": [2,3,4,5],"src": "Nguyễn Hữu Lộc","vt": "KHTN 9","star": false},{"reg": "Quảng Nam","kind": "hsg","y": 2025,"note": "HSG tỉnh","vid": "E8Saj7cQMg4","tags": [3,4,5,6],"src": "Si Ha - Vật Lí Thầy Sĩ Official","vt": "Giải đề thi Học sinh giỏi Vật Lí 9 - Quảng Nam 2024-2025 VLTS","star": false},{"reg": "Chuyên Lam Sơn — Thanh Hóa","kind": "chuyen","y": 2024,"note": "Đề 2024","vid": "1bxE-69LEQY","tags": [4,5,6],"src": "Thầy Lê Trung Tiến","vt": "Lý 9: Chuyên Lam Sơn Thanh Hoá 2024","star": true},{"reg": "Đắk Lắk — Trần Quang Diệu","kind": "hsg","y": 2024,"note": "HSG cấp trường","vid": "5iyAh-DA7mM","tags": [2,3],"src": "Hoá Thầy Trương BMT","vt": "HSG VẬT LÝ 9","star": false},{"reg": "Bắc Ninh","kind": "hsg","y": 2023,"note": "HSG tỉnh","vid": "zg6CN05bk0w","tags": [2,3,4],"src": "Lưu Văn Dầu","vt": "Chữa đề học sinh giỏi 9 Bắc Ninh năm 2022 - 2023","star": false},{"reg": "Chuyên KHTN Hà Nội","kind": "chuyen","y": 2023,"note": "Câu 1 — cơ học","vid": "Ln0Do3Xw0mI","tags": [5,6],"src": "Thầy Hà Văn Luận","vt": "Hướng Dẫn Chữa Chi Tiết Đề Thi Vào Lớp 10 Chuyên Lý Trường THPT Chuyên KHTN Năm 2023 - Câu 01","star": true},{"reg": "Hà Nội","kind": "hsg","y": 2023,"note": "HSG thành phố","vid": "SA2Qy2Gc4KE","tags": [2,3,4,5],"src": "Lưu Văn Dầu","vt": "Chữa đề HSG 9 Hà Nội năm 2022 - 2023","star": true},{"reg": "Hà Giang","kind": "hsg","y": 2022,"note": "Câu khó","vid": "b4VqrIGLO7c","tags": [2,3,4],"src": "Thầy Hà Văn Luận","vt": "Chữa Đề Thi Học Sinh Giỏi Cấp Tỉnh Môn Vật Lý 9 Của Tỉnh Hà Giang Năm Học 2021-2022  (Chữa Câu 1)","star": false},{"reg": "Nam Định","kind": "hsg","y": 2022,"note": "Đáp án chính thức","vid": "-3X_NV81yJs","tags": [2,3,5],"src": "Thầy Đỗ Văn Đoàn (Toán Lý THCS.)","vt": "ĐÁP ÁN ĐỀ THI HỌC SINH GIỎI MÔN VẬT LÝ 9 TỈNH NAM ĐỊNH NĂM HỌC 2021-2022","star": true},{"reg": "Ôn tập học kì 1","kind": "hk","y": 2022,"note": "Đề cương + đề mẫu","vid": "HneBju5ZylE","tags": [2,3,5],"src": "THẦY LÂM 1E","vt": "VẬT LÝ 9  - 2022","star": false},{"reg": "Chuyên Lam Sơn — Thanh Hóa","kind": "chuyen","y": 2021,"note": "Thi thử lần 1","vid": "K_6N4ZHz_vo","tags": [5,6],"src": "Vũ Đình Phúc","vt": "Chữa chi tiết đề chuyên Lam Sơn - Thanh Hóa - Lần 1 - Môn Vật Lý - 2021 - Thầy Vũ Đình Phúc","star": false},{"reg": "Chuyên Hùng Vương — Phú Thọ","kind": "chuyen","y": 2020,"note": "Thi thử — Thầy VNA","vid": "p3zZn9p-HFM","tags": [5,6],"src": "Thầy Vũ Ngọc Anh - Chuyên luyện thi Vật Lý","vt": "Đề thi thử chuyên Hùng Vương - Phú Thọ - Giải chi tiết - Thầy VNA","star": false},{"reg": "Chuyên Phan Bội Châu — Nghệ An","kind": "chuyen","y": 2020,"note": "Đề chính thức","vid": "nUJD0bedDzg","tags": [4,5,6],"src": "Thầy Phạm Trung Thông","vt": "CHỮA ĐỀ THI - ĐỀ CHUYÊN PHAN BỘI CHÂU, NGHỆ AN","star": false},{"reg": "Chuyên Trần Phú — Hải Phòng","kind": "chuyen","y": 2020,"note": "Thi thử lần 1","vid": "BvIKo2V_baM","tags": [4,5,6],"src": "Thầy Phạm Trung Thông","vt": "CHỮA ĐỀ THI - ĐỀ CHUYÊN TRẦN PHÚ, HẢI PHÒNG LẦN 1/2020","star": false},{"reg": "Đề cuối kỳ 1","kind": "hk","y": 2020,"note": "Chữa chi tiết","vid": "TKgi5UeYfLw","tags": [2,3,4,5],"src": "Học cùng Ms.Tuyết","vt": "Vật Lý 9 - Giải Đề Thi Cuối Kỳ 1 Môn Vật Lý Lớp 9","star": false},{"reg": "Chuyên Hà Nội","y": 2019,"note": "Đề + đáp án","drive": "1DiWLGld9QWsncw_Iyi-sv08663D9xoO4","tags": [5,6],"vt": "Đáp án + đề thi vào lớp 10 chuyên Hà Nội môn Vật Lý 2019","kind": "pdf","star": false,"src": "Google Drive"},{"reg": "Chuyên Lê Khiết — Quảng Ngãi","y": 2019,"note": "Đề chính thức","drive": "1WDl5Ks1OZUFv76Pej6jdlQs5AC0z2AIi","tags": [5,6],"vt": "Đề thi vào lớp 10 Lý chuyên Lê Khiết Quảng Ngãi 2019","kind": "pdf","star": false,"src": "Google Drive"},{"reg": "Chuyên Nguyễn Trãi — Hải Dương","y": 2019,"note": "Đề chính thức","drive": "18sdegLx6wfpDq4tz4ShUd7vn76jtidKQ","tags": [5,6],"vt": "Đề thi vào lớp 10 môn Vật lí chuyên Nguyễn Trãi — Hải Dương 2019","kind": "pdf","star": false,"src": "Google Drive"},{"reg": "Chuyên Thái Bình","y": 2019,"note": "Đề + đáp án","drive": "1NeOwFzHoPDDsP7nujqnN3XIDrqna6o_d","tags": [5,6],"vt": "Đáp án + đề thi Vật lí vào 10 chuyên Thái Bình 2019","kind": "pdf","star": false,"src": "Google Drive"},{"reg": "Cấp huyện — bộ 01–05","kind": "hsg","y": 2019,"note": "5 đề liên tiếp","vid": "Ip4jbauL0ug","tags": [2,3,4,5],"src": "Kiêm Phạm Văn","vt": "ĐỀ THI HSG VẬT LÝ 9 CẤP HUYỆN 01 - 05","star": false},{"reg": "PTNK TP.HCM","y": 2019,"note": "Đề + đáp án","drive": "1ntWPIrxsfvoGfDnlzpAk0Pq_CgwfqPuq","tags": [5,6],"vt": "Đáp án + đề thi vào lớp 10 môn Vật lí THPT Năng khiếu HCM 2019","kind": "pdf","star": false,"src": "Google Drive"},{"reg": "Bắc Ninh","kind": "hsg","y": 2017,"note": "Câu 1 — cơ học","vid": "6fAcna2GHCk","tags": [3],"src": "Si Ha - Vật Lí Thầy Sĩ Official","vt": "Giải đề thi HSG Vật Lí 9   Tỉnh Bắc Ninh NH 2016 2017 Câu 1   Cơ học","star": false},{"reg": "Hà Nội — THCS Kim Thư","kind": "hsg","y": 2014,"note": "HSG cấp trường","vid": "_NX1CPdbekE","tags": [3,4],"src": "Hoá Thầy Trương BMT","vt": "HSG VẬT LÝ 9","star": false},{"reg": "Gương phẳng — thị trường","kind": "chuyende","y": 0,"note": "Quang hình","vid": "fUe5HdQsBbA","tags": [3],"src": "NPH - CHIA SẺ TRI THỨC","vt": "[HSG Lý 8, 9] Một người cao 1,65m đứng đối diện với một gương phẳng hình chữ nhật","star": false},{"reg": "Mạch cầu dây — biến trở","kind": "chuyende","y": 0,"note": "Chuyên đề điện","vid": "BUqt5loiOrI","tags": [5,6],"src": "Thầy Đỗ Văn Đoàn (Toán Lý THCS.)","vt": "Bồi Dưỡng HSG Vật Lý 9","star": true},{"reg": "Thấu kính — ảnh thật, dịch chuyển","kind": "chuyende","y": 0,"note": "Quang hình","vid": "z1vVZ5k0iaw","tags": [4],"src": "Thầy Kiệt - LVL","vt": "ÔN THI HSG VẬT LÝ 9/THẤU KÍNH/ DẠNG 2 CHỨNG MINH ẢNH THẬT VÀ VẬT DỊCH CHUYỂN CÙNG CHIỀU","star": false},{"reg": "Thực nghiệm — các bài toán hay","kind": "chuyende","y": 0,"note": "Kỹ năng thực nghiệm","vid": "Neuc8_tKtL0","tags": [2,5,6],"src": "Thầy Đỗ Văn Đoàn (Toán Lý THCS.)","vt": "Bồi dưỡng HSG vật lý 8,9","star": true},{"reg": "Thực nghiệm — đo khối lượng riêng","kind": "chuyende","y": 0,"note": "Kỹ năng thực nghiệm","vid": "pgMu5IZddF4","tags": [1,2,5],"src": "Thầy Đỗ Văn Đoàn (Toán Lý THCS.)","vt": "Bồi Dưỡng HSG Vật Lý 9","star": false}];
 const PAPER_HUBS=[{"t": "48 đề thi tham khảo HSG Vật lí 9","src": "Thư Viện Vật Lý","u": "https://thuvienvatly.com/download/51961","d": "PDF 2,6 MB · tải trực tiếp"},{"t": "Bộ 30 đề thi chuyên Lý vào lớp 10 (có đáp án)","src": "DeThi.edu.vn","u": "https://dethi.edu.vn/bo-30-de-thi-chuyen-ly-vao-lop-10-co-dap-an-29663/","d": "149 trang · tải về"},{"t": "50 đề HSG KHTN 9 — phân môn Vật lí 2024–2025","src": "VnDoc","u": "https://vndoc.com/50-de-thi-hoc-sinh-gioi-khtn-9-phan-mon-vat-li-nam-2024-2025-364391","d": "Bộ đề cả nước"},{"t": "Kho đề Vật lí 9 — đề tỉnh, đề quận, đề HK","src": "dethi.net.vn","u": "https://dethi.net.vn/de-thi/vat-li-9/","d": "Duyệt theo tỉnh và năm"},{"t": "Bộ đề HSG KHTN 9 các tỉnh (word + pdf)","src": "vnteach","u": "https://www.vnteach.com/tai-lieu-hsg-vat-li-9","d": "300+ đề"},{"t": "Bộ 10 đề tuyển sinh vào 10 chuyên Vật lí","src": "Thư viện Đề thi","u": "https://thuviendethi.com/bo-10-de-tuyen-sinh-vao-lop-10-chuyen-mon-vat-ly-54250/","d": "PDF 16 trang"}];
-
 </script>
 
-<script>
-/* ===== NGÂN HÀNG HỎI ĐÁP & TRẮC NGHIỆM ===== */
-/* =========================================================
+<!-- ===== NGÂN HÀNG HỎI ĐÁP & TRẮC NGHIỆM ===== -->
+<script>/* =========================================================
    NGÂN HÀNG HỎI ĐÁP — 82 câu, phủ 12 chủ đề
    t: topic id · q: câu hỏi · k: từ khoá · a: trả lời
 ========================================================= */
@@ -4573,13 +4576,22 @@ const SOLVE_EXTRA4 = [
 {t: 6, title: "Công suất trên biến trở đạt cực đại", problem: "Nguồn E = 12 V, r = 2 Ω nối với biến trở R. Tìm R để công suất tiêu thụ trên biến trở lớn nhất và tính giá trị lớn nhất đó.", steps: ["Dòng mạch chính: I = E/(R + r).", "Công suất trên biến trở: P = I²R = E²R/(R + r)².", "Chia cả tử và mẫu cho R: P = E²/(R + 2r + r²/R). Mẫu nhỏ nhất khi R = r²/R, tức R = r.", "Vậy P cực đại khi R = r = 2 Ω.", "Giá trị cực đại P_max = E²/(4r) = 144/8 = 18 W; khi đó U_R = E/2 = 6 V và hiệu suất của nguồn chỉ 50%.", "Nhận xét: muốn hiệu suất cao thì phải chọn R ≫ r, đánh đổi với công suất ra."], answer: "R = 2 Ω; P_max = 18 W"}
 ];
 SOLVE.push(...SOLVE_EXTRA4);
-
 </script>
 
-<script>
-/* ===== ỨNG DỤNG ===== */
-/* phiên bản — sinh từ src/build.py */
-const APP_VERSION = '10.1';
+<!-- ===== TUỲ BIẾN GIAO DIỆN TRƯỚC KHI VẼ ===== -->
+<script>/* áp màu trước khi vẽ để không nháy trắng */
+try{var P=JSON.parse(localStorage.getItem('vnl9.prefs')||'{}');
+if(P.theme)document.documentElement.setAttribute('data-theme',P.theme);
+if(P.density)document.documentElement.setAttribute('data-density',P.density);
+if(P.radius)document.documentElement.setAttribute('data-radius',P.radius);
+if(P.motion===false)document.documentElement.setAttribute('data-motion','off');
+if(P.fs)document.documentElement.style.setProperty('--fs',String(P.fs));
+if(P.accent)document.documentElement.style.setProperty('--accent',P.accent);
+}catch(e){}</script>
+
+<!-- ===== ỨNG DỤNG ===== -->
+<script>/* phiên bản — sinh từ src/build.py */
+const APP_VERSION = '11.0';
 /* =========================================================
    KHO LƯU BỀN — không phụ thuộc cache
    4 tầng:
@@ -5212,7 +5224,7 @@ function renderDay(n){
 ========================================================= */
 function playerHTML(id,title,meta){
   return `<div class="player" data-vid="${id}">
-    <img class="thumb" src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt="" onerror="this.style.display='none'">
+    <img class="thumb" src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt="" loading="lazy" decoding="async" data-thumb>
     <div class="scrim"></div>
     <button class="poster" data-play="${id}" data-title="${esc(title)}">
       <span class="play" aria-hidden="true"></span>
@@ -5222,6 +5234,13 @@ function playerHTML(id,title,meta){
     </button>
   </div>`;
 }
+/* Ảnh bìa YouTube có thể 404 (video bị gỡ). `error` không bốc bọt nên phải
+   bắt ở pha capture; KHÔNG gắn thuộc tính xử lý sự kiện trong HTML vì CSP cấm. */
+document.addEventListener('error', e => {
+  const t = e.target;
+  if (t && t.tagName === 'IMG' && t.hasAttribute('data-thumb')) t.style.display = 'none';
+}, true);
+
 function mountPlayer(host,id,title,meta){
   host.innerHTML=playerHTML(id,title,meta);
   const b=$('.poster',host);
@@ -7201,12 +7220,10 @@ function mountTopicDrills(root) {
     };
   });
 }
-
 </script>
 
-<script>
-/* ===== MÁY GIẢI · MẠCH · NHẠC · POMODORO · PHÒNG THÍ NGHIỆM ===== */
-/* =========================================================
+<!-- ===== MÁY GIẢI · MẠCH · NHẠC · POMODORO · PHÒNG THÍ NGHIỆM ===== -->
+<script>/* =========================================================
    SOLVER ENGINE
    Pure calculators (no network, no AI) + auto diagram drawing.
    Code in English. All user-facing strings in Vietnamese.
@@ -13780,10 +13797,46 @@ function renderAbout() {
         <a class="btn sm" href="${OWNER.ghUrl}" target="_blank" rel="noopener">GitHub của tác giả ↗</a>
         <a class="btn ghost sm" href="#/">Về trang chủ</a>
         <a class="btn ghost sm" href="#/study">Học hôm nay</a>
+        <button class="btn ghost sm" id="abVer">Kiểm tra bản mới</button>
+      </div>
+
+      <div class="ab-env" id="abEnv">
+        <span class="kicker">Bản đang chạy</span>
+        <p>v${APP_VERSION} · dữ liệu lưu trong máy bạn${location.protocol === 'file:' ? ' · đang mở trực tiếp từ tệp' : ''}</p>
       </div>
     </div>
   </section>`;
   document.title = 'Giới thiệu · ' + OWNER.tag;
+
+  /* Kiểm tra bản mới qua Cloudflare Pages Function /__version.
+     Không có mạng hoặc mở bằng file:// thì im lặng, không làm phiền. */
+  const btn = $('#abVer'), env = $('#abEnv');
+  if (btn) btn.onclick = async () => {
+    btn.disabled = true; btn.textContent = 'Đang kiểm tra…';
+    try {
+      const r = await fetch('/__version', { headers: { Accept: 'application/json' } });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const d = await r.json();
+      if (d.version === APP_VERSION) {
+        btn.textContent = 'Đã là bản mới nhất ✓';
+        toast('Bạn đang dùng bản mới nhất (v' + APP_VERSION + ')');
+      } else {
+        btn.textContent = 'Có bản v' + d.version + ' — nạp lại';
+        btn.disabled = false;
+        btn.onclick = () => location.reload();
+        toast('Có bản mới v' + d.version + ' — bấm để nạp lại');
+      }
+      if (env) env.insertAdjacentHTML('beforeend',
+        `<p class="sy-note">Máy chủ: v${esc(d.version)} · build ${esc(String(d.build).slice(0, 12))}` +
+        (d.commit ? ` · commit ${esc(String(d.commit).slice(0, 7))}` : '') + `</p>`);
+    } catch (e) {
+      btn.disabled = false;
+      btn.textContent = 'Kiểm tra bản mới';
+      toast(location.protocol === 'file:'
+        ? 'Mở trực tiếp từ tệp nên không kiểm tra được — hãy xem bản trên web'
+        : 'Không kiểm tra được — có thể đang ngoại tuyến');
+    }
+  };
 }
 
 /* đưa một tuần thời khoá biểu vào lịch (tạo việc có giờ) */
@@ -15674,7 +15727,89 @@ function bindStage() {
     }, 1);
   }
 }
+</script>
 
+<!-- ===== CLOUDFLARE — service worker & trạng thái mạng ===== -->
+<script>/* =========================================================
+   CLOUDFLARE — service worker, trạng thái mạng, cập nhật
+   Trang này không cần máy chủ để học, nhưng khi chạy trên
+   Cloudflare Pages thì nên:
+     · cài service worker để mở lại là dùng, kể cả khi mất mạng
+     · báo cho người dùng biết khi đang offline
+     · báo khi có bản mới đã deploy (ETag đổi → SW phát hiện)
+   ========================================================= */
+const CF = (() => {
+  let swReady = false, online = navigator.onLine !== false;
+
+  /* ---------- đăng ký service worker ---------- */
+  function register() {
+    if (!('serviceWorker' in navigator)) return;
+    if (!/^https?:$/.test(location.protocol)) return;   /* file:// thì bỏ qua */
+    navigator.serviceWorker.register('sw.js', { scope: './' })
+      .then(reg => {
+        swReady = true;
+        /* có bản mới đang chờ → hỏi người dùng có muốn nạp lại */
+        reg.addEventListener('updatefound', () => {
+          const w = reg.installing;
+          if (!w) return;
+          w.addEventListener('statechange', () => {
+            if (w.state === 'installed' && navigator.serviceWorker.controller) {
+              offerUpdate();
+            }
+          });
+        });
+      })
+      .catch(() => { swReady = false; });
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (CF._reloading) return;
+      CF._reloading = true;
+      location.reload();
+    });
+  }
+
+  function offerUpdate() {
+    const d = document.createElement('div');
+    d.className = 'overlay ui-ov';
+    d.innerHTML = `<div class="ov-panel ui-mini" role="alertdialog" aria-label="Có bản mới">
+      <div class="cal-mh"><span class="kicker">Đã có bản mới</span><span class="grow"></span></div>
+      <div class="cal-mb"><p class="ui-msg">Trang vừa được cập nhật. Nạp lại để dùng bản mới nhất?
+        Tiến độ, thẻ và thời khoá biểu của bạn vẫn còn nguyên.</p></div>
+      <div class="cal-mf"><span class="grow"></span>
+        <button class="btn ghost sm" id="cfLater">Để sau</button>
+        <button class="btn sm" id="cfNow">Nạp lại</button></div>
+    </div>`;
+    document.body.appendChild(d);
+    const close = () => d.remove();
+    d.querySelector('#cfLater').onclick = close;
+    d.querySelector('#cfNow').onclick = close;
+    d.onclick = e => { if (e.target === d) close(); };
+    /* Trạng thái đang chờ: nạp lại trang sẽ bật bản mới */
+    d.querySelector('#cfNow').addEventListener('click', () => location.reload());
+  }
+
+  /* ---------- trạng thái mạng ---------- */
+  function paint() {
+    const el = document.getElementById('netBadge');
+    if (!el) return;
+    el.hidden = online;
+    el.textContent = 'Đang ngoại tuyến — trang vẫn chạy, dữ liệu lưu trong máy';
+  }
+
+  function init() {
+    register();
+    window.addEventListener('online', () => { online = true; paint(); toast('Đã có mạng trở lại'); });
+    window.addEventListener('offline', () => { online = false; paint(); });
+    paint();
+  }
+
+  return { init, paint, get online() { return online; }, get sw() { return swReady; } };
+})();
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => setTimeout(CF.init, 300));
+} else {
+  setTimeout(CF.init, 300);
+}
 </script>
 </body>
 </html>

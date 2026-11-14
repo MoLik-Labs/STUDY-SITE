@@ -49,7 +49,10 @@ console.log(`css: ${open} khối · ${(Buffer.byteLength(css) / 1024).toFixed(0)
   .forEach(s => { if (!html.includes(s)) failWith(`thiếu dấu hiệu nhận diện: ${s}`); });
 
 /* ---------- 4. cấm hộp thoại gốc của trình duyệt ---------- */
-const jsFiles = fs.readdirSync(SRC).filter(f => f.endsWith('.js'));
+/* *.template.js được chép sang dist/ chứ không nhúng vào trang, nên không
+   tham gia kiểm tra mã chết / hộp thoại của bản chạy. */
+const jsFiles = fs.readdirSync(SRC).filter(f => f.endsWith('.js') && !f.endsWith('.template.js'));
+const templateFiles = fs.readdirSync(SRC).filter(f => f.endsWith('.template.js'));
 jsFiles.forEach(f => {
   const raw = fs.readFileSync(path.join(SRC, f), 'utf8');
   /* bỏ chú thích khối và chú thích dòng, giữ nguyên số dòng để báo lỗi đúng chỗ */
@@ -79,6 +82,9 @@ routes.forEach(({ route, fn }) => {
   }
 });
 console.log(`router: ${routes.length} tuyến · ${new Set(routes.map(r => r.fn)).size} hàm render`);
+templateFiles.forEach(f => {
+  if (!buildPy.includes(f)) failWith(`src/${f} không được src/build.py dùng — mẫu chết?`);
+});
 
 /* ---------- 7. hàm khai báo nhưng không ai gọi ---------- */
 const bundle = scripts.join('\n');

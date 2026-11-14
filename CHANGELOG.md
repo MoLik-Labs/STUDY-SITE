@@ -1,7 +1,55 @@
 # Changelog
 
 Định dạng theo [Keep a Changelog](https://keepachangelog.com/vi/1.1.0/), phiên bản theo [SemVer](https://semver.org/lang/vi/).
-Mọi thay đổi lớn đều có kiểm thử: `node tools/check.js`, `node tests/smoke.js`, `node tests/interaction.js`.
+Mọi thay đổi lớn đều có kiểm thử: `npm test` (check tĩnh + CSP + Pages Function + 83 bước jsdom).
+
+## [11.0.0] — 2026-11-14
+
+Bản dành cho **Cloudflare Pages**: bảo mật bằng CSP nghiêm, cache đúng, chạy offline, có một
+endpoint backend thật.
+
+### Bảo mật
+- **Content-Security-Policy sinh tự động.** `src/build.py` băm SHA-256 từng khối `<script>` và
+  `<style>` rồi nhúng hash vào `<meta http-equiv>`. `script-src` **không có `'unsafe-inline'`**,
+  không có `'unsafe-eval'`, `object-src 'none'`, `base-uri 'none'`, `form-action 'none'`,
+  `connect-src 'self'`. Kiểm bằng `tests/csp.js` (25 bước) — sai một hash là CI chặn.
+- Bỏ thuộc tính `onerror="…"` còn sót trong thẻ ảnh bìa (CSP nghiêm chặn inline handler);
+  thay bằng trình xử lý bắt ở pha capture.
+- `_headers`: `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`
+  (tắt camera/mic/vị trí/thanh toán), `Cross-Origin-Opener-Policy`, `Cross-Origin-Resource-Policy`.
+- `img-src`/`frame-src` chỉ mở đúng `i.ytimg.com` và `youtube-nocookie.com`.
+
+### Hiệu suất
+- **Service worker** (`sw.js`, sinh từ `src/sw.template.js`): precache bản chạy, điều hướng
+  trả cache trước và cập nhật nền → **lần mở thứ hai 0 yêu cầu mạng, mất mạng vẫn dùng được**.
+  Tên cache chứa phiên bản nên mỗi deploy là một cache mới.
+- **Giảm 17 → 10 độ đậm font**: Be Vietnam Pro 400·600, JetBrains Mono 400·500, Lora 400·600 + italic —
+  bớt 7 tệp font phải tải, chữ vẫn đẹp (trình duyệt tự chọn độ đậm gần nhất).
+- Ảnh bìa video `loading="lazy" decoding="async"` — không tải 236 ảnh YouTube cùng lúc.
+- `Cache-Control: public, max-age=0, must-revalidate` cho `index.html`: sau khi deploy người dùng
+  nhận bản mới ngay nhưng chỉ tốn `304` vài chục byte thay vì tải lại ~1 MB.
+- `dns-prefetch` cho `i.ytimg.com`, `theme-color` cho chế độ sáng/tối.
+
+### Cloudflare Pages
+- **Pages Function `functions/__version.js`** — `GET /__version` trả `{version, build, at, commit}`,
+  có ETag/`304`, trả `405` cho method khác, và vẫn trả lời được khi không đọc nổi `index.html`.
+  Đọc phiên bản từ chính `index.html` đã deploy nên không phải sửa số ở hai nơi.
+- **`_redirects`**: `/study`, `/cards`, `/timetable`… trả `index.html` (200) — trước đây gõ thẳng
+  đường dẫn là 404 vì router dùng hash.
+- **`--dist`**: build chỉ xuất `index.html`, `_headers`, `_redirects`, `sw.js` ra `dist/` →
+  không đưa `src/`, `tests/`, `docs/` lên web công khai.
+- `wrangler.toml` + `npm run deploy`.
+- Nút **“Kiểm tra bản mới”** trong `#/about` gọi `/__version`, báo khi có bản mới và hiện
+  phiên bản máy chủ. Không có mạng / mở bằng `file://` thì im lặng, không làm phiền.
+- Thanh báo **ngoại tuyến** ở đáy trang khi mất mạng.
+- Hộp thoại “Đã có bản mới — Nạp lại” khi service worker phát hiện bản mới (không tự reload
+  để không mất bài đang làm).
+
+### Kiểm thử
+- `tests/csp.js` **25** · `tests/functions.js` **18** · `tests/smoke.js` **51** ·
+  `tests/interaction.js` **32** → **126 bước**, `npm test` chạy hết, không cần trình duyệt.
+- CI thêm hai bước: kiểm CSP và chạy thử Pages Function.
+- Bỏ `pages.yml` của GitHub (không deploy hai nơi nữa).
 
 ## [10.1.0] — 2026-11-14
 

@@ -581,10 +581,46 @@ function renderAbout() {
         <a class="btn sm" href="${OWNER.ghUrl}" target="_blank" rel="noopener">GitHub của tác giả ↗</a>
         <a class="btn ghost sm" href="#/">Về trang chủ</a>
         <a class="btn ghost sm" href="#/study">Học hôm nay</a>
+        <button class="btn ghost sm" id="abVer">Kiểm tra bản mới</button>
+      </div>
+
+      <div class="ab-env" id="abEnv">
+        <span class="kicker">Bản đang chạy</span>
+        <p>v${APP_VERSION} · dữ liệu lưu trong máy bạn${location.protocol === 'file:' ? ' · đang mở trực tiếp từ tệp' : ''}</p>
       </div>
     </div>
   </section>`;
   document.title = 'Giới thiệu · ' + OWNER.tag;
+
+  /* Kiểm tra bản mới qua Cloudflare Pages Function /__version.
+     Không có mạng hoặc mở bằng file:// thì im lặng, không làm phiền. */
+  const btn = $('#abVer'), env = $('#abEnv');
+  if (btn) btn.onclick = async () => {
+    btn.disabled = true; btn.textContent = 'Đang kiểm tra…';
+    try {
+      const r = await fetch('/__version', { headers: { Accept: 'application/json' } });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const d = await r.json();
+      if (d.version === APP_VERSION) {
+        btn.textContent = 'Đã là bản mới nhất ✓';
+        toast('Bạn đang dùng bản mới nhất (v' + APP_VERSION + ')');
+      } else {
+        btn.textContent = 'Có bản v' + d.version + ' — nạp lại';
+        btn.disabled = false;
+        btn.onclick = () => location.reload();
+        toast('Có bản mới v' + d.version + ' — bấm để nạp lại');
+      }
+      if (env) env.insertAdjacentHTML('beforeend',
+        `<p class="sy-note">Máy chủ: v${esc(d.version)} · build ${esc(String(d.build).slice(0, 12))}` +
+        (d.commit ? ` · commit ${esc(String(d.commit).slice(0, 7))}` : '') + `</p>`);
+    } catch (e) {
+      btn.disabled = false;
+      btn.textContent = 'Kiểm tra bản mới';
+      toast(location.protocol === 'file:'
+        ? 'Mở trực tiếp từ tệp nên không kiểm tra được — hãy xem bản trên web'
+        : 'Không kiểm tra được — có thể đang ngoại tuyến');
+    }
+  };
 }
 
 /* đưa một tuần thời khoá biểu vào lịch (tạo việc có giờ) */

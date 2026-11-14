@@ -5,7 +5,7 @@
 > giải mạch điện, đồng hồ tập trung… Tất cả nằm trong **một tệp `index.html`**, chạy offline, dữ liệu lưu trong máy bạn.
 
 <p>
-  <img alt="version" src="https://img.shields.io/badge/version-10.1-bordeaux">
+  <img alt="version" src="https://img.shields.io/badge/version-11.0-bordeaux">
   <img alt="single file" src="https://img.shields.io/badge/build-1%20tệp%20HTML-1f1c17">
   <img alt="offline" src="https://img.shields.io/badge/offline-100%25-4a6b3a">
   <img alt="license" src="https://img.shields.io/badge/license-MIT-8b2e22">
@@ -90,28 +90,57 @@ python3 -m http.server 8124   # mở http://localhost:8124
 Chỉ cần **Python 3** để build. `tools/check.js` chạy với **Node 18+** và không cần gì thêm;
 hai bộ test trong `tests/` cần `jsdom` (`npm install --no-save jsdom`).
 
-### Đưa lên GitHub Pages
-1. Đẩy repo lên GitHub (nhánh `main`).
-2. **Settings → Pages → Build and deployment → Source: GitHub Actions.**
-3. Workflow `.github/workflows/pages.yml` sẽ tự deploy mỗi lần push; địa chỉ:
-   `https://<tên-tài-khoản>.github.io/<tên-repo>/`
+### Đưa lên Cloudflare Pages (khuyên dùng)
 
-> Nếu bạn đặt tên repo khác `vat-li-9-study-os`, nhớ sửa `repository.url` trong `package.json` và dòng này cho khớp.
-> Tài khoản GitHub hiển thị `github.com/Ngg.Khaiz` — nếu username thật khác (GitHub không cho dấu chấm), chỉ cần đổi phần link, tag `@nggkhaiz` trong giao diện giữ nguyên.
-> Workflow `pages.yml` **tự chạy `src/build.py`** trước khi deploy, nên trang công khai luôn khớp mã nguồn.
+Cloudflare Pages miễn phí, có CDN toàn cầu, tự nén Brotli, tự cấp HTTPS và **có chạy backend**
+qua Pages Functions. Cách nhanh nhất:
 
----
+1. **Cloudflare Dashboard → Workers & Pages → Create → Pages → Connect to Git**, chọn repo này.
+2. Điền:
+
+   | Ô | Giá trị |
+   |---|---|
+   | Framework preset | `None` |
+   | Build command | `python3 src/build.py --dist` |
+   | Build output directory | `dist` |
+
+3. **Save and Deploy.** Mỗi lần push lên `main` là tự deploy lại.
+
+Hoặc deploy từ máy: `npm run deploy`.
+
+Bản deploy chỉ chứa `index.html`, `_headers`, `_redirects`, `sw.js` — **không** đưa `src/`,
+`tests/`, `docs/` lên web.
+
+**Chi tiết đầy đủ:** [`docs/CLOUDFLARE.md`](docs/CLOUDFLARE.md) — CSP, cache, service worker,
+Pages Functions, giới hạn của Pages và sự cố thường gặp.
+
+### Đưa lên GitHub Pages (vẫn dùng được)
+
+Trang là tệp tĩnh nên GitHub Pages cũng chạy: **Settings → Pages → Source: Deploy from a branch**,
+chọn nhánh `main` và thư mục `/` (tệp `index.html` ở gốc repo). Khác biệt so với Cloudflare:
+không có `_headers` (nên không có header bảo mật và cache tuỳ chỉnh) và không có Pages Functions
+(nên nút “Kiểm tra bản mới” sẽ báo không kiểm tra được).
+
+> Workflow `pages.yml` của GitHub đã được bỏ để không deploy hai nơi. Nếu muốn quay lại GitHub Pages,
+> chỉ cần bật lại trong Settings — `index.html` ở gốc repo luôn là bản dựng mới nhất.
 
 ## Cấu trúc
 
 ```
 .
-├── index.html              # BẢN CHẠY — một tệp, ~975 KB, mở là dùng
+├── index.html              # BẢN CHẠY — một tệp, ~985 KB, mở là dùng
+├── _headers                # Cloudflare Pages — sinh tự động, đừng sửa tay
+├── _redirects              # Cloudflare Pages — sinh tự động, đừng sửa tay
+├── wrangler.toml           # cấu hình deploy (tuỳ chọn)
+├── functions/
+│   └── __version.js        # Cloudflare Pages Function: GET /__version
 ├── src/
-│   ├── build.py            # ghép mọi mô-đun thành index.html
+│   ├── build.py            # ghép mọi mô-đun + sinh CSP hash + _headers/_redirects/sw.js
 │   ├── base.html           # khung HTML gốc + dữ liệu lộ trình 52 ca
 │   ├── app.js              # router, trang chủ, đọc bài, tìm kiếm ⌘K
 │   ├── app.css             # toàn bộ giao diện + 13 theme
+│   ├── cloudflare.js       # service worker, trạng thái ngoại tuyến
+│   ├── sw.template.js      # mẫu service worker (chép vào dist/ khi build)
 │   ├── store.js            # lưu bền 4 tầng: localStorage · IndexedDB · cookie · tệp
 │   ├── schedule.js         # thời khoá biểu · lịch · .ics · about
 │   ├── study.js            # Study OS: thẻ, luyện đề, kế hoạch, tiến độ, hộp thoại
@@ -122,17 +151,21 @@ hai bộ test trong `tests/` cần `jsdom` (`npm install --no-save jsdom`).
 │   ├── settings.js         # theme + màu nhấn
 │   └── …                   # nội dung, công cụ, nhạc, pomodoro, giáo viên
 ├── tests/
+│   ├── csp.js              # 25 bước: hash CSP, _headers, _redirects, sw.js
+│   ├── functions.js        # 18 bước: chạy thật Pages Function /__version
 │   ├── smoke.js            # 51 bước: nạp trang, 35 tuyến, API lõi, không lỗi JS
 │   └── interaction.js      # 32 bước: dữ liệu, hộp thoại, sao lưu, .ics, luồng học
 ├── tools/
 │   ├── check.js            # kiểm tra tĩnh (CI dùng cái này)
+│   ├── authoring/          # script sinh nội dung (cần mạng), không tham gia build
 │   └── qa/                 # bộ test cũ chạy trong trình duyệt thật
 ├── docs/
+│   ├── CLOUDFLARE.md       # triển khai, bảo mật, hiệu suất, giới hạn
 │   ├── HANDOFF.md          # bàn giao kỹ thuật: schema, route, bài học
 │   ├── SPRINT-LOG.md       # nhật ký các sprint
 │   ├── archive/            # bản kế hoạch HTML gốc + nhật ký sprint 3–5
 │   └── img/                # ảnh chụp cho README
-└── .github/workflows/      # check.yml (CI) · pages.yml (deploy, tự build lại)
+└── .github/workflows/      # check.yml (CI chặn merge)
 ```
 
 ## Dữ liệu của bạn
@@ -152,15 +185,19 @@ hai bộ test trong `tests/` cần `jsdom` (`npm install --no-save jsdom`).
 
 ## Kiểm thử
 
+`npm test` chạy toàn bộ — **126 bước**, không cần trình duyệt.
+
 | Bộ | Cách chạy | Phạm vi | Kết quả |
 |---|---|---|---|
-| `tools/check.js` | `npm run check` | cú pháp JS, cân bằng CSS, cấm `prompt/confirm/alert`, mô-đun chết, router ↔ hàm render | ✓ |
+| `tools/check.js` | `npm run check` | cú pháp JS, cân bằng CSS, cấm `prompt/confirm/alert`, mã chết, router ↔ hàm render | ✓ |
+| `tests/csp.js` | `node tests/csp.js` | **hash CSP khớp từng khối script/style**, không `unsafe-inline` cho script, `_headers`, `_redirects`, `sw.js` đúng phiên bản | **25/25** |
+| `tests/functions.js` | `node tests/functions.js` | chạy thật `functions/__version.js`: JSON, ETag, 304, 405, chịu lỗi | **18/18** |
 | `tests/smoke.js` | `node tests/smoke.js` | 35 tuyến × jsdom, dữ liệu lõi, `esc/import/uid` | **51/51** |
 | `tests/interaction.js` | `node tests/interaction.js` | tên có dấu nháy, `uiConfirm`, xoay vòng sao lưu, `.ics`, thẻ → kế hoạch → thi thử, theme, bẫy Tab | **32/32** |
-| `tools/qa/*.js` | `playwright-cli` (trình duyệt thật) | thời khoá biểu, Study OS, trường học, bảng vẽ, mô phỏng, quét 30 tuyến UI | 21/21 · 21/21 · 26/26 · 17/17 · 19/19 · audit |
+| `tools/qa/*.js` | `playwright-cli` (trình duyệt thật) | giao diện: thời khoá biểu, Study OS, trường học, bảng vẽ, mô phỏng, quét 30 tuyến | 21/21 · 21/21 · 26/26 · 17/17 · 19/19 · audit |
 
-`tests/` chạy headless trong CI. `tools/qa/` cần trình duyệt thật — dùng khi sửa giao diện,
-xem `docs/HANDOFF.md §7`.
+`tests/` cần `jsdom` (`npm install --no-save jsdom`); riêng `tests/csp.js` và `tests/functions.js`
+chạy được **không cần cài gì**. `tools/qa/` cần trình duyệt thật — xem `docs/HANDOFF.md §7`.
 
 ## Lộ trình tiếp theo
 

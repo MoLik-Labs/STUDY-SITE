@@ -1,13 +1,24 @@
 # -*- coding: utf-8 -*-
-"""Ghép app: lấy dữ liệu từ bản kế hoạch v4 + Q&A/quiz + giao diện mới -> 1 file HTML."""
-import io, os, re, sys
+"""Ghép app: lấy dữ liệu từ bản kế hoạch v4 + Q&A/quiz + giao diện mới -> 1 file HTML.
+
+Bản dựng phục vụ Cloudflare Pages:
+  · nhúng CSP với SHA-256 của từng khối <script> và <style> (không cần 'unsafe-inline')
+  · sinh BUILD_ID (băm nội dung) để đặt ?v= trên font và làm ETag cho /__version
+  · ghi _headers (bảo mật + cache) và _redirects (SPA/router bằng hash)
+Chạy:  python3 src/build.py
+"""
+import hashlib, io, os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
-VERSION = '10.1'          # một nguồn duy nhất; cũng ghi vào <meta name="app-version">
+VERSION = '11.0'          # một nguồn duy nhất; sinh ra meta, APP_VERSION, footer, sw.js
 
 def arg(flag, default):
-    return sys.argv[sys.argv.index(flag) + 1] if flag in sys.argv else default
+    """--flag giá-trị, hoặc chỉ --flag (dùng giá trị mặc định)."""
+    if flag not in sys.argv:
+        return default
+    i = sys.argv.index(flag) + 1
+    return sys.argv[i] if i < len(sys.argv) and not sys.argv[i].startswith('--') else default
 
 SRC_PLAN = arg('--base', os.path.join(HERE, 'base.html'))
 OUT = arg('--out', os.path.join(ROOT, 'index.html'))
@@ -19,7 +30,6 @@ def block(name):
     """Lấy nguyên khối `const NAME=...;` bằng cách đếm ngoặc có nhận biết chuỗi."""
     i = plan.index('const %s=' % name)
     j = i + len('const %s=' % name)
-    # tìm ký tự mở đầu [ hoặc {
     while plan[j] not in '[{':
         j += 1
     depth = 0
@@ -41,7 +51,6 @@ def block(name):
             elif c in ']})':
                 depth -= 1
                 if depth == 0:
-                    # tìm dấu ;
                     end = plan.index(';', k) + 1
                     return plan[i:end]
         k += 1
@@ -51,10 +60,10 @@ names = ['TOPICS', 'WHO', 'LIB', 'PLAN', 'EXT', 'MORE', 'PHASES', 'NOTES']
 data = '\n\n'.join(block(n) for n in names)
 data += '\n\n' + SRC('papers.js')
 
-css = io.open(os.path.join(HERE,'app.css'), encoding='utf-8').read()
+css = SRC('app.css')
 qa = SRC('qa.js') + '\n\n' + SRC('content2.js') + '\n\n' + SRC('content3.js') + '\n\n' + SRC('content4.js')
 app = SRC('app.js')
-tools = SRC('tools.js') if os.path.exists(os.path.join(HERE, 'tools.js')) else ''
+tools = SRC('tools.js')
 solver = SRC('solver.js') + '\n\n' + SRC('solver2.js')
 teacher = SRC('teacher.js')
 board = SRC('board.js')
@@ -70,11 +79,23 @@ lab = SRC('lab.js')
 engine = SRC('engine.js')
 store = SRC('store.js')
 settings = SRC('settings.js')
+cf = SRC('cloudflare.js')     # đăng ký service worker + trạng thái mạng
 
 ver_js = "/* phiên bản — sinh từ src/build.py */\nconst APP_VERSION = '" + VERSION + "';"
 
-prefs_js = """<script>
-/* áp màu trước khi vẽ để không nháy trắng */
+# Các khối script, đúng thứ tự sẽ chèn vào HTML.
+SCRIPTS = [
+    ('DỮ LIỆU LỘ TRÌNH', data),
+    ('NGÂN HÀNG HỎI ĐÁP & TRẮC NGHIỆM', qa),
+    ('ỨNG DỤNG', ver_js + '\n' + store + '\n' + app + '\n' + tools + '\n' + engine),
+    ('MÁY GIẢI · MẠCH · NHẠC · POMODORO · PHÒNG THÍ NGHIỆM',
+     solver + '\n' + teacher + '\n' + board + '\n' + builder + '\n' + sim + '\n' + school + '\n'
+     + seed_more + '\n' + study + '\n' + sched + '\n' + music + '\n' + pomo + '\n'
+     + settings + '\n' + lab),
+]
+
+# Áp giao diện trước khi vẽ để không nháy trắng — cũng là một khối inline.
+PREFS_JS = """/* áp màu trước khi vẽ để không nháy trắng */
 try{var P=JSON.parse(localStorage.getItem('vnl9.prefs')||'{}');
 if(P.theme)document.documentElement.setAttribute('data-theme',P.theme);
 if(P.density)document.documentElement.setAttribute('data-density',P.density);
@@ -82,8 +103,35 @@ if(P.radius)document.documentElement.setAttribute('data-radius',P.radius);
 if(P.motion===false)document.documentElement.setAttribute('data-motion','off');
 if(P.fs)document.documentElement.style.setProperty('--fs',String(P.fs));
 if(P.accent)document.documentElement.style.setProperty('--accent',P.accent);
-}catch(e){}
-</script>"""
+}catch(e){}"""
+
+SCRIPTS.insert(2, ('TUỲ BIẾN GIAO DIỆN TRƯỚC KHI VẼ', PREFS_JS))
+SCRIPTS.append(('CLOUDFLARE — service worker & trạng thái mạng', cf))
+
+
+def csp_hash(raw):
+    """SHA-256 base64, đúng định dạng `'sha256-…'` của CSP.
+
+    Trình duyệt băm **đúng chuỗi nằm giữa cặp thẻ**, không phải chuỗi trong
+    biến Python. Ở đây khối được dựng bằng `'<script>' + code + '</script>'`
+    nên chuỗi đó chính là `code` — dùng cùng một hàm cho cả hai việc để không
+    bao giờ lệch.
+    """
+    import base64
+    return "'sha256-" + base64.b64encode(hashlib.sha256(raw.encode('utf-8')).digest()).decode() + "'"
+
+
+script_hashes = ' '.join(csp_hash(code) for _, code in SCRIPTS)
+style_hash = csp_hash(css)
+
+
+def script_block(code):
+    """Nội dung giữa hai thẻ phải == `code` thì hash mới khớp."""
+    return '<script>' + code + '</script>'
+
+
+scripts_html = '\n\n'.join(
+    '<!-- ===== %s ===== -->\n%s' % (label, script_block(code)) for label, code in SCRIPTS)
 
 html = f"""<!doctype html>
 <html lang="vi">
@@ -93,14 +141,20 @@ html = f"""<!doctype html>
 <title>Học mọi thứ — Vật lí 9 · lớp 1–12 · @nggkhaiz</title>
 <meta name="app-version" content="{VERSION}">
 <meta name="description" content="Một trang để học mọi thứ: lộ trình Vật lí 9, trường học lớp 1–12, thẻ ghi nhớ cách quãng, luyện đề tự tạo, kế hoạch học, thời khoá biểu và lịch học. Tác giả @nggkhaiz — github.com/Ngg.Khaiz.">
+<meta name="theme-color" content="#f4f1ea" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#12110e" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="light dark">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Học mọi thứ — Vật lí 9 · lớp 1–12">
+<meta property="og:description" content="Lộ trình Vật lí 9 · luyện thi chuyên Lý · trường học lớp 1–12 · thời khoá biểu · lịch · thẻ ghi nhớ · phòng thí nghiệm. Chạy offline, dữ liệu trong máy bạn.">
+<meta property="og:locale" content="vi_VN">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f4f1ea'/%3E%3Ctext x='6' y='24' font-family='Georgia,serif' font-size='20' fill='%2317150f'%3E9%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
-<style>
-{css}
-</style>
-{prefs_js}
+<link rel="dns-prefetch" href="https://i.ytimg.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600&family=JetBrains+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>{css}</style>
 </head>
 <body>
 <a class="skip" href="#main">Tới nội dung chính</a>
@@ -126,46 +180,122 @@ html = f"""<!doctype html>
   </div>
 </footer>
 <div class="toast" aria-live="polite"></div>
+<p class="net-badge" id="netBadge" role="status" aria-live="polite" hidden></p>
 <noscript><div class="wrap" style="padding:40px 20px"><h1>Cần bật JavaScript</h1><p>Trang này chạy hoàn toàn phía trình duyệt, không cần máy chủ.</p></div></noscript>
 
-<script>
-/* ===== DỮ LIỆU LỘ TRÌNH ===== */
-{data}
-</script>
-
-<script>
-/* ===== NGÂN HÀNG HỎI ĐÁP & TRẮC NGHIỆM ===== */
-{qa}
-</script>
-
-<script>
-/* ===== ỨNG DỤNG ===== */
-{ver_js}
-{store}
-{app}
-{tools}
-{engine}
-</script>
-
-<script>
-/* ===== MÁY GIẢI · MẠCH · NHẠC · POMODORO · PHÒNG THÍ NGHIỆM ===== */
-{solver}
-{teacher}
-{board}
-{builder}
-{sim}
-{school}
-{seed_more}
-{study}
-{sched}
-{music}
-{pomo}
-{settings}
-{lab}
-</script>
+{scripts_html}
 </body>
 </html>
 """
 
+# BUILD_ID = băm của nội dung cuối (bỏ phần tự tham chiếu) — dùng cho ?v= và /__version
+build_id = hashlib.sha256(html.encode('utf-8')).hexdigest()[:12]
+
+# CSP: chỉ cho phép đúng những origin mà trang thật sự dùng.
+# 'unsafe-inline' KHÔNG xuất hiện ở script-src / style-src — mọi khối inline đều có hash.
+# Ghi chú về style:
+#   · style-src-elem  — thẻ <style> và <link rel=stylesheet>: CHỈ 'self' + hash + fonts
+#   · style-src-attr  — thuộc tính style="…" trong markup. Trang dùng 140+ chỗ
+#     (màu ô thời khoá biểu, vòng tiến độ, chiều rộng cột) nên phải cho phép;
+#     đây là CSS, không chạy được JavaScript, và img/connect/form đều bị chặn
+#     nên không mở đường rò rỉ dữ liệu.
+#   · style-src       — đường lùi cho trình duyệt chưa biết style-src-elem:
+#     vẫn giữ 'unsafe-inline' để giao diện không vỡ trên trình duyệt cũ.
+csp = '; '.join([
+    "default-src 'self'",
+    "script-src 'self' " + script_hashes,
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "style-src-elem 'self' " + style_hash + ' https://fonts.googleapis.com',
+    "style-src-attr 'unsafe-inline'",
+    "font-src 'self' https://fonts.gstatic.com",
+    "img-src 'self' data: https://i.ytimg.com https://*.ytimg.com blob:",
+    "media-src 'self' blob: https:",
+    "frame-src https://www.youtube-nocookie.com https://www.youtube.com",
+    "connect-src 'self'",
+    "worker-src 'self'",
+    "manifest-src 'self'",
+    "object-src 'none'",
+    "base-uri 'none'",
+    "form-action 'none'",
+    "frame-ancestors 'self'",
+    "upgrade-insecure-requests",
+])
+
+# Chèn meta CSP + BUILD_ID vào head (sau <meta charset> để trình duyệt thấy ngay)
+html = html.replace(
+    '<meta name="viewport"',
+    '<meta http-equiv="Content-Security-Policy" content="%s">\n'
+    '<meta name="build-id" content="%s">\n'
+    '<meta name="viewport"' % (csp.replace('"', '&quot;'), build_id), 1)
+
 io.open(OUT, 'w', encoding='utf-8').write(html)
+
+# ================================================================ tệp phụ trợ
+HEADERS = """# Cloudflare Pages — sinh tự động bởi src/build.py, đừng sửa tay.
+# Cú pháp: https://developers.cloudflare.com/pages/configuration/headers/
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: accelerometer=(), camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-origin
+
+# Trang chính: luôn xác thực lại bằng ETag (304, vài chục byte) để người
+# dùng nhận bản mới ngay sau khi deploy. Không dùng no-store để còn 304.
+/
+  Cache-Control: public, max-age=0, must-revalidate
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Service worker không bao giờ được cache lâu — nếu không sẽ kẹt bản cũ
+/sw.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Endpoint phiên bản: không cache
+/__version
+  Cache-Control: no-store
+"""
+
+REDIRECTS = """# Cloudflare Pages — sinh tự động bởi src/build.py, đừng sửa tay.
+# Router của app dùng hash (#/study, #/cards…) nên mọi đường dẫn con đều
+# phải trả về index.html. Không có bước này, người dùng gõ thẳng
+# /study hoặc /cards sẽ nhận 404 của Cloudflare.
+#
+# Cú pháp: <từ> <đến> <mã>
+
+/study      /index.html   200
+/cards      /index.html   200
+/practice   /index.html   200
+/plan       /index.html   200
+/focus      /index.html   200
+/progress   /index.html   200
+/timetable  /index.html   200
+/calendar   /index.html   200
+/settings   /index.html   200
+/about      /index.html   200
+"""
+
+SW = io.open(os.path.join(HERE, 'sw.template.js'), encoding='utf-8').read().replace('__VERSION__', VERSION)
+
+# Ghi bản chạy một-tệp ở gốc repo (để mở bằng file:// và commit vào Git)
+io.open(OUT, 'w', encoding='utf-8').write(html)
+
+# Chế độ deploy: chỉ chép những tệp trang cần, không lộ src/tests/docs
+if '--dist' in sys.argv:
+    import shutil
+    dist = os.path.abspath(arg('--dist', os.path.join(ROOT, 'dist')))
+    if os.path.isdir(dist):
+        shutil.rmtree(dist)
+    os.makedirs(dist)
+    io.open(os.path.join(dist, 'index.html'), 'w', encoding='utf-8').write(html)
+    io.open(os.path.join(dist, '_headers'), 'w', encoding='utf-8').write(HEADERS)
+    io.open(os.path.join(dist, '_redirects'), 'w', encoding='utf-8').write(REDIRECTS)
+    io.open(os.path.join(dist, 'sw.js'), 'w', encoding='utf-8').write(SW)
+    io.open(os.path.join(dist, '.nojekyll'), 'w', encoding='utf-8').write('')
+    print('dist   ', dist, '(index.html · _headers · _redirects · sw.js)')
+
 print('wrote', OUT, len(html), 'bytes')
+print('build-id', build_id)
+print('version', VERSION)

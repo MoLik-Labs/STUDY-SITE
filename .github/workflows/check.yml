@@ -20,17 +20,23 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Dựng lại index.html từ src/
-        run: python3 src/build.py
+      - name: Dựng lại bản chạy từ src/
+        run: python3 src/build.py --dist
 
       - name: Bản build phải khớp với bản đã commit
         run: git diff --exit-code -- index.html
 
-      - name: Kiểm tra tĩnh (cú pháp, mô-đun chết, hộp thoại gốc, router)
+      - name: Kiểm tra tĩnh (cú pháp, mã chết, hộp thoại gốc, router)
         run: node tools/check.js
+
+      - name: Cloudflare — CSP, _headers, _redirects, service worker
+        run: node tests/csp.js
 
       - name: Kiểm thử trong DOM (mọi tuyến + tương tác)
         run: |
           npm install --no-save --no-audit --no-fund jsdom
           node tests/smoke.js
           node tests/interaction.js
+
+      - name: Cloudflare Pages — thử chạy Pages Function
+        run: node tests/functions.js

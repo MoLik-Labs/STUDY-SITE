@@ -412,7 +412,7 @@ function renderDay(n){
 ========================================================= */
 function playerHTML(id,title,meta){
   return `<div class="player" data-vid="${id}">
-    <img class="thumb" src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt="" onerror="this.style.display='none'">
+    <img class="thumb" src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt="" loading="lazy" decoding="async" data-thumb>
     <div class="scrim"></div>
     <button class="poster" data-play="${id}" data-title="${esc(title)}">
       <span class="play" aria-hidden="true"></span>
@@ -422,6 +422,13 @@ function playerHTML(id,title,meta){
     </button>
   </div>`;
 }
+/* Ảnh bìa YouTube có thể 404 (video bị gỡ). `error` không bốc bọt nên phải
+   bắt ở pha capture; KHÔNG gắn thuộc tính xử lý sự kiện trong HTML vì CSP cấm. */
+document.addEventListener('error', e => {
+  const t = e.target;
+  if (t && t.tagName === 'IMG' && t.hasAttribute('data-thumb')) t.style.display = 'none';
+}, true);
+
 function mountPlayer(host,id,title,meta){
   host.innerHTML=playerHTML(id,title,meta);
   const b=$('.poster',host);

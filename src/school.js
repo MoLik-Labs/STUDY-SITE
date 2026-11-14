@@ -208,25 +208,35 @@ function seedLessons() {
 }
 
 /* ---------------- 3 · state ---------------- */
+/* Một cửa vào duy nhất cho khoá "school". Trước đây chỉ kiểm tra null, nên
+   state.school = "x" (từ tệp sao lưu hỏng) đi qua được và làm chết trang
+   "Bài của tôi" cùng mọi chỗ dùng Object.keys(S.lessons). Giờ kiểu cũng
+   được kiểm tra, và mọi mục con đều được chuẩn hoá ngay tại đây. */
 function schoolState() {
-  if (!state.school) state.school = { grade: 9, subj: 'vatli', lessons: {}, soft: {} };
+  if (!state.school || typeof state.school !== 'object' || Array.isArray(state.school)) {
+    state.school = { grade: 9, subj: 'vatli', lessons: {}, soft: {} };
+  }
   const S = state.school;
-  if (!S.lessons) S.lessons = {};
-  if (!S.soft) S.soft = {};
+  if (!S.lessons || typeof S.lessons !== 'object' || Array.isArray(S.lessons)) S.lessons = {};
+  if (!S.soft || typeof S.soft !== 'object' || Array.isArray(S.soft)) S.soft = {};
   if (!S.grade) S.grade = 9;
   if (!S.subj) S.subj = 'vatli';
+  Object.keys(S.lessons).forEach(k => {
+    if (!Array.isArray(S.lessons[k])) S.lessons[k] = [];
+  });
   return S;
 }
 function lessonList(g, s) {
   const S = schoolState();
   const seed = seedLessons()[g + '|' + s] || [];
-  const mine = (S.lessons[g + '|' + s] || []);
+  const mine = S.lessons[g + '|' + s] || [];
   return seed.concat(mine);
 }
 function lessonById(id) {
   const S = schoolState();
   for (const k in S.lessons) {
-    const hit = S.lessons[k].find(l => l.id === id);
+    const list = S.lessons[k];
+    const hit = Array.isArray(list) ? list.find(l => l.id === id) : null;
     if (hit) return hit;
   }
   const all = seedLessons();
@@ -241,7 +251,10 @@ function allLessons() {
   const out = [];
   const seeds = seedLessons();
   Object.keys(seeds).forEach(k => seeds[k].forEach(l => out.push(l)));
-  Object.keys(S.lessons).forEach(k => S.lessons[k].forEach(l => out.push(l)));
+  /* S.lessons có thể là null/chuỗi nếu dữ liệu bị sửa tay hoặc nhập từ bản
+     cũ — Object.keys(null) ném lỗi và làm chết cả thanh ray. */
+  const own = S.lessons && typeof S.lessons === 'object' ? S.lessons : {};
+  Object.keys(own).forEach(k => { if (Array.isArray(own[k])) own[k].forEach(l => out.push(l)); });
   return out;
 }
 

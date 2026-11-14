@@ -583,6 +583,42 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
     physCard.compareDocumentPosition(w.document.querySelector('#main a.hero-study')) & 4);
   ok('thẻ Vật lí trên trang chủ có thanh tiến độ', !!physCard.querySelector('.hp-bar'));
 
+  /* ---- điều hướng phải đầy đủ và không trùng ----
+     Bản trước mất 9 tuyến khỏi ngăn kéo (thư viện, sổ tay, đề thi, hỏi đáp,
+     ôn câu sai, máy giải, bảng mạch, thí nghiệm, tiến độ) và lặp 6 lối ra.
+     Hai lỗi đó đều không nhìn thấy được bằng mắt trên máy tính để bàn. */
+  const navAudit = w.eval(`(() => {
+    const rail = document.querySelector('#rail');
+    const spine = [...rail.querySelectorAll('a')].filter(a => !a.closest('#railGroups'));
+    const drawer = [...rail.querySelectorAll('#railGroups a')];
+    const all = [...spine, ...drawer].map(a => a.getAttribute('href'));
+    const spineHrefs = spine.map(a => a.getAttribute('href'));
+    const must = ['#/physics','#/settings','#/library','#/papers','#/qa','#/review',
+      '#/calc','#/build','#/lab','#/sim','#/special','#/stats','#/share','#/about',
+      '#/study','#/cards','#/grades','#/timetable','#/notes','#/discover'];
+    return {
+      missing: must.filter(h => all.indexOf(h) < 0),
+      dupes: spineHrefs.filter((h, i) => spineHrefs.indexOf(h) !== i),
+      groups: rail.querySelectorAll('#railGroups .rn-group').length,
+      hasToggle: !!rail.querySelector('#railMore'),
+      drawerOpenable: (() => {
+        const btn = rail.querySelector('#railMore');
+        if (!btn) return false;
+        const body = rail.querySelector('#railGroups');
+        const before = body.hidden; btn.click();
+        const after = body.hidden;
+        btn.click();
+        return before !== after;
+      })()
+    };
+  })()`);
+  ok('ngăn kéo có đủ tuyến phụ trợ', navAudit.missing.length === 0, navAudit.missing.join(' '));
+  ok('thanh ray không lặp lối ra', navAudit.dupes.length === 0, navAudit.dupes.join(' '));
+  ok('công cụ được chia nhóm thay vì một dãy phẳng', navAudit.groups >= 4, navAudit.groups + ' nhóm');
+  ok('ngăn kéo công cụ mở/đóng được', navAudit.hasToggle && navAudit.drawerOpenable);
+  ok('cài đặt với tới được từ thanh trên',
+    !!w.document.querySelector('.topbar a.tb-gear[href="#/settings"][aria-label]'));
+
   /* =========================================================
      12. TUỲ BIẾN — trang từng bị bỏ quên
      ---------------------------------------------------------

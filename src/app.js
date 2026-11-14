@@ -36,9 +36,23 @@ let state=loadState();
 const save=()=>{
   try{
     if(typeof AppStore!=='undefined'){ AppStore.write(state); AppStore.remember(state); }
-    else localStorage.setItem(KEY,JSON.stringify(state));
-  }catch(e){ try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e2){} }
+    else{
+      try{ localStorage.setItem(KEY,JSON.stringify(state)); }
+      catch(e2){ notifyStoreIssue('quota'); }
+    }
+  }catch(e){ try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e2){ notifyStoreIssue('quota'); } }
 };
+/* Kho lưu đầy hoặc bị chặn thì phải NÓI RA. Im lặng ở đây nghĩa là người
+   dùng học xong một buổi, đóng tab, và mất hết mà không biết vì sao. */
+let __storeWarned=0;
+const notifyStoreIssue=(kind)=>{
+  if(Date.now()-__storeWarned<45000) return;
+  __storeWarned=Date.now();
+  if(kind==='quota'){
+    toast('Bộ nhớ trình duyệt đã đầy — tiến độ mới chưa lưu được. Mở Cài đặt → Dữ liệu để xuất tệp sao lưu.');
+  }else toast('Không lưu được tiến độ trên máy này.');
+};
+document.addEventListener('store:issue',e=>notifyStoreIssue((e.detail||{}).kind));
 
 /* ---------- text utils ---------- */
 const norm=s=>(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
@@ -54,8 +68,12 @@ function streak(){
   while(state.days[dkey(d)]){ s++; d.setDate(d.getDate()-1); }
   return s;
 }
-const doneCount=()=>DAYS.reduce((a,d)=>a+d.sessions.filter(s=>state.done[sid(d.n,s.n)]).length,0);
-const dayDone=d=>d.sessions.filter(s=>state.done[sid(d.n,s.n)]).length;
+/* Đọc tiến độ phải chịu được state.done bị null/không phải object — đây là
+   trường hay bị tệp sao lưu cũ ghi đè, và một lần ném lỗi ở đây là trắng cả
+   thanh ray, trang chủ lẫn mọi trang có thanh tiến độ. */
+const doneMap=()=>(state.done&&typeof state.done==='object')?state.done:{};
+const doneCount=()=>DAYS.reduce((a,d)=>a+d.sessions.filter(s=>doneMap()[sid(d.n,s.n)]).length,0);
+const dayDone=d=>d.sessions.filter(s=>doneMap()[sid(d.n,s.n)]).length;
 const watchedCount=()=>Object.keys(state.watched||{}).length;
 
 /* ---------- ui helpers ---------- */
@@ -132,7 +150,19 @@ const qaOfTopic=t=>QA.filter(x=>x.t===t);
 /* =========================================================
    RENDER — SHELL
 ========================================================= */
-function renderTop(){
+/* =========================================================
+   THANH TRÊN — dựng một lần, cập nhật phần đổi được
+   ---------------------------------------------------------
+   renderTop() dựng lại toàn bộ thanh trên ở MỖI lần đổi trang, kể cả menu
+   Khám phá 36 mục. Đo được: 1709 ms trên 30 lần đổi trang — hàm tốn kém nhất
+   trong cả ứng dụng, và nó chạy trước khi trang mới kịp hiện.
+   Nhưng gần như không có gì trong đó thay đổi khi đổi trang: chỉ có lớp "đang
+   ở đây" của ngăn kéo, và con số tiến độ. Giờ có hai đường:
+     · topBuild()  — dựng HTML, chỉ gọi khi ngôn ngữ / phạm vi / tuỳ biến đổi
+     · renderTop() — gọi topBuild() khi cần, rồi cập nhật đúng hai chỗ
+   Không dựng lại nghĩa là cũng không gắn lại listener — hết một nguồn rò rỉ. */
+let topSig = '';
+function topBuild(){
   const dc=doneCount();
   $('#top').innerHTML=`
     <div class="topbar-in">
@@ -151,8 +181,8 @@ function renderTop(){
       <a class="scope-chip" href="#/subjects" title="Đổi lớp và môn">
         <b>Lớp ${schoolState().grade}</b><span>${(SUBJECTS.find(x => x.id === schoolState().subj) || { name: 'Vật lí' }).name}</span>
       </a>
-      <a class="tb-phys" href="#/physics" aria-label="${tl('nav_physics')}" title="${tl('nav_physics')}">
-        <b>${tl('nav_physics')}</b><span>${dc}/${TOTAL_SESS}</span>
+      <a class="tb-phys" id="tbPhys" href="#/physics" aria-label="${tl('nav_physics')}" title="${tl('nav_physics')}">
+        <b>${tl('nav_physics')}</b><span id="tbPhysN">${dc}/${TOTAL_SESS}</span>
       </a>
       <button class="tb-btn" data-nav="#/calc">${tl('btn_calc')}</button>
       <button class="tb-btn" data-nav="#/sim">${tl('btn_sim')}</button>
@@ -170,7 +200,7 @@ function renderTop(){
         <span>${tl('search_ph')}</span><kbd>⌘K</kbd>
       </button>
       <a class="tb-owner" href="#/about" title="${tl('nav_about')} · @its.fox_">@its.fox_</a>
-      <span class="kicker" style="white-space:nowrap">${String(dc).padStart(2,'0')} / ${TOTAL_SESS}</span>
+      <span class="kicker" id="tbCount" style="white-space:nowrap">${String(dc).padStart(2,'0')} / ${TOTAL_SESS}</span>
     </div>`;
   $('#menuBtn').onclick=()=>{
     const on=$('#rail').classList.toggle('open');
@@ -185,6 +215,33 @@ function renderTop(){
   const gearM=$('#openSettingsM');
   if(gearM) gearM.onclick=()=>{go('#/settings');closeRail();};
   $('#openSearchM').onclick=openSearchOverlay;
+  topSig = topSignature();
+  topSync();
+}
+/* Những thứ làm HTML thanh trên phải dựng lại. Route KHÔNG nằm trong đây —
+   đó chính là điểm mấu chốt. */
+function topSignature(){
+  return [i18nLang(), doneCount(), (typeof prefs==='function'?prefs().start:''),
+          (typeof prefs==='function'?prefs().accent:''),
+          (typeof schoolState==='function'?(schoolState().grade+'|'+schoolState().subj):'')].join('~');
+}
+/* Cập nhật tại chỗ: con số tiến độ + trạng thái "đang ở đây". */
+function topSync(){
+  const dc=doneCount();
+  /* So trước khi ghi: gán textContent kể cả khi chuỗi không đổi vẫn làm
+     trình duyệt đánh dấu lại layout của cả thanh. */
+  const setText=(el,txt)=>{ if(el && el.textContent!==txt) el.textContent=txt; };
+  setText($('#tbPhysN'), dc+'/'+TOTAL_SESS);
+  setText($('#tbCount'), String(dc).padStart(2,'0')+' / '+TOTAL_SESS);
+  const h=location.hash||'#/';
+  $$('#tbMenu [data-nav]').forEach(a=>{
+    a.classList.toggle('on', (a.dataset.nav||'')===h.split('?')[0]);
+  });
+  const cur=$('#tbPhys'); if(cur) cur.classList.toggle('on', h.startsWith('#/physics'));
+}
+function renderTop(){
+  if(!$('#tbMenu') || !document.querySelector('#tbCount') || topSig !== topSignature()) return topBuild();
+  topSync();
 }
 
 /* Khám phá — popup trên thanh trên.
@@ -244,7 +301,61 @@ function closeRail(){
   $('#rail').classList.remove('open');
   const b=$('#backdrop'); if(b) b.classList.remove('on');
 }
+/* Ngăn kéo cũng bị dựng lại cả trăm dòng HTML mỗi lần đổi trang (555 ms / 30
+   lần). Nội dung của nó chỉ đổi khi lớp/môn hoặc tiến độ đổi — còn "đang ở
+   đâu" thì chỉ là một lớp CSS. */
+let railSig='';
+function railSignature(){
+  return [i18nLang(), doneCount(), (typeof schoolState==='function'?(schoolState().grade+'|'+schoolState().subj):''),
+          (typeof syDue==='function'?syDue().length:0),
+          (typeof allLessons==='function'?allLessons().filter(l=>l.own).length:0),
+          (typeof prefs==='function'?prefs().railStart:true)].join('~');
+}
 function renderRail(){
+  /* Chỉ dùng lại khi khung ray còn thật trong DOM — trang khác có thể đã
+     thay cả #rail, lúc đó tái sử dụng sẽ vẽ vào hư không. */
+  if($('#rail') && $('#rail').childElementCount && document.querySelector('#rail [data-rail-on]')
+     && railSig===railSignature()) return railSync();
+  railBuild();
+}
+function railSync(){
+  /* CHỈ cập nhật những gì hàm dựng ngăn kéo đánh dấu được (data-rail-on).
+     Bản đầu quét mọi thẻ <a> và tự so khớp — nó ghi đè luôn lớp 'on' mà
+     template đặt cho ca đang học, nên ngăn kéo mất dấu trang hiện tại. */
+  const h=location.hash||'#/';
+  $$('#rail [data-rail-on]').forEach(a=>{
+    const base=(a.getAttribute('href')||'').split('?')[0];
+    a.classList.toggle('on', !!base && (base===h.split('?')[0] || (base!=='#/' && h.startsWith(base+'/'))));
+  });
+}
+/* ---------- ngăn kéo ray: nhóm công cụ ----------
+   Thanh ray từng có 48 lối ra phẳng, nhiều lối trùng nhau (Máy giải, Bảng mạch,
+   Vật lí, Học hôm nay xuất hiện hai lần). Chia thành 5 nhóm có tiêu đề để mắt
+   quét theo mục đích thay vì đọc từng dòng, và đóng sẵn để thanh ray chỉ còn
+   phần việc thật sự dùng hằng ngày. Mở/đóng được, nhớ trạng thái. */
+const RAIL_GROUPS = [
+  { t:'Vật lí', l:[['#/physics','Mục Vật lí · 13 ngày'],['#/calc','Máy giải từng bước'],
+    ['#/build','Bảng mạch'],['#/lab','Phòng thí nghiệm'],['#/sim','Mô phỏng'],
+    ['#/special','Chuyên đề nâng cao'],['#/notes','Sổ tay công thức'],['#/exam','Thi thử 15 câu']] },
+  { t:'Học', l:[['#/study','Học hôm nay'],['#/cards','Thẻ ghi nhớ'],['#/practice','Luyện tập'],
+    ['#/review','Luyện câu sai'],['#/focus','Phiên tập trung'],['#/plan','Kế hoạch tuần'],
+    ['#/weekly','Lịch 7 ngày']] },
+  { t:'Trường lớp', l:[['#/subjects','Khoá học lớp 1–12'],['#/grades','Bảng điểm'],
+    ['#/timetable','Thời khoá biểu'],['#/calendar','Lịch &amp; nhắc hẹn']] },
+  { t:'Nội dung', l:[['#/library','Thư viện bài giảng'],['#/papers','Đề thi'],['#/qa','Hỏi đáp'],
+    ['#/studio','Tạo bài học'],['#/mine','Bài của tôi'],['#/files','Kho tệp']] },
+  { t:'Tuỳ biến', l:[['#/settings','Cài đặt đầy đủ'],['#/stats','Tiến độ của bạn'],
+    ['#/discover','Khám phá · mọi lối vào'],['#/share','Chia sẻ tiến độ'],['#/about','Về Study Focus Fox']] }
+];
+const DRAWER_N = RAIL_GROUPS.reduce((n,g)=>n+g.l.length,0);
+/* Mở sẵn ngăn kéo nếu tuyến đang mở chỉ nằm trong đó — nếu không người dùng
+   vào thẳng #/papers sẽ thấy không có mục nào được chọn. */
+function railDrawerOpen(h0){
+  if(state.railOpen) return true;
+  return RAIL_GROUPS.some(g=>g.l.some(([href])=>href!=='#/'&&h0.startsWith(href)));
+}
+
+function railBuild(){
   const byPhase={I:[],II:[],III:[],IV:[]};
   DAYS.forEach(d=>byPhase[d.phase].push(d));
   const dc=doneCount();
@@ -255,30 +366,24 @@ function renderRail(){
   const mineN=(typeof allLessons==='function')?allLessons().filter(l=>l.own).length:0;
   $('#rail').innerHTML=`
     ${(typeof prefs !== 'function' || prefs().railStart !== false) ? `<div class="rail-phys${h0.startsWith('#/physics')||h0==='#/'||h0===''||h0.startsWith('#/day/')||h0.startsWith('#/lesson/')?' on':''}">
-      <a class="rp-main" href="#/physics">
+      <a class="rp-main" href="#/physics" data-rail-on>
         <span class="rp-k">${tl('nav_physics')}</span>
         <b>Vật lí 9 · ${dc}/${TOTAL_SESS} ca</b>
         <span class="rp-bar"><i style="width:${TOTAL_SESS?Math.round(dc/TOTAL_SESS*100):0}%"></i></span>
       </a>
       <div class="rp-links">
-        <a href="#/" class="${h0==='#/'||h0===''?'on':''}">Lộ trình 13 ngày</a>
-        <a href="#/calc">Máy giải</a>
-        <a href="#/build">Bảng mạch</a>
-        <a href="#/lab">Thí nghiệm</a>
+        <a href="#/" data-rail-on class="${h0==='#/'||h0===''?'on':''}">Lộ trình 13 ngày</a>
+        <a href="#/library" data-rail-on class="${h0.startsWith('#/library')?'on':''}">Thư viện bài giảng</a>
       </div>
     </div>` : ''}
     <div class="rail-study">
-      <a href="#/study" class="rs-main${h0.startsWith('#/study')?' on':''}"><b>${tl('nav_study')}</b><span>${tl('rail_today_sub')}</span></a>
+      <a href="#/study" data-rail-on class="rs-main${h0.startsWith('#/study')?' on':''}"><b>${tl('nav_study')}</b><span>${tl('rail_today_sub')}</span></a>
       <div class="rs-links">
-        <a href="#/cards" class="${h0.startsWith('#/cards')?'on':''}">${tl('nav_cards')}${(typeof syDue==='function'&&syDue().length)?'<i>'+syDue().length+'</i>':''}</a>
+        <a href="#/cards" data-rail-on class="${h0.startsWith('#/cards')?'on':''}">${tl('nav_cards')}${(typeof syDue==='function'&&syDue().length)?'<i>'+syDue().length+'</i>':''}</a>
         <a href="#/practice" class="${h0.startsWith('#/practice')?'on':''}">${tl('nav_practice')}</a>
         <a href="#/plan" class="${h0.startsWith('#/plan')&&!h0.startsWith('#/weekly')?'on':''}">${tl('rail_plan')}</a>
         <a href="#/weekly" class="${h0.startsWith('#/weekly')?'on':''}">${tl('rail_week')}</a>
         <a href="#/grades" class="${h0.startsWith('#/grades')?'on':''}">${tl('nav_grades')}</a>
-        <a href="#/focus" class="${h0.startsWith('#/focus')?'on':''}">${tl('rail_focus')}</a>
-        <a href="#/timetable" class="${h0.startsWith('#/timetable')?'on':''}">${tl('rail_week_short')}</a>
-        <a href="#/calendar" class="${h0.startsWith('#/calendar')?'on':''}">${tl('rail_cal')}</a>
-        <a href="#/progress" class="${h0.startsWith('#/progress')?'on':''}">${tl('rail_progress')}</a>
       </div>
     </div>
     <div class="rail-school">
@@ -286,7 +391,6 @@ function renderRail(){
         <b>Lớp ${sg} · ${esc(sObj.name)}</b><span>Chạm để đổi lớp &amp; môn</span>
       </a>
       <div class="rs-links">
-        <a href="#/subjects" class="${onS?'on':''}">${tl('nav_subjects')}</a>
         <a href="#/studio" class="${h0.startsWith('#/studio')?'on':''}">Tạo bài học</a>
         <a href="#/mine" class="${h0.startsWith('#/mine')?'on':''}">Bài của tôi${mineN?'<i>'+mineN+'</i>':''}</a>
         <a href="#/files" class="${h0.startsWith('#/files')?'on':''}">Kho tệp</a>
@@ -298,7 +402,7 @@ function renderRail(){
       ${byPhase[p].map(d=>{
         const on=(location.hash||'').startsWith(`#/day/${d.n}`)||(location.hash||'').startsWith(`#/lesson/${d.n}/`);
         const k=dayDone(d);
-        return `<a class="rail-link${on?' on':''}" href="#/day/${d.n}">
+        return `<a class="rail-link${on?' on':''}" data-rail-on href="#/day/${d.n}">
           <span class="n">${String(d.n).padStart(2,'0')}</span>
           <span class="t">${d.title}<i>${k}/4 ca${k===4?' · xong':''}</i></span>
         </a>`;
@@ -309,20 +413,78 @@ function renderRail(){
       <div class="bar"><i style="width:${TOTAL_SESS?dc/TOTAL_SESS*100:0}%"></i></div>
     </div>
     <div class="rail-nav">
-      <a href="#/discover"><b>Khám phá · mọi lối vào</b></a>
-      <a href="#/study">Học hôm nay</a>
-      <a href="#/subjects">Khoá học lớp 1–12</a>
-      <a href="#/physics">Mục Vật lí</a>
-      <a href="#/exam">Thi thử 15 câu</a>
-      <a href="#/settings"><b>Tuỳ biến giao diện &amp; pomodoro</b></a>
+      <button class="rn-toggle" type="button" aria-expanded="${railDrawerOpen(h0)?'true':'false'}" aria-controls="railGroups"
+        data-rail-on-retain id="railMore"><b>${railDrawerOpen(h0)?'Thu gọn':'Mọi công cụ'}</b><span class="rn-n">${DRAWER_N} lối vào</span></button>
+      <div class="rn-body" id="railGroups"${railDrawerOpen(h0)?'':' hidden'}>
+        ${RAIL_GROUPS.map(g=>`
+          <div class="rn-group">
+            <span class="rn-h">${g.t}</span>
+            ${g.l.map(([href,label])=>`<a href="${href}" data-rail-on class="${h0===href||(href!=='#/'&&h0.startsWith(href))?'on':''}">${label}</a>`).join('')}
+          </div>`).join('')}
+      </div>
     </div>`;
   $$('#rail a').forEach(a=>a.addEventListener('click',closeRail));
+  const more=$('#railMore');
+  if(more) more.onclick=()=>{
+    const body=$('#railGroups'); if(!body) return;
+    const open=body.hidden;
+    body.hidden=!open;
+    more.setAttribute('aria-expanded', open?'true':'false');
+    more.querySelector('b').textContent = open?'Thu gọn':'Mọi công cụ';
+    state.railOpen=open;
+    if(typeof save==='function') save();
+  };
+  railSig=railSignature();
+  railSync();
 }
 
 /* =========================================================
    RENDER — HOME
 ========================================================= */
+/* Trang chủ dựng lại toàn bộ ở MỖI lần quay về (703 ms / 15 lần) — nhưng chỉ
+   có ba chỗ phụ thuộc tiến độ: thẻ "học tiếp", dải thống kê, và thẻ Vật lí.
+   Khi tiến độ không đổi (chỉ đi qua lại giữa các trang), cập nhật tại chỗ. */
+let homeSig='', homeRoute='';
+function homeSignature(){
+  /* Phải có cả TUYẾN đang mở: hash lạ rơi xuống chính hàm này, nên nếu chỉ
+     so tiến độ thì từ #/ho-so-luu về #/ sẽ tưởng "không đổi" và giữ nguyên
+     nội dung của trang trước. */
+  return [location.hash||'#/', doneCount(), watchedCount(), (state.last?(state.last.d+'|'+state.last.s):''),
+          (typeof state.goal!=='undefined'?state.goal:0), i18nLang(),
+          (typeof syStreak==='function'?syStreak():0),
+          Object.keys(state.days||{}).length].join('~');
+}
+function homeSync(){
+  const dc=doneCount();
+  const setText=(el,txt)=>{ if(el && el.textContent!==txt) el.textContent=txt; };
+  setText($('#hmDone'), dc+'/'+TOTAL_SESS);
+  setText($('#hmWatch'), watchedCount()+'/'+VID_COUNT);
+  const bar=$('#hmPhysBar'); if(bar) bar.style.width=(TOTAL_SESS?Math.round(dc/TOTAL_SESS*100):0)+'%';
+  const k=$('#hmPhysK'); if(k) k.textContent=k.textContent.replace(/\d+\/\d+/, dc+'/'+TOTAL_SESS);
+  const c=$('#hmContinue');
+  if(c){
+    let next=null;
+    const last=state.last;
+    if(last&&last.d){ const ld=DAYS.find(d=>d.n===+last.d); const ls=ld&&ld.sessions.find(s=>s.n===+last.s);
+      if(ld&&ls&&!doneMap()[sid(ld.n,ls.n)]) next={d:ld,s:ls}; }
+    if(!next) for(const d of DAYS){ for(const s of d.sessions){ if(!doneMap()[sid(d.n,s.n)]){ next={d,s}; break; } } if(next) break; }
+    if(next){
+      c.setAttribute('href', sessionHref(next.d.n,next.s.n));
+      const t=$('#hmContinueT'), m=$('#hmContinueM'), kk=$('#hmContinueK');
+      setText(t, next.s.title);
+      setText(m, 'Ngày '+String(next.d.n).padStart(2,'0')+' · '+next.s.label+' · '+next.d.title);
+      setText(kk, (state.last&&state.last.d*1===next.d.n&&state.last.s*1===next.s.n)?'Đang học dở':'Học tiếp');
+    }
+  }
+}
+
 function renderHome(){
+  /* Dùng lại bản dựng chỉ khi CẢ HAI đều đúng: tiến độ không đổi và trang
+     chủ vẫn còn nguyên trong DOM. So mỗi dấu hiệu thôi là đủ để trang cũ
+     sống sót sau khi tuyến khác đã xoá #main. */
+  if($('#main') && document.querySelector('#hmPhysBar') && homeSig===homeSignature()
+     && document.querySelector('#main .hero')) return homeSync();
+  homeSig=homeSignature();
   const dc=doneCount();
   /* "Học tiếp" phải trỏ về chỗ bạn vừa rời đi, không phải ca trống đầu tiên.
      Trước đây mở ca 5 cần mua, đóng tab, mở lại thì nút đưa về ca 1 — người
@@ -333,10 +495,10 @@ function renderHome(){
   if(last&&last.d){
     const ld=DAYS.find(d=>d.n===+last.d);
     const ls=ld&&ld.sessions.find(s=>s.n===+last.s);
-    if(ld&&ls&&!state.done[sid(ld.n,ls.n)]) next={d:ld,s:ls};
+    if(ld&&ls&&!doneMap()[sid(ld.n,ls.n)]) next={d:ld,s:ls};
   }
   if(!next){
-    for(const d of DAYS){ for(const s of d.sessions){ if(!state.done[sid(d.n,s.n)]){ next={d,s}; break; } } if(next) break; }
+    for(const d of DAYS){ for(const s of d.sessions){ if(!doneMap()[sid(d.n,s.n)]){ next={d,s}; break; } } if(next) break; }
   }
   const byPhase={I:[],II:[],III:[],IV:[]};
   DAYS.forEach(d=>byPhase[d.phase].push(d));
@@ -347,8 +509,8 @@ function renderHome(){
       <p>52 ca, ${VID_COUNT} bài giảng phát ngay trong trang, ${QUIZ.length} câu hỏi sáu dạng (trắc nghiệm · nhiều đáp án · đúng–sai · điền số · sắp xếp bước · chọn hình) và ${QA.length} câu hỏi đáp tra được ngay trong bài.</p>
       <div class="hero-row">
         <div class="stats">
-          <div class="stat"><div class="k">Đã học</div><div class="v">${dc} / ${TOTAL_SESS}</div></div>
-          <div class="stat"><div class="k">Bài giảng đã xem</div><div class="v">${watchedCount()} / ${VID_COUNT}</div></div>
+          <div class="stat"><div class="k">Đã học</div><div class="v" id="hmDone">${dc} / ${TOTAL_SESS}</div></div>
+          <div class="stat"><div class="k">Bài giảng đã xem</div><div class="v" id="hmWatch">${watchedCount()} / ${VID_COUNT}</div></div>
           <div class="stat"><div class="k">Hỏi đáp</div><div class="v">${QA.length}</div></div>
           <div class="stat"><div class="k">Câu hỏi</div><div class="v">${QUIZ.length}</div></div>
         </div>
@@ -358,12 +520,12 @@ function renderHome(){
         <span>·</span> <a href="#/about">về trang này</a></p>
       <a class="hero-phys" href="#/physics">
         <span class="hp-l">
-          <span class="kicker">${tl('nav_physics')} · ${dc}/${TOTAL_SESS} ca</span>
+          <span class="kicker" id="hmPhysK">${tl('nav_physics')} · ${dc}/${TOTAL_SESS} ca</span>
           <b>Vào mục Vật lí</b>
           <span class="hp-sub">Lộ trình 13 ngày · máy giải 16 dạng · bảng mạch · phòng thí nghiệm · 8 công cụ</span>
         </span>
         <span class="hp-r">
-          <span class="hp-bar"><i style="width:${TOTAL_SESS?Math.round(dc/TOTAL_SESS*100):0}%"></i></span>
+          <span class="hp-bar"><i id="hmPhysBar" style="width:${TOTAL_SESS?Math.round(dc/TOTAL_SESS*100):0}%"></i></span>
           <u>Mở →</u>
         </span>
       </a>
@@ -379,11 +541,11 @@ function renderHome(){
       ${typeof syIfThenHtml==='function'?syIfThenHtml():''}
       ${typeof todayStrip==='function'?todayStrip():''}
       ${typeof routineCard==='function'?routineCard():''}
-      ${next?`<a class="continue" href="${sessionHref(next.d.n,next.s.n)}">
+      ${next?`<a class="continue" id="hmContinue" href="${sessionHref(next.d.n,next.s.n)}">
         <div>
-          <span class="kicker">${state.last&&state.last.d*1===next.d.n&&state.last.s*1===next.s.n?'Đang học dở':'Học tiếp'}</span>
-          <h3>${next.s.title}</h3>
-          <p>Ngày ${String(next.d.n).padStart(2,'0')} · ${next.s.label} · ${next.d.title}</p>
+          <span class="kicker" id="hmContinueK">${state.last&&state.last.d*1===next.d.n&&state.last.s*1===next.s.n?'Đang học dở':'Học tiếp'}</span>
+          <h3 id="hmContinueT">${next.s.title}</h3>
+          <p id="hmContinueM">Ngày ${String(next.d.n).padStart(2,'0')} · ${next.s.label} · ${next.d.title}</p>
         </div>
         <span class="btn">Vào ca học →</span>
       </a>`:''}
@@ -415,7 +577,7 @@ function renderHome(){
                 <div class="d"><span>Ngày ${String(d.n).padStart(2,'0')}</span><span>${k===4?'✓':''}</span></div>
                 <div class="t">${d.title}</div>
                 <div class="m"><span>${d.sessions.length} ca</span>
-                  <span class="dots">${d.sessions.map(s=>`<i class="${state.done[sid(d.n,s.n)]?'on':''}"></i>`).join('')}</span>
+                  <span class="dots">${d.sessions.map(s=>`<i class="${doneMap()[sid(d.n,s.n)]?'on':''}"></i>`).join('')}</span>
                 </div>
               </a>`;
             }).join('')}
@@ -445,7 +607,7 @@ function renderDay(n){
       </div>
       <div class="sess-list">
         ${d.sessions.map(s=>{
-          const dn=state.done[sid(d.n,s.n)];
+          const dn=doneMap()[sid(d.n,s.n)];
           return `<div class="sess${dn?' done':''}" data-go="${sessionHref(d.n,s.n)}">
             <div class="sess-n">CA ${s.n}<br>${s.time.replace('–','<br>')}</div>
             <div>
@@ -499,7 +661,7 @@ function renderLesson(dn,sn,pane){
   if(!d||!s){go('#/');return;}
   state.last={d:d.n,s:s.n}; save();
   const P=pane||state.pane||'learn';
-  const done=!!state.done[sid(d.n,s.n)];
+  const done=!!doneMap()[sid(d.n,s.n)];
   const qs=quizFor(d.n,s.n,d);
   const qaList=qaOfTopic(TOPIC_OF_DAY(d));
   const answerdCount=qs.filter(x=>{const a=ansOf(x.id);return a&&a.ok;}).length;
@@ -530,7 +692,7 @@ function renderLesson(dn,sn,pane){
 
   // ca trước / ca sau trong toàn lộ trình
   const flat=[];
-  DAYS.forEach(dd=>dd.sessions.forEach(ss=>flat.push({d:dd.n,s:ss.n,done:!!state.done[sid(dd.n,ss.n)],title:ss.title})));
+  DAYS.forEach(dd=>dd.sessions.forEach(ss=>flat.push({d:dd.n,s:ss.n,done:!!doneMap()[sid(dd.n,ss.n)],title:ss.title})));
   const idx=flat.findIndex(x=>x.d===d.n&&x.s===s.n);
   const prev=flat[idx-1], next=flat[idx+1];
   $('#lnav').innerHTML=`
@@ -583,7 +745,7 @@ function renderLearnPane(host,d,s){
           <div class="formula">${s.f}</div>
         </div>
         <div class="side-actions">
-          <button class="done-btn" aria-pressed="${!!state.done[sid(d.n,s.n)]}" id="doneBtn">${state.done[sid(d.n,s.n)]?'Đã học xong':'Đánh dấu đã học'}</button>
+          <button class="done-btn" aria-pressed="${!!doneMap()[sid(d.n,s.n)]}" id="doneBtn">${doneMap()[sid(d.n,s.n)]?'Đã học xong':'Đánh dấu đã học'}</button>
           <button class="btn ghost sm" data-pane="quiz" style="justify-content:center">Làm trắc nghiệm →</button>
           <button class="btn ghost sm" data-pane="qa" style="justify-content:center">Hỏi đáp ca này →</button>
         </div>

@@ -39,9 +39,27 @@ b,strong{font-weight:600}
 .menu-btn{display:none;font-family:var(--mono);font-size:11px;letter-spacing:.08em;border:1px solid var(--rule-2);padding:5px 8px}
 .tb-ico{display:none;width:30px;height:30px;border:1px solid var(--rule);place-items:center}
 .tb-ico svg{width:14px;height:14px;stroke:var(--ink-2);fill:none;stroke-width:1.6}
-.rail-nav{display:none;padding:16px 20px 0;margin-top:16px;border-top:1px solid var(--rule)}
-.rail-nav a{display:block;font-size:12.5px;color:var(--ink-2);padding:5px 0}
-.rail-nav a:hover{color:var(--accent)}
+.rail-nav{display:block;padding:14px 14px 0;margin-top:14px;border-top:1px solid var(--rule)}
+/* Ngăn kéo công cụ: đóng sẵn. Một nút gọn, mở ra thì chia nhóm có tiêu đề —
+   thay cho 48 dòng phẳng trước đây. */
+.rn-toggle{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;
+  background:none;border:1px solid var(--rule);padding:7px 10px;cursor:pointer;font:inherit;
+  text-align:left;color:var(--ink-2);border-radius:3px}
+.rn-toggle:hover{border-color:var(--ink);color:var(--ink)}
+.rn-toggle b{font-size:12px;font-weight:600;letter-spacing:.01em}
+.rn-toggle .rn-n{font-family:var(--mono);font-size:9px;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--ink-3)}
+.rn-body{margin-top:10px}
+.rn-body[hidden]{display:none}
+.rn-group{margin-bottom:12px}
+.rn-group:last-child{margin-bottom:0}
+.rn-h{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-3);margin-bottom:4px}
+.rn-group a{display:block;font-size:12.5px;color:var(--ink-2);padding:4px 0 4px 9px;
+  border-left:2px solid transparent;line-height:1.4}
+.rn-group a:hover{color:var(--accent);border-left-color:var(--rule-2)}
+.rn-group a.on{color:var(--accent);border-left-color:var(--accent);font-weight:600}
+.rn-group a.on::after{content:'·';margin-left:5px;color:var(--accent)}
 
 .backdrop{display:none;position:fixed;inset:54px 0 0;background:rgba(0,0,0,.45);z-index:55}
 .backdrop.on{display:block}
@@ -366,7 +384,6 @@ p{margin:0}
   .rail.open{transform:none}
   .menu-btn{display:block}
   .brand span{display:none}
-  .rail-nav{display:block}
   .room{grid-template-columns:minmax(0,1fr)}
   .side{position:static}
   .notes{grid-template-columns:minmax(0,1fr)}
@@ -1327,6 +1344,12 @@ html[data-motion="off"] *,html[data-motion="off"] *::before,html[data-motion="of
 .store-cell i.bad{color:var(--accent)}
 .set-acts{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
 .hist-box{margin-top:10px}
+/* Cảnh báo kho lưu — chỉ xuất hiện khi lần ghi gần nhất thật sự hỏng,
+   nên phải đủ nổi để không bị lướt qua giữa bảng Cài đặt. */
+.set-warn{margin-top:12px;padding:11px 13px;border:1px solid var(--accent);
+  border-left-width:4px;background:var(--accent-soft);color:var(--ink);
+  font-size:calc(12.5px * var(--fs,1));line-height:1.55;border-radius:3px}
+.set-warn b{font-weight:600;color:var(--accent)}
 .hist-h{display:flex;justify-content:space-between;align-items:baseline;margin:6px 0 6px}
 .hist-h .muted{font-family:var(--mono);font-size:9px;color:var(--ink-3)}
 .hist-list{border:1px solid var(--rule);max-height:230px;overflow:auto}

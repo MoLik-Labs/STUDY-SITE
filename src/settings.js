@@ -74,6 +74,7 @@ function renderSettings() {
   const p = prefs();
   const c = typeof pomoCfg === 'function' ? pomoCfg() : { presets: [[25, 5], [50, 10], [15, 3]] };
   const st = AppStore.status();
+  const health = AppStore.health();
 
   const SEC = [
     ['00', 'Ngôn ngữ', 'lang'], ['01', 'Giao diện', 'ui'],
@@ -238,6 +239,10 @@ function renderSettings() {
             <input type="file" id="setImport" accept="application/json,.json" hidden></label>
           <button class="btn ghost sm" id="setHist">Lịch sử ${''}</button>
         </div>
+        ${health.fail ? `<div class="set-warn" role="alert"><b>Lần ghi gần nhất thất bại.</b>
+          Trình duyệt báo hết chỗ lúc ${new Date(health.fail.at).toLocaleTimeString('vi-VN')} —
+          bản đang mở chưa chắc đã nằm trên đĩa. Bấm <b>Tải tệp .json</b> ngay rồi xoá bớt dữ liệu của trang khác.
+          Ghi chú đã lưu ở kho trình duyệt và cookie vẫn còn.</div>` : ''}
         <div id="histBox" class="hist-box"></div>
         <div class="danger">
           <span class="kicker">Vùng nguy hiểm</span>
@@ -339,10 +344,15 @@ function renderSettings() {
     if (!f) return;
     const rd = new FileReader();
     rd.onload = () => {
-      const s = AppStore.importText(rd.result);
-      if (!s) { toast('Tệp không đúng định dạng'); return; }
-      state = Object.assign(state, s);
-      applyPrefs(); save(); render(); toast('Đã nhập dữ liệu từ tệp');
+      const got = AppStore.importText(rd.result);
+      if (!got) { toast('Tệp không đúng định dạng hoặc quá lớn'); return; }
+      const before = Object.keys(state.ans||{}).length;
+      state = AppStore.merge(state, got.state);
+      applyPrefs(); save(); render();
+      const after = Object.keys(state.ans||{}).length;
+      if (got.dropped.length) toast('Đã nhập '+after+' câu trả lời · bỏ '+got.dropped.length+' mục không hợp lệ');
+      else if (before !== after) toast('Đã nhập dữ liệu · '+after+' câu trả lời');
+      else toast('Đã nhập dữ liệu từ tệp');
     };
     rd.readAsText(f);
   };

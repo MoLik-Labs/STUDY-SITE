@@ -3,6 +3,69 @@
 Định dạng theo [Keep a Changelog](https://keepachangelog.com/vi/1.1.0/), phiên bản theo [SemVer](https://semver.org/lang/vi/).
 Mọi thay đổi lớn đều có kiểm thử: `npm test` (check tĩnh + CSP + Worker + mô phỏng Workers + 83 bước jsdom).
 
+## [11.6.0] — 2026-11-14
+
+### Ba lỗi thật trong mục Khám phá
+
+Mục "Khám phá" (nút ▾ trên thanh trên) là nơi duy nhất liệt kê mọi trang. Nó
+có **một lỗi chí mạng**: bấm vào bất kỳ mục nào cũng **không đi đâu cả**.
+Handler đóng menu được gán *sau* handler điều hướng nên ghi đè nó, còn thẻ
+`<a>` không có `href` nên trình duyệt cũng không tự chuyển trang. Menu chỉ
+đóng lại. Chưa ai báo vì nó trông như "menu vừa đóng" chứ không như lỗi.
+
+| Lỗi | Hậu quả |
+|---|---|
+| Handler đóng ghi đè handler điều hướng, `<a>` không có `href` | Bấm mục nào cũng **không đi đâu cả**; bàn phím cũng không tới được mục nào |
+| `renderTop()` gắn listener `click` vào `document` mỗi lần đổi trang, không bao giờ gỡ | Đổi 60 trang → 60 listener chạy mãi trên mỗi cú bấm |
+| `.tb-menu.on{display:flex}` + `columns:2` | Hai cột không bao giờ hiện ra — flex container bỏ qua `columns` |
+
+Đồng thời: sáu nút công cụ trên thanh trên bị `display:none` ở màn hình hẹp,
+nên **điện thoại không có lối vào nào** ngoài ngăn kéo ☰. Giờ có nút Khám phá
+luôn hiện, và nó *thay* popup thay vì đứng cạnh (hai nút cùng tên là lỗi).
+
+### Lỗi dữ liệu hỏng làm trắng trang — có từ trước
+
+Chạy 132 tổ hợp *trang × dữ liệu hỏng* thì lộ ra ba chỗ ném ngoại lệ **ngay
+trong lúc render**, nghĩa là **mất cả trang** chứ không chỉ mất một thẻ:
+
+- `state.ans` có một mục `null` → `todayStats()` ném lỗi → **trang chủ trắng**.
+  Trang chủ là lộ trình Vật lí 9, nội dung lớn nhất của sản phẩm.
+- `state.watched = null` → `Library` ném lỗi trong `rowHTML`.
+- `state.explore.recent` chứa `null` → **cả trang Khám phá** ném lỗi.
+
+Cách sửa là sửa **cả lớp lỗi**, không phải từng chỗ: thêm `ansOf(id)` làm cửa
+duy nhất đọc `state.ans` (12 chỗ đọc đều đi qua nó), và mọi nơi đọc
+`state.watched` / `state.explore` đều chịu được giá trị rỗng.
+
+### Trang Khám phá `#/discover`
+
+- **Một bảng dữ liệu duy nhất** (`EXPLORE_GROUPS`, 36 lối vào) sinh ra cả trang,
+  popup trên thanh trên **và** mục trong ngăn kéo — trước đây là ba danh sách
+  chép tay, mỗi danh sách thiếu một thứ khác nhau.
+- Mỗi mục ghi rõ **khi nào nên dùng**, vì danh sách tên gọi không giúp gì khi
+  đang cần gấp.
+- **Tìm kiếm một thứ hạng** trên công cụ, bài học, công thức, hỏi đáp, lộ trình,
+  đề thi: bỏ dấu, đòi **mọi** từ khoá cùng khớp, xếp theo tên > mô tả > từ khoá.
+- **Đọc tiếp** và **việc đến hạn** suy ra từ dữ liệu thật — chưa đọc bài nào thì
+  nói thẳng "bắt đầu từ đâu", không bịa ra "đang đọc dở".
+- **Vừa mở**: 8 lối vào gần nhất, chỉ ghi khi danh sách thật sự đổi.
+- Bàn phím đầy đủ: `↑ ↓`, `Home/End`, `Enter`, `Esc`.
+- **Trang chủ được thêm vào bảng**: nó là tuyến mặc định nên không khớp mẫu
+  `p[0]==='…'`, và vì thế trước đây không có trong bất kỳ danh sách nào.
+
+### Chốt chặn mới
+
+`tools/check.js` luật **6b**: mọi tuyến không tham số **phải** có mặt trong
+`EXPLORE_GROUPS`, ngược lại mọi mục trong bảng phải trỏ tới tuyến có thật, không
+trùng, và phải có nhãn vi/en cùng câu "khi nào dùng". Đã thử bằng cách xoá mục
+`#/about` — bản dựng báo lỗi ngay.
+
+Đồng thời gỡ một khối `SCRIPTS`/`assert` bị chép hai lần trong `src/build.py`.
+
+**377 bước kiểm thử** (trước 336), bản dựng tất định, 42 tuyến render.
+
+---
+
 ## [11.5.0] — 2026-11-14
 
 ### Bốn lỗi làm chết trang — tìm bằng cách chạy thử, không phải đọc mã

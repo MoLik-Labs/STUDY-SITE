@@ -2,11 +2,11 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-bG06IHf8q1JxTaRB+a0o1jIY3+RlI51d5FLPEcKmUow=' 'sha256-CVgmugMy9TWKCz0mYkLD7pECAcciabLcLfhp88vbBaU=' 'sha256-3tSK5oOt7ZtKE2JWKIdqprAOQe4ZOGVIQ+7XgzbaagE=' 'sha256-Sp18EJDcvs6u3HVLJTs1L6XkQikQxm74RzzqR1Pru+8=' 'sha256-oDoYxWiTOhE2FQto3IIcytDj5bwbtVXSUE1A3q8qmcc=' 'sha256-ad46TqUzlyk2epFNJS6kUFUrXvL/2WNw49mje+3vDL0=' 'sha256-iEPGKqCQmawHh/WdCdHLbIN4siYgRkrc6mfluasoALU=' 'sha256-rNVwXY79d1sEgxc093d18Vu6vEfISesa7M19y00abGU=' 'sha256-5/CVUgkQ0vznR38tQ+PUt7G5pn/t64jAcgC1B2tXNxM=' 'sha256-xMwhvsW/8uycu3vXsLq5A4Vj05VrTElDxWqg0zQODvE=' 'sha256-zR2juYBM48ha9oTis1Y3k3oOpy+o01QYxWRfYOmroos='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' 'sha256-yt2tUvoXS1XKkzaokKLuqlVNwpiF2SgWg9WgmvELTQI=' https://fonts.googleapis.com; style-src-attr 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://i.ytimg.com https://*.ytimg.com blob:; media-src 'self' blob: https:; frame-src https://www.youtube-nocookie.com https://www.youtube.com; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'; upgrade-insecure-requests">
-<meta name="build-id" content="5ea1b751cfa2">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-bG06IHf8q1JxTaRB+a0o1jIY3+RlI51d5FLPEcKmUow=' 'sha256-CVgmugMy9TWKCz0mYkLD7pECAcciabLcLfhp88vbBaU=' 'sha256-3tSK5oOt7ZtKE2JWKIdqprAOQe4ZOGVIQ+7XgzbaagE=' 'sha256-HMCUlRk1W2LuSzGMoNEz1fjId/sfYwU7qzwz5F9R3ZA=' 'sha256-X+jiD0JfNm5quw3JAxiSNY9LGFv2E+7Fl1rSdlqiw6I=' 'sha256-4pUTEvTFXxWutvcNlUDZZgv+AWLyCTY7vDl/j2ncrr4=' 'sha256-RTpkHeMjLz8YvgCn5ELG/oK37CT/tkamFqrMfSQ9+9A=' 'sha256-iEPGKqCQmawHh/WdCdHLbIN4siYgRkrc6mfluasoALU=' 'sha256-rNVwXY79d1sEgxc093d18Vu6vEfISesa7M19y00abGU=' 'sha256-5/CVUgkQ0vznR38tQ+PUt7G5pn/t64jAcgC1B2tXNxM=' 'sha256-xMwhvsW/8uycu3vXsLq5A4Vj05VrTElDxWqg0zQODvE=' 'sha256-zR2juYBM48ha9oTis1Y3k3oOpy+o01QYxWRfYOmroos='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' 'sha256-izITJ8Cxt9pK34A9XRBi5uWgBhl0dsko9guWZxXdjDo=' https://fonts.googleapis.com; style-src-attr 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://i.ytimg.com https://*.ytimg.com blob:; media-src 'self' blob: https:; frame-src https://www.youtube-nocookie.com https://www.youtube.com; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'; upgrade-insecure-requests">
+<meta name="build-id" content="02d331e1fa51">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Study Focus Fox — Vật lí 9 · lớp 1–12 · học offline</title>
-<meta name="app-version" content="11.5">
+<meta name="app-version" content="11.6">
 <meta name="description" content="Một trang để học mọi thứ: lộ trình Vật lí 9, trường học lớp 1–12, thẻ ghi nhớ cách quãng, luyện đề tự tạo, kế hoạch học, thời khoá biểu và lịch học. Study Focus Fox · @its.fox_.">
 <meta name="theme-color" content="#f4f1ea" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#12110e" media="(prefers-color-scheme: dark)">
@@ -3254,6 +3254,113 @@ html[data-theme="pixelnight"] .rs-main:hover{background:var(--card)}
   .ph-next{grid-template-columns:1fr auto}
   .ph-next-t{grid-column:1/-1}
 }
+
+/* ============================================================
+   KHÁM PHÁ — trang #/discover + popup thanh trên
+   Pixel-art flavour: hard rules, mono labels, no soft shadows.
+   ============================================================ */
+.expl-page{padding-bottom:80px}
+.expl-search{display:flex;align-items:center;gap:10px;border:1px solid var(--ink);background:var(--card);
+  padding:10px 12px;margin-top:20px}
+.expl-search svg{width:15px;height:15px;stroke:var(--ink-3);fill:none;stroke-width:1.7;flex:none}
+.expl-search input{flex:1;min-width:0;border:0;background:none;font:inherit;font-size:15px;color:var(--ink);outline:none}
+.expl-search kbd{font-family:var(--mono);font-size:9px;letter-spacing:.1em;border:1px solid var(--rule-2);
+  padding:2px 5px;color:var(--ink-3);flex:none}
+.expl-search:focus-within{border-color:var(--accent);box-shadow:2px 2px 0 var(--accent-soft)}
+
+.expl-top{display:grid;grid-template-columns:minmax(0,1.6fr) repeat(auto-fit,minmax(150px,.6fr));gap:1px;
+  background:var(--rule);border:1px solid var(--rule);margin-top:22px}
+.expl-resume{background:var(--card);padding:16px 18px;display:flex;flex-direction:column;gap:3px;min-width:0}
+.expl-resume:hover{background:var(--paper)}
+.expl-resume b{font-family:var(--serif);font-size:19px;font-weight:600;line-height:1.25;
+  overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.expl-resume i{font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);font-style:normal}
+.expl-resume em{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--accent);font-style:normal;margin-top:6px}
+.expl-due{background:var(--card);padding:16px 18px;display:flex;flex-direction:column;justify-content:center;gap:2px}
+.expl-due:hover{background:var(--paper)}
+.expl-due b{font-family:var(--serif);font-size:26px;font-weight:400;line-height:1;color:var(--accent)}
+.expl-due span{font-size:12px;color:var(--ink-2)}
+.expl-due em{font-family:var(--mono);font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);font-style:normal;margin-top:5px}
+
+.expl-empty-top{border:1px dashed var(--rule-2);background:var(--card-2);padding:20px 22px;margin-top:22px}
+.expl-empty-top b{font-family:var(--serif);font-size:17px}
+.expl-empty-top p{margin:5px 0 12px;font-size:13px;color:var(--ink-2);max-width:52ch}
+
+.expl-sec{margin-top:30px}
+.expl-sec-h{display:flex;align-items:baseline;gap:10px;border-bottom:1px solid var(--ink);padding-bottom:6px;margin-bottom:1px}
+.expl-sec-h .kicker{color:var(--ink)}
+.expl-sec-h em{font-family:var(--mono);font-size:9px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);font-style:normal;margin-left:auto}
+.expl-sec-h a{font-family:var(--mono);font-size:9px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3)}
+.expl-sec-h a:hover{color:var(--accent)}
+
+.expl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-top:0}
+.expl-card{background:var(--card);padding:13px 15px 14px;display:flex;flex-direction:column;gap:4px;
+  min-height:78px;transition:background .12s}
+.expl-card:hover{background:var(--paper)}
+.expl-card b{font-family:var(--serif);font-size:15px;font-weight:600;line-height:1.3}
+.expl-card span{font-size:11.5px;line-height:1.5;color:var(--ink-3)}
+.expl-card:hover b{color:var(--accent)}
+
+.expl-recent{display:flex;gap:1px;background:var(--rule);border:1px solid var(--rule);border-top:0;
+  flex-wrap:wrap}
+.expl-recent a{background:var(--card);padding:10px 13px;min-width:170px;flex:1}
+.expl-recent a:hover{background:var(--paper)}
+.expl-recent b{display:block;font-size:13px;font-weight:600}
+.expl-recent i{display:block;font-size:10.5px;color:var(--ink-3);font-style:normal;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.expl-out{margin-top:18px;border:1px solid var(--rule)}
+.expl-h{display:flex;align-items:baseline;gap:12px;padding:9px 13px;background:var(--card-2);border-bottom:1px solid var(--rule)}
+.expl-h .kicker{color:var(--ink-2)}
+.expl-clear{font-family:var(--mono);font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);margin-left:auto}
+.expl-clear:hover{color:var(--accent)}
+.expl-row{display:grid;grid-template-columns:82px minmax(0,1fr) minmax(0,.9fr) 18px;gap:12px;align-items:baseline;
+  padding:10px 13px;border-bottom:1px solid var(--rule);background:var(--card)}
+.expl-row:last-child{border-bottom:0}
+.expl-row:hover,.expl-row.on{background:var(--paper)}
+.expl-row.on{box-shadow:inset 3px 0 0 var(--accent)}
+.expl-row .k{font-family:var(--mono);font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.expl-row .t{font-size:13.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.expl-row .d{font-size:11.5px;color:var(--ink-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.expl-row .go{font-family:var(--mono);color:var(--ink-3);text-align:right}
+.expl-row:hover .go{color:var(--accent)}
+.expl-none{padding:22px 18px;background:var(--card)}
+.expl-none b{font-family:var(--serif);font-size:16px}
+.expl-none p{margin:5px 0 12px;font-size:12.5px;color:var(--ink-2)}
+
+/* ---- popup Khám phá (thanh trên) ---- */
+.tb-menu{max-height:min(74vh,620px);overflow:auto;min-width:300px;columns:2;column-gap:0;padding:0}
+/* .tb-menu.on ở trên đặt display:flex — flex container BỎ QUA columns, nên hai cột
+   không bao giờ hiện ra. Đổi sang block để thuộc tính columns có tác dụng. */
+.tb-menu.on{display:block}
+.tb-menu .tm-head{column-span:all;padding:10px 12px;border-bottom:1px solid var(--rule)}
+.tb-menu .tm-all b{display:block;font-family:var(--serif);font-size:14px;font-weight:600;color:var(--ink)}
+.tb-menu .tm-all span{display:block;font-size:10.5px;color:var(--ink-3);margin-top:1px}
+.tb-menu .tm-all:hover b{color:var(--accent)}
+.tb-menu .tm-grp{break-inside:avoid;padding:6px 4px 8px}
+.tb-menu .tm-2{columns:2;column-gap:0;break-inside:avoid}
+.tb-menu .tm-2 a{break-inside:avoid;white-space:nowrap}
+.tb-menu .tm-lbl{display:block;font-family:var(--mono);font-size:8.5px;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--ink-3);padding:6px 9px 4px}
+.tb-menu a[data-nav]{display:block;break-inside:avoid}
+.tb-menu a[data-nav]:hover,.tb-menu a[data-nav]:focus-visible{background:var(--paper);color:var(--accent)}
+@media(max-width:760px){
+  .tb-menu{columns:1;min-width:0;width:min(88vw,320px)}
+  .expl-top{grid-template-columns:1fr}
+  .expl-row{grid-template-columns:70px minmax(0,1fr) 16px}
+  .expl-row .d{display:none}
+  .expl-grid{grid-template-columns:1fr}
+  .expl-search input{font-size:14px}
+}
+
+/* Nút Khám phá phải sống trên điện thoại: sáu .tb-btn bị ẩn ở ≤760px nên trước
+   đây màn hình hẹp không có lối vào công cụ nào ngoài ngăn kéo ☰. */
+.tb-key{display:none;font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--ink);border:1px solid var(--ink);padding:5px 8px;white-space:nowrap;background:var(--card)}
+.tb-key:hover{background:var(--ink);color:var(--paper)}
+/* ≤980px: nút Khám phá gọn thay cho popup. Hai nút cùng tên cạnh nhau là lỗi. */
+@media(max-width:980px){.tb-key{display:inline-block}.tb-more{display:none}}
+@media(max-width:560px){.tb-key{padding:4px 7px;font-size:9.5px}}
 </style>
 </head>
 <body>
@@ -3275,7 +3382,7 @@ html[data-theme="pixelnight"] .rs-main:hover{background:var(--card)}
       <em>·</em>
       <a href="#/about">giới thiệu</a>
       <em>·</em>
-      <span class="foot-v" title="phiên bản">v11.5</span>
+      <span class="foot-v" title="phiên bản">v11.6</span>
     </span>
   </div>
 </footer>
@@ -5219,7 +5326,7 @@ if(P.accent)document.documentElement.style.setProperty('--accent',P.accent);
 <!-- ===== LÕI — biến thể, lưu trữ, i18n, thương hiệu ===== -->
 <script>/* ---- phiên bản ---- */
 /* phiên bản — sinh từ src/build.py */
-const APP_VERSION = '11.5';
+const APP_VERSION = '11.6';
 
 /* ---- thương hiệu ---- */
 /* =========================================================
@@ -5589,6 +5696,7 @@ const I18N = {
   lesson_share: { vi: 'Chia sẻ bài này', en: 'Share this lesson' },
 
   more: { vi: 'Khám phá', en: 'Explore' },
+  nav_discover: { vi: 'Khám phá', en: 'Explore' },
   search_ph: { vi: 'Tìm bài, công thức, câu hỏi', en: 'Search lessons, formulas, questions' },
   scope_change: { vi: 'Đổi lớp và môn', en: 'Change grade and subject' },
   btn_calc: { vi: 'Máy giải', en: 'Solver' },
@@ -5773,7 +5881,7 @@ function streak(){
 }
 const doneCount=()=>DAYS.reduce((a,d)=>a+d.sessions.filter(s=>state.done[sid(d.n,s.n)]).length,0);
 const dayDone=d=>d.sessions.filter(s=>state.done[sid(d.n,s.n)]).length;
-const watchedCount=()=>Object.keys(state.watched).length;
+const watchedCount=()=>Object.keys(state.watched||{}).length;
 
 /* ---------- ui helpers ---------- */
 function toast(msg){
@@ -5871,44 +5979,10 @@ function renderTop(){
       <button class="tb-btn" data-nav="#/calc">${tl('btn_calc')}</button>
       <button class="tb-btn" data-nav="#/sim">${tl('btn_sim')}</button>
       <button class="tb-btn" data-nav="#/exam">${tl('btn_exam')}</button>
+      <a class="tb-key" href="#/discover" aria-label="${tl('nav_discover')}">${tl('more')} ▾</a>
       <span class="tb-more">
-        <button class="tb-btn" id="tbMoreBtn" aria-expanded="false" aria-controls="tbMenu">${tl('more')} ▾</button>
-        <span class="tb-menu" id="tbMenu" role="menu">
-          <a data-nav="#/physics" role="menuitem" class="tb-key">${tl('nav_physics')}</a>
-          <a data-nav="#/study" role="menuitem">${tl('nav_study')}</a>
-          <a data-nav="#/cards" role="menuitem">${tl('nav_cards')}</a>
-          <a data-nav="#/practice" role="menuitem">${tl('nav_practice')}</a>
-          <a data-nav="#/plan" role="menuitem">${tl('nav_plan')}</a>
-          <a data-nav="#/weekly" role="menuitem">${tl('nav_weekly')}</a>
-          <a data-nav="#/grades" role="menuitem">${tl('nav_grades')}</a>
-          <a data-nav="#/focus" role="menuitem">${tl('nav_focus')}</a>
-          <a data-nav="#/timetable" role="menuitem">${tl('nav_timetable')}</a>
-          <a data-nav="#/calendar" role="menuitem">${tl('nav_calendar')}</a>
-          <span class="tb-sep"></span>
-          <a data-nav="#/game" role="menuitem">${tl('nav_game')}</a>
-          <a data-nav="#/share" role="menuitem">${tl('nav_share')}</a>
-          <a data-nav="#/special" role="menuitem">${tl('nav_special')}</a>
-          <span class="tb-sep"></span>
-          <a data-nav="#/subjects" role="menuitem">${tl('nav_subjects')}</a>
-          <a data-nav="#/studio" role="menuitem">${tl('nav_studio')}</a>
-          <a data-nav="#/mine" role="menuitem">${tl('nav_mine')}</a>
-          <a data-nav="#/files" role="menuitem">${tl('nav_files')}</a>
-          <span class="tb-sep"></span>
-          <a data-nav="#/build" role="menuitem">${tl('nav_build')}</a>
-          <a data-nav="#/builder" role="menuitem">${tl('nav_builder')}</a>
-          <a data-nav="#/lab" role="menuitem">${tl('nav_lab')}</a>
-          <a data-nav="#/solve" role="menuitem">${tl('nav_solve')}</a>
-          <a data-nav="#/library" role="menuitem">${tl('nav_library')}</a>
-          <a data-nav="#/notes" role="menuitem">${tl('nav_notes')}</a>
-          <a data-nav="#/papers" role="menuitem">${tl('nav_papers')}</a>
-          <a data-nav="#/qa" role="menuitem">${tl('nav_qa')}</a>
-          <a data-nav="#/review" role="menuitem">${tl('nav_review')}</a>
-          <span class="tb-sep"></span>
-          <a data-nav="#/progress" role="menuitem">${tl('nav_progress')}</a>
-          <a data-nav="#/stats" role="menuitem">${tl('nav_stats')}</a>
-          <a data-nav="#/settings" role="menuitem">${tl('nav_settings')}</a>
-          <a data-nav="#/about" role="menuitem">${tl('nav_about')}</a>
-        </span>
+        <button class="tb-btn" id="tbMoreBtn" aria-expanded="false" aria-controls="tbMenu" aria-haspopup="true">${tl('more')} ▾</button>
+        <span class="tb-menu" id="tbMenu" role="menu" aria-label="${tl('more')}">${typeof explMenuBody === 'function' ? explMenuBody() : ''}</span>
       </span>
       <button class="tb-search" id="openSearch">
         <svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.6"/><path d="M10.5 10.5 14 14"/></svg>
@@ -5926,15 +6000,60 @@ function renderTop(){
   $('#openSearch').onclick=openSearchOverlay;
   const gear=$('#openSettings');
   if(gear) gear.onclick=()=>go('#/settings');
-  const mb=$('#tbMoreBtn'), mm=$('#tbMenu');
-  if(mb&&mm){
-    mb.onclick=e=>{e.stopPropagation();const on=mm.classList.toggle('on');mb.setAttribute('aria-expanded',String(on));};
-    document.addEventListener('click',ev=>{if(!mm.contains(ev.target)&&ev.target!==mb){mm.classList.remove('on');mb.setAttribute('aria-expanded','false');}});
-    $$('#tbMenu [data-nav]').forEach(a=>a.onclick=()=>{mm.classList.remove('on');});
-  }
+  bindExploreMenu();
   const gearM=$('#openSettingsM');
   if(gearM) gearM.onclick=()=>{go('#/settings');closeRail();};
   $('#openSearchM').onclick=openSearchOverlay;
+}
+
+/* Khám phá — popup trên thanh trên.
+   Trước đây mỗi lần đổi trang lại gắn thêm một listener 'click' vào document
+   mà không bao giờ gỡ, nên sau N trang có N listener chạy mãi. Giờ chỉ gắn
+   một lần; phần tử được thay bằng innerHTML nên gắn lại cũng vô hại. */
+let explMenuOff = null;
+function bindExploreMenu() {
+  const mb = $('#tbMoreBtn'), mm = $('#tbMenu');
+  if (!mb || !mm) return;
+  const setOpen = on => {
+    mm.classList.toggle('on', on);
+    mb.setAttribute('aria-expanded', String(on));
+  };
+  const isOpen = () => mm.classList.contains('on');
+  if (explMenuOff) explMenuOff();
+  mb.onclick = e => { e.stopPropagation(); setOpen(!isOpen()); };
+  const onDoc = ev => { if (isOpen() && !mm.contains(ev.target) && ev.target !== mb) setOpen(false); };
+  const onKey = ev => {
+    if (ev.key === 'Escape' && isOpen()) { setOpen(false); mb.focus(); }
+  };
+  document.addEventListener('click', onDoc);
+  document.addEventListener('keydown', onKey);
+  explMenuOff = () => {
+    document.removeEventListener('click', onDoc);
+    document.removeEventListener('keydown', onKey);
+    explMenuOff = null;
+  };
+  /* Chọn một mục thì ĐI TỚI ĐÓ rồi mới đóng.
+     Bản cũ chỉ đóng menu: handler đóng được gán sau handler điều hướng nên ghi
+     đè nó, và vì <a> không có href nên trình duyệt cũng không tự chuyển trang.
+     Kết quả: bấm mục nào cũng chỉ làm menu biến mất — không đi đâu cả. */
+  $$('#tbMenu [data-nav]').forEach(a => {
+    a.onclick = ev => {
+      ev.preventDefault();
+      setOpen(false);
+      closeRail();
+      go(a.dataset.nav);
+    };
+    a.onkeydown = ev => {
+      const rows = $$('#tbMenu [data-nav]');
+      const i = rows.indexOf(a);
+      if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') {
+        ev.preventDefault();
+        const next = ev.key === 'ArrowDown' ? (i + 1) % rows.length : (i - 1 + rows.length) % rows.length;
+        rows[next].focus();
+      } else if (ev.key === 'Home') { ev.preventDefault(); rows[0].focus(); }
+      else if (ev.key === 'End') { ev.preventDefault(); rows[rows.length - 1].focus(); }
+    };
+  });
 }
 
 /* thanh trên + rail đọc lại lớp/môn đang chọn sau khi trang đổi phạm vi */
@@ -5996,25 +6115,12 @@ function renderRail(){
       <div class="bar"><i style="width:${TOTAL_SESS?dc/TOTAL_SESS*100:0}%"></i></div>
     </div>
     <div class="rail-nav">
-      <a href="#/subjects"><b>Khoá học lớp 1–12</b></a>
-      <a href="#/studio">Tạo bài học · tải tệp</a>
-      <a href="#/mine">Bài của tôi</a>
-      <a href="#/calc">Máy giải &amp; vẽ hình</a>
-      <a href="#/build">Bảng mạch</a>
-      <a href="#/builder">Mạch lồng nhau · thêm bớt R</a>
-      <a href="#/sim">Băng thí nghiệm</a>
-      <a href="#/lab">Phòng thí nghiệm</a>
-      <a href="#/sheet">Tạo phiếu in</a>
+      <a href="#/discover"><b>Khám phá · mọi lối vào</b></a>
+      <a href="#/study">Học hôm nay</a>
+      <a href="#/subjects">Khoá học lớp 1–12</a>
+      <a href="#/physics">Mục Vật lí</a>
       <a href="#/exam">Thi thử 15 câu</a>
-      <a href="#/review">Luyện câu sai</a>
-      <a href="#/solve">Bài giải mẫu</a>
-      <a href="#/flash">Flashcard công thức</a>
-      <a href="#/library">Thư viện bài giảng</a>
-      <a href="#/notes">Sổ tay công thức</a>
       <a href="#/settings"><b>Tuỳ biến giao diện &amp; pomodoro</b></a>
-      <a href="#/papers">Đề thi &amp; lời giải</a>
-      <a href="#/qa">Hỏi đáp</a>
-      <a href="#/stats">Tiến độ của bạn</a>
     </div>`;
   $$('#rail a').forEach(a=>a.addEventListener('click',closeRail));
 }
@@ -6178,7 +6284,7 @@ function renderLesson(dn,sn,pane){
   const done=!!state.done[sid(d.n,s.n)];
   const qs=quizFor(d.n,s.n,d);
   const qaList=qaOfTopic(TOPIC_OF_DAY(d));
-  const answerdCount=qs.filter(x=>state.ans[x.id]&&state.ans[x.id].ok).length;
+  const answerdCount=qs.filter(x=>{const a=ansOf(x.id);return a&&a.ok;}).length;
 
   $('#main').innerHTML=`
     <section class="wrap">
@@ -6626,20 +6732,20 @@ function renderQuizPane(host,d,s,qs){
   let idx=0;
   const draw=()=>{
     const q=qs[idx];
-    const a=state.ans[q.id];
+    const a=ansOf(q.id);
     host.innerHTML=`
       <div class="quiz">
         <div class="qmeta">
           <span class="kicker">Câu ${idx+1} / ${qs.length}</span>
           <span class="qdots">${qs.map((x,i)=>{
-            const p=state.ans[x.id];
+            const p=ansOf(x.id);
             const c=i===idx?'cur':(p?(p.ok?'ok':'no'):'');
             return `<i class="${c}"></i>`;
           }).join('')}</span>
         </div>
         <div id="qslot"></div>
         <div class="qfoot">
-          <span class="qscore">${qs.filter(x=>state.ans[x.id]).length} / ${qs.length} câu đã trả lời · đúng ${qs.filter(x=>state.ans[x.id]&&state.ans[x.id].ok).length}</span>
+          <span class="qscore">${qs.filter(x=>!!ansOf(x.id)).length} / ${qs.length} câu đã trả lời · đúng ${qs.filter(x=>{const a=ansOf(x.id);return a&&a.ok;}).length}</span>
           <span style="display:flex;gap:8px">
             ${idx>0?'<button class="btn ghost sm" id="prevQ">← Câu trước</button>':''}
             ${idx<qs.length-1?'<button class="btn ghost sm" id="nextQ">Câu tiếp →</button>':''}
@@ -6816,7 +6922,7 @@ function renderLibrary(){
       const g=document.createElement('div');
       g.className='lib-group';
       const K=normq?rows.length:4;        /* có từ khoá thì mở hết */
-      const rowHTML=([id,v],i)=>`<button class="lib-row${state.watched[id]?' seen':''}" data-vid="${id}">
+      const rowHTML=([id,v],i)=>`<button class="lib-row${(state.watched||{})[id]?' seen':''}" data-vid="${id}">
           <span class="i">${String(i+1).padStart(2,'0')}</span>
           <span class="t">${v.pick?'<em>chọn</em>':''}${v.t}</span>
           <span class="w">${shortWho(v.who)}</span>
@@ -7066,6 +7172,9 @@ function render(){
   if (typeof mountDocks === 'function') mountDocks();
   const h=location.hash||'#/';
   renderTop(); renderRail();
+  /* ghi lại lối vào vừa mở để trang Khám phá có mục "Vừa mở".
+     Chỉ những route không tham số mới được ghi (hàm tự lọc). */
+  if(typeof explRecord==='function') { try{ explRecord(h); }catch(e){} }
   syncBrandChrome();
   const [path,query]=h.replace(/^#/,'').split('?');
   const p=path.split('/').filter(Boolean);
@@ -7077,6 +7186,7 @@ function render(){
   }
   if(p[0]==='lesson'&&p[1]&&p[2]) return renderLesson(p[1],p[2],qp.get('pane')||state.pane);
   if(p[0]==='day'&&p[1]) return renderDay(p[1]);
+  if(p[0]==='discover') return renderDiscover(qp.get('q')||'');
   if(p[0]==='library') return renderLibrary();
   if(p[0]==='notes') return renderNotes(qp.get('q')||'');
   if(p[0]==='papers') return renderPapers();
@@ -7222,11 +7332,15 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 /* ---------- helpers ---------- */
 const ALLQ=QS;
-const wrongList=()=>ALLQ.filter(q=>state.ans[q.id]&&!state.ans[q.id].ok);
+const wrongList=()=>ALLQ.filter(q=>{const a=ansOf(q.id);return a&&!a.ok;});
 const reviewList=()=>typeof dueList==='function'?dueList():wrongList();
 const answerStats=()=>{
-  const a=Object.values(state.ans);
-  return {n:a.length, ok:a.filter(x=>x.ok).length};
+  /* đếm qua ansOf: một mục null trong state.ans làm Object.values().filter
+     ném lỗi và cả trang Thống kê trắng. */
+  const keys=Object.keys(state.ans||{});
+  let ok=0, n=0;
+  keys.forEach(k=>{ const a=ansOf(k); if(a){ n++; if(a.ok) ok++; } });
+  return {n, ok};
 };
 function pageHead(kicker,h1,p){
   return `<div class="page-head"><span class="kicker">${kicker}</span>
@@ -7534,7 +7648,7 @@ function renderReview(){
         </span></div>`;
     const slot=$('#revSlot');
     renderQuestion(slot,q,{revealed:false,picked:undefined,onAnswer:ok=>{
-      const a=state.ans[q.id];
+      const a=ansOf(q.id);
       if(a){
         const box=Math.min(4,a.box||0);
         toast(ok?`Đúng · lên hộp ${box+1}${SRS_DAYS[box]?` — ôn lại sau ${SRS_DAYS[box]} ngày`:' — ôn lại sau 21 ngày'}`
@@ -7662,7 +7776,7 @@ function renderFlash(){
 function renderStats(){
   const st=answerStats();
   const byT={};
-  ALLQ.forEach(q=>{const k=q.t;byT[k]=byT[k]||{n:0,seen:0,ok:0};byT[k].n++;const a=state.ans[q.id];if(a){byT[k].seen++;if(a.ok)byT[k].ok++;}});
+  ALLQ.forEach(q=>{const k=q.t;byT[k]=byT[k]||{n:0,seen:0,ok:0};byT[k].n++;const a=ansOf(q.id);if(a){byT[k].seen++;if(a.ok)byT[k].ok++;}});
   const runs=(state.runs||[]).slice().reverse();
   $('#main').innerHTML=`<section class="wrap wide">
     ${pageHead('Tiến độ','Toàn bộ số liệu học tập của bạn','Lưu trong trình duyệt này. Không có tài khoản, không gửi dữ liệu đi đâu.')}
@@ -7758,7 +7872,7 @@ const DAY_MS = 86400000;
 
 /* ---------- ghi nhận một câu trả lời, cập nhật hộp ---------- */
 function srsRecord(id, ok, p) {
-  const prev = state.ans[id] || {};
+  const prev = ansOf(id) || {};
   const box = ok ? Math.min(SRS_DAYS.length - 1, (prev.box || 0) + 1) : 0;
   const due = ok ? Date.now() + SRS_DAYS[box] * DAY_MS : Date.now();
   state.ans[id] = { ok, p, at: Date.now(), box, due, tries: (prev.tries || 0) + 1 };
@@ -7770,7 +7884,7 @@ function srsRecord(id, ok, p) {
 function dueList() {
   const now = Date.now();
   return ALLQ.filter(q => {
-    const a = state.ans[q.id];
+    const a = ansOf(q.id);
     if (!a) return false;
     if (a.due === undefined) return !a.ok;       /* dữ liệu cũ: chỉ câu sai */
     return a.due <= now;
@@ -7779,7 +7893,7 @@ function dueList() {
 function srsBoxes() {
   const c = [0, 0, 0, 0, 0];
   ALLQ.forEach(q => {
-    const a = state.ans[q.id];
+    const a = ansOf(q.id);
     if (!a) return;
     c[Math.min(4, a.box || 0)]++;
   });
@@ -7787,11 +7901,25 @@ function srsBoxes() {
 }
 
 /* ---------- thống kê hôm nay ---------- */
+/* Every reader of state.ans goes through here.
+   The map is user-writable through localStorage/JSON import, so an entry can
+   be null, a string, or `{}`. Before this guard, one null entry made
+   todayStats() throw and the HOME PAGE failed to render — the most important
+   page in the product, killed by a corrupt save. `at` defaults to 0 instead
+   of undefined so arithmetic on it stays finite. */
+function ansOf(id) {
+  const a = state && state.ans ? state.ans[id] : null;
+  return (a && typeof a === 'object') ? a : null;
+}
+
 function todayStats() {
   const t0 = new Date(); t0.setHours(0, 0, 0, 0);
   const from = t0.getTime();
   let n = 0, ok = 0;
-  Object.values(state.ans).forEach(a => { if (a.at >= from) { n++; if (a.ok) ok++; } });
+  Object.keys(state.ans || {}).forEach(k => {
+    const a = ansOf(k);
+    if (a && typeof a.at === 'number' && a.at >= from) { n++; if (a.ok) ok++; }
+  });
   const goal = state.goal || 20;
   return { n, ok, goal, pct: Math.min(100, Math.round(n / goal * 100)), streak: streak(), due: dueList().length };
 }
@@ -7802,7 +7930,7 @@ function topicStats() {
   const byId = {};
   rows.forEach(r => byId[r.id] = r);
   ALLQ.forEach(q => {
-    const a = state.ans[q.id];
+    const a = ansOf(q.id);
     if (!a) return;
     const r = byId[q.t]; if (!r) return;
     r.n++; if (a.ok) r.ok++;
@@ -7936,7 +8064,10 @@ function nextSessionLink() {
 function routineState() {
   const t0 = new Date(); t0.setHours(0, 0, 0, 0);
   const from = t0.getTime();
-  const ansN = Object.values(state.ans).filter(a => a.at >= from).length;
+  const ansN = Object.keys(state.ans || {}).filter(k => {
+    const a = ansOf(k);
+    return a && typeof a.at === 'number' && a.at >= from;
+  }).length;
   const lesN = Object.keys(state.doneAt || {}).filter(k => state.doneAt[k] >= from).length;
   const runN = (state.runs || []).filter(r => r.at >= from).length;
   const goal = state.goal || 20;
@@ -8153,6 +8284,393 @@ function mountTopicDrills(root) {
       drillExam([t], 10, 'Chủ đề ' + t);
     };
   });
+}
+</script>
+
+<!-- ===== KHÁM PHÁ — một bảng cho mọi lối vào, tìm kiếm toàn kho ===== -->
+<script>/* ---- khám phá ---- */
+/* =========================================================
+   KHÁM PHÁ · #/discover
+   ---------------------------------------------------------
+   The product has ~40 routes. Until now they lived in three
+   half-overlapping lists — the rail, a flat "Explore ▾" popup and
+   the ⌘K palette — so the same destination had up to three names
+   and none of them said *why* you would go there.
+
+   This module is the one place that answers "what can I open?":
+
+     · EXPLORE_GROUPS is the single table of every destination,
+       with `need` explaining WHEN to use it (a menu of names is
+       useless, which is what made the old popup hard to use);
+     · explSearch q   — one ranked search over tools, lessons,
+                        formulas, Q&A, plan sessions and papers;
+     · explRecent     — what you actually used, and a resume card
+                        derived from real state (last lesson read,
+                        cards due, unread lessons);
+     · renderDiscover — the page, reachable at #/discover and from
+                        every Explore button.
+
+   The topbar popup and the rail are rendered from the same table,
+   so a new route cannot exist in one place and be missing from the
+   other. tools/check.js enforces that every non-parameterised route
+   appears here.
+   ========================================================= */
+
+/* Every destination, once. `kw` carries the Vietnamese words a student
+   might type (diacritic-free) that the visible name does not contain. */
+const EXPLORE_GROUPS = [
+  {
+    id: 'hoc', vi: 'Học mỗi ngày', en: 'Every day', spread: true,
+    items: [
+      /* trang chủ là lộ trình Vật lí 9 — nội dung lớn nhất của sản phẩm. Nó là
+         tuyến mặc định nên không khớp mẫu `p[0]===…`, và vì thế đã từng không
+         xuất hiện ở bất kỳ danh sách nào ngoài logo. */
+      { href: '#/', vi: 'Lộ trình 13 ngày', en: '13-day plan', need: 'Toàn bộ lộ trình Vật lí 9, chia theo 4 giai đoạn', kw: 'lo trinh 13 ngay vat li 9 trang chu roadmap' },
+      { href: '#/study', vi: 'Học hôm nay', en: 'Today', need: 'Việc cần làm hôm nay, chuỗi ngày, tiến độ môn', kw: 'dashboard hom nay viec can lam chuoi ngay' },
+      { href: '#/cards', vi: 'Thẻ ghi nhớ', en: 'Flashcards', need: 'Ôn theo lịch lặp lại cách quãng — thẻ đáo hạn hiện ở đây', kw: 'the ghi nho flashcard on cach quang on tap' },
+      { href: '#/practice', vi: 'Luyện đề tự tạo', en: 'Practice', need: 'Tự chọn lớp, môn, số câu rồi tự chấm', kw: 'luyen de tu tao kiem tra cau hoi' },
+      { href: '#/plan', vi: 'Kế hoạch tới ngày thi', en: 'Plan', need: 'Chia bài theo số ngày còn lại trước deadline', kw: 'ke hoach hoc deadline thi' },
+      { href: '#/weekly', vi: 'Kế hoạch tuần', en: 'Week', need: 'Rải việc theo 7 ngày, kéo thả, dồn một ngày', kw: 'ke hoach tuan lich tuan' },
+      { href: '#/focus', vi: 'Đồng hồ tập trung', en: 'Focus timer', need: 'Pomodoro 15/25/45/50 phút, có nhật ký phút học', kw: 'pomodoro dong ho hen gio tap trung' },
+      { href: '#/grades', vi: 'Sổ điểm', en: 'Grades', need: 'Nhập điểm thật, tính điểm trung bình theo hệ số', kw: 'so diem bang diem diem trung binh' },
+      { href: '#/timetable', vi: 'Thời khoá biểu', en: 'Timetable', need: 'Lịch học theo thứ và tiết', kw: 'thoi khoa bieu tkb tiet hoc' },
+      { href: '#/calendar', vi: 'Lịch', en: 'Calendar', need: 'Xem tháng, thêm việc có giờ', kw: 'lich thang su kien' },
+    ],
+  },
+  {
+    id: 'khoa', vi: 'Khoá học lớp 1–12', en: 'Courses, grade 1–12',
+    items: [
+      { href: '#/subjects', vi: 'Chọn lớp & môn', en: 'Subjects', need: 'Cửa vào toàn bộ bài học theo lớp, theo môn', kw: 'khoa hoc lop mon bai hoc' },
+      { href: '#/physics', vi: 'Mục Vật lí', en: 'Physics', need: 'Một chỗ cho cả Vật lí: lộ trình, 8 công cụ, công thức, chủ đề yếu', kw: 'vat li physics vat ly' },
+      { href: '#/library', vi: 'Thư viện bài giảng', en: 'Lectures', need: '236 bài giảng đã chọn lọc, lọc được theo chủ đề', kw: 'thu vien bai giang video' },
+      { href: '#/notes', vi: 'Sổ tay công thức', en: 'Formula sheet', need: 'Tra 57 công thức, in ra được', kw: 'so tay cong thuc tra cuu' },
+      { href: '#/papers', vi: 'Đề thi & lời giải', en: 'Papers', need: '54 bộ đề chuyên kèm hướng dẫn', kw: 'de thi chuyen hsg loi giai' },
+      { href: '#/qa', vi: 'Hỏi đáp', en: 'Q&A', need: 'Câu hỏi thường gặp, gõ không dấu vẫn ra', kw: 'hoi dap cau hoi thuong gap' },
+      { href: '#/review', vi: 'Luyện câu sai', en: 'Review', need: 'Ôn lại đúng những câu bạn từng làm sai', kw: 'on cau sai on cach quang' },
+      { href: '#/studio', vi: 'Tạo bài học', en: 'New lesson', need: 'Tự soạn bài, dán tài liệu, thêm ảnh và câu hỏi', kw: 'tao bai hoc tu soan studio' },
+      { href: '#/mine', vi: 'Bài của tôi', en: 'My lessons', need: 'Sửa lại các bài bạn tự soạn', kw: 'bai cua toi tu soan' },
+      { href: '#/files', vi: 'Kho tệp', en: 'Files', need: 'Ảnh, PDF, Word bạn đã tải lên', kw: 'kho tep tai len upload file' },
+    ],
+  },
+  {
+    id: 'congcu', vi: 'Công cụ Vật lí', en: 'Physics tools', spread: true,
+    items: [
+      { href: '#/calc', vi: 'Máy giải 16 dạng', en: 'Solver', need: 'Có số liệu, cần lời giải từng bước', kw: 'may giai solver bai tap' },
+      { href: '#/solve', vi: 'Bài giải mẫu', en: 'Worked solutions', need: 'Xem cách trình bày một bài tự luận', kw: 'bai giai mau tu luan' },
+      { href: '#/special', vi: 'Đọc đề tự động', en: 'Read a problem', need: 'Dán cả đề, máy rút đại lượng và chọn định luật', kw: 'doc de tu dong rut dai luong' },
+      { href: '#/build', vi: 'Bảng mạch', en: 'Circuit board', need: 'Kéo–thả điện trở, nguồn, ampe kế', kw: 'bang mach mach dien keo tha' },
+      { href: '#/builder', vi: 'Mạch lồng nhau', en: 'Nested circuit', need: 'Nhiều tầng nối tiếp / song song, thêm bớt R', kw: 'mach long nhau noi tiep song song' },
+      { href: '#/sim', vi: 'Mô phỏng', en: 'Simulation', need: 'Xem hiện tượng chạy thay vì đọc công thức', kw: 'mo phong khuc xa bong toi dong nang' },
+      { href: '#/lab', vi: 'Phòng thí nghiệm', en: 'Lab', need: 'Bốn bàn thực hành: đo, cân, nhiệt, quang', kw: 'phong thi nghiem thuc hanh' },
+      { href: '#/exam', vi: 'Thi thử 15 câu', en: 'Mock exam', need: '20 phút, chấm điểm, lưu câu sai', kw: 'thi thu de 15 cau 20 phut' },
+      { href: '#/flash', vi: 'Flashcard công thức', en: 'Formula cards', need: 'Học thuộc công thức bằng thẻ', kw: 'flashcard cong thuc hoc thuoc' },
+      { href: '#/sheet', vi: 'Tạo phiếu in', en: 'Printable sheet', need: 'In đề cho lớp hoặc cho mình', kw: 'phieu in de giao vien in an' },
+    ],
+  },
+  {
+    id: 'tien', vi: 'Tiến độ & khác', en: 'Progress & more',
+    items: [
+      { href: '#/progress', vi: 'Tiến độ tổng', en: 'Progress', need: 'Báo cáo tuần: phút học, độ chính xác, lời khuyên', kw: 'tien do bao cao thong ke phut hoc' },
+      { href: '#/stats', vi: 'Thống kê', en: 'Stats', need: 'Số liệu thô: số câu, hộp ôn, chủ đề yếu', kw: 'thong ke so lieu hop on' },
+      { href: '#/share', vi: 'Khoe tiến độ', en: 'Share progress', need: 'Xuất thiệp tiến độ để đăng hoặc gửi bạn', kw: 'chia se khoe tien do the anh' },
+      { href: '#/game', vi: 'Đấu trường', en: 'Study game', need: 'Học bằng trò chơi khi không muốn đọc', kw: 'game dau truong tro choi' },
+      { href: '#/settings', vi: 'Tuỳ biến', en: 'Settings', need: 'Cỡ chữ, sáng/tối, pomodoro, ngôn ngữ', kw: 'tuy bien cai dat sang toi co chu' },
+      { href: '#/about', vi: 'Giới thiệu', en: 'About', need: 'Dự án này là gì, dữ liệu lưu ở đâu', kw: 'gioi thieu ve du an' },
+    ],
+  },
+];
+
+/* nhãn theo ngôn ngữ đang chọn; vi là nguồn nên luôn có */
+const explLang = () => (typeof i18nLang === 'function' ? i18nLang() : 'vi');
+const explName = it => (explLang() === 'en' && it.en ? it.en : it.vi);
+const explGroupName = g => (explLang() === 'en' && g.en ? g.en : g.vi);
+
+/* tra ngược: href → tên hiển thị. Dùng cho "vừa mở" và cho tiêu đề trang. */
+function explToolAt(href) {
+  const h = String(href || '').split('?')[0];
+  for (const g of EXPLORE_GROUPS) {
+    for (const it of g.items) if (it.href === h) return { group: g, item: it };
+  }
+  return null;
+}
+
+/* ---------------- "vừa mở" ----------------
+   Ghi lại route người dùng thật sự ghé, tối đa 8 mục, mới nhất trước.
+   Không lưu route có tham số (bài học, ngày) — danh sách sẽ đầy rác. */
+function explorRecentList() {
+  if (!state.explore || typeof state.explore !== 'object') state.explore = { recent: [] };
+  if (!Array.isArray(state.explore.recent)) state.explore.recent = [];
+  /* phần tử có thể hỏng (null, số, chuỗi) vì đây là dữ liệu người dùng sửa
+     được. Lọc bỏ tại chỗ: một phần tử null từng làm cả trang Khám phá ném lỗi
+     ngay trong lúc render, tức là mất luôn cả trang chứ không chỉ mất một thẻ. */
+  state.explore.recent = state.explore.recent.filter(r => r && typeof r === 'object' && typeof r.href === 'string');
+  return state.explore.recent;
+}
+function explRecord(hash) {
+  const hit = explToolAt(hash);
+  if (!hit || !hit.item.href) return;
+  const list = explorRecentList();
+  /* đã là mục mới nhất rồi thì thôi — nếu không, mỗi lần đổi trang lại ghi
+     localStorage + IndexedDB + cookie, trong khi danh sách không đổi gì. */
+  if (list[0] && list[0].href === hit.item.href) return;
+  const i = list.findIndex(x => x.href === hit.item.href);
+  const entry = { href: hit.item.href, at: Date.now(), n: hit.item.vi };
+  if (i >= 0) list.splice(i, 1);
+  list.unshift(entry);
+  if (list.length > 8) list.length = 8;
+  save();
+}
+
+/* ---------------- tìm kiếm ----------------
+   Một hàm, một thứ hạng, dùng cho cả trang Khám phá và ô tìm trên thanh trên.
+   `hit` đòi MỌI từ khoá cùng khớp — giống searchAll — nên "định luật ôm"
+   không trả về mọi thứ có chữ "định luật". */
+function explIndex() {
+  const out = [];
+  EXPLORE_GROUPS.forEach(g => g.items.forEach(it => out.push({
+    kind: 'tool', g: explGroupName(g), t: explName(it), vi: it.vi,
+    d: it.need, href: it.href, k: it.vi + ' ' + (it.en || '') + ' ' + (it.kw || '') + ' ' + it.need,
+  })));
+
+  if (typeof allLessons === 'function' && typeof SUBJECTS !== 'undefined') {
+    const nm = id => { const x = SUBJECTS.find(s => s.id === id); return x ? x.name : id; };
+    allLessons().forEach(l => out.push({
+      kind: 'lesson', g: 'Lớp ' + l.g, t: l.t, d: nm(l.s) + (l.tag ? ' · ' + l.tag : ''),
+      href: '#/read/' + l.id,
+      k: l.t + ' ' + nm(l.s) + ' ' + l.g + ' ' + (l.aim || '') + ' ' + (l.tag || ''),
+    }));
+  }
+  if (typeof DAYS !== 'undefined') {
+    DAYS.forEach(d => d.sessions.forEach(s => out.push({
+      kind: 'session', g: 'Lộ trình', t: s.title, d: 'Ngày ' + String(d.n).padStart(2, '0') + ' · ' + s.label,
+      href: sessionHref(d.n, s.n), k: s.title + ' ' + (s.obj || '') + ' ' + d.title,
+    })));
+  }
+  if (typeof NOTES !== 'undefined') {
+    NOTES.forEach(n => n.rows.forEach(([a, b]) => {
+      const plain = String(b).replace(/<[^>]+>/g, ' ');
+      out.push({ kind: 'formula', g: 'Công thức', t: a, d: plain, href: '#/notes?q=' + encodeURIComponent(a), k: a + ' ' + plain });
+    }));
+  }
+  if (Array.isArray(window.QA)) {
+    window.QA.forEach(x => out.push({
+      kind: 'qa', g: 'Hỏi đáp', t: x.q, d: '',
+      href: '#/qa?q=' + encodeURIComponent(x.q), k: x.q + ' ' + (x.k || ''),
+    }));
+  }
+  if (typeof PAPER_BANK !== 'undefined') {
+    PAPER_BANK.forEach(p => out.push({
+      kind: 'paper', g: 'Đề thi', t: (p.reg || '') + (p.y ? ' · ' + p.y : ''), d: p.note || '',
+      href: '#/papers', k: (p.reg || '') + ' ' + (p.note || '') + ' ' + (p.y || '') + ' de thi',
+    }));
+  }
+
+  /* n: chuỗi đã chuẩn hoá để so — tính một lần, không tính lại mỗi phím */
+  return out.map(o => {
+    const nm = norm(o.t + ' ' + o.d + ' ' + o.k);
+    return { o, n: nm, nt: norm(o.t), titleCount: toks(o.t).length };
+  });
+}
+
+/* Trọng số: khớp trong tên > khớp trong mô tả > khớp trong từ khoá.
+   Công cụ và bài học được ưu tiên hơn câu hỏi lẻ, vì đó là thứ người ta
+   đang tìm khi mở ô tìm. */
+const EXPL_KIND_W = { tool: 2.2, lesson: 1.6, formula: 1.8, session: 1.3, qa: 1.0, paper: 1.1 };
+
+function explSearch(q, limit) {
+  const words = toks(q);
+  if (!words.length) return [];
+  const idx = window.EXPL_INDEX || (window.EXPL_INDEX = explIndex());
+  const cap = limit || 24;
+  const scored = [];
+  for (let i = 0; i < idx.length; i++) {
+    const row = idx[i];
+    let ok = true, sc = 0;
+    for (let w = 0; w < words.length; w++) {
+      const word = words[w];
+      if (row.n.indexOf(word) < 0) { ok = false; break; }
+      if (row.nt.indexOf(word) >= 0) sc += 3;
+      else sc += 1;
+    }
+    if (!ok) continue;
+    sc *= EXPL_KIND_W[row.o.kind] || 1;
+    if (row.nt === norm(q)) sc += 8;                    /* tên trùng khít */
+    else if (row.nt.indexOf(norm(q)) === 0) sc += 3;     /* tên bắt đầu bằng */
+    scored.push({ o: row.o, sc });
+  }
+  scored.sort((a, b) => b.sc - a.sc);
+  const seen = new Set(), out = [];
+  for (const r of scored) {
+    const key = r.o.href + '|' + r.o.t;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(r.o);
+    if (out.length >= cap) break;
+  }
+  return out;
+}
+
+/* ---------------- gợi ý: đọc tiếp / ôn tập ----------------
+   Tất cả suy ra từ dữ liệu thật. Nếu chưa có gì để gợi ý thì trả null,
+   thay vì bịa ra một "khoá học nên học tiếp". */
+function explResume() {
+  const S = (typeof schoolState === 'function') ? schoolState() : null;
+  const last = S && S.soft && S.soft.lastRead;
+  if (last && last.id && typeof lessonById === 'function') {
+    const l = lessonById(last.id);
+    if (l) return {
+      kind: 'continue', href: '#/read/' + l.id, kicker: 'Đọc tiếp',
+      title: l.t, sub: 'Lớp ' + l.g + ' · ' + (typeof syScopeName === 'function' ? syScopeName(l.g, l.s) : l.s),
+    };
+  }
+  if (typeof syNextLesson === 'function') {
+    const nx = syNextLesson();
+    if (nx) return {
+      kind: 'new', href: '#/read/' + nx.id, kicker: 'Bài mới',
+      title: nx.t, sub: 'Lớp ' + nx.g + ' · ' + (typeof syScopeName === 'function' ? syScopeName(nx.g, nx.s) : nx.s),
+    };
+  }
+  return null;
+}
+
+/* Việc đang chờ: thẻ đáo hạn, câu sai cần ôn. Chỉ trả về cái có số > 0. */
+function explDue() {
+  const out = [];
+  let cards = 0, wrong = 0;
+  try { cards = typeof syDue === 'function' ? syDue().length : 0; } catch (e) { cards = 0; }
+  try { wrong = typeof dueList === 'function' ? dueList().length : 0; } catch (e) { wrong = 0; }
+  if (cards) out.push({ href: '#/cards', n: cards, k: 'Thẻ đến hạn ôn', vi2: 'Ôn ngay' });
+  if (wrong) out.push({ href: '#/review', n: wrong, k: 'Câu sai đến hạn', vi2: 'Luyện lại' });
+  return out;
+}
+
+/* ---------------- trang #/discover ---------------- */
+function renderDiscover(q0) {
+  const q = (q0 || '').trim();
+  const res = q ? explSearch(q, 30) : [];
+  const resume = explResume();
+  const due = explDue();
+  const recent = explorRecentList().slice(0, 6).map(r => {
+    const hit = explToolAt(r.href);
+    return hit ? { href: r.href, t: explName(hit.item), d: hit.item.need } : null;
+  }).filter(Boolean);
+  /* recent entries pointing at routes that no longer exist are dropped above */
+
+  const kindLabel = { tool: 'Công cụ', lesson: 'Bài học', formula: 'Công thức', session: 'Lộ trình', qa: 'Hỏi đáp', paper: 'Đề thi' };
+  const mkRow = (r, i) => `<a class="expl-row${i === 0 && q ? ' on' : ''}" href="${r.href}" data-expl-row>
+      <span class="k">${kindLabel[r.kind] || r.g}</span>
+      <span class="t">${esc(r.t)}</span>
+      <span class="d">${esc((r.d || '').slice(0, 76))}</span>
+      <span class="go">→</span>
+    </a>`;
+
+  $('#main').innerHTML = `<section class="wrap wide expl-page">
+    ${pageHead('Khám phá · ' + EXPLORE_GROUPS.reduce((n, g) => n + g.items.length, 0) + ' lối vào',
+    'Một chỗ để mở mọi thứ',
+    'Tìm bằng tiếng Việt có dấu hay không dấu đều được. Mỗi mục ghi rõ <em>khi nào nên dùng</em>, vì một danh sách tên gọi thì không giúp được gì khi bạn đang cần gấp.')}
+
+    <form class="expl-search" id="explForm" role="search">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.6"/><path d="M10.5 10.5 14 14"/></svg>
+      <input id="explQ" value="${esc(q)}" placeholder="định luật ôm, thẻ ghi nhớ, mạch cầu, lớp 12 toán…" autocomplete="off" aria-label="Tìm trong toàn bộ khoá học">
+      <kbd>ENTER</kbd>
+    </form>
+
+    ${q ? `<div class="expl-out" id="explOut">
+      <div class="expl-h"><span class="kicker">${res.length} kết quả cho “${esc(q)}”</span>
+        <a class="expl-clear" href="#/discover">xoá tìm kiếm</a></div>
+      ${res.length ? res.map(mkRow).join('') : `<div class="expl-none">
+        <b>Không thấy “${esc(q)}”</b>
+        <p>Thử một từ khoá ngắn hơn, hoặc mở mục Hỏi đáp để tra theo câu hỏi thường gặp.</p>
+        <a class="btn ghost sm" href="#/qa?q=${encodeURIComponent(q)}">Tra trong Hỏi đáp →</a>
+      </div>`}
+    </div>` : `
+      ${due.length || resume ? `<div class="expl-top">
+        ${resume ? `<a class="expl-resume" href="${resume.href}">
+          <span class="kicker">${resume.kicker}</span>
+          <b>${esc(resume.title)}</b>
+          <i>${esc(resume.sub)}</i>
+          <em>Mở bài →</em>
+        </a>` : ''}
+        ${due.map(d => `<a class="expl-due" href="${d.href}">
+          <b>${d.n}</b><span>${d.k}</span><em>${d.vi2} →</em>
+        </a>`).join('')}
+      </div>` : `<div class="expl-empty-top">
+        <b>Bắt đầu từ đâu?</b>
+        <p>Chưa có bài nào đang đọc dở. Chọn lớp và môn để mở bài đầu tiên — hoặc thử ôn thẻ, làm một đề ngắn.</p>
+        <a class="btn sm" href="#/subjects">Chọn lớp &amp; môn →</a>
+      </div>`}
+
+      ${recent.length ? `<div class="expl-sec">
+        <div class="expl-sec-h"><span class="kicker">Vừa mở</span><a href="#/discover" data-expl-clear>xoá</a></div>
+        <div class="expl-recent">${recent.map(r => `<a href="${r.href}"><b>${esc(r.t)}</b><i>${esc((r.d || '').slice(0, 40))}</i></a>`).join('')}</div>
+      </div>` : ''}
+
+      ${EXPLORE_GROUPS.map(g => `<div class="expl-sec" id="expl-${g.id}">
+        <div class="expl-sec-h"><span class="kicker">${explGroupName(g)}</span><em>${g.items.length} mục</em></div>
+        <div class="expl-grid">
+          ${g.items.map(it => `<a class="expl-card" href="${it.href}">
+            <b>${esc(explName(it))}</b>
+            <span>${esc(it.need)}</span>
+          </a>`).join('')}
+        </div>
+      </div>`).join('')}
+    `}
+  </section>`;
+
+  const form = $('#explForm'), input = $('#explQ');
+  form.onsubmit = e => { e.preventDefault(); go('#/discover?q=' + encodeURIComponent(input.value.trim())); };
+  input.oninput = () => {
+    /* gợi ý sống ngay dưới ô, không cần Enter — nhưng vẫn giữ Enter để chốt */
+    const v = input.value.trim();
+    const out = $('#explOut');
+    if (!v) { if (out) out.remove(); return; }
+    const r = explSearch(v, 12);
+    let host = out;
+    if (!host) {
+      host = document.createElement('div');
+      host.className = 'expl-out'; host.id = 'explOut';
+      form.insertAdjacentElement('afterend', host);
+    }
+    host.innerHTML = `<div class="expl-h"><span class="kicker">${r.length} kết quả</span></div>` +
+      (r.length ? r.map(mkRow).join('') :
+        `<div class="expl-none"><b>Không thấy</b><p>Thử từ khoá ngắn hơn.</p></div>`);
+  };
+  input.onkeydown = e => {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      const rows = $$('[data-expl-row]', $('#explOut') || document);
+      if (!rows.length) return;
+      e.preventDefault();
+      const cur = rows.findIndex(r => r.classList.contains('on'));
+      const next = e.key === 'ArrowDown' ? Math.min(rows.length - 1, cur + 1) : Math.max(0, cur - 1 || 0);
+      rows.forEach(r => r.classList.remove('on'));
+      rows[next < 0 ? 0 : next].classList.add('on');
+      rows[next < 0 ? 0 : next].scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'Enter') {
+      const on = $('[data-expl-row].on') || $('[data-expl-row]');
+      if (on) { e.preventDefault(); go(on.getAttribute('href')); }
+    } else if (e.key === 'Escape') {
+      input.value = ''; const out = $('#explOut'); if (out) out.remove();
+    }
+  };
+  const clr = $('[data-expl-clear]');
+  if (clr) clr.onclick = e => { e.preventDefault(); state.explore = { recent: [] }; save(); renderDiscover(''); };
+  if (q) { input.focus(); input.setSelectionRange(input.value.length, input.value.length); }
+  if (typeof syncScope === 'function') syncScope();
+}
+
+/* ---------------- popup "Khám phá" ở thanh trên ----------------
+   Cùng bảng dữ liệu, nên không bao giờ lệch với trang. Có: nhóm, mũi tên,
+   Enter, Esc, và khoá tiêu điểm trong hộp (Tab không lạc ra sau trang). */
+function explMenuBody() {
+  const head = `<div class="tm-head">
+    <a class="tm-all" href="#/discover"><b>Mở trang Khám phá</b><span>Tìm và mở mọi thứ trong một chỗ</span></a>
+  </div>`;
+  /* `spread` marks the first few items of each group so the two-column popup
+     does not become an unbroken 36-row ladder on a wide screen. */
+  return head + EXPLORE_GROUPS.map(g => `<div class="tm-grp${g.spread ? ' tm-2' : ''}">
+    <span class="tm-lbl">${explGroupName(g)}</span>
+    ${g.items.map(it => `<a href="${it.href}" data-nav="${it.href}" role="menuitem">${esc(explName(it))}</a>`).join('')}
+  </div>`).join('');
 }
 </script>
 
@@ -12059,7 +12577,7 @@ function phWeakTopics(limit) {
   const stat = {};
   TOPICS.forEach(t => { stat[t.id] = { id: t.id, name: t.name, n: 0, ok: 0 }; });
   Object.keys(state.ans || {}).forEach(k => {
-    const a = state.ans[k];
+    const a = ansOf(k);
     if (!a) return;
     let tp = topicOf[k];
     if (tp === undefined) {
@@ -12813,6 +13331,7 @@ function renderRead(id) {
     uiConfirm('Xoá bài học', `Xoá <b>${esc(l.t)}</b>? Không hoàn tác được.`, () => {
       const S = schoolState();
       Object.keys(S.lessons).forEach(k => { S.lessons[k] = S.lessons[k].filter(x => x.id !== l.id); });
+      if (typeof window !== 'undefined') window.EXPL_INDEX = null;
       save(); toast('Đã xoá bài'); location.hash = '#/subject/' + l.g + '/' + l.s;
     }, { danger: true, okText: 'Xoá bài' });
   };
@@ -13078,6 +13597,7 @@ function renderStudio(id) {
         S2.lessons[oldKey] = (S2.lessons[oldKey] || []).filter(x => x.id !== editing.id);
         S2.lessons[key].push(rec);
       }
+      if (typeof window !== 'undefined') window.EXPL_INDEX = null;
       save(); toast('Đã lưu thay đổi'); location.hash = '#/read/' + editing.id;
     } else {
       const rec = {
@@ -13085,6 +13605,7 @@ function renderStudio(id) {
         blocks: draft.blocks, files: draft.files, at: Date.now()
       };
       S2.lessons[key].push(rec);
+      if (typeof window !== 'undefined') window.EXPL_INDEX = null;
       save(); toast('Đã xuất bản bài mới');
       location.hash = '#/read/' + rec.id;
     }
@@ -13180,6 +13701,7 @@ async function renderFiles() {
   const files = (await FileStore.all()).sort((a, b) => b.at - a.at);
   window.__filesCache = files.map(f => ({ id: f.id, name: f.name, size: f.size }));
   if (typeof PAL_INDEX_CACHE !== 'undefined') PAL_INDEX_CACHE = null;
+  if (typeof window !== 'undefined') window.EXPL_INDEX = null;
   const S = (schoolState().soft = schoolState().soft || {});
 
   const thumb = {};

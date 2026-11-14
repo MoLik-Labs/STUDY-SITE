@@ -56,7 +56,7 @@ function streak(){
 }
 const doneCount=()=>DAYS.reduce((a,d)=>a+d.sessions.filter(s=>state.done[sid(d.n,s.n)]).length,0);
 const dayDone=d=>d.sessions.filter(s=>state.done[sid(d.n,s.n)]).length;
-const watchedCount=()=>Object.keys(state.watched).length;
+const watchedCount=()=>Object.keys(state.watched||{}).length;
 
 /* ---------- ui helpers ---------- */
 function toast(msg){
@@ -154,44 +154,10 @@ function renderTop(){
       <button class="tb-btn" data-nav="#/calc">${tl('btn_calc')}</button>
       <button class="tb-btn" data-nav="#/sim">${tl('btn_sim')}</button>
       <button class="tb-btn" data-nav="#/exam">${tl('btn_exam')}</button>
+      <a class="tb-key" href="#/discover" aria-label="${tl('nav_discover')}">${tl('more')} ▾</a>
       <span class="tb-more">
-        <button class="tb-btn" id="tbMoreBtn" aria-expanded="false" aria-controls="tbMenu">${tl('more')} ▾</button>
-        <span class="tb-menu" id="tbMenu" role="menu">
-          <a data-nav="#/physics" role="menuitem" class="tb-key">${tl('nav_physics')}</a>
-          <a data-nav="#/study" role="menuitem">${tl('nav_study')}</a>
-          <a data-nav="#/cards" role="menuitem">${tl('nav_cards')}</a>
-          <a data-nav="#/practice" role="menuitem">${tl('nav_practice')}</a>
-          <a data-nav="#/plan" role="menuitem">${tl('nav_plan')}</a>
-          <a data-nav="#/weekly" role="menuitem">${tl('nav_weekly')}</a>
-          <a data-nav="#/grades" role="menuitem">${tl('nav_grades')}</a>
-          <a data-nav="#/focus" role="menuitem">${tl('nav_focus')}</a>
-          <a data-nav="#/timetable" role="menuitem">${tl('nav_timetable')}</a>
-          <a data-nav="#/calendar" role="menuitem">${tl('nav_calendar')}</a>
-          <span class="tb-sep"></span>
-          <a data-nav="#/game" role="menuitem">${tl('nav_game')}</a>
-          <a data-nav="#/share" role="menuitem">${tl('nav_share')}</a>
-          <a data-nav="#/special" role="menuitem">${tl('nav_special')}</a>
-          <span class="tb-sep"></span>
-          <a data-nav="#/subjects" role="menuitem">${tl('nav_subjects')}</a>
-          <a data-nav="#/studio" role="menuitem">${tl('nav_studio')}</a>
-          <a data-nav="#/mine" role="menuitem">${tl('nav_mine')}</a>
-          <a data-nav="#/files" role="menuitem">${tl('nav_files')}</a>
-          <span class="tb-sep"></span>
-          <a data-nav="#/build" role="menuitem">${tl('nav_build')}</a>
-          <a data-nav="#/builder" role="menuitem">${tl('nav_builder')}</a>
-          <a data-nav="#/lab" role="menuitem">${tl('nav_lab')}</a>
-          <a data-nav="#/solve" role="menuitem">${tl('nav_solve')}</a>
-          <a data-nav="#/library" role="menuitem">${tl('nav_library')}</a>
-          <a data-nav="#/notes" role="menuitem">${tl('nav_notes')}</a>
-          <a data-nav="#/papers" role="menuitem">${tl('nav_papers')}</a>
-          <a data-nav="#/qa" role="menuitem">${tl('nav_qa')}</a>
-          <a data-nav="#/review" role="menuitem">${tl('nav_review')}</a>
-          <span class="tb-sep"></span>
-          <a data-nav="#/progress" role="menuitem">${tl('nav_progress')}</a>
-          <a data-nav="#/stats" role="menuitem">${tl('nav_stats')}</a>
-          <a data-nav="#/settings" role="menuitem">${tl('nav_settings')}</a>
-          <a data-nav="#/about" role="menuitem">${tl('nav_about')}</a>
-        </span>
+        <button class="tb-btn" id="tbMoreBtn" aria-expanded="false" aria-controls="tbMenu" aria-haspopup="true">${tl('more')} ▾</button>
+        <span class="tb-menu" id="tbMenu" role="menu" aria-label="${tl('more')}">${typeof explMenuBody === 'function' ? explMenuBody() : ''}</span>
       </span>
       <button class="tb-search" id="openSearch">
         <svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.6"/><path d="M10.5 10.5 14 14"/></svg>
@@ -209,15 +175,60 @@ function renderTop(){
   $('#openSearch').onclick=openSearchOverlay;
   const gear=$('#openSettings');
   if(gear) gear.onclick=()=>go('#/settings');
-  const mb=$('#tbMoreBtn'), mm=$('#tbMenu');
-  if(mb&&mm){
-    mb.onclick=e=>{e.stopPropagation();const on=mm.classList.toggle('on');mb.setAttribute('aria-expanded',String(on));};
-    document.addEventListener('click',ev=>{if(!mm.contains(ev.target)&&ev.target!==mb){mm.classList.remove('on');mb.setAttribute('aria-expanded','false');}});
-    $$('#tbMenu [data-nav]').forEach(a=>a.onclick=()=>{mm.classList.remove('on');});
-  }
+  bindExploreMenu();
   const gearM=$('#openSettingsM');
   if(gearM) gearM.onclick=()=>{go('#/settings');closeRail();};
   $('#openSearchM').onclick=openSearchOverlay;
+}
+
+/* Khám phá — popup trên thanh trên.
+   Trước đây mỗi lần đổi trang lại gắn thêm một listener 'click' vào document
+   mà không bao giờ gỡ, nên sau N trang có N listener chạy mãi. Giờ chỉ gắn
+   một lần; phần tử được thay bằng innerHTML nên gắn lại cũng vô hại. */
+let explMenuOff = null;
+function bindExploreMenu() {
+  const mb = $('#tbMoreBtn'), mm = $('#tbMenu');
+  if (!mb || !mm) return;
+  const setOpen = on => {
+    mm.classList.toggle('on', on);
+    mb.setAttribute('aria-expanded', String(on));
+  };
+  const isOpen = () => mm.classList.contains('on');
+  if (explMenuOff) explMenuOff();
+  mb.onclick = e => { e.stopPropagation(); setOpen(!isOpen()); };
+  const onDoc = ev => { if (isOpen() && !mm.contains(ev.target) && ev.target !== mb) setOpen(false); };
+  const onKey = ev => {
+    if (ev.key === 'Escape' && isOpen()) { setOpen(false); mb.focus(); }
+  };
+  document.addEventListener('click', onDoc);
+  document.addEventListener('keydown', onKey);
+  explMenuOff = () => {
+    document.removeEventListener('click', onDoc);
+    document.removeEventListener('keydown', onKey);
+    explMenuOff = null;
+  };
+  /* Chọn một mục thì ĐI TỚI ĐÓ rồi mới đóng.
+     Bản cũ chỉ đóng menu: handler đóng được gán sau handler điều hướng nên ghi
+     đè nó, và vì <a> không có href nên trình duyệt cũng không tự chuyển trang.
+     Kết quả: bấm mục nào cũng chỉ làm menu biến mất — không đi đâu cả. */
+  $$('#tbMenu [data-nav]').forEach(a => {
+    a.onclick = ev => {
+      ev.preventDefault();
+      setOpen(false);
+      closeRail();
+      go(a.dataset.nav);
+    };
+    a.onkeydown = ev => {
+      const rows = $$('#tbMenu [data-nav]');
+      const i = rows.indexOf(a);
+      if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') {
+        ev.preventDefault();
+        const next = ev.key === 'ArrowDown' ? (i + 1) % rows.length : (i - 1 + rows.length) % rows.length;
+        rows[next].focus();
+      } else if (ev.key === 'Home') { ev.preventDefault(); rows[0].focus(); }
+      else if (ev.key === 'End') { ev.preventDefault(); rows[rows.length - 1].focus(); }
+    };
+  });
 }
 
 /* thanh trên + rail đọc lại lớp/môn đang chọn sau khi trang đổi phạm vi */
@@ -279,25 +290,12 @@ function renderRail(){
       <div class="bar"><i style="width:${TOTAL_SESS?dc/TOTAL_SESS*100:0}%"></i></div>
     </div>
     <div class="rail-nav">
-      <a href="#/subjects"><b>Khoá học lớp 1–12</b></a>
-      <a href="#/studio">Tạo bài học · tải tệp</a>
-      <a href="#/mine">Bài của tôi</a>
-      <a href="#/calc">Máy giải &amp; vẽ hình</a>
-      <a href="#/build">Bảng mạch</a>
-      <a href="#/builder">Mạch lồng nhau · thêm bớt R</a>
-      <a href="#/sim">Băng thí nghiệm</a>
-      <a href="#/lab">Phòng thí nghiệm</a>
-      <a href="#/sheet">Tạo phiếu in</a>
+      <a href="#/discover"><b>Khám phá · mọi lối vào</b></a>
+      <a href="#/study">Học hôm nay</a>
+      <a href="#/subjects">Khoá học lớp 1–12</a>
+      <a href="#/physics">Mục Vật lí</a>
       <a href="#/exam">Thi thử 15 câu</a>
-      <a href="#/review">Luyện câu sai</a>
-      <a href="#/solve">Bài giải mẫu</a>
-      <a href="#/flash">Flashcard công thức</a>
-      <a href="#/library">Thư viện bài giảng</a>
-      <a href="#/notes">Sổ tay công thức</a>
       <a href="#/settings"><b>Tuỳ biến giao diện &amp; pomodoro</b></a>
-      <a href="#/papers">Đề thi &amp; lời giải</a>
-      <a href="#/qa">Hỏi đáp</a>
-      <a href="#/stats">Tiến độ của bạn</a>
     </div>`;
   $$('#rail a').forEach(a=>a.addEventListener('click',closeRail));
 }
@@ -461,7 +459,7 @@ function renderLesson(dn,sn,pane){
   const done=!!state.done[sid(d.n,s.n)];
   const qs=quizFor(d.n,s.n,d);
   const qaList=qaOfTopic(TOPIC_OF_DAY(d));
-  const answerdCount=qs.filter(x=>state.ans[x.id]&&state.ans[x.id].ok).length;
+  const answerdCount=qs.filter(x=>{const a=ansOf(x.id);return a&&a.ok;}).length;
 
   $('#main').innerHTML=`
     <section class="wrap">
@@ -909,20 +907,20 @@ function renderQuizPane(host,d,s,qs){
   let idx=0;
   const draw=()=>{
     const q=qs[idx];
-    const a=state.ans[q.id];
+    const a=ansOf(q.id);
     host.innerHTML=`
       <div class="quiz">
         <div class="qmeta">
           <span class="kicker">Câu ${idx+1} / ${qs.length}</span>
           <span class="qdots">${qs.map((x,i)=>{
-            const p=state.ans[x.id];
+            const p=ansOf(x.id);
             const c=i===idx?'cur':(p?(p.ok?'ok':'no'):'');
             return `<i class="${c}"></i>`;
           }).join('')}</span>
         </div>
         <div id="qslot"></div>
         <div class="qfoot">
-          <span class="qscore">${qs.filter(x=>state.ans[x.id]).length} / ${qs.length} câu đã trả lời · đúng ${qs.filter(x=>state.ans[x.id]&&state.ans[x.id].ok).length}</span>
+          <span class="qscore">${qs.filter(x=>!!ansOf(x.id)).length} / ${qs.length} câu đã trả lời · đúng ${qs.filter(x=>{const a=ansOf(x.id);return a&&a.ok;}).length}</span>
           <span style="display:flex;gap:8px">
             ${idx>0?'<button class="btn ghost sm" id="prevQ">← Câu trước</button>':''}
             ${idx<qs.length-1?'<button class="btn ghost sm" id="nextQ">Câu tiếp →</button>':''}
@@ -1099,7 +1097,7 @@ function renderLibrary(){
       const g=document.createElement('div');
       g.className='lib-group';
       const K=normq?rows.length:4;        /* có từ khoá thì mở hết */
-      const rowHTML=([id,v],i)=>`<button class="lib-row${state.watched[id]?' seen':''}" data-vid="${id}">
+      const rowHTML=([id,v],i)=>`<button class="lib-row${(state.watched||{})[id]?' seen':''}" data-vid="${id}">
           <span class="i">${String(i+1).padStart(2,'0')}</span>
           <span class="t">${v.pick?'<em>chọn</em>':''}${v.t}</span>
           <span class="w">${shortWho(v.who)}</span>
@@ -1349,6 +1347,9 @@ function render(){
   if (typeof mountDocks === 'function') mountDocks();
   const h=location.hash||'#/';
   renderTop(); renderRail();
+  /* ghi lại lối vào vừa mở để trang Khám phá có mục "Vừa mở".
+     Chỉ những route không tham số mới được ghi (hàm tự lọc). */
+  if(typeof explRecord==='function') { try{ explRecord(h); }catch(e){} }
   syncBrandChrome();
   const [path,query]=h.replace(/^#/,'').split('?');
   const p=path.split('/').filter(Boolean);
@@ -1360,6 +1361,7 @@ function render(){
   }
   if(p[0]==='lesson'&&p[1]&&p[2]) return renderLesson(p[1],p[2],qp.get('pane')||state.pane);
   if(p[0]==='day'&&p[1]) return renderDay(p[1]);
+  if(p[0]==='discover') return renderDiscover(qp.get('q')||'');
   if(p[0]==='library') return renderLibrary();
   if(p[0]==='notes') return renderNotes(qp.get('q')||'');
   if(p[0]==='papers') return renderPapers();

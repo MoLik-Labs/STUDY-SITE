@@ -11,7 +11,7 @@ import hashlib, io, os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
-VERSION = '11.5'          # một nguồn duy nhất; sinh ra meta, APP_VERSION, footer, sw.js
+VERSION = '11.6'          # một nguồn duy nhất; sinh ra meta, APP_VERSION, footer, sw.js
 
 def arg(flag, default):
     """--flag giá-trị, hoặc chỉ --flag (dùng giá trị mặc định)."""
@@ -112,6 +112,9 @@ MODULES = [
       ('tiện ích', SRC('tools.js')),
       ('máy tính', SRC('engine.js'))]),
 
+    ('KHÁM PHÁ — một bảng cho mọi lối vào, tìm kiếm toàn kho', 'explore',
+     [('khám phá', SRC('explore.js'))]),
+
     ('VẬT LÍ — máy giải, mạch điện, phòng thí nghiệm', 'physics',
      [('giải đề', SRC('solver.js')),
       ('giải đề 2', SRC('solver2.js')),
@@ -149,13 +152,6 @@ MODULES = [
 
 # Each module becomes its own <script>. Labels are kept short and stable: they
 # are what a stack trace shows, so they have to stay meaningful for years.
-SCRIPTS = [(label, '\n\n'.join(
-    '/* ---- %s ---- */\n%s' % (part, code) for part, code in parts))
-    for label, _slug, parts in MODULES]
-
-if len(SCRIPTS) != len(MODULES):
-    raise SystemExit('module table mismatch')
-
 SCRIPTS = [(label, '\n\n'.join(
     '/* ---- %s ---- */\n%s' % (part, code) for part, code in parts))
     for label, _slug, parts in MODULES]

@@ -66,7 +66,7 @@ function phWeakTopics(limit) {
   const stat = {};
   TOPICS.forEach(t => { stat[t.id] = { id: t.id, name: t.name, n: 0, ok: 0 }; });
   Object.keys(state.ans || {}).forEach(k => {
-    const a = state.ans[k];
+    const a = ansOf(k);
     if (!a) return;
     let tp = topicOf[k];
     if (tp === undefined) {

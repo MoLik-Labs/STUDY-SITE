@@ -4,12 +4,12 @@
    các lần sau trả từ cache (0 ms), đồng thời kiểm tra bản mới
    trong nền. Mất mạng vẫn mở được bình thường.
    ---------------------------------------------------------
-   Tên cache chứa VERSION (src/build.py thay 11.5), nên mỗi
+   Tên cache chứa VERSION (src/build.py thay 11.6), nên mỗi
    lần deploy là một cache mới và bản cũ bị xoá khi activate.
    ========================================================= */
 'use strict';
 
-const CACHE = 'vnl9-v11.5';
+const CACHE = 'vnl9-v11.6';
 /* Chỉ precache phần vỏ tối thiểu. Trang là MỘT tệp nên chỉ cần index.html.
    Duyệt từng tệp thay vì addAll(): addAll hỏng cả lô nếu MỘT tệp lỗi, còn
    cách này thì tệp nào lấy được là có, và /404.html lấy được thì người dùng

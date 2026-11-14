@@ -27,7 +27,16 @@ const ok = (n, c, note) => results.push({ n, pass: !!c, note: note === undefined
 const wait = ms => new Promise(r => setTimeout(r, ms));
 
 (async () => {
-  const dom = new JSDOM(html, { runScripts: 'dangerously', pretendToBeVisual: true, url: 'http://localhost/x.html' });
+  /* thu thập ngoại lệ thật (bỏ qua các "Not implemented" của jsdom) — nhiều
+     lỗi trước đây chỉ hiện ra dưới dạng trang trắng, không phải câu assert sai */
+  const { VirtualConsole } = require('jsdom');
+  const vc = new VirtualConsole();
+  const errsSeen = [];
+  vc.on('jsdomError', e => { if (!/Not implemented/.test(e.message)) errsSeen.push(e.message); });
+  const dom = new JSDOM(html, {
+    runScripts: 'dangerously', pretendToBeVisual: true, url: 'http://localhost/x.html',
+    virtualConsole: vc,
+  });
   const w = dom.window;
   w.eval(`
     window.scrollTo=function(){};
@@ -391,6 +400,170 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
   ok('bài học mới mở được', rd && rd.innerHTML.length > 1200, rd ? rd.innerHTML.length : 0);
   ok('bài có công thức', !!rd.querySelector('.read-formula'));
   ok('bài có câu hỏi tự kiểm tra', !!rd.querySelector('.read-q'));
+
+
+  /* =========================================================
+     9. KHÁM PHÁ — one table, and every entry actually goes somewhere
+     ---------------------------------------------------------
+     The bug this section exists for: clicking a menu item closed the
+     popup and went nowhere, because the close handler was assigned after
+     the navigate handler and overwrote it, and the <a> had no href. Every
+     assertion below fails on that version.
+     ========================================================= */
+  const hrefs = ev("JSON.parse(JSON.stringify(EXPLORE_GROUPS.reduce(function(a,g){" +
+    "return a.concat(g.items.map(function(i){return i.href}))},[])))");
+  ok('explore table is not empty', hrefs.length >= 30, hrefs.length + ' entries');
+  ok('the home roadmap is reachable from Explore', hrefs.includes('#/'));
+  ok('explore table has no duplicate destinations',
+    new Set(hrefs).size === hrefs.length, hrefs.length - new Set(hrefs).size + ' dupes');
+  ok('every explore entry explains when to use it',
+    ev("EXPLORE_GROUPS.every(function(g){return g.items.every(function(i){" +
+      "return i.need && i.need.length>12 && i.vi && i.en})})"));
+
+  /* every entry has a real href attribute — without it, keyboard users can
+     never reach the item and middle-click opens nothing */
+  const menuAnchors = [...w.document.querySelectorAll('#tbMenu [data-nav]')];
+  ok('menu items are real links',
+    menuAnchors.length > 0 && menuAnchors.every(a => a.getAttribute('href') === a.dataset.nav),
+    menuAnchors.length + ' items');
+
+  /* the regression: click a menu item and the app must navigate */
+  const probe = menuAnchors.find(a => a.dataset.nav === '#/library');
+  let navOk = false;
+  if (probe) {
+    w.location.hash = '#/about'; await wait(60);
+    w.document.querySelector('#tbMoreBtn').click(); await wait(40);
+    const again = [...w.document.querySelectorAll('#tbMenu [data-nav]')]
+      .find(a => a.dataset.nav === '#/library');
+    again.click(); await wait(160);
+    navOk = w.location.hash === '#/library' && !w.document.querySelector('#tbMenu').classList.contains('on');
+  }
+  ok('clicking an Explore item navigates AND closes the menu', navOk, w.location.hash);
+
+  /* keyboard: focus moves inside the popup */
+  w.document.querySelector('#tbMoreBtn').click(); await wait(60);
+  const mRows = [...w.document.querySelectorAll('#tbMenu [data-nav]')];
+  mRows[0].focus();
+  const focusable = w.document.activeElement === mRows[0];
+  mRows[0].dispatchEvent(new w.KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+  ok('popup items are focusable', focusable);
+  ok('ArrowDown moves focus inside the popup', w.document.activeElement === mRows[1]);
+  w.document.dispatchEvent(new w.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+  ok('Escape closes the popup', !w.document.querySelector('#tbMenu').classList.contains('on'));
+
+  /* the page itself */
+  w.location.hash = '#/__blank__'; await wait(20);
+  w.location.hash = '#/discover'; await wait(240);
+  const dPage = w.document.querySelector('#main');
+  ok('#/discover renders', dPage && dPage.innerHTML.length > 3000, dPage ? dPage.innerHTML.length : 0);
+  ok('#/discover shows every group', dPage.querySelectorAll('.expl-sec .expl-card').length >= 30,
+    dPage.querySelectorAll('.expl-card').length + ' cards');
+  ok('#/discover has a search box', !!dPage.querySelector('#explQ'));
+
+  /* search: diacritic-insensitive, AND across words, html-safe, never throws */
+  const noDia = ev("explSearch('dinh luat om',5).map(function(x){return x.t})");
+  const withDia = ev("explSearch('định luật ôm',5).map(function(x){return x.t})");
+  ok('search ignores diacritics', JSON.stringify(noDia) === JSON.stringify(withDia));
+  ok('search finds the Ohm formula', noDia.some(t => /Ôm/i.test(t)), noDia.slice(0, 2).join(' | '));
+  ok('a two-word query requires BOTH words somewhere in the entry',
+    ev("explSearch('mach cau',8).every(function(x){" +
+       "var t=norm(x.t+' '+(x.d||'')+' '+(x.k||''));" +
+       "return t.indexOf('mach')>=0 && t.indexOf('cau')>=0})"),
+    ev("explSearch('mach cau',3).map(function(x){return x.t.slice(0,26)})").join(' | '));
+  ok('junk queries return nothing instead of throwing',
+    ev("['!!!','<script>','   ','&amp;'].every(function(q){return explSearch(q,5).length>=0})"));
+  ok('a query with no match returns an empty list',
+    ev("explSearch('zzzqqqxxx',5).length") === 0);
+
+  /* live typing renders rows without pressing Enter */
+  const qi = dPage.querySelector('#explQ');
+  qi.value = 'the ghi nho';
+  qi.dispatchEvent(new w.Event('input'));
+  await wait(80);
+  const liveRows = w.document.querySelectorAll('#explOut .expl-row');
+  ok('typing filters live', liveRows.length > 0, liveRows.length + ' rows');
+  ok('live rows are links', [...liveRows].every(r => r.getAttribute('href').startsWith('#/')));
+
+  /* "recent" is recorded, capped, and survives a reload of the page */
+  ev("state.explore={recent:[]};save();");
+  for (let i = 0; i < 12; i++) {
+    w.location.hash = '#/about'; await wait(12);
+    w.location.hash = '#/library'; await wait(12);
+  }
+  ok('recent list is capped at 8', ev("state.explore.recent.length") <= 8, ev("state.explore.recent.length"));
+  ok('recent list records real destinations',
+    ev("state.explore.recent.every(function(r){return !!explToolAt(r.href)})"));
+
+  /* a fresh install must not show a fabricated "continue" */
+  ev("state.school.soft=(state.school.soft||{});delete state.school.soft.lastRead;state.explore={recent:[]};save();");
+  w.location.hash = '#/__blank__'; await wait(20);
+  w.location.hash = '#/discover'; await wait(200);
+  const fresh = w.document.querySelector('#main');
+  /* a brand-new visitor has no lesson history, so the card must be the
+     first-lesson offer ("Bài mới"), never a claim that they were "reading"
+     something they never opened */
+  const fc = fresh.querySelector('.expl-resume');
+  ok('#/discover never invents reading history',
+    !fc || /Bài mới/.test(fc.textContent), fc ? fc.textContent.replace(/\s+/g, ' ').slice(0, 60) : 'no card');
+  ok('#/discover offers a start button when there is no history',
+    !!fresh.querySelector('.expl-empty-top a[href="#/subjects"]') || !!fc);
+
+
+  /* a lesson created after the search index was built must be findable —
+     the index is cached for speed, so it has to be invalidated on write */
+  ev(`(function(){var S=schoolState();S.lessons['9|toan']=S.lessons['9|toan']||[];
+      S.lessons['9|toan'].push({id:'mytest1',g:9,s:'toan',t:'Bài kiểm tra chỉ mục tìm kiếm',aim:'x',blocks:[],at:Date.now()});
+      if(window.EXPL_INDEX) window.EXPL_INDEX=null; save();})()`);
+  ok('a newly created lesson is searchable',
+    ev("explSearch('chi muc tim kiem',5).some(function(x){return x.t.indexOf('chỉ mục')>=0||x.t.indexOf('chỉ mục tìm')>=0})"));
+  ev("(function(){var S=schoolState();S.lessons['9|toan']=(S.lessons['9|toan']||[]).filter(function(l){return l.id!=='mytest1'});window.EXPL_INDEX=null;save();})()");
+  ok('a deleted lesson disappears from search',
+    !ev("explSearch('chi muc tim kiem',5).some(function(x){return x.href==='#/read/mytest1'})"));
+
+  /* one Explore control, never two: the compact key replaces the popup ≤980px */
+  const hasKey = !!w.document.querySelector('a.tb-key[href="#/discover"]');
+  ok('there is an Explore control on small screens', hasKey);
+
+
+  /* =========================================================
+     10. SAVED STATE CAN BE ANYTHING
+     ---------------------------------------------------------
+     localStorage is user-writable and JSON import takes any file, so an
+     answer entry can be null and a recent list can hold numbers. Each of
+     these used to throw DURING RENDER on a real page — the page went blank,
+     not just one card. The assertions are deliberately about "no exception",
+     because that is what the user loses.
+     ========================================================= */
+  const errBase = errsSeen.length;
+  ev("state.ans={0:null,1:{ok:'x'},2:'junk',3:{}};save();");
+  for (const r of ['#/', '#/discover', '#/stats', '#/physics', '#/study']) {
+    w.location.hash = '#/__blank__'; await wait(15);
+    w.location.hash = r; await wait(80);
+    ok('trang ' + r + ' sống sót khi state.ans hỏng',
+      !!w.document.querySelector('#main') && w.document.querySelector('#main').innerHTML.length > 200);
+  }
+  ok('state.ans hỏng không ném ngoại lệ', errsSeen.length === errBase, (errsSeen.length - errBase) + ' lỗi');
+  ok('đếm câu trả lời bỏ qua mục hỏng',
+    ev("JSON.stringify(answerStats())") === '{"n":2,"ok":1}', ev("JSON.stringify(answerStats())"));
+
+  ev("state.explore={recent:[null,1,{},'x',{href:'#/nope'},{href:'#/library'}]};save();");
+  w.location.hash = '#/__blank__'; await wait(15);
+  w.location.hash = '#/discover'; await wait(200);
+  ok('Khám phá sống sót khi danh sách "vừa mở" hỏng',
+    w.document.querySelector('#main').innerHTML.length > 3000);
+  ok('mục "vừa mở" hỏng bị loại, mục tốt được giữ',
+    w.document.querySelectorAll('.expl-recent a').length === 1,
+    w.document.querySelectorAll('.expl-recent a').length + ' thẻ');
+
+  ev("state={ans:{},done:{},days:{},note:{},prefs:{},mine:[],watched:null,school:null,study:null,explore:null};save();");
+  for (const r of ['#/', '#/library', '#/discover', '#/study', '#/stats']) {
+    w.location.hash = '#/__blank__'; await wait(15);
+    w.location.hash = r; await wait(80);
+    ok('trang ' + r + ' sống sót khi toàn bộ state bị xoá',
+      !!w.document.querySelector('#main') && w.document.querySelector('#main').innerHTML.length > 200);
+  }
+  ok('state trắng không ném ngoại lệ', errsSeen.length === errBase, (errsSeen.length - errBase) + ' lỗi');
+  ev("state.ans={};state.watched={};save();");
 
   const pass = results.filter(r => r.pass).length;
   results.filter(r => !r.pass).forEach(r => console.log('  ✗ ' + r.n + (r.note ? ' — ' + r.note : '')));

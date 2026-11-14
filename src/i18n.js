@@ -57,6 +57,7 @@ const I18N = {
   lesson_share: { vi: 'Chia sẻ bài này', en: 'Share this lesson' },
 
   more: { vi: 'Khám phá', en: 'Explore' },
+  nav_discover: { vi: 'Khám phá', en: 'Explore' },
   search_ph: { vi: 'Tìm bài, công thức, câu hỏi', en: 'Search lessons, formulas, questions' },
   scope_change: { vi: 'Đổi lớp và môn', en: 'Change grade and subject' },
   btn_calc: { vi: 'Máy giải', en: 'Solver' },

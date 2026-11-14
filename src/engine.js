@@ -11,7 +11,7 @@ const DAY_MS = 86400000;
 
 /* ---------- ghi nhận một câu trả lời, cập nhật hộp ---------- */
 function srsRecord(id, ok, p) {
-  const prev = state.ans[id] || {};
+  const prev = ansOf(id) || {};
   const box = ok ? Math.min(SRS_DAYS.length - 1, (prev.box || 0) + 1) : 0;
   const due = ok ? Date.now() + SRS_DAYS[box] * DAY_MS : Date.now();
   state.ans[id] = { ok, p, at: Date.now(), box, due, tries: (prev.tries || 0) + 1 };
@@ -23,7 +23,7 @@ function srsRecord(id, ok, p) {
 function dueList() {
   const now = Date.now();
   return ALLQ.filter(q => {
-    const a = state.ans[q.id];
+    const a = ansOf(q.id);
     if (!a) return false;
     if (a.due === undefined) return !a.ok;       /* dữ liệu cũ: chỉ câu sai */
     return a.due <= now;
@@ -32,7 +32,7 @@ function dueList() {
 function srsBoxes() {
   const c = [0, 0, 0, 0, 0];
   ALLQ.forEach(q => {
-    const a = state.ans[q.id];
+    const a = ansOf(q.id);
     if (!a) return;
     c[Math.min(4, a.box || 0)]++;
   });
@@ -40,11 +40,25 @@ function srsBoxes() {
 }
 
 /* ---------- thống kê hôm nay ---------- */
+/* Every reader of state.ans goes through here.
+   The map is user-writable through localStorage/JSON import, so an entry can
+   be null, a string, or `{}`. Before this guard, one null entry made
+   todayStats() throw and the HOME PAGE failed to render — the most important
+   page in the product, killed by a corrupt save. `at` defaults to 0 instead
+   of undefined so arithmetic on it stays finite. */
+function ansOf(id) {
+  const a = state && state.ans ? state.ans[id] : null;
+  return (a && typeof a === 'object') ? a : null;
+}
+
 function todayStats() {
   const t0 = new Date(); t0.setHours(0, 0, 0, 0);
   const from = t0.getTime();
   let n = 0, ok = 0;
-  Object.values(state.ans).forEach(a => { if (a.at >= from) { n++; if (a.ok) ok++; } });
+  Object.keys(state.ans || {}).forEach(k => {
+    const a = ansOf(k);
+    if (a && typeof a.at === 'number' && a.at >= from) { n++; if (a.ok) ok++; }
+  });
   const goal = state.goal || 20;
   return { n, ok, goal, pct: Math.min(100, Math.round(n / goal * 100)), streak: streak(), due: dueList().length };
 }
@@ -55,7 +69,7 @@ function topicStats() {
   const byId = {};
   rows.forEach(r => byId[r.id] = r);
   ALLQ.forEach(q => {
-    const a = state.ans[q.id];
+    const a = ansOf(q.id);
     if (!a) return;
     const r = byId[q.t]; if (!r) return;
     r.n++; if (a.ok) r.ok++;
@@ -189,7 +203,10 @@ function nextSessionLink() {
 function routineState() {
   const t0 = new Date(); t0.setHours(0, 0, 0, 0);
   const from = t0.getTime();
-  const ansN = Object.values(state.ans).filter(a => a.at >= from).length;
+  const ansN = Object.keys(state.ans || {}).filter(k => {
+    const a = ansOf(k);
+    return a && typeof a.at === 'number' && a.at >= from;
+  }).length;
   const lesN = Object.keys(state.doneAt || {}).filter(k => state.doneAt[k] >= from).length;
   const runN = (state.runs || []).filter(r => r.at >= from).length;
   const goal = state.goal || 20;

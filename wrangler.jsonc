@@ -9,6 +9,14 @@
 // Deploy:
 //   npm run deploy          # = python3 src/build.py --dist && npx wrangler deploy
 //
+// Build trên Cloudflare (Workers Builds → Settings → Build):
+//   Build command   npm run cf:build        (KHÔNG phải `npm run build` —
+//                                            trình cài đặt không nhận tên này,
+//                                            và `dist/` bị .gitignore nên nếu
+//                                            không build thì deploy không có gì)
+//   Deploy command  npx wrangler deploy
+//   Root directory  /
+//
 // Những điểm cần biết:
 //   · KHÔNG có `main` → đây là Worker chỉ có tài nguyên tĩnh, không có script.
 //     Nhờ vậy mọi request tĩnh đều MIỄN PHÍ và KHÔNG đếm vào hạn mức
@@ -20,7 +28,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/cloudflare/workers-sdk/main/packages/wrangler/config-schema.json",
 
-  "name": "vat-li-9-study-os",
+  "name": "foxfocus",
   "compatibility_date": "2026-11-01",
 
   // Chỉ phục vụ tệp tĩnh — bật cờ nodejs_compat là không cần thiết và làm

@@ -103,7 +103,7 @@ Lần đầu Wrangler mở trình duyệt để đăng nhập. Không cần API 
 
 ### 4.3 Địa chỉ
 
-- Tạm: `https://vat-li-9-study-os.<tài-khoản>.workers.dev`
+- Tạm: `https://foxfocus.<tài-khoản>.workers.dev`
 - Tên miền riêng: bỏ comment khối `routes` trong `wrangler.jsonc`, sửa thành tên miền của bạn,
   rồi deploy. Wrangler tự tạo bản ghi DNS và chứng chỉ TLS, và tự giữ nguyên qua mỗi lần deploy.
 

@@ -4,7 +4,11 @@
    · Lịch tháng/tuần: sự kiện màu, việc học, hạn nộp, lịch thi
    ========================================================= */
 
-const OWNER = { tag: '@nggkhaiz', name: 'Nguyễn Khải', gh: 'github.com/Ngg.Khaiz', ghUrl: 'https://github.com/Ngg.Khaiz' };
+/* The identity is the fox, not a personal profile. `its.fox_` is the
+   social handle; GitHub has no user by that name (it forbids dots and
+   underscores), so the code link points at the repository itself —
+   the one URL that is guaranteed to resolve. */
+const OWNER = { tag: '@its.fox_', name: 'Study Focus Fox', gh: 'github.com/MoLik-Labs/STUDY-SITE', ghUrl: 'https://github.com/MoLik-Labs/STUDY-SITE' };
 
 const SCH_DAYS = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ nhật'];
 const SCH_DAYS_SHORT = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
@@ -676,7 +680,7 @@ function schICS() {
     while (rest.length) { out.push(' ' + rest.slice(0, 72)); rest = rest.slice(72); }
     return out.join('\r\n');
   };
-  const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Hoc moi thu//@nggkhaiz//VI', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH'];
+  const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Study Focus Fox//its.fox//VI', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH'];
   let n = 0;
   S.events.forEach(e => {
     const t = (e.time || '08:00').split(':').map(Number);
@@ -684,7 +688,7 @@ function schICS() {
     start.setHours(t[0] || 8, t[1] || 0, 0, 0);
     const end = new Date(start.getTime() + 45 * 60000);
     lines.push('BEGIN:VEVENT');
-    lines.push('UID:' + e.id + '@nggkhaiz');
+    lines.push('UID:' + e.id + '@studyfocusfox');
     lines.push('DTSTAMP:' + stamp(new Date()));
     lines.push('DTSTART:' + stamp(start));
     lines.push('DTEND:' + stamp(end));

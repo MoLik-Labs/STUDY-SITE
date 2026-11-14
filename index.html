@@ -2,12 +2,12 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-T3t9GpP3XnRts+uwbiGz0akmb1fKbRI1yccDJbwe+Ek=' 'sha256-fALrYnrybyE+saRuVp+aEdvZu6ZKe5V2TzZtWxVxF9U=' 'sha256-hVlZl4DmsgwBdjrs6goQ5ATdQahsssaUyrCSIMR+NYM=' 'sha256-L8mKqOTWm0JvRiqwyuqvbvgYLux9XdvNu4H1xdJm4qI=' 'sha256-K81ByfXYlS/nsDZFSiuPTJRSlaJuPcdlTPs3wgdXLBY=' 'sha256-wK8yByPVNIfnHbpi+dmHWXXhHTm6BZUyB7CIptplLjU='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' 'sha256-w3hFvls4ExObkGsUvjmvmRDX6IF5dcn0ISEv67L+hpg=' https://fonts.googleapis.com; style-src-attr 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://i.ytimg.com https://*.ytimg.com blob:; media-src 'self' blob: https:; frame-src https://www.youtube-nocookie.com https://www.youtube.com; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'; upgrade-insecure-requests">
-<meta name="build-id" content="198f27d4accf">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-T3t9GpP3XnRts+uwbiGz0akmb1fKbRI1yccDJbwe+Ek=' 'sha256-fALrYnrybyE+saRuVp+aEdvZu6ZKe5V2TzZtWxVxF9U=' 'sha256-hVlZl4DmsgwBdjrs6goQ5ATdQahsssaUyrCSIMR+NYM=' 'sha256-z/EskK/5c9rf4zQnF2kE9PX8+wnxBWWH1a+AGAm+KuM=' 'sha256-/XPx2aZ0FNsSyi8kIRYHT/dIfdnw4ca0lqQ7DLGqxNw=' 'sha256-wK8yByPVNIfnHbpi+dmHWXXhHTm6BZUyB7CIptplLjU='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' 'sha256-lDIpABoeRm5CyTxqSf3Wj8KKQUoJM6kylxIN0PLEVGA=' https://fonts.googleapis.com; style-src-attr 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://i.ytimg.com https://*.ytimg.com blob:; media-src 'self' blob: https:; frame-src https://www.youtube-nocookie.com https://www.youtube.com; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'; upgrade-insecure-requests">
+<meta name="build-id" content="05a3a07737e2">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Học mọi thứ — Vật lí 9 · lớp 1–12 · @nggkhaiz</title>
-<meta name="app-version" content="11.2">
-<meta name="description" content="Một trang để học mọi thứ: lộ trình Vật lí 9, trường học lớp 1–12, thẻ ghi nhớ cách quãng, luyện đề tự tạo, kế hoạch học, thời khoá biểu và lịch học. Tác giả @nggkhaiz — github.com/Ngg.Khaiz.">
+<title>Study Focus Fox — Vật lí 9 · lớp 1–12 · học offline</title>
+<meta name="app-version" content="11.3">
+<meta name="description" content="Một trang để học mọi thứ: lộ trình Vật lí 9, trường học lớp 1–12, thẻ ghi nhớ cách quãng, luyện đề tự tạo, kế hoạch học, thời khoá biểu và lịch học. Study Focus Fox · @its.fox_.">
 <meta name="theme-color" content="#f4f1ea" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#12110e" media="(prefers-color-scheme: dark)">
 <meta name="color-scheme" content="light dark">
@@ -2792,6 +2792,188 @@ html[data-theme="pixelnight"] .rs-main:hover{background:var(--card)}
 
 .pg-k-l{color:var(--accent);text-decoration:none}
 .pg-k-l:hover{text-decoration:underline}
+
+/* =========================================================
+   BRAND — the fox mark
+   Drawn as a 16x16 grid of spans so it stays crisp at any size and
+   never needs a second HTTP request.
+   ========================================================= */
+.px-mark{display:inline-grid;grid-template-rows:repeat(16,1fr);width:26px;height:26px;
+  vertical-align:middle;flex:none;image-rendering:pixelated}
+.px-mark>span{display:grid;grid-template-columns:repeat(16,1fr);gap:0}
+.px-mark i{display:block;background:transparent}
+.px-mark i.c1{background:#c6542d}
+.px-mark i.c2{background:#a53e20}
+.px-mark i.c3{background:#17150f}
+.px-mark i.c4{background:#fcf9f2}
+.brand{display:flex;align-items:center;gap:9px}
+.brand-tx{display:flex;flex-direction:column;line-height:1.15}
+.brand-tx b{font-family:var(--serif);font-size:15px;font-weight:600;letter-spacing:-.2px}
+.brand-tx span{font-family:var(--mono);font-size:7.5px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--ink-3);margin-top:1px}
+@media(max-width:520px){.brand-tx b{font-size:13px}.px-mark{width:22px;height:22px}}
+
+/* language switch */
+.lang-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.lang-btn{text-align:left;border:1px solid var(--rule);background:var(--paper);padding:10px 12px;cursor:pointer}
+.lang-btn b{display:block;font-family:var(--serif);font-size:14px;font-weight:500;color:var(--ink)}
+.lang-btn i{display:block;font-style:normal;font-family:var(--mono);font-size:8px;line-height:1.5;
+  letter-spacing:.03em;color:var(--ink-3);margin-top:3px}
+.lang-btn:hover{border-color:var(--rule-2)}
+.lang-btn.on{border-color:var(--ink);background:var(--card);box-shadow:inset 0 -2px 0 var(--accent)}
+
+/* =========================================================
+   PIXEL ARENA  #/game
+   ========================================================= */
+.px{display:grid;grid-template-rows:repeat(8,1fr);width:72px;height:72px;image-rendering:pixelated}
+.px>span{display:grid;grid-template-columns:repeat(8,1fr)}
+.px i{display:block;background:transparent}
+.px i.c1{background:#5a6b4f}
+.px i.c2{background:#8b2e22}
+.px i.c3{background:#17150f}
+.px i.c4{background:#c6542d}
+.px.sm{width:44px;height:44px}
+.px.foe{transform:scaleX(-1)}
+.gm-arena-select{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;
+  background:var(--rule);border:1px solid var(--rule);margin-top:16px}
+.gm-foe-card{background:var(--card);border:0;padding:18px 14px;text-align:left;cursor:pointer;
+  display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.gm-foe-card:hover{background:var(--paper)}
+.gm-foe-card b{font-family:var(--serif);font-size:15px;font-weight:500;color:var(--ink)}
+.gm-foe-card i{font-style:normal;font-size:10.5px;line-height:1.5;color:var(--ink-3)}
+.gm-lv{font-family:var(--mono);font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.gm-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:10px 0}
+.gm-stat{font-family:var(--mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+.gm-stat b{font-family:var(--serif);font-size:15px;font-weight:500;color:var(--ink);margin-left:3px}
+.gm-stage{display:grid;grid-template-columns:1fr minmax(0,2fr) 1fr;gap:14px;align-items:center;
+  border:1px solid var(--rule);background:var(--card);padding:18px 14px}
+.gm-side{display:flex;flex-direction:column;align-items:center;gap:8px}
+.gm-hp{width:100%;height:8px;background:var(--rule);border:1px solid var(--rule-2)}
+.gm-hp i{display:block;height:100%;background:#3f6b4e;transition:width .25s}
+.gm-hp.foe i{background:var(--accent)}
+.gm-hp-t{font-family:var(--mono);font-size:8px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+.gm-mid{min-height:130px;display:flex;flex-direction:column;justify-content:center}
+.gm-q p{font-family:var(--serif);font-size:clamp(15px,2vw,19px);line-height:1.45;margin:8px 0 0}
+.gm-unit{font-family:var(--mono);font-size:9px;color:var(--ink-3);letter-spacing:.05em}
+.gm-over{text-align:center}
+.gm-over b{display:block;font-family:var(--serif);font-size:22px;font-weight:500}
+.gm-over span{display:block;font-family:var(--mono);font-size:10px;color:var(--ink-3);margin-top:4px}
+.gm-over-sub{font-size:8.5px!important}
+.gm-over .btn{margin-top:10px}
+.gm-in{display:flex;gap:8px;margin-top:14px;max-width:520px}
+.gm-in input{flex:1;border:1px solid var(--rule);background:var(--paper);padding:10px 12px;
+  font-family:var(--mono);font-size:14px;color:var(--ink)}
+.gm-in input:focus{border-color:var(--accent);outline:2px solid color-mix(in srgb,var(--accent) 20%,transparent)}
+.gm-opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:14px}
+.gm-opt{border:1px solid var(--rule);background:var(--card);padding:11px;cursor:pointer;
+  font-family:var(--mono);font-size:12.5px;color:var(--ink)}
+.gm-opt:hover{border-color:var(--accent);background:var(--paper)}
+.gm-hint{margin-top:7px}
+.gm-log{margin-top:16px;border-top:1px solid var(--rule);padding-top:10px}
+.gm-log-r{display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:8px;align-items:baseline;
+  padding:5px 0;border-bottom:1px dashed var(--rule);font-size:10.5px}
+.gm-log-r:last-child{border-bottom:0}
+.gm-log-m{font-family:var(--mono)}
+.gm-log-r.ok .gm-log-m{color:#3f6b4e}
+.gm-log-r.no .gm-log-m{color:var(--accent)}
+.gm-log-t{color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gm-log-a{font-family:var(--mono);font-size:9px;color:var(--ink-3);white-space:nowrap}
+@media(max-width:760px){
+  .gm-stage{grid-template-columns:1fr;gap:10px}
+  .gm-mid{order:-1;min-height:0}
+  .gm-side{flex-direction:row;justify-content:center}
+  .gm-hp{width:120px}
+}
+
+/* =========================================================
+   PHYSICS LAB  #/special
+   ========================================================= */
+.sp-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
+.sp-card{border:1px solid var(--rule);background:var(--card);padding:15px 16px}
+.sp-card.sp-wide{grid-column:1/-1}
+.sp-h{display:flex;align-items:baseline;gap:10px;margin-bottom:8px}
+.sp-badge{margin-left:auto;font-family:var(--mono);font-size:8px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--ink-3);border:1px solid var(--rule);padding:2px 6px}
+.sp-card textarea{width:100%;border:1px solid var(--rule);background:var(--paper);padding:10px 12px;
+  font-family:var(--sans);font-size:13px;line-height:1.55;color:var(--ink);resize:vertical;margin-top:6px}
+.sp-card textarea:focus{border-color:var(--accent);outline:2px solid color-mix(in srgb,var(--accent) 18%,transparent)}
+.sp-out{margin-top:12px}
+.sp-none{font-size:11.5px;color:var(--ink-3);margin:0}
+.sp-qty{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:11px}
+.sp-chip{border:1px solid var(--rule);background:var(--paper);padding:3px 8px;
+  display:inline-flex;align-items:baseline;gap:6px}
+.sp-chip b{font-family:var(--mono);font-size:11.5px;color:var(--ink)}
+.sp-chip i{font-style:normal;font-family:var(--mono);font-size:7.5px;color:var(--ink-3);
+  letter-spacing:.04em;text-transform:uppercase}
+.sp-laws{display:flex;flex-direction:column;gap:7px}
+.sp-law{border-left:2px solid var(--rule-2);padding:6px 0 6px 10px}
+.sp-law.full{border-left-color:var(--accent)}
+.sp-law-h{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+.sp-law-h b{font-family:var(--serif);font-size:13.5px;font-weight:500}
+.sp-law-h .mono{font-family:var(--mono);font-size:10px;color:var(--ink-2)}
+.sp-tag{font-family:var(--mono);font-size:7.5px;letter-spacing:.07em;text-transform:uppercase;
+  background:var(--accent);color:var(--paper);padding:1px 5px}
+.sp-law p{margin:3px 0 0;font-size:10.5px;line-height:1.5;color:var(--ink-3)}
+.sp-ans{margin-top:12px;border-top:1px solid var(--rule);padding-top:10px}
+.sp-ans b{display:block;font-family:var(--serif);font-size:20px;font-weight:500;color:var(--accent);margin-top:3px}
+.sp-sense{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin-top:10px}
+.sp-sense-p{font-family:var(--mono);font-size:9px;padding:1px 6px;border:1px solid var(--rule)}
+.sp-sense-p.ok{color:#3f6b4e;border-color:#3f6b4e}
+.sp-sense-p.no{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+.sp-ok-t{font-style:normal;font-size:9.5px;color:#3f6b4e;margin-left:4px}
+.sp-no-t{font-style:normal;font-size:9.5px;color:var(--accent);margin-left:4px}
+.sp-sense-demo{display:flex;flex-direction:column;gap:6px;margin:10px 0}
+.sp-sense-r{display:grid;grid-template-columns:90px 1fr;gap:4px 10px;border-left:2px solid var(--rule-2);padding-left:9px}
+.sp-sense-r.ok{border-left-color:#3f6b4e}
+.sp-sense-r.no{border-left-color:var(--accent)}
+.sp-sense-r b{font-family:var(--mono);font-size:11px;grid-row:1}
+.sp-sense-r span{font-family:var(--mono);font-size:8px;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--ink-3);grid-row:1;text-align:right}
+.sp-sense-r i{grid-column:1/-1;font-style:normal;font-size:10px;line-height:1.5;color:var(--ink-2)}
+.sp-tab{width:100%;border-collapse:collapse;margin-top:8px;font-size:11px}
+.sp-tab th{text-align:left;font-family:var(--mono);font-size:7.5px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--ink-3);border-bottom:1px solid var(--rule);padding:5px 4px}
+.sp-tab td{border-bottom:1px solid var(--rule);padding:5px 4px}
+.sp-tab td b{font-family:var(--mono);font-size:11px}
+.sp-tab td span{font-size:9.5px;color:var(--ink-3);display:block;line-height:1.35}
+.sp-tab td.mono{font-family:var(--mono);font-size:10.5px;text-align:right;white-space:nowrap}
+.sp-prefix{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.sp-pf{font-family:var(--mono);font-size:10px;border:1px solid var(--rule);padding:2px 7px;background:var(--paper)}
+.sp-pf b{color:var(--accent);margin-right:4px}
+.sp-ladder{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1px;
+  background:var(--rule);border:1px solid var(--rule);margin:10px 0}
+.sp-f{background:var(--card);padding:9px 11px}
+.sp-f-q{display:flex;align-items:baseline;gap:8px}
+.sp-f-b{font-family:var(--mono);font-size:7.5px;letter-spacing:.05em;color:var(--ink-3);
+  border:1px solid var(--rule);padding:0 4px;flex:none}
+.sp-f-q b{font-family:var(--serif);font-size:12.5px;font-weight:500}
+.sp-f-a{font-family:var(--mono);font-size:13px;color:var(--accent);margin-top:3px}
+.sp-f i{display:block;font-style:normal;font-size:9.5px;color:var(--ink-3);margin-top:2px}
+.sp-drill{margin-top:12px;border-top:1px solid var(--rule);padding-top:12px}
+.sp-drill-q{font-family:var(--serif);font-size:16px;margin:6px 0 8px}
+.sp-drill input{width:100%;max-width:340px;border:1px solid var(--rule);background:var(--paper);
+  padding:9px 11px;font-family:var(--mono);font-size:13px}
+.sp-y{color:#3f6b4e}.sp-n{color:var(--accent)}
+.sp-done b{font-family:var(--serif);font-size:18px;font-weight:500}
+@media(max-width:820px){.sp-grid{grid-template-columns:1fr}}
+
+/* =========================================================
+   SHARE CARD  #/share
+   ========================================================= */
+.sh-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(280px,1fr);gap:18px;margin-top:18px;align-items:start}
+.sh-prev{border:1px solid var(--rule);background:var(--paper-2);padding:12px}
+.sh-prev canvas{width:100%;height:auto;display:block;box-shadow:0 2px 12px rgba(23,21,15,.08)}
+.sh-kpi{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule);
+  border:1px solid var(--rule);margin-bottom:12px}
+.sh-kpi>div{background:var(--card);padding:10px 12px}
+.sh-kpi b{display:block;font-family:var(--serif);font-size:22px;font-weight:400;line-height:1}
+.sh-kpi span{display:block;font-family:var(--mono);font-size:7.5px;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--ink-3);margin-top:3px}
+.sh-note{border-top:1px solid var(--rule);margin-top:14px;padding-top:11px}
+.sh-note ul{margin:7px 0 0;padding-left:16px}
+.sh-note li{font-size:11px;line-height:1.7;color:var(--ink-2)}
+.sh-note s{color:var(--accent);text-decoration-thickness:1px}
+@media(max-width:820px){.sh-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -2809,11 +2991,11 @@ html[data-theme="pixelnight"] .rs-main:hover{background:var(--card)}
     <span><b>Học mọi thứ</b> — Vật lí 9 · lớp 1–12 · chạy hoàn toàn trong trình duyệt, dữ liệu nằm trong máy bạn.</span>
     <span>Thẻ ghi nhớ · luyện đề · kế hoạch · thời khoá biểu · lịch học · phòng thí nghiệm — xuất được ra tệp, dùng offline.</span>
     <span class="foot-own">
-      <a href="https://github.com/Ngg.Khaiz" target="_blank" rel="noopener">@nggkhaiz</a>
+      <a href="https://github.com/MoLik-Labs/STUDY-SITE" target="_blank" rel="noopener">@its.fox_</a>
       <em>·</em>
       <a href="#/about">giới thiệu</a>
       <em>·</em>
-      <span class="foot-v" title="phiên bản">v11.2</span>
+      <span class="foot-v" title="phiên bản">v11.3</span>
     </span>
   </div>
 </footer>
@@ -4750,7 +4932,93 @@ if(P.accent)document.documentElement.style.setProperty('--accent',P.accent);
 
 <!-- ===== ỨNG DỤNG ===== -->
 <script>/* phiên bản — sinh từ src/build.py */
-const APP_VERSION = '11.2';
+const APP_VERSION = '11.3';
+/* =========================================================
+   BRAND — Study Focus Fox
+   ---------------------------------------------------------
+   One module owns the identity so nothing drifts: the product
+   name, the pixel mark, the tagline, and the document title.
+
+   The mark is a 16x16 grid. It is drawn from data, not from an
+   image file, because:
+     · a single HTML file must not depend on a second request;
+     · CSP stays strict (no external image host);
+     · it scales to any size with crispEdges semantics — no blur.
+   Only the left half is stored; the right is mirrored, so the
+   fox can never come out asymmetric by accident.
+   ========================================================= */
+
+const BRAND = {
+  name: 'Study Focus Fox',
+  short: 'Focus Fox',
+  tagline: { vi: 'Tập trung sâu · Nhớ lâu hơn', en: 'Focus deep · Remember longer' },
+  /* palette — must stay in sync with the CSS custom properties */
+  colors: { fox: '#c6542d', deep: '#a53e20', ink: '#17150f', cream: '#fcf9f2' },
+};
+
+/* Left half of the 16x16 mark. Mirrored at render time.
+   Legend: o = fox, d = deep shadow, k = ink (eyes, nose), w = cream muzzle */
+const BRAND_MARK_HALF = [
+  /* v5. Everything here was chosen after looking at it rendered, which is
+     the only way to judge a 16px mark:
+       · ears cut steeply inward — an upright triangle reads as a cat;
+       · the skull dips between the ears, then flares to cheek tufts;
+       · eyes 2x2 and horizontal — a 1px slit reads as a mask, not a face;
+       · the white cheek band sits on the OUTER edge and never encloses,
+         because an enclosed white blob read as a cat's muzzle;
+       · nothing at the exact bottom centre — the apex is the nose. */
+  '..o.....',
+  '..oo....',
+  '.odo....',
+  '.oodo...',
+  '.ooodo..',
+  'oooooo..',
+  'ooooooo.',
+  'oooooooo',
+  '.oookkoo',
+  '.oookkoo',
+  '..wwoooo',
+  '...wwooo',
+  '....wwoo',
+  '.....wwo',
+  '......wo',
+  '.......k',
+];
+
+const BRAND_MARK_CLASS = { o: 'c1', d: 'c2', k: 'c3', w: 'c4' };
+
+/* Render the mark as a grid of spans. CSS paints each cell. */
+function brandMarkHtml(label) {
+  const rows = BRAND_MARK_HALF.map(half => half + half.split('').reverse().join(''));
+  const cells = rows.map(r => `<span>${[...r].map(c =>
+    c === '.' ? '<i></i>' : `<i class="${BRAND_MARK_CLASS[c]}"></i>`).join('')}</span>`).join('');
+  return `<span class="px-mark"${label ? ` role="img" aria-label="${label}"` : ' aria-hidden="true"'}>${cells}</span>`;
+}
+
+const GM_SPRITE_MARK = brandMarkHtml('');
+
+/* Keep the browser tab and the <html> element in step with the brand.
+   Called on every render, so a route change cannot leave a stale title. */
+function syncBrandChrome() {
+  const L = typeof i18nLang === 'function' ? i18nLang() : 'vi';
+  const tag = BRAND.tagline[L] || BRAND.tagline.vi;
+  try {
+    document.documentElement.setAttribute('data-brand', 'focusfox');
+    document.documentElement.setAttribute('lang', L);
+    /* The first title comes from the static <head>, baked at build time in
+       Vietnamese. Remember it once, then always regenerate it from the live
+       language, otherwise switching to English leaves a Vietnamese tab —
+       the one piece of chrome the in-page language switch used to miss. */
+    if (!BRAND._title0) BRAND._title0 = document.title;
+    const base = BRAND._title0 || '';
+    /* Routes that set their own title are left alone; the home title is the
+       only one built from the tagline. */
+    if (!base || /Study Focus Fox/.test(base)) {
+      document.title = BRAND.name + ' — ' + tag;
+    }
+  } catch (e) { }
+}
+
 /* =========================================================
    KHO LƯU BỀN — không phụ thuộc cache
    4 tầng:
@@ -4970,6 +5238,187 @@ const AppStore = (() => {
 })();
 
 /* =========================================================
+   i18n — VIETNAMESE + ENGLISH, ONE BUILD
+   ---------------------------------------------------------
+   The site ships as a single self-contained HTML file, so both
+   languages live in the same build. That is a deliberate choice:
+   216 KB is one file either way, and a student switching to English
+   should not pay for a second download.
+
+   Rules of engagement:
+     · Vietnamese is the source language and the default.
+     · Keys are stable snake_case ids, never English prose — so the
+       Vietnamese text can be rewritten without touching call sites.
+     · t() falls back vi → en → key. A missing key shows its own id,
+       which is how a bug becomes visible instead of silent.
+     · The <html lang> attribute follows the choice; screen readers
+       need it, and so does hyphenation.
+
+   Content that is genuinely subject matter (physics explanations,
+   question banks) is NOT translated here — it lives in content
+   files. This table is the interface: chrome, buttons, headings,
+   empty states, confirmations.
+   ========================================================= */
+
+const I18N = {
+  /* ---------- chrome ---------- */
+  brand_sub: { vi: 'HSG KHTN 1 · Chuyên Lý', en: 'Physics · Grade 9' },
+  nav_study: { vi: 'Học hôm nay', en: 'Today' },
+  nav_cards: { vi: 'Thẻ ghi nhớ', en: 'Flashcards' },
+  nav_practice: { vi: 'Luyện đề tự tạo', en: 'Practice' },
+  nav_plan: { vi: 'Kế hoạch học', en: 'Study plan' },
+  nav_weekly: { vi: 'Kế hoạch tuần', en: 'Week plan' },
+  nav_grades: { vi: 'Sổ điểm', en: 'Grade book' },
+  nav_focus: { vi: 'Đồng hồ tập trung', en: 'Focus timer' },
+  nav_timetable: { vi: 'Thời khoá biểu', en: 'Timetable' },
+  nav_calendar: { vi: 'Lịch học', en: 'Calendar' },
+  nav_subjects: { vi: 'Khoá học lớp 1–12', en: 'Courses 1–12' },
+  nav_studio: { vi: 'Tạo bài học', en: 'Create a lesson' },
+  nav_mine: { vi: 'Bài của tôi', en: 'My lessons' },
+  nav_files: { vi: 'Kho tệp', en: 'Files' },
+  nav_build: { vi: 'Bảng mạch', en: 'Circuit board' },
+  nav_builder: { vi: 'Mạch lồng nhau', en: 'Nested circuits' },
+  nav_lab: { vi: 'Phòng thí nghiệm', en: 'Lab' },
+  nav_solve: { vi: 'Bài giải mẫu', en: 'Worked examples' },
+  nav_library: { vi: 'Thư viện bài giảng', en: 'Video library' },
+  nav_notes: { vi: 'Sổ tay công thức', en: 'Formula sheet' },
+  nav_papers: { vi: 'Đề thi', en: 'Exam papers' },
+  nav_qa: { vi: 'Hỏi đáp', en: 'Q&A' },
+  nav_review: { vi: 'Luyện câu sai', en: 'Retry mistakes' },
+  nav_progress: { vi: 'Tiến độ tổng · báo cáo', en: 'Progress & report' },
+  nav_stats: { vi: 'Tiến độ Vật lí 9', en: 'Physics 9 progress' },
+  nav_settings: { vi: 'Tuỳ biến giao diện', en: 'Appearance' },
+  nav_about: { vi: 'Giới thiệu', en: 'About' },
+  nav_game: { vi: 'Đấu trường Pixel', en: 'Pixel Arena' },
+  nav_special: { vi: 'Góc Vật lí', en: 'Physics Lab' },
+  nav_share: { vi: 'Khoe tiến độ', en: 'Share progress' },
+
+  more: { vi: 'Khám phá', en: 'Explore' },
+  search_ph: { vi: 'Tìm bài, công thức, câu hỏi', en: 'Search lessons, formulas, questions' },
+  scope_change: { vi: 'Đổi lớp và môn', en: 'Change grade and subject' },
+  btn_calc: { vi: 'Máy giải', en: 'Solver' },
+  btn_sim: { vi: 'Thí nghiệm', en: 'Simulate' },
+  btn_exam: { vi: 'Thi thử', en: 'Mock exam' },
+
+  /* ---------- rail ---------- */
+  rail_today_sub: { vi: 'việc cần làm · chuỗi ngày', en: 'what to do · streak' },
+  rail_plan: { vi: 'Kế hoạch', en: 'Plan' },
+  rail_week: { vi: 'Tuần này', en: 'This week' },
+  rail_focus: { vi: 'Tập trung', en: 'Focus' },
+  rail_week_short: { vi: 'Thời khoá biểu', en: 'Timetable' },
+  rail_cal: { vi: 'Lịch', en: 'Calendar' },
+  rail_progress: { vi: 'Tiến độ', en: 'Progress' },
+  rail_courses: { vi: 'Khoá học 1–12', en: 'Courses 1–12' },
+
+  /* ---------- common actions ---------- */
+  ok: { vi: 'Đồng ý', en: 'OK' },
+  cancel: { vi: 'Huỷ', en: 'Cancel' },
+  close: { vi: 'Đóng', en: 'Close' },
+  save: { vi: 'Lưu', en: 'Save' },
+  saved: { vi: 'Đã lưu', en: 'Saved' },
+  delete: { vi: 'Xoá', en: 'Delete' },
+  add: { vi: 'Thêm', en: 'Add' },
+  next: { vi: 'Tiếp', en: 'Next' },
+  back: { vi: 'Quay lại', en: 'Back' },
+  done: { vi: 'Xong', en: 'Done' },
+  start: { vi: 'Bắt đầu', en: 'Start' },
+  retry: { vi: 'Làm lại', en: 'Retry' },
+  reset: { vi: 'Đặt lại', en: 'Reset' },
+  loading: { vi: 'Đang tải…', en: 'Loading…' },
+  empty: { vi: 'Chưa có gì ở đây', en: 'Nothing here yet' },
+  optional: { vi: 'không bắt buộc', en: 'optional' },
+  today: { vi: 'Hôm nay', en: 'Today' },
+  yesterday: { vi: 'Hôm qua', en: 'Yesterday' },
+  minutes: { vi: 'phút', en: 'min' },
+  days: { vi: 'ngày', en: 'days' },
+  points: { vi: 'điểm', en: 'pts' },
+  level: { vi: 'Cấp', en: 'Level' },
+  streak: { vi: 'Chuỗi', en: 'Streak' },
+  correct: { vi: 'đúng', en: 'correct' },
+  wrong: { vi: 'sai', en: 'wrong' },
+  score: { vi: 'Điểm', en: 'Score' },
+  best: { vi: 'Kỷ lục', en: 'Best' },
+  new_record: { vi: 'Kỷ lục mới!', en: 'New record!' },
+
+  /* ---------- language ---------- */
+  lang_label: { vi: 'Ngôn ngữ', en: 'Language' },
+  lang_vi: { vi: 'Tiếng Việt', en: 'Vietnamese' },
+  lang_en: { vi: 'English', en: 'English' },
+  lang_note: {
+    vi: 'Đổi ngôn ngữ giao diện. Nội dung bài học Vật lí giữ tiếng Việt để khớp đề thi.',
+    en: 'Changes the interface language. Physics lesson content stays in Vietnamese to match the exam.',
+  },
+
+  /* ---------- game ---------- */
+  game_title: { vi: 'Đấu trường Pixel', en: 'Pixel Arena' },
+  game_sub: {
+    vi: 'Trả lời đúng để gây sát thương. Sai thì bị đánh trả — và ôn lại ngay.',
+    en: 'Answer right to deal damage. Answer wrong and you take the hit — then review it.',
+  },
+  game_start: { vi: 'Vào trận', en: 'Enter battle' },
+  game_hp: { vi: 'Máu', en: 'HP' },
+  game_coin: { vi: 'Xu', en: 'Coins' },
+  game_combo: { vi: 'Liên hoàn', en: 'Combo' },
+  game_topic_phys: { vi: 'Vật lí', en: 'Physics' },
+  game_topic_math: { vi: 'Toán', en: 'Maths' },
+  game_topic_eng: { vi: 'Ngữ pháp tiếng Anh', en: 'English grammar' },
+  game_topic_chem: { vi: 'Hoá học', en: 'Chemistry' },
+  game_over: { vi: 'Hết máu rồi', en: 'You ran out of HP' },
+  game_win: { vi: 'Thắng rồi!', en: 'You win!' },
+  game_again: { vi: 'Đánh lại', en: 'Fight again' },
+
+  /* ---------- special / physics ---------- */
+  special_title: { vi: 'Góc Vật lí', en: 'Physics Lab' },
+  special_sub: {
+    vi: 'Những thứ chỉ có ở đây: công thức tự đọc đề, mô phỏng, và bảng hằng số.',
+    en: 'Things only this site has: formulas that read your problem, simulations, constants.',
+  },
+
+  /* ---------- grades ---------- */
+  grades_title: { vi: 'Sổ điểm · THCS & THPT', en: 'Grade book · Secondary' },
+  grades_target: { vi: 'Mục tiêu', en: 'Target' },
+  grades_add_subject: { vi: 'Thêm môn', en: 'Add subject' },
+  grades_need: { vi: 'Cần', en: 'Need' },
+  grades_need_tail: { vi: 'điểm 1 tiết nữa để đạt', en: 'on the next test to reach' },
+
+  /* ---------- weekly ---------- */
+  weekly_title: { vi: 'Kế hoạch tuần', en: 'Week plan' },
+  weekly_project: { vi: 'Dự án', en: 'Project' },
+  weekly_task: { vi: 'Việc', en: 'Task' },
+  weekly_subtask: { vi: 'Việc con', en: 'Subtask' },
+  weekly_available: { vi: 'Ngày tôi có thể học', en: 'Days I can study' },
+  weekly_pull: { vi: 'Kéo việc trễ về hôm nay', en: 'Pull overdue to today' },
+};
+
+/* ---------- current language ---------- */
+const I18N_DEFAULT = 'vi';
+function i18nLang() {
+  const p = (typeof state !== 'undefined' && state && state.prefs) ? state.prefs : {};
+  return p.lang === 'en' ? 'en' : (p.lang === 'vi' ? 'vi' : I18N_DEFAULT);
+}
+
+function t(key, lang) {
+  const row = I18N[key];
+  if (!row) return key;                     /* key tự hiện ra = bug nhìn thấy được */
+  const L = lang || i18nLang();
+  return row[L] != null ? row[L] : (row.vi != null ? row.vi : key);
+}
+
+/* Đặt ngôn ngữ, cập nhật <html lang>, lưu lại */
+function setLang(lang) {
+  const L = lang === 'en' ? 'en' : 'vi';
+  if (!state.prefs) state.prefs = {};
+  state.prefs.lang = L;
+  try { document.documentElement.setAttribute('lang', L); } catch (e) { }
+  save();
+  if (typeof render === 'function') render();
+  return L;
+}
+
+/* Dùng trong template cho gọn: tl('nav_study') */
+const tl = key => t(key);
+
+/* =========================================================
    APP — Lớp Vật lí 9
    Dữ liệu: TOPICS, WHO, LIB, PLAN, EXT, MORE, PHASES, NOTES, PAPERS (từ bản kế hoạch)
             QA, QUIZ (ngân hàng hỏi đáp + trắc nghiệm)
@@ -5108,7 +5557,10 @@ function renderTop(){
   $('#top').innerHTML=`
     <div class="topbar-in">
       <button class="menu-btn" id="menuBtn" aria-label="Mở danh sách ngày">☰</button>
-      <a class="brand" href="#/"><b>Vật lí 9</b><span>HSG KHTN 1 · Chuyên Lý</span></a>
+      <a class="brand" href="#/" aria-label="${BRAND.name} — về trang chủ">
+        <span class="brand-mk" aria-hidden="true">${GM_SPRITE_MARK}</span>
+        <span class="brand-tx"><b>${BRAND.name}</b><span>${tl('brand_sub')}</span></span>
+      </a>
       <span class="grow"></span>
       <button class="tb-ico" id="openSettingsM" aria-label="Tuỳ biến" title="Tuỳ biến giao diện">
         <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="2.4"/><path d="M8 1.6v1.6M8 12.8v1.6M1.6 8h1.6M12.8 8h1.6M3.5 3.5l1.1 1.1M11.4 11.4l1.1 1.1M12.5 3.5l-1.1 1.1M4.6 11.4l-1.1 1.1"/></svg>
@@ -5119,48 +5571,52 @@ function renderTop(){
       <a class="scope-chip" href="#/subjects" title="Đổi lớp và môn">
         <b>Lớp ${schoolState().grade}</b><span>${(SUBJECTS.find(x => x.id === schoolState().subj) || { name: 'Vật lí' }).name}</span>
       </a>
-      <button class="tb-btn" data-nav="#/calc">Máy giải</button>
-      <button class="tb-btn" data-nav="#/sim">Thí nghiệm</button>
-      <button class="tb-btn" data-nav="#/exam">Thi thử</button>
+      <button class="tb-btn" data-nav="#/calc">${tl('btn_calc')}</button>
+      <button class="tb-btn" data-nav="#/sim">${tl('btn_sim')}</button>
+      <button class="tb-btn" data-nav="#/exam">${tl('btn_exam')}</button>
       <span class="tb-more">
-        <button class="tb-btn" id="tbMoreBtn" aria-expanded="false" aria-controls="tbMenu">Khám phá ▾</button>
+        <button class="tb-btn" id="tbMoreBtn" aria-expanded="false" aria-controls="tbMenu">${tl('more')} ▾</button>
         <span class="tb-menu" id="tbMenu" role="menu">
-          <a data-nav="#/study" role="menuitem">Học hôm nay</a>
-          <a data-nav="#/cards" role="menuitem">Thẻ ghi nhớ</a>
-          <a data-nav="#/practice" role="menuitem">Luyện đề tự tạo</a>
-          <a data-nav="#/plan" role="menuitem">Kế hoạch học</a>
-          <a data-nav="#/weekly" role="menuitem">Kế hoạch tuần</a>
-          <a data-nav="#/grades" role="menuitem">Sổ điểm</a>
-          <a data-nav="#/focus" role="menuitem">Đồng hồ tập trung</a>
-          <a data-nav="#/timetable" role="menuitem">Thời khoá biểu</a>
-          <a data-nav="#/calendar" role="menuitem">Lịch học</a>
+          <a data-nav="#/study" role="menuitem">${tl('nav_study')}</a>
+          <a data-nav="#/cards" role="menuitem">${tl('nav_cards')}</a>
+          <a data-nav="#/practice" role="menuitem">${tl('nav_practice')}</a>
+          <a data-nav="#/plan" role="menuitem">${tl('nav_plan')}</a>
+          <a data-nav="#/weekly" role="menuitem">${tl('nav_weekly')}</a>
+          <a data-nav="#/grades" role="menuitem">${tl('nav_grades')}</a>
+          <a data-nav="#/focus" role="menuitem">${tl('nav_focus')}</a>
+          <a data-nav="#/timetable" role="menuitem">${tl('nav_timetable')}</a>
+          <a data-nav="#/calendar" role="menuitem">${tl('nav_calendar')}</a>
           <span class="tb-sep"></span>
-          <a data-nav="#/subjects" role="menuitem">Khoá học lớp 1–12</a>
-          <a data-nav="#/studio" role="menuitem">Tạo bài học</a>
-          <a data-nav="#/mine" role="menuitem">Bài của tôi</a>
-          <a data-nav="#/files" role="menuitem">Kho tệp</a>
+          <a data-nav="#/game" role="menuitem">${tl('nav_game')}</a>
+          <a data-nav="#/share" role="menuitem">${tl('nav_share')}</a>
+          <a data-nav="#/special" role="menuitem">${tl('nav_special')}</a>
           <span class="tb-sep"></span>
-          <a data-nav="#/build" role="menuitem">Bảng mạch</a>
-          <a data-nav="#/builder" role="menuitem">Mạch lồng nhau</a>
-          <a data-nav="#/lab" role="menuitem">Phòng thí nghiệm</a>
-          <a data-nav="#/solve" role="menuitem">Bài giải mẫu</a>
-          <a data-nav="#/library" role="menuitem">Thư viện bài giảng</a>
-          <a data-nav="#/notes" role="menuitem">Sổ tay công thức</a>
-          <a data-nav="#/papers" role="menuitem">Đề thi</a>
-          <a data-nav="#/qa" role="menuitem">Hỏi đáp</a>
-          <a data-nav="#/review" role="menuitem">Luyện câu sai</a>
+          <a data-nav="#/subjects" role="menuitem">${tl('nav_subjects')}</a>
+          <a data-nav="#/studio" role="menuitem">${tl('nav_studio')}</a>
+          <a data-nav="#/mine" role="menuitem">${tl('nav_mine')}</a>
+          <a data-nav="#/files" role="menuitem">${tl('nav_files')}</a>
           <span class="tb-sep"></span>
-          <a data-nav="#/progress" role="menuitem">Tiến độ tổng · báo cáo</a>
-          <a data-nav="#/stats" role="menuitem">Tiến độ Vật lí 9</a>
-          <a data-nav="#/settings" role="menuitem">Tuỳ biến giao diện</a>
-          <a data-nav="#/about" role="menuitem">Giới thiệu · @nggkhaiz</a>
+          <a data-nav="#/build" role="menuitem">${tl('nav_build')}</a>
+          <a data-nav="#/builder" role="menuitem">${tl('nav_builder')}</a>
+          <a data-nav="#/lab" role="menuitem">${tl('nav_lab')}</a>
+          <a data-nav="#/solve" role="menuitem">${tl('nav_solve')}</a>
+          <a data-nav="#/library" role="menuitem">${tl('nav_library')}</a>
+          <a data-nav="#/notes" role="menuitem">${tl('nav_notes')}</a>
+          <a data-nav="#/papers" role="menuitem">${tl('nav_papers')}</a>
+          <a data-nav="#/qa" role="menuitem">${tl('nav_qa')}</a>
+          <a data-nav="#/review" role="menuitem">${tl('nav_review')}</a>
+          <span class="tb-sep"></span>
+          <a data-nav="#/progress" role="menuitem">${tl('nav_progress')}</a>
+          <a data-nav="#/stats" role="menuitem">${tl('nav_stats')}</a>
+          <a data-nav="#/settings" role="menuitem">${tl('nav_settings')}</a>
+          <a data-nav="#/about" role="menuitem">${tl('nav_about')}</a>
         </span>
       </span>
       <button class="tb-search" id="openSearch">
         <svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.6"/><path d="M10.5 10.5 14 14"/></svg>
-        <span>Tìm bài, công thức, câu hỏi</span><kbd>⌘K</kbd>
+        <span>${tl('search_ph')}</span><kbd>⌘K</kbd>
       </button>
-      <a class="tb-owner" href="#/about" title="Tác giả">@nggkhaiz</a>
+      <a class="tb-owner" href="#/about" title="${tl('nav_about')} · @its.fox_">@its.fox_</a>
       <span class="kicker" style="white-space:nowrap">${String(dc).padStart(2,'0')} / ${TOTAL_SESS}</span>
     </div>`;
   $('#menuBtn').onclick=()=>{
@@ -5201,17 +5657,17 @@ function renderRail(){
   const mineN=(typeof allLessons==='function')?allLessons().filter(l=>l.own).length:0;
   $('#rail').innerHTML=`
     <div class="rail-study">
-      <a href="#/study" class="rs-main${h0.startsWith('#/study')?' on':''}"><b>Học hôm nay</b><span>việc cần làm · chuỗi ngày</span></a>
+      <a href="#/study" class="rs-main${h0.startsWith('#/study')?' on':''}"><b>${tl('nav_study')}</b><span>${tl('rail_today_sub')}</span></a>
       <div class="rs-links">
-        <a href="#/cards" class="${h0.startsWith('#/cards')?'on':''}">Thẻ ghi nhớ${(typeof syDue==='function'&&syDue().length)?'<i>'+syDue().length+'</i>':''}</a>
-        <a href="#/practice" class="${h0.startsWith('#/practice')?'on':''}">Luyện đề</a>
-        <a href="#/plan" class="${h0.startsWith('#/plan')&&!h0.startsWith('#/weekly')?'on':''}">Kế hoạch</a>
-        <a href="#/weekly" class="${h0.startsWith('#/weekly')?'on':''}">Tuần này</a>
-        <a href="#/grades" class="${h0.startsWith('#/grades')?'on':''}">Sổ điểm</a>
-        <a href="#/focus" class="${h0.startsWith('#/focus')?'on':''}">Tập trung</a>
-        <a href="#/timetable" class="${h0.startsWith('#/timetable')?'on':''}">Thời khoá biểu</a>
-        <a href="#/calendar" class="${h0.startsWith('#/calendar')?'on':''}">Lịch</a>
-        <a href="#/progress" class="${h0.startsWith('#/progress')?'on':''}">Tiến độ</a>
+        <a href="#/cards" class="${h0.startsWith('#/cards')?'on':''}">${tl('nav_cards')}${(typeof syDue==='function'&&syDue().length)?'<i>'+syDue().length+'</i>':''}</a>
+        <a href="#/practice" class="${h0.startsWith('#/practice')?'on':''}">${tl('nav_practice')}</a>
+        <a href="#/plan" class="${h0.startsWith('#/plan')&&!h0.startsWith('#/weekly')?'on':''}">${tl('rail_plan')}</a>
+        <a href="#/weekly" class="${h0.startsWith('#/weekly')?'on':''}">${tl('rail_week')}</a>
+        <a href="#/grades" class="${h0.startsWith('#/grades')?'on':''}">${tl('nav_grades')}</a>
+        <a href="#/focus" class="${h0.startsWith('#/focus')?'on':''}">${tl('rail_focus')}</a>
+        <a href="#/timetable" class="${h0.startsWith('#/timetable')?'on':''}">${tl('rail_week_short')}</a>
+        <a href="#/calendar" class="${h0.startsWith('#/calendar')?'on':''}">${tl('rail_cal')}</a>
+        <a href="#/progress" class="${h0.startsWith('#/progress')?'on':''}">${tl('rail_progress')}</a>
       </div>
     </div>
     <div class="rail-school">
@@ -5219,7 +5675,7 @@ function renderRail(){
         <b>Lớp ${sg} · ${esc(sObj.name)}</b><span>Chạm để đổi lớp &amp; môn</span>
       </a>
       <div class="rs-links">
-        <a href="#/subjects" class="${onS?'on':''}">Khoá học 1–12</a>
+        <a href="#/subjects" class="${onS?'on':''}">${tl('nav_subjects')}</a>
         <a href="#/studio" class="${h0.startsWith('#/studio')?'on':''}">Tạo bài học</a>
         <a href="#/mine" class="${h0.startsWith('#/mine')?'on':''}">Bài của tôi${mineN?'<i>'+mineN+'</i>':''}</a>
         <a href="#/files" class="${h0.startsWith('#/files')?'on':''}">Kho tệp</a>
@@ -5288,7 +5744,7 @@ function renderHome(){
         </div>
       </div>
       ${typeof etaText==='function'?`<p class="eta">${etaText()}</p>`:''}
-      <p class="hero-sign">Biên soạn &amp; thiết kế: <a href="https://github.com/Ngg.Khaiz" target="_blank" rel="noopener">@nggkhaiz</a>
+      <p class="hero-sign">Biên soạn &amp; thiết kế: <a href="https://github.com/MoLik-Labs/STUDY-SITE" target="_blank" rel="noopener">@its.fox_</a>
         <span>·</span> <a href="#/about">về trang này</a></p>
       <a class="hero-study" href="#/study">
         <span class="hs-l">
@@ -6307,6 +6763,7 @@ function render(){
   if (typeof mountDocks === 'function') mountDocks();
   const h=location.hash||'#/';
   renderTop(); renderRail();
+  syncBrandChrome();
   const [path,query]=h.replace(/^#/,'').split('?');
   const p=path.split('/').filter(Boolean);
   const qp=new URLSearchParams(query||'');
@@ -6342,6 +6799,9 @@ function render(){
   if(p[0]==='plan') return renderPlan();
   if(p[0]==='focus') return renderFocus();
   if(p[0]==='progress') return renderProgress();
+  if(p[0]==='game') return renderGame();
+  if(p[0]==='special') return renderSpecial();
+  if(p[0]==='share') return renderShare();
   if(p[0]==='grades') return renderGrades(p[1]);
   if(p[0]==='weekly') return renderWeekly();
   if(p[0]==='timetable') return renderTimetable();
@@ -13406,7 +13866,11 @@ function uiCardForm(preset) {
    · Lịch tháng/tuần: sự kiện màu, việc học, hạn nộp, lịch thi
    ========================================================= */
 
-const OWNER = { tag: '@nggkhaiz', name: 'Nguyễn Khải', gh: 'github.com/Ngg.Khaiz', ghUrl: 'https://github.com/Ngg.Khaiz' };
+/* The identity is the fox, not a personal profile. `its.fox_` is the
+   social handle; GitHub has no user by that name (it forbids dots and
+   underscores), so the code link points at the repository itself —
+   the one URL that is guaranteed to resolve. */
+const OWNER = { tag: '@its.fox_', name: 'Study Focus Fox', gh: 'github.com/MoLik-Labs/STUDY-SITE', ghUrl: 'https://github.com/MoLik-Labs/STUDY-SITE' };
 
 const SCH_DAYS = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ nhật'];
 const SCH_DAYS_SHORT = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
@@ -14078,7 +14542,7 @@ function schICS() {
     while (rest.length) { out.push(' ' + rest.slice(0, 72)); rest = rest.slice(72); }
     return out.join('\r\n');
   };
-  const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Hoc moi thu//@nggkhaiz//VI', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH'];
+  const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Study Focus Fox//its.fox//VI', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH'];
   let n = 0;
   S.events.forEach(e => {
     const t = (e.time || '08:00').split(':').map(Number);
@@ -14086,7 +14550,7 @@ function schICS() {
     start.setHours(t[0] || 8, t[1] || 0, 0, 0);
     const end = new Date(start.getTime() + 45 * 60000);
     lines.push('BEGIN:VEVENT');
-    lines.push('UID:' + e.id + '@nggkhaiz');
+    lines.push('UID:' + e.id + '@studyfocusfox');
     lines.push('DTSTAMP:' + stamp(new Date()));
     lines.push('DTSTART:' + stamp(start));
     lines.push('DTEND:' + stamp(end));
@@ -14805,6 +15269,10 @@ function setPref(k, v) {
    TRANG TUỲ BIẾN
    ========================================================= */
 function renderSettings() {
+  /* đổi ngôn ngữ — render lại ngay, không cần tải lại trang */
+  setTimeout(() => $$('[data-lang]').forEach(b => {
+    b.onclick = () => setLang(b.dataset.lang);
+  }), 0);
   const p = prefs();
   const c = typeof pomoCfg === 'function' ? pomoCfg() : { presets: [[25, 5], [50, 10], [15, 3]] };
   const st = AppStore.status();
@@ -14814,6 +15282,17 @@ function renderSettings() {
       'Mọi thứ dưới đây lưu ngay vào máy — ở 3 tầng khác nhau, kèm lịch sử phiên bản. Không phải cache: đóng trình duyệt, tắt máy vẫn còn.')}
 
     <div class="set-grid">
+      <section class="set-sec">
+        <div class="set-h"><span class="kicker">00 · ${tl('lang_label')}</span><span class="muted">vi · en</span></div>
+        <div class="lang-row">
+          <button class="lang-btn${i18nLang() === 'vi' ? ' on' : ''}" data-lang="vi" lang="vi">
+            <b>Tiếng Việt</b><i>giao diện gốc · nội dung Vật lí</i></button>
+          <button class="lang-btn${i18nLang() === 'en' ? ' on' : ''}" data-lang="en" lang="en">
+            <b>English</b><i>interface only · physics content stays Vietnamese</i></button>
+        </div>
+        <p class="sy-note">${tl('lang_note')}</p>
+      </section>
+
       <section class="set-sec">
         <div class="set-h"><span class="kicker">01 · Giao diện</span><span class="muted">${THEMES.length} bộ màu</span></div>
         <div class="theme-grid">
@@ -15902,6 +16381,1130 @@ function renderWeekly() {
     };
     if (btn) btn.onclick = flip;
   });
+}
+
+/* =========================================================
+   PIXEL ARENA — học bằng cách chơi
+   ---------------------------------------------------------
+   Nghiên cứu: Study Bunny (xu cho mỗi phút tập trung), Forest (phần
+   thưởng hữu hình), memoryOS (luyện trí nhớ có gamification), Todait
+   (đo thời gian theo môn). Điểm chung đáng học: **phần thưởng phải trả
+   giá được**, không phải huy hiệu rỗng.
+
+   Nhưng có một thứ các app đó làm sai: trả lời sai thì chỉ "sai". Ở đây
+   trả lời sai **bị đánh trả** và **câu đó quay lại ngay trong trận** —
+   đúng vòng lặp học tập: sai → sửa → gặp lại → đúng.
+
+   Ba bộ sinh câu, mỗi bộ sinh VÔ HẠN (random hoá tham số), nên không
+   bao giờ cạn đề và không phải nhớ 500 câu mẫu:
+     · Vật lí  — tính toán theo công thức, có đơn vị
+     · Toán    — số học, phân số, phần trăm, phương trình bậc 1
+     · Ngữ pháp tiếng Anh — chia thì, giới từ, mạo từ, so sánh
+
+   Vẽ bằng CSS, không dùng <canvas>: chữ vẫn chọn/đọc được, in được, và
+   CSP không phải nới. Mọi thứ lưu trong state.game.
+   ========================================================= */
+
+/* ---------- pixel sprites (thuần CSS, không ảnh) ---------- */
+const GM_SPRITE = {
+  hero: [
+    '..1111..',
+    '.122221.',
+    '.123321.',
+    '.122221.',
+    '..1111..',
+    '.144441.',
+    '11444411',
+    '.1.44.1.',
+  ],
+  slime: [
+    '........',
+    '..111...',
+    '.12221..',
+    '1233321.',
+    '1233321.',
+    '1222221.',
+    '.11111..',
+    '........',
+  ],
+  bat: [
+    '........',
+    '1......1',
+    '11.11.11',
+    '11222211',
+    '.122221.',
+    '..1221..',
+    '...11...',
+    '........',
+  ],
+  boss: [
+    '.11..11.',
+    '11111111',
+    '12222221',
+    '12333321',
+    '12322321',
+    '12222221',
+    '.111111.',
+    '..1..1..',
+  ],
+};
+
+const GM_ENEMIES = [
+  { id: 'slime', name: { vi: 'Slime', en: 'Slime' }, hp: 3, dmg: 1, art: 'slime' },
+  { id: 'bat', name: { vi: 'Dơi', en: 'Bat' }, hp: 4, dmg: 1, art: 'bat' },
+  { id: 'boss', name: { vi: 'Trùm', en: 'Boss' }, hp: 6, dmg: 2, art: 'boss' },
+];
+
+function gmSprite(name, cls) {
+  const rows = GM_SPRITE[name] || GM_SPRITE.hero;
+  return `<div class="px ${cls || ''}" aria-hidden="true">${rows.map(r => `<span>${[...r].map(c =>
+    c === '.' ? '<i></i>' : `<i class="c${c}"></i>`).join('')}</span>`).join('')}</div>`;
+}
+
+/* ---------- state ---------- */
+function gmState() {
+  if (!state.game || typeof state.game !== 'object') state.game = {};
+  const G = state.game;
+  if (!isFinite(G.coins)) G.coins = 0;
+  if (!isFinite(G.best)) G.best = 0;
+  if (!isFinite(G.level)) G.level = 1;
+  if (!isFinite(G.wins)) G.wins = 0;
+  if (!G.diff || typeof G.diff !== 'object') G.diff = { phys: 1, math: 1, eng: 1, chem: 1 };
+  if (!G.seen || typeof G.seen !== 'object') G.seen = {};
+  return G;
+}
+
+/* =========================================================
+   CÂU HỎI SINH TỰ ĐỘNG
+   Mỗi hàm trả { q, a, unit, hint } — a là chuỗi đã chuẩn hoá để so.
+   ========================================================= */
+const gmRnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const gmPick = arr => arr[Math.floor(Math.random() * arr.length)];
+const gmNum = v => {
+  const r = Math.round(v * 100) / 100;
+  return String(r).replace('.', ',');
+};
+
+/* --- VẬT LÍ: dùng đúng công thức lớp 9 --- */
+function gmGenPhysics(diff) {
+  const d = Math.max(1, Math.min(4, diff || 1));
+  /* lv1: một bước; lv3+: hai bước, phải đổi đơn vị */
+  const kinds = d >= 3 ? ['ohm', 'power', 'series', 'work', 'density'] : ['ohm', 'series', 'work', 'speed', 'density'];
+  const k = gmPick(kinds);
+  if (k === 'ohm') {
+    const R = gmRnd(2, 20) * (d >= 3 ? 5 : 1);
+    const I = gmRnd(1, 5) / 10;              /* 0,1 – 0,5 A */
+    const U = +(R * I).toFixed(2);
+    return { q: `U = ? khi R = ${R} Ω và I = ${gmNum(I)} A`, a: gmNum(U), unit: 'V', hint: 'U = I × R' };
+  }
+  if (k === 'power') {
+    const R = gmRnd(5, 40), I = gmRnd(1, 4) / 10;
+    const P = +(R * I * I).toFixed(2);
+    return { q: `P = ? khi R = ${R} Ω và I = ${gmNum(I)} A`, a: gmNum(P), unit: 'W', hint: 'P = I² × R' };
+  }
+  if (k === 'series') {
+    const R1 = gmRnd(2, 15), R2 = gmRnd(2, 15), U = gmRnd(3, 24);
+    const Rt = R1 + R2, I = +(U / Rt).toFixed(3);
+    return {
+      q: `R₁ = ${R1} Ω, R₂ = ${R2} Ω mắc nối tiếp, U = ${U} V. I = ?`,
+      a: gmNum(I), unit: 'A', hint: 'R = R₁ + R₂ rồi I = U / R',
+    };
+  }
+  if (k === 'work') {
+    const F = gmRnd(10, 90), s = gmRnd(2, 12);
+    return { q: `A = ? khi F = ${F} N và quãng đường s = ${s} m`, a: String(F * s), unit: 'J', hint: 'A = F × s' };
+  }
+  if (k === 'speed') {
+    const s = gmRnd(20, 200), tm = gmRnd(2, 20);
+    return { q: `v = ? khi đi ${s} m trong ${tm} s`, a: gmNum(s / tm), unit: 'm/s', hint: 'v = s / t' };
+  }
+  /* density */
+  const m = gmRnd(50, 900), V = gmRnd(20, 300);
+  return { q: `D = ? khi m = ${m} g và V = ${V} cm³`, a: gmNum(m / V), unit: 'g/cm³', hint: 'D = m / V' };
+}
+
+/* --- TOÁN --- */
+function gmGenMath(diff) {
+  const d = Math.max(1, Math.min(4, diff || 1));
+  const k = gmPick(d >= 3 ? ['linear', 'percent', 'fraction', 'ratio'] : ['arith', 'percent', 'arith', 'fraction']);
+  if (k === 'arith') {
+    const a = gmRnd(12, 99), b = gmRnd(3, 12);
+    return gmPick([
+      { q: `${a} × ${b} = ?`, a: String(a * b) },
+      { q: `${a * b} ÷ ${b} = ?`, a: String(a) },
+      { q: `${a} + ${b * 7} = ?`, a: String(a + b * 7) },
+    ]);
+  }
+  if (k === 'percent') {
+    const p = gmPick([5, 10, 15, 20, 25, 40]), n = gmRnd(2, 40) * 20;
+    return { q: `${p}% của ${n} = ?`, a: gmNum(n * p / 100) };
+  }
+  if (k === 'fraction') {
+    const a = gmRnd(1, 5), b = gmRnd(2, 7), c = gmRnd(1, 5), e = gmRnd(2, 7);
+    /* cộng hai phân số cùng mẫu cho dễ kiểm */
+    if (Math.random() < 0.5) {
+      const den = b;
+      const num = a + Math.min(c, den - a);
+      return { q: `${a}/${den} + ${num - a}/${den} = ? (nhập dạng a/b)`, a: `${num}/${den}` };
+    }
+    return { q: `Rút gọn: ${a * 2}/${b * 2} = ? (nhập dạng a/b)`, a: `${a}/${b}` };
+  }
+  if (k === 'ratio') {
+    const x = gmRnd(2, 12), r = gmRnd(2, 5);
+    return { q: `x : ${x * r} = 1 : ${r}. x = ?`, a: String(x) };
+  }
+  /* linear: 2x + b = c */
+  const a = gmRnd(2, 9), x = gmRnd(1, 12), b = gmRnd(1, 20);
+  return { q: `Giải: ${a}x + ${b} = ${a * x + b}. x = ?`, a: String(x) };
+}
+
+/* --- NGỮ PHÁP TIẾNG ANH --- */
+const GM_ENG = [
+  { q: 'She ___ to school every day.', a: ['goes'], opts: ['go', 'goes', 'going', 'gone'] },
+  { q: 'They ___ football yesterday.', a: ['played'], opts: ['play', 'played', 'playing', 'plays'] },
+  { q: 'I ___ here since 2020.', a: ['have lived', 'have been living'], opts: ['live', 'lived', 'have lived', 'am living'] },
+  { q: 'He is good ___ maths.', a: ['at'], opts: ['in', 'at', 'on', 'for'] },
+  { q: 'She is interested ___ physics.', a: ['in'], opts: ['on', 'at', 'in', 'of'] },
+  { q: 'This is ___ apple.', a: ['an'], opts: ['a', 'an', 'the', '—'] },
+  { q: 'He is ___ than his brother.', a: ['taller'], opts: ['tall', 'taller', 'tallest', 'more tall'] },
+  { q: 'If it ___ tomorrow, we will stay home.', a: ['rains'], opts: ['rain', 'rains', 'rained', 'will rain'] },
+  { q: 'The book ___ by Nguyen Du.', a: ['was written'], opts: ['wrote', 'was written', 'has wrote', 'is write'] },
+  { q: 'I look forward to ___ you.', a: ['seeing'], opts: ['see', 'seeing', 'saw', 'seen'] },
+  { q: 'She asked me where I ___.', a: ['lived'], opts: ['live', 'lived', 'living', 'lives'] },
+  { q: 'Neither of them ___ ready.', a: ['is'], opts: ['is', 'are', 'be', 'were'] },
+];
+
+function gmGenEng(diff) {
+  const d = Math.max(1, Math.min(4, diff || 1));
+  const pool = d >= 3 ? GM_ENG : GM_ENG.slice(0, 6);
+  const it = gmPick(pool);
+  return { q: it.q, a: it.a, opts: it.opts, kind: 'choice' };
+}
+
+/* --- HOÁ: cân bằng đơn giản, mol --- */
+function gmGenChem(diff) {
+  const d = Math.max(1, Math.min(4, diff || 1));
+  const k = gmPick(d >= 3 ? ['mol', 'conc', 'mass'] : ['mol', 'mass']);
+  if (k === 'mol') {
+    const M = gmPick([18, 23, 40, 44, 58.5, 98]);
+    const n = gmRnd(1, 5) / 2;
+    return { q: `n = ? khi m = ${gmNum(M * n)} g và M = ${M} g/mol`, a: gmNum(n), unit: 'mol', hint: 'n = m / M' };
+  }
+  if (k === 'conc') {
+    const n = gmRnd(1, 10) / 10, V = gmRnd(1, 5) / 10;
+    return { q: `Cₘ = ? khi n = ${gmNum(n)} mol trong V = ${gmNum(V)} lít`, a: gmNum(n / V), unit: 'M', hint: 'Cₘ = n / V' };
+  }
+  const n = gmRnd(1, 4), M = gmPick([18, 40, 44]);
+  return { q: `m = ? khi n = ${n} mol và M = ${M} g/mol`, a: String(n * M), unit: 'g', hint: 'm = n × M' };
+}
+
+const GM_GEN = { phys: gmGenPhysics, math: gmGenMath, eng: gmGenEng, chem: gmGenChem };
+
+/* so khớp đáp án: chấp nhận 1,5 / 1.5 / 1,50 và chữ không phân biệt hoa thường */
+function gmMatch(input, answer) {
+  const norm = s => String(s == null ? '' : s).trim().toLowerCase()
+    .replace(/\s+/g, ' ').replace(/,/g, '.');
+  const a = norm(input), b = norm(answer);
+  if (a === b) return true;
+  /* số: so theo giá trị, chấp nhận 0,5% */
+  const fa = parseFloat(a), fb = parseFloat(b);
+  if (isFinite(fa) && isFinite(fb) && fb !== 0) {
+    return Math.abs(fa - fb) / Math.abs(fb) < 0.005;
+  }
+  return false;
+}
+
+/* =========================================================
+   TRẬN ĐẤU
+   ========================================================= */
+let GM = null;
+
+function gmStart(topic) {
+  const G = gmState();
+  const diff = G.diff[topic] || 1;
+  const foeIdx = Math.min(GM_ENEMIES.length - 1, Math.floor((G.level - 1) / 3));
+  const foe = GM_ENEMIES[Math.min(foeIdx, GM_ENEMIES.length - 1)];
+  GM = {
+    topic, diff, foe,
+    heroHp: 5, heroMax: 5,
+    foeHp: foe.hp, foeMax: foe.hp,
+    round: 0, right: 0, wrong: 0, combo: 0, bestCombo: 0,
+    cur: null, queue: [],   /* queue = câu sai, quay lại ngay */
+    over: false, won: false,
+    log: [],
+  };
+  gmNext();
+  renderGame();
+}
+
+function gmNext() {
+  if (!GM || GM.over) return;
+  /* A missed question comes back on the VERY NEXT turn, always.
+     Earlier this was a 70% chance, which meant a student could miss a
+     question and then not see it again for ten rounds — the opposite of
+     error correction. Immediate re-testing after a mistake is the
+     strongest evidenced pattern, and determinism makes it testable.
+     It pays 1 coin instead of 2, so it cannot be farmed. */
+  if (GM.queue.length) {
+    GM.cur = GM.queue.shift();
+    GM.cur.repeat = true;
+  } else {
+    GM.cur = GM_GEN[GM.topic](GM.diff);
+    GM.cur.repeat = false;
+  }
+}
+
+function gmAnswer(value) {
+  if (!GM || GM.over || !GM.cur) return;
+  const cur = GM.cur;
+  GM.round++;
+  const ok = Array.isArray(cur.a) ? cur.a.some(x => gmMatch(value, x)) : gmMatch(value, cur.a);
+
+  if (ok) {
+    GM.right++;
+    GM.combo++;
+    GM.bestCombo = Math.max(GM.bestCombo, GM.combo);
+    /* sát thương: 1 + thưởng combo, tối đa 3 */
+    const dmg = Math.min(3, 1 + Math.floor(GM.combo / 3));
+    GM.foeHp = Math.max(0, GM.foeHp - dmg);
+    GM.log.unshift({ ok: true, txt: cur.q, dmg });
+    const G = gmState();
+    G.coins += cur.repeat ? 1 : 2;         /* câu từng sai trả ít hơn — không farm được */
+    if (GM.foeHp <= 0) {
+      GM.over = true; GM.won = true;
+      G.wins++;
+      G.coins += 10;
+      /* lên cấp mỗi 3 trận thắng, và tăng độ khó của đúng môn đó */
+      if (G.wins % 3 === 0) {
+        G.level++;
+        G.diff[GM.topic] = Math.min(4, (G.diff[GM.topic] || 1) + 1);
+      }
+    }
+  } else {
+    GM.wrong++;
+    GM.combo = 0;
+    GM.heroHp = Math.max(0, GM.heroHp - GM.foe.dmg);
+    GM.log.unshift({ ok: false, txt: cur.q, ans: Array.isArray(cur.a) ? cur.a[0] : cur.a });
+    /* câu sai vào hàng đợi để gặp lại trong chính trận này */
+    if (!cur.repeat) GM.queue.push(cur);
+    if (GM.heroHp <= 0) { GM.over = true; GM.won = false; }
+  }
+  save();
+
+  if (GM.over) {
+    const G = gmState();
+    const score = GM.right * 10 - GM.wrong * 3 + GM.bestCombo * 2;
+    if (score > G.best) G.best = score;
+    GM.score = score;
+    save();
+  } else {
+    gmNext();
+  }
+  renderGame();
+}
+
+/* =========================================================
+   ROUTE · ĐẤU TRƯỜNG PIXEL  #/game
+   ========================================================= */
+function renderGame() {
+  const G = gmState();
+  const langNow = i18nLang();
+
+  /* màn hình chọn môn khi chưa vào trận */
+  if (!GM) {
+    const topics = [
+      { id: 'phys', name: langNow === 'en' ? 'Physics' : 'Vật lí', note: langNow === 'en' ? 'U = IR, P = I²R, series circuits' : 'U = IR, P = I²R, mạch nối tiếp', art: 'slime' },
+      { id: 'math', name: langNow === 'en' ? 'Maths' : 'Toán', note: langNow === 'en' ? 'arithmetic, %, fractions, linear' : 'số học, %, phân số, phương trình', art: 'bat' },
+      { id: 'eng', name: langNow === 'en' ? 'English grammar' : 'Ngữ pháp tiếng Anh', note: langNow === 'en' ? 'tenses, prepositions, articles' : 'thì, giới từ, mạo từ', art: 'slime' },
+      { id: 'chem', name: langNow === 'en' ? 'Chemistry' : 'Hoá học', note: langNow === 'en' ? 'moles, concentration, mass' : 'mol, nồng độ, khối lượng', art: 'boss' },
+    ];
+    $('#main').innerHTML = `<section class="wrap wide sy-page">
+      ${pageHead(tl('game_title'), tl('game_sub'),
+      langNow === 'en'
+        ? 'Every round generates a fresh question, so the arena never runs out. Wrong answers come back in the same battle — that is the point.'
+        : 'Mỗi lượt sinh một câu mới nên không bao giờ cạn đề. Câu sai quay lại ngay trong chính trận đó — đó mới là chỗ học.')}
+
+      <div class="pg-kpi">
+        <div class="pg-k"><span class="kicker">${tl('game_coin')}</span><b>${G.coins}</b><em>${langNow === 'en' ? 'earned' : 'kiếm được'}</em></div>
+        <div class="pg-k"><span class="kicker">${tl('level')}</span><b>${G.level}</b><em>${G.wins} ${langNow === 'en' ? 'wins' : 'trận thắng'}</em></div>
+        <div class="pg-k"><span class="kicker">${tl('best')}</span><b>${G.best}</b><em>${tl('score')}</em></div>
+      </div>
+
+      <div class="gm-arena-select">
+        ${topics.map(t => `<button class="gm-foe-card" data-topic="${t.id}">
+          ${gmSprite(t.art, 'sm')}
+          <b>${t.name}</b>
+          <i>${t.note}</i>
+          <span class="gm-lv">${tl('level')} ${G.diff[t.id] || 1}</span>
+        </button>`).join('')}
+      </div>
+    </section>`;
+    $$('[data-topic]').forEach(b => b.onclick = () => gmStart(b.dataset.topic));
+    return;
+  }
+
+  /* màn hình trong trận */
+  const cur = GM.cur;
+  const hpPct = Math.round(GM.heroHp / GM.heroMax * 100);
+  const foePct = Math.round(GM.foeHp / GM.foeMax * 100);
+
+  $('#main').innerHTML = `<section class="wrap wide sy-page gm-battle">
+    <div class="gm-bar">
+      <button class="btn ghost sm" id="gmQuit">← ${langNow === 'en' ? 'Leave' : 'Rời trận'}</button>
+      <span class="grow"></span>
+      <span class="gm-stat">${tl('game_combo')} <b>${GM.combo}×</b></span>
+      <span class="gm-stat">${tl('correct')} <b>${GM.right}</b></span>
+      <span class="gm-stat">${tl('wrong')} <b>${GM.wrong}</b></span>
+    </div>
+
+    <div class="gm-stage">
+      <div class="gm-side gm-side-hero">
+        ${gmSprite('hero')}
+        <div class="gm-hp"><i style="width:${hpPct}%"></i></div>
+        <span class="gm-hp-t">${tl('game_hp')} ${GM.heroHp}/${GM.heroMax}</span>
+      </div>
+
+      <div class="gm-mid">
+        ${GM.over ? `<div class="gm-over">
+            <b>${GM.won ? tl('game_win') : tl('game_over')}</b>
+            <span>${tl('score')} ${GM.score}</span>
+            <span class="gm-over-sub">${GM.right} ${tl('correct')} · ${GM.wrong} ${tl('wrong')} · combo ${GM.bestCombo}×</span>
+            <button class="btn sm" id="gmAgain">${tl('game_again')}</button>
+            <button class="btn ghost sm" id="gmBack">${tl('back')}</button>
+          </div>` : `<div class="gm-q">
+            <span class="kicker">${GM.cur.repeat ? (langNow === 'en' ? 'RETRY — you missed this' : 'GẶP LẠI — câu bạn từng sai') : (langNow === 'en' ? 'QUESTION' : 'CÂU HỎI')}</span>
+            <p>${esc(cur.q)}</p>
+            ${cur.unit ? `<span class="gm-unit">${langNow === 'en' ? 'unit' : 'đơn vị'}: ${cur.unit}</span>` : ''}
+          </div>`}
+      </div>
+
+      <div class="gm-side gm-side-foe">
+        ${gmSprite(GM.foe.art, 'foe')}
+        <div class="gm-hp foe"><i style="width:${foePct}%"></i></div>
+        <span class="gm-hp-t">${(GM.foe.name[langNow] || GM.foe.name.vi)} ${GM.foeHp}/${GM.foeMax}</span>
+      </div>
+    </div>
+
+    ${GM.over ? '' : (cur.opts
+      ? `<div class="gm-opts">${cur.opts.map(o =>
+        `<button class="gm-opt" data-opt="${esc(o)}">${esc(o)}</button>`).join('')}</div>`
+      : `<div class="gm-in">
+          <input id="gmIn" type="text" inputmode="decimal" autocomplete="off"
+            placeholder="${langNow === 'en' ? 'Your answer…' : 'Đáp án của bạn…'}"
+            aria-label="${langNow === 'en' ? 'Answer' : 'Đáp án'}">
+          <button class="btn" id="gmSend">${langNow === 'en' ? 'Attack' : 'Tấn công'}</button>
+        </div>
+        <p class="sy-note gm-hint">${langNow === 'en' ? 'Enter to attack. Comma or dot both work.' : 'Enter để tấn công. Dấu phẩy hay chấm đều được.'}</p>`)}
+
+    ${GM.log.length ? `<div class="gm-log">${GM.log.slice(0, 3).map(l => `
+      <div class="gm-log-r ${l.ok ? 'ok' : 'no'}">
+        <span class="gm-log-m">${l.ok ? '✓' : '✕'}</span>
+        <span class="gm-log-t">${esc(l.txt)}</span>
+        <span class="gm-log-a">${l.ok ? '-' + l.dmg + ' HP' : '→ ' + esc(l.ans)}</span>
+      </div>`).join('')}</div>` : ''}
+  </section>`;
+
+  /* --- bind --- */
+  const q = $('#gmQuit');
+  if (q) q.onclick = () => { GM = null; renderGame(); };
+
+  if (GM.over) {
+    $('#gmAgain').onclick = () => gmStart(GM.topic);
+    $('#gmBack').onclick = () => { GM = null; renderGame(); };
+    return;
+  }
+
+  $$('[data-opt]').forEach(b => b.onclick = () => gmAnswer(b.dataset.opt));
+
+  const inp = $('#gmIn');
+  if (inp) {
+    inp.focus();
+    const send = () => {
+      const v = inp.value;
+      if (String(v).trim() === '') return;
+      gmAnswer(v);
+    };
+    $('#gmSend').onclick = send;
+    inp.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); send(); } };
+  }
+}
+
+/* =========================================================
+   GÓC VẬT LÍ  #/special
+   ---------------------------------------------------------
+   The one page that only makes sense for physics. Four tools:
+
+   1. READ THE PROBLEM — paste a Vietnamese physics problem and the
+      engine pulls the numbers out and names the law that fits.
+      This is not an AI call; it is a pattern matcher over the
+      quantity units a Vietnamese textbook actually uses
+      (Ω, V, A, W, J, N, m/s, kg/m³, °C, cal…). Everything runs
+      locally, so it works offline and costs nothing.
+
+   2. CONSTANTS + UNITS — the numbers you look up mid-exercise,
+      with the SI prefix table, because half of all lost marks in
+      physics are unit slips, not physics slips.
+
+   3. SENSE CHECK — order-of-magnitude sanity: is 3000 A through a
+      resistor physical? Students memorize formulas but forget that
+      answers must be plausible.
+
+   4. MEMORY PALACE — a deliberately tiny spaced-repetition ladder
+      for the 12 formula clusters, using the same Leitner boxes as
+      the flashcard system, so physics facts survive the exam.
+   ========================================================= */
+
+/* ---------- 1. quantity extraction ---------- */
+/* Each unit knows: the quantity it measures, its SI factor, and the
+   symbols a student might type. Order matters: longer first. */
+const SP_UNITS = [
+  { u: 'kΩ', q: 'R', f: 1e3 }, { u: 'MΩ', q: 'R', f: 1e6 }, { u: 'Ω', q: 'R', f: 1 },
+  { u: 'mV', q: 'U', f: 1e-3 }, { u: 'kV', q: 'U', f: 1e3 }, { u: 'V', q: 'U', f: 1 },
+  { u: 'mA', q: 'I', f: 1e-3 }, { u: 'A', q: 'I', f: 1 },
+  { u: 'kW', q: 'P', f: 1e3 }, { u: 'W', q: 'P', f: 1 },
+  { u: 'kJ', q: 'A', f: 1e3 }, { u: 'J', q: 'A', f: 1 },
+  { u: 'km/h', q: 'v', f: 1 / 3.6 }, { u: 'm/s', q: 'v', f: 1 }, { u: 'km', q: 's', f: 1e3 },
+  { u: 'cm³', q: 'V', f: 1e-6 }, { u: 'm³', q: 'V', f: 1 }, { u: 'lít', q: 'V', f: 1e-3 },
+  { u: 'g/cm³', q: 'D', f: 1e3 }, { u: 'kg/m³', q: 'D', f: 1 },
+  { u: 'g', q: 'm', f: 1e-3 }, { u: 'kg', q: 'm', f: 1 },
+  { u: 'm', q: 's', f: 1 }, { u: 'cm', q: 's', f: 1e-2 }, { u: 'mm', q: 's', f: 1e-3 },
+  { u: 'N', q: 'F', f: 1 }, { u: '°C', q: 't', f: 1 }, { u: 'cal', q: 'Q', f: 4.18 },
+  { u: 'phút', q: 't', f: 60 }, { u: 'giây', q: 't', f: 1 }, { u: 'giờ', q: 't', f: 3600 },
+  { u: 'Hz', q: 'f', f: 1 }, { u: 'nm', q: 'λ', f: 1e-9 }, { u: 'K', q: 'T', f: 1 },
+];
+
+const SP_QNAME = {
+  R: 'điện trở', U: 'hiệu điện thế', I: 'cường độ dòng điện', P: 'công suất',
+  A: 'công / năng lượng', v: 'vận tốc', s: 'quãng đường / độ dài', V: 'thể tích',
+  D: 'khối lượng riêng', m: 'khối lượng', F: 'lực', t: 'nhiệt độ / thời gian',
+  Q: 'nhiệt lượng', f: 'tần số', λ: 'bước sóng', T: 'nhiệt độ tuyệt đối',
+};
+
+/* Pull "12 Ω", "0,5 A", "1,2 kΩ" out of free text. */
+function spParse(text) {
+  const out = [];
+  const src = String(text || '').replace(/\u00a0/g, ' ');
+  /* number, optional space, unit word — longest unit first so kΩ beats Ω */
+  const units = SP_UNITS.slice().sort((a, b) => b.u.length - a.u.length);
+  units.forEach(({ u, q, f }) => {
+    const re = new RegExp('(-?\\d+(?:[.,]\\d+)?)\\s*' + u.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&') +
+      '(?![a-zA-ZÀ-ỹ])', 'g');
+    let m;
+    while ((m = re.exec(src))) {
+      const raw = m[1].replace(',', '.');
+      const val = parseFloat(raw);
+      if (!isFinite(val)) continue;
+      /* skip if this match is inside a longer unit already taken */
+      if (out.some(o => o.start === m.index && o.unit.length > u.length)) continue;
+      out.push({
+        start: m.index, end: m.index + m[0].length,
+        val, unit: u, qty: q, si: val * f, raw: m[0].trim(),
+      });
+    }
+  });
+  /* de-duplicate overlapping hits, keep the longest unit */
+  out.sort((a, b) => a.start - b.start || (b.end - b.start) - (a.end - a.start));
+  const keep = [];
+  let lastEnd = -1;
+  out.forEach(o => {
+    if (o.start < lastEnd) return;
+    keep.push(o);
+    lastEnd = o.end;
+  });
+  return keep;
+}
+
+/* Which law fits these quantities? Ranked, with the reason spelled out. */
+const SP_LAWS = [
+  {
+    id: 'ohm', name: 'Định luật Ôm', f: 'I = U / R',
+    needs: ['U', 'R'], solve: 'I',
+    why: 'Có hiệu điện thế và điện trở → tìm được cường độ dòng điện.',
+  },
+  {
+    id: 'power', name: 'Công suất điện', f: 'P = U × I = I²R = U²/R',
+    needs: ['U', 'I'], solve: 'P',
+    why: 'Có U và I → công suất (hoặc ngược lại, tìm U khi biết P và I).',
+  },
+  {
+    id: 'joule', name: 'Định luật Jun–Len-xơ', f: 'Q = I² R t',
+    needs: ['I', 'R'], solve: 'Q',
+    why: 'Có dòng điện, điện trở và thời gian → nhiệt lượng toả ra.',
+  },
+  {
+    id: 'work', name: 'Công cơ học', f: 'A = F × s',
+    needs: ['F', 's'], solve: 'A',
+    why: 'Có lực và quãng đường → công thực hiện.',
+  },
+  {
+    id: 'speed', name: 'Vận tốc', f: 'v = s / t',
+    needs: ['s', 'v'], solve: 't',
+    why: 'Có quãng đường và vận tốc → thời gian đi hết quãng đường.',
+  },
+  {
+    id: 'density', name: 'Khối lượng riêng', f: 'D = m / V',
+    needs: ['m', 'V'], solve: 'D',
+    why: 'Có khối lượng và thể tích → khối lượng riêng.',
+  },
+  {
+    id: 'heat', name: 'Phương trình cân bằng nhiệt', f: 'Q = m c Δt',
+    needs: ['m', 't'], solve: 'Q',
+    why: 'Có khối lượng và nhiệt độ → nhiệt lượng (cần thêm nhiệt dung riêng c).',
+  },
+];
+
+function spSolve(text) {
+  const qty = spParse(text);
+  const have = {};
+  qty.forEach(q => { if (!have[q.qty]) have[q.qty] = q; });
+  const keys = Object.keys(have);
+
+  const ranked = SP_LAWS.map(l => {
+    const hit = l.needs.filter(n => have[n]).length;
+    return { law: l, hit, full: hit === l.needs.length };
+  }).filter(x => x.hit > 0).sort((a, b) => b.hit - a.hit);
+
+  /* compute a numeric answer when the law is fully satisfied */
+  let answer = null;
+  const top = ranked.find(x => x.full);
+  if (top) {
+    const g = k => have[k] ? have[k].si : null;
+    try {
+      if (top.law.id === 'ohm') answer = { v: g('U') / g('R'), u: 'A', sym: 'I' };
+      if (top.law.id === 'power') answer = { v: g('U') * g('I'), u: 'W', sym: 'P' };
+      if (top.law.id === 'work') answer = { v: g('F') * g('s'), u: 'J', sym: 'A' };
+      if (top.law.id === 'density') answer = { v: g('m') / g('V'), u: 'kg/m³', sym: 'D' };
+      if (top.law.id === 'speed' && g('s') && g('v')) answer = { v: g('s') / g('v'), u: 's', sym: 't' };
+    } catch (e) { answer = null; }
+  }
+  return { qty, have, ranked, answer, keys };
+}
+
+/* ---------- 2. constants ---------- */
+const SP_CONST = [
+  { s: 'c', n: 'Tốc độ ánh sáng', v: '3 × 10⁸', u: 'm/s' },
+  { s: 'g', n: 'Gia tốc trọng trường', v: '9,8 (≈10)', u: 'm/s²' },
+  { s: 'cₙ', n: 'Nhiệt dung riêng của nước', v: '4200', u: 'J/(kg·K)' },
+  { s: 'cₙₕ', n: 'Nhiệt dung riêng của nhôm', v: '880', u: 'J/(kg·K)' },
+  { s: 'Dₙ', n: 'Khối lượng riêng của nước', v: '1000', u: 'kg/m³' },
+  { s: 'ρ', n: 'Điện trở suất của đồng', v: '1,7 × 10⁻⁸', u: 'Ω·m' },
+  { s: 'p₀', n: 'Áp suất khí quyển', v: '1,013 × 10⁵', u: 'Pa' },
+  { s: 'L', n: 'Nhiệt hoá hơi của nước', v: '2,26 × 10⁶', u: 'J/kg' },
+];
+
+const SP_PREFIX = [
+  { p: 'k', n: 'kilo', f: '10³', e: 3 },
+  { p: 'c', n: 'centi', f: '10⁻²', e: -2 },
+  { p: 'm', n: 'mili', f: '10⁻³', e: -3 },
+  { p: 'µ', n: 'micro', f: '10⁻⁶', e: -6 },
+  { p: 'n', n: 'nano', f: '10⁻⁹', e: -9 },
+  { p: 'M', n: 'mega', f: '10⁶', e: 6 },
+];
+
+/* ---------- 3. sense check ---------- */
+/* Thresholds are deliberately generous — this is a "does this smell
+   wrong" filter, not a grader. Every band cites a real textbook case. */
+const SP_SENSE = [
+  { q: 'I', min: 1e-6, max: 20, u: 'A', why: 'Mạch điện học ở lớp 9 thường dưới 5 A. Cỡ 1000 A là đoản mạch hoặc nhầm đơn vị.' },
+  { q: 'U', min: 0.1, max: 1000, u: 'V', why: 'Nguồn pin/acquy trong phòng thí nghiệm 1,5–12 V; mạng điện 220 V.' },
+  { q: 'R', min: 0.1, max: 1e6, u: 'Ω', why: 'Điện trở thường 1 Ω – 1 MΩ. Nhỏ hơn 0,1 Ω dễ là nhầm mili-ôhm.' },
+  { q: 'P', min: 0.01, max: 3000, u: 'W', why: 'Bóng đèn 3–100 W; ấm điện ~1000 W. 10⁶ W là nhầm kW thành W.' },
+  { q: 'v', min: 0.1, max: 100, u: 'm/s', why: 'Xe đạp ~5 m/s, xe máy ~15 m/s, âm thanh 340 m/s.' },
+  { q: 'D', min: 100, max: 25000, u: 'kg/m³', why: 'Nước 1000, sắt 7800, chì 11300 kg/m³.' },
+  { q: 'm', min: 1e-4, max: 100, u: 'kg', why: 'Dụng cụ thí nghiệm lớp 9 nặng gam đến vài kg.' },
+];
+
+function spSense(text) {
+  return spParse(text).map(p => {
+    const band = SP_SENSE.find(b => b.q === p.qty);
+    if (!band) return null;
+    const ok = p.si >= band.min && p.si <= band.max;
+    return { ...p, ok, band, note: ok ? 'hợp lí' : 'đáng ngờ — ' + band.why };
+  }).filter(Boolean);
+}
+
+/* ---------- 4. formula clusters for the memory ladder ---------- */
+const SP_FORMULAS = [
+  { id: 'f-ohm', q: 'I = ?', a: 'U / R', note: 'Định luật Ôm cho đoạn mạch' },
+  { id: 'f-ohm2', q: 'R = ?', a: 'U / I', note: 'Từ định luật Ôm' },
+  { id: 'f-ser', q: 'R tương đương, mắc nối tiếp?', a: 'R₁ + R₂ + …', note: 'Cùng dòng điện' },
+  { id: 'f-par', q: 'R tương đương, mắc song song?', a: '1/R₁ + 1/R₂ + …', note: 'Cùng hiệu điện thế' },
+  { id: 'f-p1', q: 'P = ? (theo U, I)', a: 'U × I', note: 'Công suất điện' },
+  { id: 'f-p2', q: 'P = ? (theo I, R)', a: 'I² × R', note: 'Dạng toả nhiệt' },
+  { id: 'f-p3', q: 'P = ? (theo U, R)', a: 'U² / R', note: 'Dạng dùng khi biết U' },
+  { id: 'f-joule', q: 'Q = ? (Jun–Len-xơ)', a: 'I² R t', note: 'Nhiệt lượng toả ra' },
+  { id: 'f-work', q: 'A = ? (công cơ học)', a: 'F × s', note: 'Lực cùng phương dịch chuyển' },
+  { id: 'f-speed', q: 'v = ?', a: 's / t', note: 'Vận tốc trung bình' },
+  { id: 'f-dens', q: 'D = ?', a: 'm / V', note: 'Khối lượng riêng' },
+  { id: 'f-heat', q: 'Q = ? (nhiệt lượng)', a: 'm c Δt', note: 'Δt = t₂ − t₁' },
+];
+
+/* ---------- the page ---------- */
+function renderSpecial() {
+  const L = i18nLang();
+  const en = L === 'en';
+
+  /* formula ladder state lives in the study store so it shares the
+     same Leitner boxes as the flashcard system */
+  const S = studyState();
+  S.specialBox = S.specialBox || {};
+
+  $('#main').innerHTML = `<section class="wrap wide sy-page">
+    ${pageHead(tl('special_title'),
+    en ? 'only-here physics tools' : 'công cụ Vật lí chỉ có ở đây',
+    en
+      ? 'Paste a problem and the page reads the quantities out of it. Check whether an answer is even physically plausible. Look up constants. Drill the twelve formula clusters until they survive the exam.'
+      : 'Dán một đề bài vào và trang tự đọc ra các đại lượng. Kiểm tra xem đáp án có hợp lí về mặt vật lí không. Tra hằng số. Luyện 12 cụm công thức tới khi nhớ được qua kì thi.')}
+
+    <div class="sp-grid">
+
+      <!-- 1. read the problem -->
+      <section class="sp-card sp-wide">
+        <div class="sp-h"><span class="kicker">01 · ${en ? 'Read the problem' : 'Đọc đề bài'}</span>
+          <span class="sp-badge">${en ? 'runs offline' : 'chạy offline'}</span></div>
+        <p class="sy-note">${en
+      ? 'Paste a Vietnamese physics problem. Units are what make this work — Ω, V, A, W, J, N, m/s, kg/m³.'
+      : 'Dán đề Vật lí tiếng Việt vào. Đơn vị chính là thứ làm được việc — Ω, V, A, W, J, N, m/s, kg/m³.'}</p>
+        <textarea id="spIn" rows="4" placeholder="${en ? 'e.g. A resistor of 12 Ω is connected to 6 V. Find the current.' :
+      'Ví dụ: Một điện trở 12 Ω mắc vào hiệu điện thế 6 V. Tính cường độ dòng điện.'}"></textarea>
+        <div class="sy-btnrow">
+          <button class="btn" id="spGo">${en ? 'Read it' : 'Đọc đề'}</button>
+          <button class="btn ghost sm" id="spDemo">${en ? 'Try an example' : 'Thử ví dụ'}</button>
+        </div>
+        <div id="spOut" class="sp-out"></div>
+      </section>
+
+      <!-- 3. sense check -->
+      <section class="sp-card">
+        <div class="sp-h"><span class="kicker">02 · ${en ? 'Sense check' : 'Kiểm tra hợp lí'}</span></div>
+        <p class="sy-note">${en
+      ? 'Formulas do not warn you when an answer is absurd. This does: a 3000 A current through a lab resistor is not a physics result, it is a unit slip.'
+      : 'Công thức không cảnh báo khi đáp án vô lí. Chỗ này thì có: dòng 3000 A qua một điện trở phòng thí nghiệm không phải kết quả vật lí, mà là nhầm đơn vị.'}</p>
+        <div class="sp-sense-demo">
+          ${spSense('I = 3000 A, U = 6 V, R = 12 Ω').map(r => `<div class="sp-sense-r ${r.ok ? 'ok' : 'no'}">
+            <b>${r.raw}</b><span>${r.qty ? (SP_QNAME[r.qty] || r.qty) : ''}</span>
+            <i>${r.note}</i></div>`).join('')}
+        </div>
+        <p class="sy-note">${en ? 'Paste your own numbers above to check them.' : 'Dán số của bạn ở ô trên để kiểm tra.'}</p>
+      </section>
+
+      <!-- 2. constants -->
+      <section class="sp-card">
+        <div class="sp-h"><span class="kicker">03 · ${en ? 'Constants' : 'Hằng số'}</span></div>
+        <table class="sp-tab">
+          <thead><tr><th>${en ? 'Symbol' : 'Kí hiệu'}</th><th>${en ? 'Value' : 'Giá trị'}</th><th>${en ? 'Unit' : 'Đơn vị'}</th></tr></thead>
+          <tbody>${SP_CONST.map(c => `<tr><td><b>${c.s}</b> <span>${c.n}</span></td><td class="mono">${c.v}</td><td class="mono">${c.u}</td></tr>`).join('')}</tbody>
+        </table>
+        <div class="sp-h" style="margin-top:14px"><span class="kicker">${en ? 'SI prefixes' : 'Tiền tố SI'}</span></div>
+        <div class="sp-prefix">${SP_PREFIX.map(p => `<span class="sp-pf"><b>${p.p}</b>${p.f}</span>`).join('')}</div>
+        <p class="sy-note">${en
+      ? 'Most lost marks in physics are unit slips, not physics slips. Convert first, calculate second.'
+      : 'Phần lớn điểm mất trong Vật lí là do nhầm đơn vị, không phải do không hiểu. Đổi đơn vị trước, tính sau.'}</p>
+      </section>
+
+      <!-- 4. formula ladder -->
+      <section class="sp-card sp-wide">
+        <div class="sp-h"><span class="kicker">04 · ${en ? 'Formula ladder' : 'Thang công thức'}</span>
+          <span class="sp-badge">${Object.keys(S.specialBox).filter(k => (S.specialBox[k] || 0) >= 4).length}/${SP_FORMULAS.length} ${en ? 'mastered' : 'đã thuộc'}</span></div>
+        <p class="sy-note">${en
+      ? 'Same Leitner boxes as your flashcards: right answer moves a card up a box, wrong answer drops it to box 1. Mastered = box 4 or higher, which means you recalled it three times on separate days.'
+      : 'Cùng thang Leitner với thẻ ghi nhớ: đúng thì lên hộp, sai thì về hộp 1. “Đã thuộc” = hộp 4 trở lên, nghĩa là đã nhớ đúng ba lần ở ba ngày khác nhau.'}</p>
+        <div class="sp-ladder">
+          ${SP_FORMULAS.map(f => {
+        const box = S.specialBox[f.id] || 0;
+        return `<div class="sp-f" data-f="${f.id}">
+              <div class="sp-f-q"><span class="sp-f-b" data-box="${box}">${box ? 'H' + box : '—'}</span>
+                <b>${esc(f.q)}</b></div>
+              <div class="sp-f-a">${esc(f.a)}</div>
+              <i>${esc(f.note)}</i>
+            </div>`;
+      }).join('')}
+        </div>
+        <div class="sy-btnrow">
+          <button class="btn" id="spDrill">${en ? 'Drill these' : 'Luyện 12 công thức'}</button>
+        </div>
+        <div id="spDrillOut"></div>
+      </section>
+
+    </div>
+  </section>`;
+
+  /* ---- read the problem ---- */
+  const run = (text) => {
+    const r = spSolve(text);
+    const out = $('#spOut');
+    if (!r.qty.length) {
+      out.innerHTML = `<p class="sp-none">${en
+        ? 'No quantities found. The engine reads units — try writing “12 Ω”, “0,5 A”, “6 V”.'
+        : 'Không tìm thấy đại lượng nào. Máy đọc theo đơn vị — thử viết “12 Ω”, “0,5 A”, “6 V”.'}</p>`;
+      return;
+    }
+    out.innerHTML = `
+      <div class="sp-qty">${r.qty.map(q => `<span class="sp-chip"><b>${esc(q.raw)}</b>
+        <i>${SP_QNAME[q.qty] || q.qty}</i></span>`).join('')}</div>
+      ${r.ranked.length ? `<div class="sp-laws">${r.ranked.slice(0, 3).map(x => `
+        <div class="sp-law ${x.full ? 'full' : ''}">
+          <div class="sp-law-h"><b>${esc(x.law.name)}</b>
+            <span class="mono">${esc(x.law.f)}</span>
+            ${x.full ? `<span class="sp-tag">${en ? 'solvable' : 'giải được'}</span>` : ''}</div>
+          <p>${esc(x.law.why)}</p>
+        </div>`).join('')}</div>` : ''}
+      ${r.answer ? `<div class="sp-ans"><span class="kicker">${en ? 'Answer' : 'Đáp số'}</span>
+        <b>${r.answer.sym} = ${spFmt(r.answer.v)} ${r.answer.u}</b></div>` : ''}
+      ${spSense(text).length ? `<div class="sp-sense">
+        ${spSense(text).map(s => `<span class="sp-sense-p ${s.ok ? 'ok' : 'no'}">${esc(s.raw)}</span>`).join('')}
+        ${spSense(text).every(s => s.ok) ? `<i class="sp-ok-t">${en ? 'all plausible' : 'đều hợp lí'}</i>`
+        : `<i class="sp-no-t">${en ? 'something looks off' : 'có chỗ đáng ngờ'}</i>`}</div>` : ''}`;
+  };
+
+  $('#spGo').onclick = () => run($('#spIn').value);
+  $('#spDemo').onclick = () => {
+    const demo = en
+      ? 'A resistor of 12 Ω is connected to a 6 V supply. Find the current.'
+      : 'Một điện trở 12 Ω được mắc vào hiệu điện thế 6 V. Tính cường độ dòng điện chạy qua.';
+    $('#spIn').value = demo;
+    run(demo);
+  };
+
+  /* ---- formula drill ---- */
+  const drill = $('#spDrill');
+  if (drill) drill.onclick = () => {
+    const idx = {};
+    SP_FORMULAS.forEach(f => { idx[f.id] = f; });
+    /* weakest first: box 0 … box 6 */
+    const order = SP_FORMULAS.slice().sort((a, b) =>
+      (S.specialBox[a.id] || 0) - (S.specialBox[b.id] || 0));
+    let i = 0, right = 0;
+    const host = $('#spDrillOut');
+    const step = () => {
+      if (i >= order.length) {
+        host.innerHTML = `<div class="sp-done"><b>${right}/${order.length} ${en ? 'correct' : 'đúng'}</b>
+          <p class="sy-note">${en ? 'Boxes updated. Come back tomorrow — spacing is the point.'
+          : 'Đã cập nhật hộp. Mai quay lại — giãn cách mới là điều tạo ra trí nhớ.'}</p></div>`;
+        save();
+        return;
+      }
+      const f = order[i];
+      host.innerHTML = `<div class="sp-drill">
+        <span class="kicker">${i + 1}/${order.length}</span>
+        <p class="sp-drill-q">${esc(f.q)}</p>
+        <input id="spDA" type="text" placeholder="${en ? 'formula…' : 'công thức…'}">
+        <div class="sy-btnrow"><button class="btn sm" id="spDGo">${en ? 'Check' : 'Kiểm tra'}</button>
+          <button class="btn ghost sm" id="spDSee">${en ? 'Show' : 'Xem đáp án'}</button></div>
+        <p class="sy-note" id="spDRes"></p>
+      </div>`;
+      const judge = (showOnly) => {
+        const got = showOnly ? '' : $('#spDA').value;
+        const ok = !showOnly && spFormulaMatch(got, f.a);
+        if (!showOnly) {
+          const box = S.specialBox[f.id] || 0;
+          S.specialBox[f.id] = ok ? Math.min(6, box + 1) : 1;
+          if (ok) right++;
+          save();
+        }
+        $('#spDRes').innerHTML = (showOnly ? '' :
+          ok ? `<b class="sp-y">✓ ${en ? 'correct' : 'đúng'}</b>` : `<b class="sp-n">✕ ${en ? 'not quite' : 'chưa đúng'}</b>`)
+          + ` <span class="mono">${esc(f.a)}</span>`;
+        i++;
+        setTimeout(step, showOnly ? 900 : 620);
+      };
+      $('#spDGo').onclick = () => judge(false);
+      $('#spDA').onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); judge(false); } };
+      $('#spDSee').onclick = () => judge(true);
+      $('#spDA').focus();
+    };
+    step();
+  };
+}
+
+/* Format a computed number the way a physics answer should look. */
+function spFmt(v) {
+  if (!isFinite(v)) return '—';
+  const a = Math.abs(v);
+  if (a !== 0 && (a < 0.01 || a >= 1e5)) {
+    const e = Math.floor(Math.log10(a));
+    const m = v / Math.pow(10, e);
+    return m.toFixed(2).replace('.', ',') + ' × 10' + spSup(e);
+  }
+  return (Math.round(v * 1000) / 1000).toString().replace('.', ',');
+}
+function spSup(n) {
+  const map = { '-': '⁻', 0: '⁰', 1: '¹', 2: '²', 3: '³', 4: '⁴', 5: '⁵', 6: '⁶', 7: '⁷', 8: '⁸', 9: '⁹' };
+  return String(n).split('').map(c => map[c] || c).join('');
+}
+
+/* Formula answers are typed, so be generous: ignore spaces, case,
+   and × vs * vs . — the student knows the physics, not the syntax. */
+function spFormulaMatch(input, answer) {
+  const norm = s => String(s || '').toLowerCase()
+    .replace(/[×⋅·*]/g, '').replace(/\s+/g, '').replace(/\./g, '').replace(/,/g, '');
+  const a = norm(input), b = norm(answer);
+  if (!a) return false;
+  if (a === b) return true;
+  /* allow "U/R" for "U / R" and "I2Rt" for "I² R t" */
+  return a.replace(/²/g, '2').replace(/³/g, '3') === b.replace(/²/g, '2').replace(/³/g, '3');
+}
+
+/* =========================================================
+   SHARE — progress cards people actually want to post
+   ---------------------------------------------------------
+   The rule that keeps this from being cringe: a share card must
+   show something the person genuinely earned, and it must be
+   readable without context. So the numbers come from real state,
+   never from a "share for +100 coins" button.
+
+   Two outputs, both offline, no server, no tracking:
+     · a 1200x630 PNG drawn on <canvas> (OG-image proportions, so it
+       looks right when a chat app unfurls it)
+     · plain text for pasting into a message
+
+   Why canvas and not a screenshot library: one file, no dependency,
+   and the drawing code doubles as the layout definition.
+
+   Privacy: the card carries a score and a streak, never a name,
+   never an email, never the content of notes. The learner decides
+   what to share; the card cannot leak more than it shows.
+   ========================================================= */
+
+const SH_W = 1200, SH_H = 630;
+
+/* Collect only what is safe and worth showing. */
+function shSnapshot() {
+  const S = typeof studyState === 'function' ? studyState() : {};
+  const G = typeof gmState === 'function' ? gmState() : {};
+  const g = typeof gdTermAvg === 'function' ? gdTermAvg('hk1') : null;
+  const cards = (S.cards || []).length;
+  const mastered = (S.cards || []).filter(c => (c.box || 0) >= 4).length;
+  const streak = typeof syStreak === 'function' ? syStreak() : 0;
+  const minutes = (S.sessions || []).reduce((a, s) => a + (s.min || 0), 0);
+  const plan = S.plan ? Math.round((S.plan.doneCount / Math.max(1, S.plan.totalCount)) * 100) : null;
+  return {
+    cards, mastered, streak, minutes, plan, grade: g,
+    coins: G.coins || 0, level: G.level || 1, best: G.best || 0,
+    days: typeof doneCount === 'function' ? doneCount() : 0,
+    total: typeof TOTAL_SESS !== 'undefined' ? TOTAL_SESS : 52,
+  };
+}
+
+/* Draw the card. Kept in one function so the layout is auditable. */
+function shDraw(canvas, snap, lang) {
+  const en = lang === 'en';
+  const W = SH_W, H = SH_H, dpr = 2;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  const c = canvas.getContext && canvas.getContext('2d');
+  /* Some environments (older browsers, locked-down webviews, and the
+     jsdom test runner) have no 2d context. Returning null lets the page
+     fall back to the text card instead of taking the whole route down. */
+  if (!c) return false;
+  c.scale(dpr, dpr);
+
+  const INK = '#17150f', PAPER = '#f4f1ea', CARD = '#fbfaf6';
+  const RULE = '#dbd5c6', FOX = '#c6542d', MUTED = '#7a7264';
+
+  /* paper + a 2px ink rule under the top edge, like the site */
+  c.fillStyle = PAPER; c.fillRect(0, 0, W, H);
+  c.fillStyle = INK; c.fillRect(0, 0, W, 6);
+
+  /* the fox, drawn as squares from the same 16x16 grid as the site */
+  const cell = 9, ox = 74, oy = 78;
+  const HALF = (typeof BRAND_MARK_HALF !== 'undefined') ? BRAND_MARK_HALF : [];
+  const COL = { o: FOX, d: '#a53e20', k: INK, w: '#fcf9f2' };
+  HALF.forEach((half, y) => {
+    const full = half + half.split('').reverse().join('');
+    [...full].forEach((ch, x) => {
+      if (!COL[ch]) return;
+      c.fillStyle = COL[ch];
+      c.fillRect(ox + x * cell, oy + y * cell, cell + 0.5, cell + 0.5);
+    });
+  });
+
+  /* wordmark */
+  const tx = ox + 16 * cell + 34;
+  c.fillStyle = INK;
+  c.font = '600 56px Georgia, "Times New Roman", serif';
+  c.textBaseline = 'alphabetic';
+  c.fillText('Study Focus Fox', tx, oy + 80);
+
+  c.fillStyle = MUTED;
+  c.font = '500 17px ui-monospace, Menlo, monospace';
+  const tag = (typeof BRAND !== 'undefined')
+    ? (BRAND.tagline[en ? 'en' : 'vi']) : '';
+  c.fillText(tag.toUpperCase(), tx, oy + 116);
+
+  /* Right side of the header: the date. It gives the card a "when" without
+     asking for a name, and it fills the void that made the layout look
+     unfinished. */
+  const now = new Date();
+  const dateVN = String(now.getDate()).padStart(2, '0') + '/' +
+    String(now.getMonth() + 1).padStart(2, '0') + '/' + now.getFullYear();
+  c.textAlign = 'right';
+  c.fillStyle = INK;
+  c.font = '400 30px Georgia, "Times New Roman", serif';
+  c.fillText(dateVN, W - 74, oy + 62);
+  c.fillStyle = MUTED;
+  c.font = '500 13px ui-monospace, Menlo, monospace';
+  c.fillText((en ? 'LEARNING LOG' : 'NHAT KY HOC').toUpperCase(), W - 74, oy + 88);
+  c.textAlign = 'left';
+
+  /* rule */
+  c.strokeStyle = RULE; c.lineWidth = 1;
+  c.beginPath(); c.moveTo(74, 292); c.lineTo(W - 74, 292); c.stroke();
+
+  /* the four numbers that matter, big */
+  const stats = [
+    { n: String(snap.streak), l: en ? 'day streak' : 'ngày liên tiếp' },
+    { n: String(snap.mastered), l: en ? 'cards mastered' : 'thẻ đã thuộc' },
+    { n: snap.minutes >= 60 ? (snap.minutes / 60).toFixed(1) : String(snap.minutes), l: en ? 'hours studied' : 'giờ đã học' },
+    { n: String(snap.days) + '/' + snap.total, l: en ? 'sessions done' : 'ca đã xong' },
+  ];
+  const gap = (W - 148) / 4;
+  stats.forEach((s, i) => {
+    const x = 74 + i * gap;
+    c.fillStyle = INK;
+    c.font = '400 76px Georgia, "Times New Roman", serif';
+    c.fillText(s.n, x, 404);
+    c.fillStyle = MUTED;
+    c.font = '500 15px ui-monospace, Menlo, monospace';
+    c.fillText(s.l.toUpperCase(), x, 434);
+  });
+
+  /* footer strip: the honest footnote */
+  c.fillStyle = CARD;
+  c.fillRect(0, H - 116, W, 116);
+  c.strokeStyle = RULE;
+  c.beginPath(); c.moveTo(0, H - 116); c.lineTo(W, H - 116); c.stroke();
+
+  c.fillStyle = INK;
+  c.font = '400 21px Georgia, "Times New Roman", serif';
+  const foot = en
+    ? 'Studied offline · data never left this device'
+    : 'Học offline · dữ liệu không rời khỏi máy này';
+  c.fillText(foot, 74, H - 66);
+
+  c.fillStyle = MUTED;
+  c.font = '500 14px ui-monospace, Menlo, monospace';
+  const extra = [];
+  if (snap.grade !== null) extra.push((en ? 'GPA ' : 'ĐTB ') + snap.grade.toFixed(1));
+  if (snap.plan !== null) extra.push((en ? 'plan ' : 'kế hoạch ') + snap.plan + '%');
+  if (snap.level > 1) extra.push((en ? 'arena Lv' : 'đấu trường cấp ') + snap.level);
+  c.fillText(extra.join('  ·  ') || (en ? 'no data yet' : 'chưa có dữ liệu'), 74, H - 40);
+
+  /* the source, bottom right — a card with a URL is a card people can find */
+  c.textAlign = 'right';
+  c.fillStyle = MUTED;
+  c.font = '500 14px ui-monospace, Menlo, monospace';
+  c.fillText('studyfocusfox', W - 74, H - 40);
+  c.textAlign = 'left';
+  return true;
+}
+
+/* Plain-text version — for chat where an image is overkill. */
+function shText(snap, lang) {
+  const en = lang === 'en';
+  const L = [];
+  L.push(en ? 'Study Focus Fox — my progress' : 'Study Focus Fox — tiến độ của tôi');
+  L.push(en ? `Streak: ${snap.streak} days` : `Chuỗi: ${snap.streak} ngày`);
+  L.push(en ? `Cards mastered: ${snap.mastered}/${snap.cards}` : `Thẻ đã thuộc: ${snap.mastered}/${snap.cards}`);
+  L.push(en ? `Sessions done: ${snap.days}/${snap.total}` : `Ca đã xong: ${snap.days}/${snap.total}`);
+  if (snap.grade !== null) L.push((en ? 'Term average: ' : 'ĐTB học kì: ') + snap.grade.toFixed(1));
+  if (snap.plan !== null) L.push((en ? 'Plan: ' : 'Kế hoạch: ') + snap.plan + '%');
+  if (snap.level > 1) L.push((en ? 'Arena level: ' : 'Cấp đấu trường: ') + snap.level);
+  return L.join('\n');
+}
+
+/* =========================================================
+   ROUTE · SHARE  #/share
+   ========================================================= */
+function renderShare() {
+  const L = i18nLang(), en = L === 'en';
+  const snap = shSnapshot();
+
+  $('#main').innerHTML = `<section class="wrap wide sy-page">
+    ${pageHead(en ? 'Share your progress' : 'Khoe tiến độ',
+    en ? 'a card built from real numbers' : 'tấm thiệp dựng từ số thật',
+    en
+      ? 'Every figure on this card comes from your own study data. There is no name, no email, and nothing about what you wrote — share it or do not, nothing changes in your progress.'
+      : 'Mọi con số trên thiệp lấy từ dữ liệu học của chính bạn. Không có tên, không email, không lộ nội dung ghi chú — khoe hay không thì tiến độ vẫn vậy.')}
+
+    <div class="sh-grid">
+      <div class="sh-prev">
+        <canvas id="shCanvas" width="${SH_W}" height="${SH_H}"
+          aria-label="${en ? 'Progress card preview' : 'Xem trước thiệp tiến độ'}"></canvas>
+      </div>
+      <div class="sh-side">
+        <div class="sh-kpi">
+          <div><b>${snap.streak}</b><span>${en ? 'day streak' : 'ngày liên tiếp'}</span></div>
+          <div><b>${snap.mastered}</b><span>${en ? 'mastered' : 'đã thuộc'}</span></div>
+          <div><b>${Math.round(snap.minutes / 60 * 10) / 10}</b><span>${en ? 'hours' : 'giờ'}</span></div>
+          <div><b>${snap.days}/${snap.total}</b><span>${en ? 'sessions' : 'ca học'}</span></div>
+        </div>
+        <div class="sy-btnrow">
+          <button class="btn" id="shPng">${en ? 'Download image' : 'Tải ảnh'}</button>
+          <button class="btn ghost sm" id="shCopy">${en ? 'Copy text' : 'Chép chữ'}</button>
+        </div>
+        <p class="sy-note">${en
+      ? 'The image is 1200×630, the size chat apps and social previews expect. It is rendered on your device and never uploaded.'
+      : 'Ảnh 1200×630 — đúng tỉ lệ khung xem trước của ứng dụng chat và mạng xã hội. Ảnh vẽ ngay trên máy bạn, không tải lên đâu cả.'}</p>
+        <div class="sh-note">
+          <span class="kicker">${en ? 'What is on the card' : 'Trên thiệp có gì'}</span>
+          <ul>
+            <li>${en ? 'streak, cards mastered, hours, sessions' : 'chuỗi ngày, thẻ đã thuộc, số giờ, số ca'}</li>
+            <li>${en ? 'term average (if you use the grade book)' : 'ĐTB học kì (nếu bạn dùng sổ điểm)'}</li>
+            <li>${en ? 'plan completion and arena level' : 'mức hoàn thành kế hoạch và cấp đấu trường'}</li>
+            <li><s>${en ? 'your name, email, notes, answers' : 'tên, email, ghi chú, đáp án của bạn'}</s></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>`;
+
+  const cv = $('#shCanvas');
+  const drew = shDraw(cv, snap, L);
+  if (!drew) {
+    /* No canvas → hide the preview, keep the text card usable. */
+    const box = cv.closest('.sh-prev');
+    if (box) box.innerHTML = '<p class="sy-note" style="margin:0">'
+      + (en ? 'This browser cannot draw the image. Use “Copy text” below — it carries the same numbers.'
+        : 'Trình duyệt này không vẽ được ảnh. Dùng “Chép chữ” bên dưới — số liệu y hệt.')
+      + '</p>';
+    const png = $('#shPng');
+    if (png) png.disabled = true;
+  }
+
+  const pngBtn = $('#shPng');
+  if (pngBtn) pngBtn.onclick = () => {
+    try {
+      if (!cv.toBlob) throw new Error('no toBlob');
+      cv.toBlob(b => {
+        if (!b) return toast(en ? 'Could not render the image' : 'Không vẽ được ảnh');
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(b);
+        a.download = 'study-focus-fox-' + new Date().toISOString().slice(0, 10) + '.png';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+        toast(en ? 'Image saved' : 'Đã lưu ảnh');
+      }, 'image/png');
+    } catch (e) {
+      toast(en ? 'This browser blocked the download' : 'Trình duyệt chặn tải ảnh');
+    }
+  };
+
+  $('#shCopy').onclick = () => {
+    const txt = shText(snap, L);
+    const done = () => toast(en ? 'Copied — paste it anywhere' : 'Đã chép — dán vào đâu cũng được');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(txt).then(done).catch(() => fallback());
+    } else fallback();
+    function fallback() {
+      const ta = document.createElement('textarea');
+      ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); done(); } catch (e) { toast(txt); }
+      ta.remove();
+    }
+  };
 }
 
 /* =========================================================

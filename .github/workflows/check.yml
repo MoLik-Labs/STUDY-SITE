@@ -38,6 +38,7 @@ jobs:
           node tests/smoke.js
           node tests/interaction.js
           node tests/newfeat.js
+          node tests/v112.js
 
       - name: Cloudflare — Worker /__version (ETag, 304, 405, 404)
         run: node tests/functions.js

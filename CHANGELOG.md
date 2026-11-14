@@ -3,6 +3,67 @@
 Định dạng theo [Keep a Changelog](https://keepachangelog.com/vi/1.1.0/), phiên bản theo [SemVer](https://semver.org/lang/vi/).
 Mọi thay đổi lớn đều có kiểm thử: `npm test` (check tĩnh + CSP + Worker + mô phỏng Workers + 83 bước jsdom).
 
+## [11.3.0] — 2026-11-14
+
+**Study Focus Fox.** Đổi tên, làm bộ nhận diện, thêm tiếng Anh, thêm Đấu trường
+Pixel và Góc Vật lí, thêm thiệp khoe tiến độ.
+
+### Nhận diện · Study Focus Fox
+- **Dấu hiệu cáo pixel 16×16**, chỉ lưu nửa trái rồi lật gương nên không bao giờ lệch.
+  Ba bản trước đều hỏng và đã bị loại: có viền → khối đỏ; mõm tròn → gấu; mõm nhọn
+  + mắt to → mèo. Bản cuối chỉ giữ **tai nhọn, mắt xếch, mõm nhọn xuống**.
+- **Favicon SVG 800 byte nhúng thẳng dạng data-URI** → 0 request, không cần host ảnh,
+  CSP không phải nới. Có `theme-color` cho cả sáng và tối.
+- `docs/BRAND.md` — đặc tả đầy đủ: lưới, bảng màu, kiểu chữ, giọng văn, và **lý do
+  từng quyết định**, kèm những bản đã bị loại.
+- `src/brand.js` là nguồn duy nhất: `BRAND`, `BRAND_MARK_HALF`, `brandMarkHtml()`.
+
+### Song ngữ Việt–Anh
+- `src/i18n.js`: bảng khoá ổn định, `t(key)` rơi về vi → en → chính khoá đó
+  (thiếu bản dịch thì **hiện khoá**, không hiện `undefined`).
+- Đổi ngôn ngữ ngay trong `#/settings`, không tải lại trang; `<html lang>` đổi theo.
+- **Nội dung Vật lí giữ tiếng Việt** — dịch đề Vật lí sang tiếng Anh là làm hỏng
+  đúng thứ người dùng cần. Chỉ giao diện đổi.
+
+### Đấu trường Pixel `#/game`
+- Bốn môn, **sinh câu vô hạn** (không phải kho 500 câu mẫu): Vật lí, Toán,
+  Ngữ pháp tiếng Anh, Hoá.
+- Trả lời sai → **mất máu** và **câu đó quay lại ngay lượt sau**, luôn luôn.
+  Bản đầu để 70% ngẫu nhiên; đó là lỗi — sai mà có thể 10 lượt sau mới gặp lại
+  thì không phải sửa lỗi. Câu gặp lại trả 1 xu thay vì 2 nên không farm được.
+- Combo, lên cấp, tăng độ khó theo môn. Sprite vẽ bằng CSS, không ảnh, không canvas
+  → chữ vẫn đọc được, in được, CSP không đổi.
+
+### Góc Vật lí `#/special`
+- **Đọc đề**: dán đề tiếng Việt, máy rút ra đại lượng theo **đơn vị** (Ω, kΩ, mA,
+  kW, km/h, g/cm³, cal…) kèm quy đổi SI, rồi chọn định luật khớp và tính đáp số.
+  Chạy hoàn toàn trong máy — không gọi AI, không cần mạng.
+- **Kiểm tra hợp lí**: 3000 A qua điện trở phòng thí nghiệm không phải kết quả
+  vật lí mà là nhầm đơn vị — chỗ này nói ra.
+- **Hằng số + tiền tố SI**.
+- **Thang 12 cụm công thức** dùng chung hộp Leitner với thẻ ghi nhớ.
+
+### Khoe tiến độ `#/share`
+- Thiệp 1200×630 vẽ bằng `<canvas>` trên máy, không tải lên đâu.
+- Chỉ có **số liệu học**: chuỗi, thẻ đã thuộc, giờ, ca, ĐTB, mức kế hoạch, cấp.
+  Không tên, không email, không ghi chú.
+- Trình duyệt không có canvas → tự chuyển bản chữ, trang không chết.
+
+### Sửa lỗi
+- `shDraw` ném lỗi khi `getContext('2d')` trả `null` (jsdom, webview bị khoá)
+  làm chết cả tuyến `#/share` → giờ trả `false` và chuyển sang bản chữ.
+- `wkAddSub` mặc định ngày về 0 làm mọi việc dồn vào thứ Hai (đã sửa ở 11.2).
+- Hàm chết `i18nHas`/`i18nKeys` bị loại khỏi bundle.
+
+### Kiểm thử
+- **`tests/v112.js` (mới, 63 bước)**: mọi khoá i18n phải có đủ vi và en; dấu hiệu
+  phải đối xứng từng ô; **120 câu sinh ra cho mỗi môn đều phải có đáp án**;
+  đọc đơn vị (kΩ→1200, mA→0,25, km không bị nhầm thành m); chọn đúng định luật;
+  câu sai quay lại ngay; thiệp không lộ tên.
+- Tổng: **268 bước** xanh. Build tất định. 1.105 KB thô / 304 KB gzip.
+
+---
+
 ## [11.2.0] — 2026-11-14
 
 Nghiên cứu 15+ trang học tập đang chạy tốt (beaverplans, MyStudyLife, Power Planner,

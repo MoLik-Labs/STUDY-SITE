@@ -45,7 +45,7 @@ if (open !== close) failWith(`CSS lệch ngoặc: ${open} { · ${close} }`);
 console.log(`css: ${open} khối · ${(Buffer.byteLength(css) / 1024).toFixed(0)} KB`);
 
 /* ---------- 3. dấu hiệu nhận diện ---------- */
-['@nggkhaiz', 'github.com/Ngg.Khaiz', 'id="main"', "window.addEventListener('hashchange'"]
+['@its.fox_', 'github.com/MoLik-Labs/STUDY-SITE', 'id="main"', "window.addEventListener('hashchange'"]
   .forEach(s => { if (!html.includes(s)) failWith(`thiếu dấu hiệu nhận diện: ${s}`); });
 
 /* ---------- 4. cấm hộp thoại gốc của trình duyệt ---------- */

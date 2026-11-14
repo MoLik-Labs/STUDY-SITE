@@ -11,7 +11,7 @@ import hashlib, io, os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
-VERSION = '11.2'          # một nguồn duy nhất; sinh ra meta, APP_VERSION, footer, sw.js
+VERSION = '11.3'          # một nguồn duy nhất; sinh ra meta, APP_VERSION, footer, sw.js
 
 def arg(flag, default):
     """--flag giá-trị, hoặc chỉ --flag (dùng giá trị mặc định)."""
@@ -62,6 +62,8 @@ data += '\n\n' + SRC('papers.js')
 
 css = SRC('app.css')
 qa = SRC('qa.js') + '\n\n' + SRC('content2.js') + '\n\n' + SRC('content3.js') + '\n\n' + SRC('content4.js')
+brandjs = SRC('brand.js')    # Study Focus Fox — tên, logo pixel, tiêu đề tab
+i18n = SRC('i18n.js')        # vi + en, cùng một bản dựng
 app = SRC('app.js')
 tools = SRC('tools.js')
 solver = SRC('solver.js') + '\n\n' + SRC('solver2.js')
@@ -81,6 +83,9 @@ store = SRC('store.js')
 settings = SRC('settings.js')
 grades = SRC('grades.js')      # sổ điểm THCS/THPT — hệ số VN + what-if
 weekly = SRC('weekly.js')      # bàn lập kế hoạch tuần — dự án → việc → việc con
+game = SRC('game.js')          # Đấu trường Pixel — sinh câu vô hạn, 4 môn
+special = SRC('special.js')    # Góc Vật lí — đọc đề, hằng số, thang công thức
+share = SRC('share.js')        # thiệp tiến độ — vẽ trên máy, không tải lên
 cf = SRC('cloudflare.js')     # đăng ký service worker + trạng thái mạng
 
 ver_js = "/* phiên bản — sinh từ src/build.py */\nconst APP_VERSION = '" + VERSION + "';"
@@ -89,11 +94,11 @@ ver_js = "/* phiên bản — sinh từ src/build.py */\nconst APP_VERSION = '" 
 SCRIPTS = [
     ('DỮ LIỆU LỘ TRÌNH', data),
     ('NGÂN HÀNG HỎI ĐÁP & TRẮC NGHIỆM', qa),
-    ('ỨNG DỤNG', ver_js + '\n' + store + '\n' + app + '\n' + tools + '\n' + engine),
+    ('ỨNG DỤNG', ver_js + '\n' + brandjs + '\n' + store + '\n' + i18n + '\n' + app + '\n' + tools + '\n' + engine),
     ('MÁY GIẢI · MẠCH · NHẠC · POMODORO · PHÒNG THÍ NGHIỆM',
      solver + '\n' + teacher + '\n' + board + '\n' + builder + '\n' + sim + '\n' + school + '\n'
      + seed_more + '\n' + study + '\n' + sched + '\n' + music + '\n' + pomo + '\n'
-     + settings + '\n' + grades + '\n' + weekly + '\n' + lab),
+     + settings + '\n' + grades + '\n' + weekly + '\n' + game + '\n' + special + '\n' + share + '\n' + lab),
 ]
 
 # Áp giao diện trước khi vẽ để không nháy trắng — cũng là một khối inline.
@@ -140,9 +145,9 @@ html = f"""<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Học mọi thứ — Vật lí 9 · lớp 1–12 · @nggkhaiz</title>
+<title>Study Focus Fox — Vật lí 9 · lớp 1–12 · học offline</title>
 <meta name="app-version" content="{VERSION}">
-<meta name="description" content="Một trang để học mọi thứ: lộ trình Vật lí 9, trường học lớp 1–12, thẻ ghi nhớ cách quãng, luyện đề tự tạo, kế hoạch học, thời khoá biểu và lịch học. Tác giả @nggkhaiz — github.com/Ngg.Khaiz.">
+<meta name="description" content="Một trang để học mọi thứ: lộ trình Vật lí 9, trường học lớp 1–12, thẻ ghi nhớ cách quãng, luyện đề tự tạo, kế hoạch học, thời khoá biểu và lịch học. Study Focus Fox · @its.fox_.">
 <meta name="theme-color" content="#f4f1ea" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#12110e" media="(prefers-color-scheme: dark)">
 <meta name="color-scheme" content="light dark">
@@ -173,7 +178,7 @@ html = f"""<!doctype html>
     <span><b>Học mọi thứ</b> — Vật lí 9 · lớp 1–12 · chạy hoàn toàn trong trình duyệt, dữ liệu nằm trong máy bạn.</span>
     <span>Thẻ ghi nhớ · luyện đề · kế hoạch · thời khoá biểu · lịch học · phòng thí nghiệm — xuất được ra tệp, dùng offline.</span>
     <span class="foot-own">
-      <a href="https://github.com/Ngg.Khaiz" target="_blank" rel="noopener">@nggkhaiz</a>
+      <a href="https://github.com/MoLik-Labs/STUDY-SITE" target="_blank" rel="noopener">@its.fox_</a>
       <em>·</em>
       <a href="#/about">giới thiệu</a>
       <em>·</em>
@@ -332,6 +337,10 @@ REDIRECTS = """# Cloudflare — sinh tự động bởi src/build.py, đừng s�
 /grades/     /  200
 /weekly      /  200
 /weekly/     /  200
+/game        /  200
+/game/       /  200
+/special     /  200
+/special/    /  200
 /timetable   /  200
 /timetable/  /  200
 /calendar    /  200

@@ -1,18 +1,26 @@
-# Học mọi thứ · Vật lí 9 → Chuyên Lý
+<p align="center"><img src="docs/img/fox-mark.svg" width="88" alt="Study Focus Fox"></p>
+
+# Study Focus Fox
+
+*Tập trung sâu · Nhớ lâu hơn* — một tệp HTML duy nhất để học Vật lí 9 và mọi môn:
+lộ trình 13 ngày, thẻ ghi nhớ lặp lại cách quãng, sổ điểm đúng quy chế, kế hoạch tuần,
+đấu trường pixel và góc công cụ Vật lí. Chạy offline, dữ liệu ở trong máy bạn.
+
+## Mọi thứ về việc học · Vật lí 9 → Chuyên Lý
 
 > Một trang web duy nhất để **học mọi thứ liên quan đến việc học**: lộ trình 52 ca Vật lí 9 và luyện thi chuyên Lý,
 > trường học lớp 1–12 đủ 13 môn, **thời khoá biểu — kế hoạch — lịch** chỉn chu, thẻ ghi nhớ, luyện đề, phòng thí nghiệm,
 > giải mạch điện, đồng hồ tập trung… Tất cả nằm trong **một tệp `index.html`**, chạy offline, dữ liệu lưu trong máy bạn.
 
 <p>
-  <img alt="version" src="https://img.shields.io/badge/version-11.2-bordeaux">
+  <img alt="version" src="https://img.shields.io/badge/version-11.3-bordeaux">
   <img alt="single file" src="https://img.shields.io/badge/build-1%20tệp%20HTML-1f1c17">
   <img alt="offline" src="https://img.shields.io/badge/offline-100%25-4a6b3a">
   <img alt="license" src="https://img.shields.io/badge/license-MIT-8b2e22">
-  <img alt="author" src="https://img.shields.io/badge/@nggkhaiz-owner-6b4f7a">
+  <img alt="author" src="https://img.shields.io/badge/@its.fox_-owner-c6542d">
 </p>
 
-**Tác giả & chủ sở hữu: [`@nggkhaiz`](https://github.com/Ngg.Khaiz)** · mã nguồn mở theo giấy phép MIT.
+**Tác giả & chủ sở hữu: [`@its.fox_`](https://github.com/MoLik-Labs/STUDY-SITE)** · mã nguồn mở theo giấy phép MIT.
 
 ---
 
@@ -52,7 +60,7 @@
 ### 4. Thời khoá biểu · Kế hoạch · Lịch  *(v10)*
 - **`#/timetable`** — lưới tuần 2→7, chia sáng/chiều, chỉnh số tiết; bấm ô để thêm môn · tiết · GV · màu tại chỗ;
   nhiều bảng (chính khoá / ôn thi / lịch hè); **Tự xếp môn** nhận cả dấu phẩy, chấm phẩy và xuống dòng;
-  **In / lưu PDF** có dòng ký tên `@nggkhaiz`.
+  **In / lưu PDF** có dòng ký tên `@its.fox_`.
 - **Đưa vào lịch tuần này** — biến từng tiết thành việc có giờ thật (sáng 07:00–11:05, chiều 13:30–17:40), chống trùng.
 - **`#/calendar`** — tháng & tuần, ô ngày 104px, màu theo loại (thi / deadline / buổi học / khác), tick xong tại chỗ,
   **xuất `.ics`** để nhập vào Google · Apple · Outlook Calendar.
@@ -68,7 +76,7 @@
 ### 6. Giao diện
 - **13 theme** basic – sang trọng: `paper` (mặc định, editorial), `midnight`, `moss`, `slate`, `amber`, `pixel`, `pixelnight`, `ivory`, `bordeaux`, `ink`, `lotus`, `graphite`, `ocean`… mỗi theme có **14 màu nhấn**.
 - Chữ Việt, in ấn sạch (ẩn thanh điều hướng), phím tắt ⌘K, chạy tốt trên điện thoại 390px.
-- **`@nggkhaiz`** có mặt ở: hero trang chủ, thanh trên, chân trang, `#/about`, bản in, tiêu đề tab, `<meta>`.
+- **`@its.fox_`** có mặt ở: hero trang chủ, thanh trên, chân trang, `#/about`, bản in, tiêu đề tab, `<meta>`.
 
 ---
 
@@ -151,6 +159,11 @@ không có `_headers` (nên không có header bảo mật và cache tuỳ chỉn
 │   ├── app.js              # router, trang chủ, đọc bài, tìm kiếm ⌘K
 │   ├── app.css             # toàn bộ giao diện + 13 theme
 │   ├── cloudflare.js       # service worker, trạng thái ngoại tuyến
+│   ├── brand.js            # Study Focus Fox: tên, dấu hiệu pixel 16x16, tiêu đề tab
+│   ├── i18n.js             # song ngữ vi + en, cùng một bản dựng
+│   ├── game.js             # Đấu trường Pixel: sinh câu vô hạn, 4 môn
+│   ├── special.js          # Góc Vật lí: đọc đề, hằng số, thang công thức
+│   ├── share.js            # thiệp tiến độ 1200x630, vẽ trên máy
 │   ├── grades.js           # sổ điểm THCS/THPT: hệ số, xếp loại, what-if, đếm ngược
 │   ├── weekly.js           # kế hoạch tuần: dự án → việc → việc con, rải theo độ khó
 │   ├── sw.template.js      # mẫu service worker (chép vào dist/ khi build)
@@ -199,7 +212,7 @@ không có `_headers` (nên không có header bảo mật và cache tuỳ chỉn
 
 ## Kiểm thử
 
-`npm test` chạy toàn bộ — **205 bước**, không cần trình duyệt.
+`npm test` chạy toàn bộ — **268 bước**, không cần trình duyệt.
 
 | Bộ | Cách chạy | Phạm vi | Kết quả |
 |---|---|---|---|
@@ -209,6 +222,7 @@ không có `_headers` (nên không có header bảo mật và cache tuỳ chỉn
 | `tests/worker.js` | `node tests/worker.js` | mô phỏng **thứ tự phục vụ của Workers**: tĩnh miễn phí, `_redirects` 200, 404 riêng, không lộ mã nguồn | **32/32** |
 | `tests/smoke.js` | `node tests/smoke.js` | 38 tuyến × jsdom, dữ liệu lõi, `esc/import/uid` | **54/54** |
 | `tests/newfeat.js` | `node tests/newfeat.js` | **công thức sổ điểm** (hệ số 1/1/2/3, cả năm, xếp loại, what-if) + **rải việc tuần** (độ khó, kéo việc trễ, đếm ngược) | **33/33** |
+| `tests/v112.js` | `node tests/v112.js` | **i18n đủ vi+en**, dấu hiệu đối xứng, **120 câu sinh cho mỗi môn đều có đáp án**, đọc đơn vị (kΩ, mA, km), thiệp không lộ tên | **63/63** |
 | `tests/interaction.js` | `node tests/interaction.js` | tên có dấu nháy, `uiConfirm`, xoay vòng sao lưu, `.ics`, thẻ → kế hoạch → thi thử, theme, bẫy Tab | **32/32** |
 | `tools/qa/*.js` | `playwright-cli` (trình duyệt thật) | giao diện: thời khoá biểu, Study OS, trường học, bảng vẽ, mô phỏng, quét 30 tuyến | 21/21 · 21/21 · 26/26 · 17/17 · 19/19 · audit |
 
@@ -227,7 +241,7 @@ không có `_headers` (nên không có header bảo mật và cache tuỳ chỉn
 
 ## Giấy phép & ghi công
 
-MIT © 2026 **[@nggkhaiz](https://github.com/Ngg.Khaiz)**.
+MIT © 2026 **[@its.fox_](https://github.com/MoLik-Labs/STUDY-SITE)**.
 
-Nội dung, mã nguồn và thiết kế thuộc về tác giả. Nếu dùng lại, vui lòng **giữ nguyên dòng ghi công `@nggkhaiz`** trong giao diện và trong README này.
+Nội dung, mã nguồn và thiết kế thuộc về tác giả. Nếu dùng lại, vui lòng **giữ nguyên dòng ghi công `@its.fox_`** trong giao diện và trong README này.
 Ý tưởng giảng dạy tham khảo hướng tiếp cận của thầy Vũ Ngọc Anh; video thuộc về các kênh gốc trên YouTube.

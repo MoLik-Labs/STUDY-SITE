@@ -137,7 +137,10 @@ function renderTop(){
   $('#top').innerHTML=`
     <div class="topbar-in">
       <button class="menu-btn" id="menuBtn" aria-label="Mở danh sách ngày">☰</button>
-      <a class="brand" href="#/"><b>Vật lí 9</b><span>HSG KHTN 1 · Chuyên Lý</span></a>
+      <a class="brand" href="#/" aria-label="${BRAND.name} — về trang chủ">
+        <span class="brand-mk" aria-hidden="true">${GM_SPRITE_MARK}</span>
+        <span class="brand-tx"><b>${BRAND.name}</b><span>${tl('brand_sub')}</span></span>
+      </a>
       <span class="grow"></span>
       <button class="tb-ico" id="openSettingsM" aria-label="Tuỳ biến" title="Tuỳ biến giao diện">
         <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="2.4"/><path d="M8 1.6v1.6M8 12.8v1.6M1.6 8h1.6M12.8 8h1.6M3.5 3.5l1.1 1.1M11.4 11.4l1.1 1.1M12.5 3.5l-1.1 1.1M4.6 11.4l-1.1 1.1"/></svg>
@@ -148,48 +151,52 @@ function renderTop(){
       <a class="scope-chip" href="#/subjects" title="Đổi lớp và môn">
         <b>Lớp ${schoolState().grade}</b><span>${(SUBJECTS.find(x => x.id === schoolState().subj) || { name: 'Vật lí' }).name}</span>
       </a>
-      <button class="tb-btn" data-nav="#/calc">Máy giải</button>
-      <button class="tb-btn" data-nav="#/sim">Thí nghiệm</button>
-      <button class="tb-btn" data-nav="#/exam">Thi thử</button>
+      <button class="tb-btn" data-nav="#/calc">${tl('btn_calc')}</button>
+      <button class="tb-btn" data-nav="#/sim">${tl('btn_sim')}</button>
+      <button class="tb-btn" data-nav="#/exam">${tl('btn_exam')}</button>
       <span class="tb-more">
-        <button class="tb-btn" id="tbMoreBtn" aria-expanded="false" aria-controls="tbMenu">Khám phá ▾</button>
+        <button class="tb-btn" id="tbMoreBtn" aria-expanded="false" aria-controls="tbMenu">${tl('more')} ▾</button>
         <span class="tb-menu" id="tbMenu" role="menu">
-          <a data-nav="#/study" role="menuitem">Học hôm nay</a>
-          <a data-nav="#/cards" role="menuitem">Thẻ ghi nhớ</a>
-          <a data-nav="#/practice" role="menuitem">Luyện đề tự tạo</a>
-          <a data-nav="#/plan" role="menuitem">Kế hoạch học</a>
-          <a data-nav="#/weekly" role="menuitem">Kế hoạch tuần</a>
-          <a data-nav="#/grades" role="menuitem">Sổ điểm</a>
-          <a data-nav="#/focus" role="menuitem">Đồng hồ tập trung</a>
-          <a data-nav="#/timetable" role="menuitem">Thời khoá biểu</a>
-          <a data-nav="#/calendar" role="menuitem">Lịch học</a>
+          <a data-nav="#/study" role="menuitem">${tl('nav_study')}</a>
+          <a data-nav="#/cards" role="menuitem">${tl('nav_cards')}</a>
+          <a data-nav="#/practice" role="menuitem">${tl('nav_practice')}</a>
+          <a data-nav="#/plan" role="menuitem">${tl('nav_plan')}</a>
+          <a data-nav="#/weekly" role="menuitem">${tl('nav_weekly')}</a>
+          <a data-nav="#/grades" role="menuitem">${tl('nav_grades')}</a>
+          <a data-nav="#/focus" role="menuitem">${tl('nav_focus')}</a>
+          <a data-nav="#/timetable" role="menuitem">${tl('nav_timetable')}</a>
+          <a data-nav="#/calendar" role="menuitem">${tl('nav_calendar')}</a>
           <span class="tb-sep"></span>
-          <a data-nav="#/subjects" role="menuitem">Khoá học lớp 1–12</a>
-          <a data-nav="#/studio" role="menuitem">Tạo bài học</a>
-          <a data-nav="#/mine" role="menuitem">Bài của tôi</a>
-          <a data-nav="#/files" role="menuitem">Kho tệp</a>
+          <a data-nav="#/game" role="menuitem">${tl('nav_game')}</a>
+          <a data-nav="#/share" role="menuitem">${tl('nav_share')}</a>
+          <a data-nav="#/special" role="menuitem">${tl('nav_special')}</a>
           <span class="tb-sep"></span>
-          <a data-nav="#/build" role="menuitem">Bảng mạch</a>
-          <a data-nav="#/builder" role="menuitem">Mạch lồng nhau</a>
-          <a data-nav="#/lab" role="menuitem">Phòng thí nghiệm</a>
-          <a data-nav="#/solve" role="menuitem">Bài giải mẫu</a>
-          <a data-nav="#/library" role="menuitem">Thư viện bài giảng</a>
-          <a data-nav="#/notes" role="menuitem">Sổ tay công thức</a>
-          <a data-nav="#/papers" role="menuitem">Đề thi</a>
-          <a data-nav="#/qa" role="menuitem">Hỏi đáp</a>
-          <a data-nav="#/review" role="menuitem">Luyện câu sai</a>
+          <a data-nav="#/subjects" role="menuitem">${tl('nav_subjects')}</a>
+          <a data-nav="#/studio" role="menuitem">${tl('nav_studio')}</a>
+          <a data-nav="#/mine" role="menuitem">${tl('nav_mine')}</a>
+          <a data-nav="#/files" role="menuitem">${tl('nav_files')}</a>
           <span class="tb-sep"></span>
-          <a data-nav="#/progress" role="menuitem">Tiến độ tổng · báo cáo</a>
-          <a data-nav="#/stats" role="menuitem">Tiến độ Vật lí 9</a>
-          <a data-nav="#/settings" role="menuitem">Tuỳ biến giao diện</a>
-          <a data-nav="#/about" role="menuitem">Giới thiệu · @nggkhaiz</a>
+          <a data-nav="#/build" role="menuitem">${tl('nav_build')}</a>
+          <a data-nav="#/builder" role="menuitem">${tl('nav_builder')}</a>
+          <a data-nav="#/lab" role="menuitem">${tl('nav_lab')}</a>
+          <a data-nav="#/solve" role="menuitem">${tl('nav_solve')}</a>
+          <a data-nav="#/library" role="menuitem">${tl('nav_library')}</a>
+          <a data-nav="#/notes" role="menuitem">${tl('nav_notes')}</a>
+          <a data-nav="#/papers" role="menuitem">${tl('nav_papers')}</a>
+          <a data-nav="#/qa" role="menuitem">${tl('nav_qa')}</a>
+          <a data-nav="#/review" role="menuitem">${tl('nav_review')}</a>
+          <span class="tb-sep"></span>
+          <a data-nav="#/progress" role="menuitem">${tl('nav_progress')}</a>
+          <a data-nav="#/stats" role="menuitem">${tl('nav_stats')}</a>
+          <a data-nav="#/settings" role="menuitem">${tl('nav_settings')}</a>
+          <a data-nav="#/about" role="menuitem">${tl('nav_about')}</a>
         </span>
       </span>
       <button class="tb-search" id="openSearch">
         <svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.6"/><path d="M10.5 10.5 14 14"/></svg>
-        <span>Tìm bài, công thức, câu hỏi</span><kbd>⌘K</kbd>
+        <span>${tl('search_ph')}</span><kbd>⌘K</kbd>
       </button>
-      <a class="tb-owner" href="#/about" title="Tác giả">@nggkhaiz</a>
+      <a class="tb-owner" href="#/about" title="${tl('nav_about')} · @its.fox_">@its.fox_</a>
       <span class="kicker" style="white-space:nowrap">${String(dc).padStart(2,'0')} / ${TOTAL_SESS}</span>
     </div>`;
   $('#menuBtn').onclick=()=>{
@@ -230,17 +237,17 @@ function renderRail(){
   const mineN=(typeof allLessons==='function')?allLessons().filter(l=>l.own).length:0;
   $('#rail').innerHTML=`
     <div class="rail-study">
-      <a href="#/study" class="rs-main${h0.startsWith('#/study')?' on':''}"><b>Học hôm nay</b><span>việc cần làm · chuỗi ngày</span></a>
+      <a href="#/study" class="rs-main${h0.startsWith('#/study')?' on':''}"><b>${tl('nav_study')}</b><span>${tl('rail_today_sub')}</span></a>
       <div class="rs-links">
-        <a href="#/cards" class="${h0.startsWith('#/cards')?'on':''}">Thẻ ghi nhớ${(typeof syDue==='function'&&syDue().length)?'<i>'+syDue().length+'</i>':''}</a>
-        <a href="#/practice" class="${h0.startsWith('#/practice')?'on':''}">Luyện đề</a>
-        <a href="#/plan" class="${h0.startsWith('#/plan')&&!h0.startsWith('#/weekly')?'on':''}">Kế hoạch</a>
-        <a href="#/weekly" class="${h0.startsWith('#/weekly')?'on':''}">Tuần này</a>
-        <a href="#/grades" class="${h0.startsWith('#/grades')?'on':''}">Sổ điểm</a>
-        <a href="#/focus" class="${h0.startsWith('#/focus')?'on':''}">Tập trung</a>
-        <a href="#/timetable" class="${h0.startsWith('#/timetable')?'on':''}">Thời khoá biểu</a>
-        <a href="#/calendar" class="${h0.startsWith('#/calendar')?'on':''}">Lịch</a>
-        <a href="#/progress" class="${h0.startsWith('#/progress')?'on':''}">Tiến độ</a>
+        <a href="#/cards" class="${h0.startsWith('#/cards')?'on':''}">${tl('nav_cards')}${(typeof syDue==='function'&&syDue().length)?'<i>'+syDue().length+'</i>':''}</a>
+        <a href="#/practice" class="${h0.startsWith('#/practice')?'on':''}">${tl('nav_practice')}</a>
+        <a href="#/plan" class="${h0.startsWith('#/plan')&&!h0.startsWith('#/weekly')?'on':''}">${tl('rail_plan')}</a>
+        <a href="#/weekly" class="${h0.startsWith('#/weekly')?'on':''}">${tl('rail_week')}</a>
+        <a href="#/grades" class="${h0.startsWith('#/grades')?'on':''}">${tl('nav_grades')}</a>
+        <a href="#/focus" class="${h0.startsWith('#/focus')?'on':''}">${tl('rail_focus')}</a>
+        <a href="#/timetable" class="${h0.startsWith('#/timetable')?'on':''}">${tl('rail_week_short')}</a>
+        <a href="#/calendar" class="${h0.startsWith('#/calendar')?'on':''}">${tl('rail_cal')}</a>
+        <a href="#/progress" class="${h0.startsWith('#/progress')?'on':''}">${tl('rail_progress')}</a>
       </div>
     </div>
     <div class="rail-school">
@@ -248,7 +255,7 @@ function renderRail(){
         <b>Lớp ${sg} · ${esc(sObj.name)}</b><span>Chạm để đổi lớp &amp; môn</span>
       </a>
       <div class="rs-links">
-        <a href="#/subjects" class="${onS?'on':''}">Khoá học 1–12</a>
+        <a href="#/subjects" class="${onS?'on':''}">${tl('nav_subjects')}</a>
         <a href="#/studio" class="${h0.startsWith('#/studio')?'on':''}">Tạo bài học</a>
         <a href="#/mine" class="${h0.startsWith('#/mine')?'on':''}">Bài của tôi${mineN?'<i>'+mineN+'</i>':''}</a>
         <a href="#/files" class="${h0.startsWith('#/files')?'on':''}">Kho tệp</a>
@@ -317,7 +324,7 @@ function renderHome(){
         </div>
       </div>
       ${typeof etaText==='function'?`<p class="eta">${etaText()}</p>`:''}
-      <p class="hero-sign">Biên soạn &amp; thiết kế: <a href="https://github.com/Ngg.Khaiz" target="_blank" rel="noopener">@nggkhaiz</a>
+      <p class="hero-sign">Biên soạn &amp; thiết kế: <a href="https://github.com/MoLik-Labs/STUDY-SITE" target="_blank" rel="noopener">@its.fox_</a>
         <span>·</span> <a href="#/about">về trang này</a></p>
       <a class="hero-study" href="#/study">
         <span class="hs-l">
@@ -1336,6 +1343,7 @@ function render(){
   if (typeof mountDocks === 'function') mountDocks();
   const h=location.hash||'#/';
   renderTop(); renderRail();
+  syncBrandChrome();
   const [path,query]=h.replace(/^#/,'').split('?');
   const p=path.split('/').filter(Boolean);
   const qp=new URLSearchParams(query||'');
@@ -1371,6 +1379,9 @@ function render(){
   if(p[0]==='plan') return renderPlan();
   if(p[0]==='focus') return renderFocus();
   if(p[0]==='progress') return renderProgress();
+  if(p[0]==='game') return renderGame();
+  if(p[0]==='special') return renderSpecial();
+  if(p[0]==='share') return renderShare();
   if(p[0]==='grades') return renderGrades(p[1]);
   if(p[0]==='weekly') return renderWeekly();
   if(p[0]==='timetable') return renderTimetable();

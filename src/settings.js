@@ -54,6 +54,10 @@ function setPref(k, v) {
    TRANG TUỲ BIẾN
    ========================================================= */
 function renderSettings() {
+  /* đổi ngôn ngữ — render lại ngay, không cần tải lại trang */
+  setTimeout(() => $$('[data-lang]').forEach(b => {
+    b.onclick = () => setLang(b.dataset.lang);
+  }), 0);
   const p = prefs();
   const c = typeof pomoCfg === 'function' ? pomoCfg() : { presets: [[25, 5], [50, 10], [15, 3]] };
   const st = AppStore.status();
@@ -63,6 +67,17 @@ function renderSettings() {
       'Mọi thứ dưới đây lưu ngay vào máy — ở 3 tầng khác nhau, kèm lịch sử phiên bản. Không phải cache: đóng trình duyệt, tắt máy vẫn còn.')}
 
     <div class="set-grid">
+      <section class="set-sec">
+        <div class="set-h"><span class="kicker">00 · ${tl('lang_label')}</span><span class="muted">vi · en</span></div>
+        <div class="lang-row">
+          <button class="lang-btn${i18nLang() === 'vi' ? ' on' : ''}" data-lang="vi" lang="vi">
+            <b>Tiếng Việt</b><i>giao diện gốc · nội dung Vật lí</i></button>
+          <button class="lang-btn${i18nLang() === 'en' ? ' on' : ''}" data-lang="en" lang="en">
+            <b>English</b><i>interface only · physics content stays Vietnamese</i></button>
+        </div>
+        <p class="sy-note">${tl('lang_note')}</p>
+      </section>
+
       <section class="set-sec">
         <div class="set-h"><span class="kicker">01 · Giao diện</span><span class="muted">${THEMES.length} bộ màu</span></div>
         <div class="theme-grid">

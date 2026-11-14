@@ -80,7 +80,9 @@ const SEED = [
       { k: 'f', v: 'n = m / M        V(khí, đktc) = n · 22,4' },
       { k: 'ul', v: ['Bước 1: viết và cân bằng phương trình', 'Bước 2: đổi dữ kiện ra mol', 'Bước 3: lập tỉ lệ theo hệ số', 'Bước 4: đổi kết quả ra đơn vị đề hỏi'] },
       { k: 'p', v: 'Ví dụ: đốt 4,8 g Mg. n(Mg) = 0,2 mol; 2Mg + O₂ → 2MgO nên n(O₂) = 0,1 mol ⇒ V = 2,24 lít.' },
-      { k: 'note', v: 'Chất dư phải so tỉ lệ n/hệ số cho từng chất trước khi tính theo chất phản ứng hết.' }
+      { k: 'note', v: 'Chất dư phải so tỉ lệ n/hệ số cho từng chất trước khi tính theo chất phản ứng hết.' },
+      { k: 'q', v: 'Đốt 6,5 g Zn (M=65) trong O₂ dư. Tính khối lượng ZnO (M=81).',
+        a: 'n(Zn) = 0,1 mol; 2Zn + O₂ → 2ZnO nên n(ZnO) = 0,1 mol; m = 8,1 g.' }
     ]
   },
   {
@@ -99,7 +101,9 @@ const SEED = [
     blocks: [
       { k: 'ul', v: ['19/8/1945: Tổng khởi nghĩa ở Hà Nội; 2/9/1945: Tuyên ngôn Độc lập', '19/12/1946: Toàn quốc kháng chiến', 'Thu – đông 1947: chiến thắng Việt Bắc', '1950: chiến dịch Biên giới', '7/5/1954: Điện Biên Phủ'] },
       { k: 'p', v: 'Đường lối kháng chiến toàn dân, toàn diện, trường kì, tự lực cánh sinh là sợi chỉ đỏ xuyên suốt.' },
-      { k: 'note', v: 'Khi làm bài, luôn gắn sự kiện với nguyên nhân và ý nghĩa, đừng chỉ liệt kê ngày tháng.' }
+      { k: 'note', v: 'Khi làm bài, luôn gắn sự kiện với nguyên nhân và ý nghĩa, đừng chỉ liệt kê ngày tháng.' },
+      { k: 'q', v: 'Vì sao chiến thắng Điện Biên Phủ năm 1954 được coi là mốc kết thúc cuộc kháng chiến chống Pháp?',
+        a: 'Vì nó đánh sập ý chí tiếp tục chiến tranh của Pháp, buộc Pháp ký Hiệp định Giơ-ne-vơ (7/1954) công nhận độc lập, chủ quyền của Việt Nam.' }
     ]
   },
   {
@@ -116,7 +120,9 @@ const SEED = [
     aim: 'Nhớ độ tuổi kết hôn, các nguyên tắc cơ bản và hành vi bị cấm.',
     blocks: [
       { k: 'ul', v: ['Nam từ 20 tuổi, nữ từ 18 tuổi trở lên', 'Hôn nhân tự nguyện, tiến bộ, một vợ một chồng', 'Cấm kết hôn giả, cưỡng ép, tảo hôn'] },
-      { k: 'note', v: 'Câu hỏi tình huống thường hỏi: kết hôn khi chưa đủ tuổi bị xử lí thế nào — trả lời theo hướng vi phạm pháp luật, hôn nhân không được pháp luật công nhận.' }
+      { k: 'note', v: 'Câu hỏi tình huống thường hỏi: kết hôn khi chưa đủ tuổi bị xử lí thế nào — trả lời theo hướng vi phạm pháp luật, hôn nhân không được pháp luật công nhận.' },
+      { k: 'q', v: 'Nêu hai điều kiện bắt buộc để một cuộc hôn nhân hợp pháp.',
+        a: 'Đủ tuổi kết hôn (nam 20, nữ 18) và tự nguyện; đồng thời không thuộc các trường hợp bị cấm như đang có vợ hoặc chồng, cùng dòng máu trực hệ.' }
     ]
   },
   {
@@ -134,7 +140,9 @@ const SEED = [
     blocks: [
       { k: 'ul', v: ['Aptomat thay cầu chì: tự ngắt khi quá tải, bật lại được', 'Dây tiếp địa nối vỏ kim loại để tránh giật', 'Ổ cắm có chốt an toàn cho trẻ nhỏ'] },
       { k: 'p', v: 'Công suất lớn (bếp từ, điều hoà) nên đi dây riêng, không dùng chung ổ với đèn.' },
-      { k: 'note', v: 'Khi tính dây, dùng P = U·I với U = 220 V để suy ra dòng định mức.' }
+      { k: 'note', v: 'Khi tính dây, dùng P = U·I với U = 220 V để suy ra dòng định mức.' },
+      { k: 'q', v: 'Vì sao dây nối đất lại quan trọng với các thiết bị vỏ kim loại?',
+        a: 'Nếu vỏ bị rò điện, dòng sẽ theo dây nối đất xuống đất thay vì qua người dùng; đồng thời aptomat ngắt mạch.' }
     ]
   },
   {
@@ -151,7 +159,9 @@ const SEED = [
     aim: 'Biết chọn 5–7 chi tiết đắt thay vì liệt kê cảnh vật.',
     blocks: [
       { k: 'ul', v: ['Mở: giới thiệu cảnh và thời điểm', 'Thân: tả theo trình tự không gian hoặc thời gian', 'Kết: cảm xúc của em'] },
-      { k: 'p', v: 'Chi tiết đắt là chi tiết có âm thanh, mùi, chuyển động — “nắng rắc vàng trên mái ngói” tốt hơn “trời có nắng”.' }
+      { k: 'p', v: 'Chi tiết đắt là chi tiết có âm thanh, mùi, chuyển động — “nắng rắc vàng trên mái ngói” tốt hơn “trời có nắng”.' },
+      { k: 'q', v: 'Viết lại “Cây bàng rất đẹp” thành một câu có chi tiết nghe được hoặc nhìn thấy được.',
+        a: 'Ví dụ: “Nắng xuyên qua tán bàng, rơi xuống sân thành những đốm sáng nhảy nhót.” Có hình ảnh cụ thể thay cho lời khen chung.' }
     ]
   },
   {
@@ -161,7 +171,9 @@ const SEED = [
       { k: 'f', v: 'x = A·cos(ωt + φ)   ·   ω = 2π/T = 2πf' },
       { k: 'f', v: 'A² = x² + (v/ω)²' },
       { k: 'ul', v: ['Vận tốc sớm pha π/2 so với li độ', 'Gia tốc ngược pha, a = −ω²x', 'Thế năng ↔ động năng biến thiên với chu kì T/2'] },
-      { k: 'note', v: 'Ở vị trí cân bằng tốc độ lớn nhất, gia tốc bằng 0; ở biên thì ngược lại.' }
+      { k: 'note', v: 'Ở vị trí cân bằng tốc độ lớn nhất, gia tốc bằng 0; ở biên thì ngược lại.' },
+      { k: 'q', v: 'Một vật dao động với A = 5 cm, ω = 2π rad/s. Tính vận tốc cực đại.',
+        a: 'v_max = ωA = 2π · 0,05 ≈ 0,314 m/s (nhớ đổi cm sang m).' }
     ]
   },
   {
@@ -169,14 +181,22 @@ const SEED = [
     aim: 'Dựng được luận điểm so sánh, tránh sa vào kể lại nội dung.',
     blocks: [
       { k: 'ul', v: ['Chọn một tiêu chí so sánh rõ (hình tượng, giọng điệu, không gian)', 'Mỗi đoạn: nêu điểm giống → điểm khác → lí giải vì sao khác', 'Kết mỗi đoạn phải khái quát được phong cách tác giả'] },
-      { k: 'note', v: 'Đừng so sánh hai tác phẩm khác đề tài nếu đề không yêu cầu; dễ lạc sang cảm nhận chung chung.' }
+      { k: 'note', v: 'Đừng so sánh hai tác phẩm khác đề tài nếu đề không yêu cầu; dễ lạc sang cảm nhận chung chung.' },
+      { k: 'q', v: 'Khi so sánh hai tác phẩm, nên chọn tiêu chí nào để bài không lan man?',
+        a: 'Chọn một vài tiêu chí cụ thể — cách xây dựng hình tượng, giọng điệu, cách kết thúc — rồi so từng điểm, thay vì kể lần lượt hai tác phẩm.' }
     ]
   }
 ];
 
 function seedLessons() {
   const out = {};
-  SEED.forEach((L, i) => {
+  /* SEED_MORE and SEED_MORE2 are edited separately from the original SEED so
+     subject coverage can grow without touching (or risking) the physics
+     lessons. Concatenating here keeps one id scheme and one seeding path. */
+  const ALL = SEED
+    .concat(typeof SEED_MORE !== 'undefined' ? SEED_MORE : [])
+    .concat(typeof SEED_MORE2 !== 'undefined' ? SEED_MORE2 : []);
+  ALL.forEach((L, i) => {
     const key = L.g + '|' + L.s;
     out[key] = out[key] || [];
     out[key].push({

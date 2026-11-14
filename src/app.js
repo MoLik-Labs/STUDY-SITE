@@ -157,6 +157,7 @@ function renderTop(){
       <span class="tb-more">
         <button class="tb-btn" id="tbMoreBtn" aria-expanded="false" aria-controls="tbMenu">${tl('more')} ▾</button>
         <span class="tb-menu" id="tbMenu" role="menu">
+          <a data-nav="#/physics" role="menuitem" class="tb-key">${tl('nav_physics')}</a>
           <a data-nav="#/study" role="menuitem">${tl('nav_study')}</a>
           <a data-nav="#/cards" role="menuitem">${tl('nav_cards')}</a>
           <a data-nav="#/practice" role="menuitem">${tl('nav_practice')}</a>
@@ -1385,6 +1386,7 @@ function render(){
   if(p[0]==='focus') return renderFocus();
   if(p[0]==='progress') return renderProgress();
   if(p[0]==='game') return renderGame();
+  if(p[0]==='physics') return renderPhysics();
   if(p[0]==='special') return renderSpecial();
   if(p[0]==='share'&&p[1]==='lesson'&&p[2]&&p[3]) return renderShareLesson(p[2],p[3]);
   if(p[0]==='share') return renderShare();

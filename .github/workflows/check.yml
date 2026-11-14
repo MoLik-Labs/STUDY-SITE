@@ -1,0 +1,47 @@
+name: Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-and-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Dựng lại bản chạy từ src/
+        run: python3 src/build.py --dist
+
+      - name: Bản build phải khớp với bản đã commit
+        run: git diff --exit-code -- index.html dist/
+
+      - name: Kiểm tra tĩnh (cú pháp, mã chết, hộp thoại gốc, router)
+        run: node tools/check.js
+
+      - name: Cloudflare — CSP, _headers, _redirects, service worker
+        run: node tests/csp.js
+
+      - name: Kiểm thử trong DOM (mọi tuyến + tương tác)
+        run: |
+          npm install --no-save --no-audit --no-fund jsdom
+          node tests/smoke.js
+          node tests/interaction.js
+          node tests/newfeat.js
+          node tests/v112.js
+
+      - name: Cloudflare — Worker /__version (ETag, 304, 405, 404)
+        run: node tests/functions.js
+
+      - name: Cloudflare — mô phỏng thứ tự phục vụ của Workers
+        run: node tests/worker.js

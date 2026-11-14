@@ -3,12 +3,6 @@
    Sand drains top → bottom, then the glass turns over.
    ========================================================= */
 
-const POMO_MODES = [
-  { f: 25, r: 5, label: '25 / 5' },
-  { f: 50, r: 10, label: '50 / 10' },
-  { f: 15, r: 3, label: '15 / 3' }
-];
-
 /* người dùng tự đặt 3 ô giờ, kiểu đồng hồ, màu cát, chuông */
 function pomoCfg() {
   const def = { presets: [[25, 5], [50, 10], [15, 3]], style: 'pixel', tint: 'accent', sound: true, v: 2 };

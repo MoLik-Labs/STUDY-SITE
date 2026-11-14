@@ -88,10 +88,10 @@
 
   /* 14 · nhận diện tác giả */
   await go('#/about');
-  const hasTag = txt('#main').includes('@nggkhaiz') && document.querySelector('a[href*="github.com/Ngg.Khaiz"]');
-  ok('14 trang giới thiệu có chủ sở hữu', !!hasTag, '@nggkhaiz · github');
+  const hasTag = txt('#main').includes('@its.fox_') && document.querySelector('a[href*="github.com/MoLik-Labs/STUDY-SITE"]');
+  ok('14 trang giới thiệu có chủ sở hữu', !!hasTag, '@its.fox_ · github');
   await go('#/');
-  ok('15 tag ở thanh trên + chân trang', !!$('.tb-owner') && document.querySelector('.foot-own a[href*="Ngg.Khaiz"]'),
+  ok('15 tag ở thanh trên + chân trang', !!$('.tb-owner') && document.querySelector('.foot-own a[href*="MoLik-Labs"]'),
     ($('.tb-owner') || {}).textContent);
 
   /* 16 · thời khoá biểu giữ màu khi in (class in) */

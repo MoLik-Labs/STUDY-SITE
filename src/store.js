@@ -109,16 +109,21 @@ const AppStore = (() => {
     let raw;
     try { raw = JSON.stringify(state); } catch (e) { return; }
 
-    /* localStorage: bản chính + xoay vòng 3 bản dự phòng (mỗi 20 giây) */
+    /* localStorage: bản chính + xoay vòng 3 bản dự phòng (mỗi 20 giây)
+       Phải ĐỌC bản cũ TRƯỚC khi ghi đè, nếu không cả 3 bản dự phòng sẽ
+       trỏ về cùng một nội dung mới và lưới an toàn coi như không có. */
     try {
-      localStorage.setItem(APP_KEY, raw);
-      if (now - lastWrite > 20000) {
-        const prev = localStorage.getItem(APP_KEY);
-        localStorage.setItem(BAK_KEYS[0], prev || raw);
-        const b1 = localStorage.getItem(BAK_KEYS[0]);
-        localStorage.setItem(BAK_KEYS[1], b1 || raw);
+      const prev = localStorage.getItem(APP_KEY);
+      if (now - lastWrite > 20000 && prev && prev !== raw) {
         lastWrite = now;
+        /* đẩy chuỗi bản cũ xuống: b1 ← b2, b0 ← b1, b0 ← prev */
+        const old0 = localStorage.getItem(BAK_KEYS[0]);
+        const old1 = localStorage.getItem(BAK_KEYS[1]);
+        if (old0) localStorage.setItem(BAK_KEYS[1], old0);
+        if (old1) localStorage.setItem(BAK_KEYS[2], old1);
+        localStorage.setItem(BAK_KEYS[0], prev);
       }
+      localStorage.setItem(APP_KEY, raw);
     } catch (e) {}
 
     /* cookie: phần lõi, chỉ ghi mỗi 4 giây */

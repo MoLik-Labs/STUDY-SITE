@@ -603,10 +603,11 @@ function renderRead(id) {
   if (ed) ed.onclick = () => { location.hash = '#/studio/' + l.id; };
   const dl = $('#readDel');
   if (dl) dl.onclick = () => {
-    if (!confirm('Xoá bài này? Không hoàn tác được.')) return;
-    const S = schoolState();
-    Object.keys(S.lessons).forEach(k => { S.lessons[k] = S.lessons[k].filter(x => x.id !== l.id); });
-    save(); toast('Đã xoá bài'); location.hash = '#/subject/' + l.g + '/' + l.s;
+    uiConfirm('Xoá bài học', `Xoá <b>${esc(l.t)}</b>? Không hoàn tác được.`, () => {
+      const S = schoolState();
+      Object.keys(S.lessons).forEach(k => { S.lessons[k] = S.lessons[k].filter(x => x.id !== l.id); });
+      save(); toast('Đã xoá bài'); location.hash = '#/subject/' + l.g + '/' + l.s;
+    }, { danger: true, okText: 'Xoá bài' });
   };
   if (typeof syncScope === 'function') syncScope();
 }
@@ -805,10 +806,13 @@ function renderStudio(id) {
   };
   $$('.st-tpl [data-tpl]').forEach(b => b.onclick = () => {
     const onlyEmpty = draft.blocks.every(x => !x.v || (Array.isArray(x.v) && !x.v.length));
-    if (!onlyEmpty && !confirm('Thay nội dung đang soạn bằng mẫu này?')) return;
-    draft.blocks = JSON.parse(JSON.stringify(TPL[b.dataset.tpl] || []));
-    paintBlocks();
-    toast('Đã chèn mẫu — sửa lại theo ý bạn');
+    const useTpl = () => {
+      draft.blocks = JSON.parse(JSON.stringify(TPL[b.dataset.tpl] || []));
+      paintBlocks();
+      toast('Đã chèn mẫu — sửa lại theo ý bạn');
+    };
+    if (onlyEmpty) return useTpl();
+    uiConfirm('Chèn mẫu', 'Bài đang soạn đã có nội dung. Thay bằng mẫu này?', useTpl, { okText: 'Thay bằng mẫu' });
   });
 
   $('#bkAdd').onclick = () => { syncFromForm(); draft.blocks.push({ k: 'p', v: '' }); paintBlocks();
@@ -1069,9 +1073,10 @@ async function renderFiles() {
   /* mở thẳng một tệp: #/files?f=<id> */
   const qf = (location.hash.match(/[?&]f=([^&]+)/) || [])[1];
   if (qf) setTimeout(() => filePreview(decodeURIComponent(qf)), 150);
-  $$('[data-del]').forEach(b => b.onclick = async () => {
-    if (!confirm('Xoá tệp này khỏi máy?')) return;
-    await FileStore.del(b.dataset.del);
-    renderFiles();
+  $$('[data-del]').forEach(b => b.onclick = () => {
+    uiConfirm('Xoá tệp', 'Tệp này sẽ bị xoá khỏi kho lưu trong máy. Không hoàn tác được.', async () => {
+      await FileStore.del(b.dataset.del);
+      renderFiles();
+    }, { danger: true, okText: 'Xoá tệp' });
   });
 }

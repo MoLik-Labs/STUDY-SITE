@@ -1,0 +1,67 @@
+// Cloudflare Workers — cấu hình DUY NHẤT cho bản deploy.
+//
+// Đây là Workers Static Assets, không phải Pages.
+// Lý do: Cloudflare đã nói rõ (docs "Workers Best Practices") rằng với project
+// mới nên dùng Workers, mọi tính năng mới chỉ phát triển trên Workers, và
+// Pages đang ở trạng thái "duy trì". Workers vẫn dùng đúng `_headers` và
+// `_redirects` như Pages, nên bản dựng không phải đổi gì.
+//
+// Deploy:
+//   npm run deploy          # = python3 src/build.py --dist && npx wrangler deploy
+//
+// Build trên Cloudflare (Workers Builds → Settings → Build):
+//   Deploy command  npx wrangler deploy
+//   Root directory  /
+//   Build command   để trống, hoặc `npm run cf:build`
+//
+// `dist/` bị .gitignore, nên nếu không build trước thì deploy không có gì để
+// đẩy lên. Vì thế package.json có hook `prepare` — npm tự chạy nó SAU MỌI lần
+// cài đặt, và Workers Builds luôn cài đặt. Nhờ vậy dist/ luôn tồn tại dù ô
+// Build command trên dashboard có để trống hay ghi sai.
+//
+// Những điểm cần biết:
+//   · KHÔNG có `main` → đây là Worker chỉ có tài nguyên tĩnh, không có script.
+//     Nhờ vậy mọi request tĩnh đều MIỄN PHÍ và KHÔNG đếm vào hạn mức
+//     100.000 request/ngày của Workers Free. Chỉ endpoint động mới bị đếm.
+//   · `run_worker_first` mặc định false (ta không đặt) → tài nguyên tĩnh được
+//     phục vụ TRƯỚC khi Worker chạy, nên không tốn lượt gọi nào.
+//   · Vẫn là "Cloudflare" như bạn muốn: cùng mạng 330+ thành phố, có PoP ở
+//     Hà Nội (HAN), Đà Nẵng (DAD), TP.HCM (SGN).
+{
+  "$schema": "https://raw.githubusercontent.com/cloudflare/workers-sdk/main/packages/wrangler/config-schema.json",
+
+  "name": "foxfocus",
+  "compatibility_date": "2026-11-01",
+
+  // Chỉ phục vụ tệp tĩnh — bật cờ nodejs_compat là không cần thiết và làm
+  // tăng thời gian khởi động. Không thêm gì ở đây.
+
+  
+  // Điểm vào động DUY NHẤT — chỉ trả lời những đường dẫn không phải tệp tĩnh
+  // (thực tế chỉ /__version, và 404 cho phần còn lại). Không có mã nào chạy
+  // cho việc phục vụ index.html, font, hay service worker.
+  "main": "./dist/_worker.mjs",
+
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    // Router của app dùng hash (#/study, #/cards) nên đường dẫn lạ không phải
+    // là trang thật. "404-page" trả đúng 404 của ta thay vì đoán mò.
+    "not_found_handling": "404-page",
+    // Bỏ .html khỏi URL: /index.html → /, và /  phục vụ index.html.
+    "html_handling": "auto-trailing-slash"
+  },
+
+  // Giữ *.workers.dev để có địa chỉ thử trước khi gắn tên miền riêng.
+  "workers_dev": true,
+  "preview_urls": true,
+
+  // Gắn tên miền riêng ngay trong tệp này để `wrangler deploy` tự tạo DNS +
+  // chứng chỉ TLS, và tự giữ nguyên qua mỗi lần deploy.
+  // Bỏ comment và sửa thành tên miền của bạn. Yêu cầu: tên miền đã được thêm
+  // vào Cloudflare (nameserver trỏ về Cloudflare).
+  //
+  // "routes": [
+  //   { "pattern": "study.ten-mien-cua-ban.com", "custom_domain": true }
+  // ]
+}

@@ -147,9 +147,12 @@ function renderSheet() {
     rd.readAsText(f);
   };
   $('#bkReset').onclick = () => {
-    if (!confirm('Xoá toàn bộ tiến độ, câu sai, ghi chú và điểm thi trên trình duyệt này?')) return;
-    state = { done: {}, watched: {}, ans: {}, mine: [], note: {}, runs: [], days: {}, calc: null, book: [], sheet: state.sheet, pane: 'learn', last: null };
-    save(); toast('Đã xoá'); render();
+    uiConfirm('Bắt đầu lại từ đầu',
+      'Xoá <b>toàn bộ</b> tiến độ, câu sai, ghi chú và điểm thi trên trình duyệt này? Hãy sao lưu trước nếu cần.',
+      () => {
+        state = { done: {}, watched: {}, ans: {}, mine: [], note: {}, runs: [], days: {}, calc: null, book: [], sheet: state.sheet, pane: 'learn', last: null };
+        save(); toast('Đã xoá'); render();
+      }, { danger: true, okText: 'Xoá tất cả' });
   };
 
   draw();

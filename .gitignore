@@ -1,0 +1,35 @@
+# hệ điều hành
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# công cụ
+node_modules/
+# package-lock.json ĐƯỢC commit: Cloudflare Workers Builds chạy `npm ci`, và
+# `npm ci` từ chối chạy khi không có lockfile → build hỏng sau ~7 giây với
+# thông báo khó hiểu. Khoá phiên bản cũng làm bản dựng lặp lại được.
+.playwright-cli/
+__pycache__/
+*.pyc
+.venv/
+# dist/ ĐƯỢC commit. Cloudflare Workers Builds tự nó KHÔNG chạy build cho repo
+# này (mọi lần thử đều hỏng sau ~0 giây, trước cả khi cài đặt), nên nếu dist/
+# không nằm trong repo thì không có gì để deploy. Commit nó là cách duy nhất
+# bảo đảm deploy chạy được mà không phải sửa cấu hình trên dashboard.
+# Kiểm tra dist/ khớp src/ nằm trong CI (xem .github/workflows/check.yml).
+out/
+build/
+
+# rác kiểm thử
+.config/
+.pw-browsers/
+z_*.png
+*.log
+.arena/
+
+# liên kết tạm để chạy test
+node_modules
+
+# cloudflare
+dev.vars
+.wrangler/

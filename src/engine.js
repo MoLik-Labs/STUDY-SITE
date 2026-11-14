@@ -81,7 +81,7 @@ function todayStrip() {
   const t = todayStats();
   const weak = weakTopics(1)[0];
   const ring = 2 * Math.PI * 15;
-  return `<div class="today">
+  const out = `<div class="today">
     <div class="today-ring">
       <svg viewBox="0 0 36 36" aria-hidden="true">
         <circle cx="18" cy="18" r="15" fill="none" stroke="var(--rule)" stroke-width="2.4"/>
@@ -103,6 +103,9 @@ function todayStrip() {
       <span class="today-streak">${t.streak ? `Chuỗi ${t.streak} ngày` : 'Bắt đầu chuỗi hôm nay'}</span>
     </div>
   </div>`;
+  /* todayStrip() trả về chuỗi HTML, nên phải gắn hành động sau khi đã chèn vào DOM */
+  setTimeout(() => mountTopicDrills(), 0);
+  return out;
 }
 
 /* ---------- ước lượng thời gian còn lại theo nhịp thực tế ---------- */
@@ -239,7 +242,20 @@ function examRestore() {
 }
 function examClear() { delete state.exam; save(); }
 
+/* Gắn hành động cho nút trong examBanner(). Gọi ngay sau khi chèn HTML. */
+function examBannerBind() {
+  const r = $('#examResume'), d = $('#examDrop');
+  if (r) r.onclick = () => go('#/exam');
+  if (d) d.onclick = () => {
+    uiConfirm('Bỏ đề đang làm', 'Xoá đề và toàn bộ đáp án đã chọn?', () => {
+      if (typeof examClear === 'function') examClear();
+      EXAM = null; render();
+    }, { danger: true, okText: 'Bỏ đề' });
+  };
+}
+
 function examBanner(EX) {
+  setTimeout(examBannerBind, 0);
   if (!EX) return '';
   const n = Object.keys(EX.picks || {}).length;
   return `<div class="exam-resume">

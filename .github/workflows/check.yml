@@ -24,7 +24,7 @@ jobs:
         run: python3 src/build.py --dist
 
       - name: Bản build phải khớp với bản đã commit
-        run: git diff --exit-code -- index.html
+        run: git diff --exit-code -- index.html dist/
 
       - name: Kiểm tra tĩnh (cú pháp, mã chết, hộp thoại gốc, router)
         run: node tools/check.js

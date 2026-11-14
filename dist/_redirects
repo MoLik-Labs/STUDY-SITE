@@ -1,0 +1,40 @@
+# Cloudflare — sinh tự động bởi src/build.py, đừng sửa tay.
+# Trả index.html (200, không chuyển hướng) cho mọi đường dẫn của router.
+# Router dùng hash (#/study) nên người dùng gõ /study cũng phải mở được app,
+# và không phải nhận 404 của Cloudflare.
+#
+# Vì sao đích là "/" chứ không phải "/index.html": khi html_handling =
+# auto-trailing-slash, Cloudflare chuẩn hoá /index.html → / bằng 307. Rewrite
+# tới /index.html vì thế sinh thêm một vòng chuyển hướng; rewrite tới / thì
+# trả 200 ngay. Đã kiểm bằng `wrangler dev`.
+#
+# Cú pháp: <từ> <đến> <mã>. Kèm cả dạng có dấu / ở cuối.
+
+/study       /  200
+/study/      /  200
+/cards       /  200
+/cards/      /  200
+/practice    /  200
+/practice/   /  200
+/plan        /  200
+/plan/       /  200
+/focus       /  200
+/focus/      /  200
+/progress    /  200
+/progress/   /  200
+/grades      /  200
+/grades/     /  200
+/weekly      /  200
+/weekly/     /  200
+/game        /  200
+/game/       /  200
+/special     /  200
+/special/    /  200
+/timetable   /  200
+/timetable/  /  200
+/calendar    /  200
+/calendar/   /  200
+/settings    /  200
+/settings/   /  200
+/about       /  200
+/about/      /  200

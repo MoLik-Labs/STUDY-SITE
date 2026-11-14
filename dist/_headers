@@ -1,0 +1,26 @@
+# Cloudflare — sinh tự động bởi src/build.py, đừng sửa tay.
+# Đọc bởi cả Workers Static Assets và Pages.
+# Cú pháp: https://developers.cloudflare.com/workers/static-assets/headers/
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: accelerometer=(), camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-origin
+
+# Trang chính: luôn xác thực lại bằng ETag (304, vài chục byte) để người
+# dùng nhận bản mới ngay sau khi deploy. Không dùng no-store để còn 304.
+/
+  Cache-Control: public, max-age=0, must-revalidate
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Service worker không bao giờ được cache lâu — nếu không sẽ kẹt bản cũ
+/sw.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Endpoint phiên bản: không cache
+/__version
+  Cache-Control: no-store

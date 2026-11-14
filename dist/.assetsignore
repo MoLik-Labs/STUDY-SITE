@@ -1,0 +1,7 @@
+# Cloudflare — sinh tự động, đừng sửa tay.
+#
+# _worker.mjs là MÃ WORKER, không phải tài nguyên. Nếu không loại trừ,
+# nó bị phục vụ công khai ở /_worker.mjs (đã kiểm bằng wrangler dev).
+# .assetsignore chặn việc upload nó thành tài nguyên tĩnh.
+_worker.mjs
+.nojekyll

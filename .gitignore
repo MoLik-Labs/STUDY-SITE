@@ -21,6 +21,8 @@ out/
 build/
 
 # rác kiểm thử
+.config/
+.pw-browsers/
 z_*.png
 *.log
 .arena/

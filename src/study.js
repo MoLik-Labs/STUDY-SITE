@@ -724,7 +724,11 @@ function renderPlan() {
     syRecount(); save(); renderPlan(); toast('Đã dựng kế hoạch ' + days.length + ' ngày');
   };
   const cl = $('#plClear');
-  if (cl) cl.onclick = () => { if (!confirm('Xoá kế hoạch này?')) return; S.plan = null; save(); renderPlan(); };
+  if (cl) cl.onclick = () => {
+    uiConfirm('Xoá kế hoạch', `Xoá kế hoạch <b>${esc(plan.name)}</b> cùng toàn bộ dấu đã đánh?`, () => {
+      S.plan = null; save(); renderPlan(); toast('Đã xoá kế hoạch');
+    }, { danger: true, okText: 'Xoá kế hoạch' });
+  };
 
   /* đánh dấu xong */
   $$('[data-pk]').forEach(b => b.onclick = () => {
@@ -1163,6 +1167,35 @@ function renderProgress() {
 /* =========================================================
    HỘP THOẠI NHỎ — thay cho prompt() của trình duyệt
    ========================================================= */
+/* Hộp xác nhận nội trang — thay hẳn confirm() của trình duyệt.
+   confirm() bị chặn trong iframe/preview và làm treo bộ QA, nên mọi chỗ xoá
+   dữ liệu đều đi qua đây. `danger` tô nút xác nhận bằng màu cảnh báo. */
+function uiConfirm(title, message, onOk, opt) {
+  opt = opt || {};
+  const d = document.createElement('div');
+  d.className = 'overlay ui-ov';
+  d.innerHTML = `<div class="ov-panel ui-mini" role="alertdialog" aria-label="${esc(title)}">
+    <div class="cal-mh"><span class="kicker">${esc(title)}</span><span class="grow"></span><button class="bd-x" aria-label="Đóng">×</button></div>
+    <div class="cal-mb"><p class="ui-msg">${message}</p></div>
+    <div class="cal-mf"><span class="grow"></span>
+      <button class="btn ghost sm" id="ucNo">Huỷ</button>
+      <button class="btn sm${opt.danger ? ' btn-danger' : ''}" id="ucYes">${esc(opt.okText || 'Đồng ý')}</button></div>
+  </div>`;
+  document.body.appendChild(d);
+  const close = () => { d.remove(); document.removeEventListener('keydown', onKey, true); };
+  const yes = () => { close(); onOk(); };
+  const onKey = e => {
+    if (e.key === 'Escape') { e.stopPropagation(); close(); }
+    if (e.key === 'Enter') { e.preventDefault(); yes(); }
+  };
+  d.querySelector('.bd-x').onclick = close;
+  $('#ucNo', d).onclick = close;
+  $('#ucYes', d).onclick = yes;
+  d.onclick = e => { if (e.target === d) close(); };
+  document.addEventListener('keydown', onKey, true);
+  setTimeout(() => { const b = $('#ucYes', d); if (b) b.focus(); }, 40);
+}
+
 function uiPrompt(title, def, onOk, opt) {
   opt = opt || {};
   const d = document.createElement('div');

@@ -65,7 +65,12 @@ function toast(msg){
   t.textContent=msg; t.classList.add('on');
   clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('on'),1900);
 }
-const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+/* Thoát ký tự cho HTML — dùng được cả trong nội dung lẫn trong thuộc tính
+   (data-*, value="…", aria-label="…"). Thiếu `"` và `'` thì mọi tên do người
+   dùng gõ mà có dấu nháy sẽ làm vỡ thuộc tính và hiện ra rỗng. */
+const esc=s=>String(s==null?'':s)
+  .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+  .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 
 function go(hash){ if(location.hash===hash){render();} else location.hash=hash; }
 const sessionHref=(d,s)=>`#/lesson/${d}/${s}`;
@@ -163,6 +168,7 @@ function renderTop(){
           <a data-nav="#/files" role="menuitem">Kho tệp</a>
           <span class="tb-sep"></span>
           <a data-nav="#/build" role="menuitem">Bảng mạch</a>
+          <a data-nav="#/builder" role="menuitem">Mạch lồng nhau</a>
           <a data-nav="#/lab" role="menuitem">Phòng thí nghiệm</a>
           <a data-nav="#/solve" role="menuitem">Bài giải mẫu</a>
           <a data-nav="#/library" role="menuitem">Thư viện bài giảng</a>
@@ -266,6 +272,7 @@ function renderRail(){
       <a href="#/mine">Bài của tôi</a>
       <a href="#/calc">Máy giải &amp; vẽ hình</a>
       <a href="#/build">Bảng mạch</a>
+      <a href="#/builder">Mạch lồng nhau · thêm bớt R</a>
       <a href="#/sim">Băng thí nghiệm</a>
       <a href="#/lab">Phòng thí nghiệm</a>
       <a href="#/sheet">Tạo phiếu in</a>
@@ -316,6 +323,7 @@ function renderHome(){
         </span>
         <span class="hs-r"><em id="hsMin">0</em><i>phút hôm nay</i><u>Mở →</u></span>
       </a>
+      ${typeof examBanner==='function' && typeof examRestore==='function' ? examBanner(examRestore()) : ''}
       ${typeof todayStrip==='function'?todayStrip():''}
       ${typeof routineCard==='function'?routineCard():''}
       ${next?`<a class="continue" href="${sessionHref(next.d.n,next.s.n)}">
@@ -418,7 +426,7 @@ function mountPlayer(host,id,title,meta){
   host.innerHTML=playerHTML(id,title,meta);
   const b=$('.poster',host);
   b.onclick=()=>{
-    host.innerHTML=`<div class="player"><iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&modestbranding=1" title="${esc(title)}" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture;web-share" allowfullscreen></iframe></div>`;
+    host.innerHTML=`<div class="player"><iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0&modestbranding=1" title="${esc(title)}" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture;web-share" allowfullscreen></iframe></div>`;
     if(!state.watched[id]){ state.watched[id]=1; save(); }
   };
 }
@@ -1239,11 +1247,13 @@ function openVideoModal(id){
   const meta=v?(v.d||''):'';
   const m=document.createElement('div');
   m.className='modal';
-  m.innerHTML=`<div class="modal-in">
+  m.innerHTML=`<div class="modal-in" role="dialog" aria-modal="true" aria-label="${esc(title)}">
       <div class="modal-h"><span class="kicker">${esc(title)}${meta?' · '+meta:''}</span><button class="x" aria-label="Đóng">✕ Đóng</button></div>
       <div class="modal-b"><div style="position:relative;aspect-ratio:16/9">
-        <iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0" style="position:absolute;inset:0;width:100%;height:100%;border:0" allow="autoplay;encrypted-media;picture-in-picture" allowfullscreen></iframe>
+        <iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0" title="${esc(title)}" style="position:absolute;inset:0;width:100%;height:100%;border:0" allow="autoplay;encrypted-media;picture-in-picture" allowfullscreen></iframe>
       </div></div>
+      <div class="modal-f"><a href="https://www.youtube.com/watch?v=${encodeURIComponent(id)}" target="_blank" rel="noopener">Mở trên YouTube ↗</a>
+        <span>Khung phát có thể bị chặn khi xem offline — mở trực tiếp nếu không thấy hình.</span></div>
     </div>`;
   document.body.appendChild(m);
   state.watched[id]=1; save();
@@ -1336,6 +1346,7 @@ function render(){
   if(p[0]==='stats') return renderStats();
   if(p[0]==='calc') return renderCalc();
   if(p[0]==='build') return renderBoard();
+  if(p[0]==='builder') return renderBuild();
   if(p[0]==='sim') return renderSim();
   if(p[0]==='subjects') return renderShelf();
   if(p[0]==='subject'&&p[1]&&p[2]) return renderSubject(+p[1],p[2]);
@@ -1358,6 +1369,28 @@ function render(){
   if(p[0]==='vid'&&p[1]){ renderHome(); setTimeout(()=>openVideoModal(p[1]),60); return; }
   return renderHome();
 }
+
+/* =========================================================
+   FOCUS TRAP — giữ phím Tab trong hộp thoại đang mở
+   Mọi overlay (lịch, thời khoá biểu, uiPrompt, xoá dữ liệu) đều dựa vào
+   phần tử .ov-panel[role=dialog|alertdialog]. Không có bẫy này thì Tab
+   sẽ chạy ra sau lớp phủ và người dùng bàn phím bị lạc.
+   ========================================================= */
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Tab') return;
+  const panels = [...document.querySelectorAll('.ov-panel[role="dialog"],.ov-panel[role="alertdialog"]')];
+  const panel = panels[panels.length - 1];
+  if (!panel) return;
+  const items = [...panel.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')]
+    .filter(el => el.offsetParent !== null || el === document.activeElement);
+  if (!items.length) return;
+  const first = items[0], last = items[items.length - 1];
+  if (e.shiftKey && (document.activeElement === first || !panel.contains(document.activeElement))) {
+    e.preventDefault(); last.focus();
+  } else if (!e.shiftKey && (document.activeElement === last || !panel.contains(document.activeElement))) {
+    e.preventDefault(); first.focus();
+  }
+}, true);
 
 window.addEventListener('hashchange',render);
 document.addEventListener('keydown',e=>{

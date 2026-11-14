@@ -336,6 +336,10 @@ p{margin:0}
 .modal-h{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--rule)}
 .modal-h .x{font-family:var(--mono);font-size:11px;color:var(--ink-2)}
 .modal-b{padding:0;background:#14120e}
+.modal-f{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;padding:9px 14px;border-top:1px solid var(--rule)}
+.modal-f a{font-family:var(--mono);font-size:11px;color:var(--accent);border-bottom:1px solid var(--accent-soft)}
+.modal-f a:hover{border-bottom-color:var(--accent)}
+.modal-f span{font-size:11px;color:var(--ink-3);line-height:1.5;flex:1;min-width:220px}
 
 /* toast */
 .toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);background:var(--ink);color:var(--paper);padding:9px 16px;font-size:12.5px;opacity:0;pointer-events:none;transition:.25s;z-index:120}
@@ -2534,6 +2538,11 @@ html[data-theme="ocean"]{
 .ui-mini input{width:100%;border:1px solid var(--rule);background:var(--paper);font:inherit;font-size:13.5px;
   padding:9px 10px;outline:none;color:var(--ink)}
 .ui-mini input:focus{border-color:var(--accent)}
+.ui-mini .ui-msg{margin:0;font-size:13.5px;line-height:1.65;color:var(--ink-2)}
+.ui-mini .ui-msg b{color:var(--ink)}
+.btn.btn-danger{background:var(--heat4);border-color:var(--heat4);color:#fff}
+.btn.btn-danger:hover{background:#6f2318;border-color:#6f2318;color:#fff}
+html[data-theme^="pixel"] .btn.btn-danger{box-shadow:3px 3px 0 var(--rule-2)}
 /* ô ngày trong lịch: cao đều, số ngày rõ, việc dễ đọc hơn */
 .cal-cell{min-height:104px}
 .cal-dn{font-family:var(--serif);font-size:13px;color:var(--ink-2);opacity:.75}

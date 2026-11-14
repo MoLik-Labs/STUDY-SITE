@@ -31,9 +31,7 @@ function schedState() {
   if (!state.sched) state.sched = {};
   const S = state.sched;
   if (!Array.isArray(S.tables)) S.tables = [];
-  if (!S.tables.length) {
-    S.tables.push({ id: 'tkb1', name: 'Thời khoá biểu chính khoá', days: 6, morning: 5, afternoon: 3, cells: {}, active: true });
-  }
+  if (!S.tables.length) S.tables.push(schNewTable('Thời khoá biểu chính khoá'));
   if (!S.activeId || !S.tables.find(t => t.id === S.activeId)) S.activeId = S.tables[0].id;
   if (!Array.isArray(S.events)) S.events = [];
   if (!S.calView) S.calView = 'month';
@@ -46,6 +44,7 @@ const schedTable = () => {
 };
 const cellKey = (d, k, idx) => d + '-' + k + '-' + idx;
 const schId = () => 's' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+const schNewTable = name => ({ id: schId(), name: name || 'Thời khoá biểu', days: 6, morning: 5, afternoon: 3, cells: {} });
 
 const SCH_ISO = d => {
   const x = new Date(d);
@@ -149,15 +148,17 @@ function renderTimetable() {
   $$('[data-table]').forEach(b => b.onclick = () => { S.activeId = b.dataset.table; save(); renderTimetable(); });
   const nw = $('#ttNew'); if (nw) nw.onclick = () => {
     uiPrompt('Tên bảng mới', 'Ôn thi học kì', name => {
-      const id = schId();
-      S.tables.push({ id, name, days: 6, morning: 5, afternoon: 3, cells: {} });
-      S.activeId = id; save(); renderTimetable(); toast('Đã tạo bảng mới');
+      const t = schNewTable(name);
+      S.tables.push(t);
+      S.activeId = t.id; save(); renderTimetable(); toast('Đã tạo bảng mới');
     });
   };
   const del = $('#ttDel'); if (del) del.onclick = () => {
-    if (!confirm('Xoá bảng này?')) return;
-    S.tables = S.tables.filter(t => t.id !== T.id);
-    S.activeId = S.tables[0].id; save(); renderTimetable();
+    uiConfirm('Xoá bảng thời khoá biểu', `Xoá <b>${esc(T.name)}</b> cùng toàn bộ tiết đã xếp trong đó?`, () => {
+      S.tables = S.tables.filter(t => t.id !== T.id);
+      if (!S.tables.length) S.tables.push(schNewTable('Thời khoá biểu chính khoá'));
+      S.activeId = S.tables[0].id; save(); renderTimetable(); toast('Đã xoá bảng');
+    }, { danger: true, okText: 'Xoá bảng' });
   };
 
   /* sửa cấu hình */
@@ -173,8 +174,9 @@ function renderTimetable() {
   const auto = $('#ttAuto'); if (auto) auto.onclick = () => schAutoFill(T);
   const t2c = $('#ttToCal'); if (t2c) t2c.onclick = () => schPushWeek(T);
   const clr = $('#ttClear'); if (clr) clr.onclick = () => {
-    if (!confirm('Xoá toàn bộ môn trong bảng này?')) return;
-    T.cells = {}; save(); renderTimetable();
+    uiConfirm('Xoá toàn bộ tiết', 'Mọi môn đã xếp trong bảng này sẽ bị xoá. Cấu trúc tuần vẫn giữ nguyên.', () => {
+      T.cells = {}; save(); renderTimetable(); toast('Đã xoá toàn bộ tiết');
+    }, { danger: true, okText: 'Xoá hết' });
   };
   const pr = $('#ttPrint'); if (pr) pr.onclick = () => window.print();
 
@@ -285,7 +287,6 @@ function schApplyAuto(T, list) {
 /* =========================================================
    TRANG · LỊCH  #/calendar
    ========================================================= */
-function calEvents() { return schedState().events; }
 function calAdd(o) {
   const S = schedState();
   const ev = Object.assign({ id: schId(), date: SCH_ISO(Date.now()), title: '', time: '', color: 'brick', kind: 'study', done: false }, o);
@@ -573,7 +574,7 @@ function renderAbout() {
 
       <div class="ab-ownnote">
         <p>Toàn bộ nội dung, mã nguồn và thiết kế thuộc về <b>${OWNER.tag}</b>. Nếu bạn dùng lại, vui lòng giữ dòng ghi công này.</p>
-        <code>© ${new Date().getFullYear()} ${OWNER.tag} · ${OWNER.gh} · v10.0</code>
+        <code>© ${new Date().getFullYear()} ${OWNER.tag} · ${OWNER.gh} · v${APP_VERSION}</code>
       </div>
 
       <div class="ab-links">
@@ -627,7 +628,18 @@ function schICS() {
   const S = schedState();
   const pad = n => String(n).padStart(2, '0');
   const stamp = d => d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + 'T' + pad(d.getHours()) + pad(d.getMinutes()) + '00';
-  const esc2 = t => String(t || '').replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\n/g, '\\n');
+  /* RFC 5545 §3.3.11: thoát \\ ; , và xuống dòng; gấp dòng dài quá 75 octet (§3.1) */
+  const esc2 = t => String(t || '').replace(/\\/g, '\\\\').replace(/;/g, '\\;')
+    .replace(/,/g, '\\,').replace(/\r?\n/g, '\\n');
+  const fold = line => {
+    if (line.length <= 73) return line;
+    const out = [];
+    let rest = line;
+    out.push(rest.slice(0, 73));
+    rest = rest.slice(73);
+    while (rest.length) { out.push(' ' + rest.slice(0, 72)); rest = rest.slice(72); }
+    return out.join('\r\n');
+  };
   const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Hoc moi thu//@nggkhaiz//VI', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH'];
   let n = 0;
   S.events.forEach(e => {
@@ -648,7 +660,7 @@ function schICS() {
   });
   lines.push('END:VCALENDAR');
   if (!n) { toast('Chưa có việc nào để xuất'); return; }
-  const blob = new Blob([lines.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
+  const blob = new Blob([lines.map(fold).join('\r\n') + '\r\n'], { type: 'text/calendar;charset=utf-8' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'lich-hoc-' + (S.events[0] ? S.events[0].date : '') + '.ics';

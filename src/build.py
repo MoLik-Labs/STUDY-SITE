@@ -4,6 +4,7 @@ import io, os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
+VERSION = '10.1'          # một nguồn duy nhất; cũng ghi vào <meta name="app-version">
 
 def arg(flag, default):
     return sys.argv[sys.argv.index(flag) + 1] if flag in sys.argv else default
@@ -50,13 +51,14 @@ names = ['TOPICS', 'WHO', 'LIB', 'PLAN', 'EXT', 'MORE', 'PHASES', 'NOTES']
 data = '\n\n'.join(block(n) for n in names)
 data += '\n\n' + SRC('papers.js')
 
-css = io.open('/home/user/src/app.css', encoding='utf-8').read()
+css = io.open(os.path.join(HERE,'app.css'), encoding='utf-8').read()
 qa = SRC('qa.js') + '\n\n' + SRC('content2.js') + '\n\n' + SRC('content3.js') + '\n\n' + SRC('content4.js')
 app = SRC('app.js')
 tools = SRC('tools.js') if os.path.exists(os.path.join(HERE, 'tools.js')) else ''
 solver = SRC('solver.js') + '\n\n' + SRC('solver2.js')
 teacher = SRC('teacher.js')
 board = SRC('board.js')
+builder = SRC('builder.js')   # mạch lồng nhau — cần f2/f3 của solver.js
 sim = SRC('sim.js')
 school = SRC('school.js')
 seed_more = SRC('seed_more.js')
@@ -68,6 +70,8 @@ lab = SRC('lab.js')
 engine = SRC('engine.js')
 store = SRC('store.js')
 settings = SRC('settings.js')
+
+ver_js = "/* phiên bản — sinh từ src/build.py */\nconst APP_VERSION = '" + VERSION + "';"
 
 prefs_js = """<script>
 /* áp màu trước khi vẽ để không nháy trắng */
@@ -87,6 +91,7 @@ html = f"""<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Học mọi thứ — Vật lí 9 · lớp 1–12 · @nggkhaiz</title>
+<meta name="app-version" content="{VERSION}">
 <meta name="description" content="Một trang để học mọi thứ: lộ trình Vật lí 9, trường học lớp 1–12, thẻ ghi nhớ cách quãng, luyện đề tự tạo, kế hoạch học, thời khoá biểu và lịch học. Tác giả @nggkhaiz — github.com/Ngg.Khaiz.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f4f1ea'/%3E%3Ctext x='6' y='24' font-family='Georgia,serif' font-size='20' fill='%2317150f'%3E9%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -116,7 +121,7 @@ html = f"""<!doctype html>
       <em>·</em>
       <a href="#/about">giới thiệu</a>
       <em>·</em>
-      <span class="foot-v" title="phiên bản">v10.0</span>
+      <span class="foot-v" title="phiên bản">v{VERSION}</span>
     </span>
   </div>
 </footer>
@@ -135,6 +140,7 @@ html = f"""<!doctype html>
 
 <script>
 /* ===== ỨNG DỤNG ===== */
+{ver_js}
 {store}
 {app}
 {tools}
@@ -146,6 +152,7 @@ html = f"""<!doctype html>
 {solver}
 {teacher}
 {board}
+{builder}
 {sim}
 {school}
 {seed_more}

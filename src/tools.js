@@ -270,8 +270,10 @@ function renderExam(){
   };
   $('#examReset').onclick=()=>{
     const answered=Object.keys(EXAM.picks||{}).length;
-    if(answered && !confirm('Đang làm dở '+answered+' câu. Bốc đề mới sẽ bỏ hết đáp án đã chọn. Tiếp tục?')) return;
-    EXAM=null; if(typeof examClear==='function') examClear(); renderExam(); toast('Đã bốc đề mới');
+    const fresh=()=>{ EXAM=null; if(typeof examClear==='function') examClear(); renderExam(); toast('Đã bốc đề mới'); };
+    if(!answered) return fresh();
+    uiConfirm('Bốc đề mới', 'Đang làm dở <b>'+answered+' câu</b>. Bốc đề mới sẽ bỏ hết đáp án đã chọn.',
+      fresh, { okText: 'Bốc đề mới' });
   };
 }
 

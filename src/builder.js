@@ -296,9 +296,6 @@ function renderBuild() {
 
   const update = () => {
     const s = buildSolve(cfg);
-    const names2 = new Map();
-    // rebuild names each time
-    const rr = s.rows.map((r, i) => Object.assign({}, r));
     $('#buildRes').innerHTML = [
       { l: 'R tương đương', v: s.Req, u: 'Ω' },
       { l: 'I toàn mạch', v: s.I, u: 'A' },
@@ -308,7 +305,6 @@ function renderBuild() {
     $('#buildFig').innerHTML = `<div class="kicker">Hình vẽ tự động</div>${svgBuild(cfg, Object.assign({}, s, { nodes: nodesInOrder(cfg.root) }))}`;
     $('#buildTab').innerHTML = `<thead><tr><th>Điện trở</th><th>R (Ω)</th><th>I (A)</th><th>U (V)</th><th>P (W)</th></tr></thead>
       <tbody>${s.rows.map(r => `<tr><td>${r.n}</td><td class="mono">${f2(r.R)}</td><td class="mono">${f3(r.I)}</td><td class="mono">${f2(r.U)}</td><td class="mono">${f2(r.P)}</td></tr>`).join('')}</tbody>`;
-    void names2; void rr;
   };
   update();
 

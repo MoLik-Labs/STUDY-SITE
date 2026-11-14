@@ -21,11 +21,6 @@ const CIR_GEN = {
   supply:  { name: 'Nguồn điều chỉnh', note: '0–24 V, vặn liên tục', u: 12, r: 0 },
   ac:      { name: 'Nguồn xoay chiều', note: '12 V · 50 Hz', u: 12, r: 0 }
 };
-function cirGenU(c) {
-  const g = c.gen || { kind: 'battery', n: 2 };
-  if (g.kind === 'battery') return +c.U;           /* U do người dùng đặt, hiển thị n cell */
-  return +c.U;
-}
 
 const cirLeaf = (k, v, name) => ({ t: 'e', id: cirUid(), k, name: name || '', v: v === undefined ? CIR_KIND[k].val : v, closed: true, probe: false });
 const cirSeries = kids => ({ t: 's', id: cirUid(), kids });
@@ -623,6 +618,7 @@ function renderBoard() {
           <span class="bd-sp"></span>
           <button class="bd-btn" id="bdSvgt">Tải hình SVG</button>
           <button class="bd-btn" id="bdSaveBook">Lưu vào phiếu</button>
+          <a class="bd-btn" href="#/builder" title="Dựng mạch lồng nhau không giới hạn độ sâu">Mạch lồng nhau →</a>
         </div>
       </div>
     </div>

@@ -13,7 +13,7 @@ lộ trình 13 ngày, thẻ ghi nhớ lặp lại cách quãng, sổ điểm đ�
 > giải mạch điện, đồng hồ tập trung… Tất cả nằm trong **một tệp `index.html`**, chạy offline, dữ liệu lưu trong máy bạn.
 
 <p>
-  <img alt="version" src="https://img.shields.io/badge/version-11.3-bordeaux">
+  <img alt="version" src="https://img.shields.io/badge/version-11.4-bordeaux">
   <img alt="single file" src="https://img.shields.io/badge/build-1%20tệp%20HTML-1f1c17">
   <img alt="offline" src="https://img.shields.io/badge/offline-100%25-4a6b3a">
   <img alt="license" src="https://img.shields.io/badge/license-MIT-8b2e22">
@@ -212,7 +212,7 @@ không có `_headers` (nên không có header bảo mật và cache tuỳ chỉn
 
 ## Kiểm thử
 
-`npm test` chạy toàn bộ — **293 bước**, không cần trình duyệt.
+`npm test` chạy toàn bộ — **315 bước**, không cần trình duyệt.
 
 | Bộ | Cách chạy | Phạm vi | Kết quả |
 |---|---|---|---|
@@ -221,7 +221,7 @@ không có `_headers` (nên không có header bảo mật và cache tuỳ chỉn
 | `tests/functions.js` | `node tests/functions.js` | chạy thật `dist/_worker.mjs`: JSON, ETag, 304, 405, chịu lỗi; `wrangler.jsonc` khớp `dist/` | **20/20 + 6** |
 | `tests/worker.js` | `node tests/worker.js` | mô phỏng **thứ tự phục vụ của Workers**: tĩnh miễn phí, `_redirects` 200, 404 riêng, không lộ mã nguồn | **32/32** |
 | `tests/smoke.js` | `node tests/smoke.js` | 38 tuyến × jsdom, dữ liệu lõi, `esc/import/uid` | **54/54** |
-| `tests/newfeat.js` | `node tests/newfeat.js` | **công thức sổ điểm** (hệ số 1/1/2/3, cả năm, xếp loại, what-if) + **rải việc tuần** (độ khó, kéo việc trễ, đếm ngược) | **33/33** |
+| `tests/newfeat.js` | `node tests/newfeat.js` | **công thức sổ điểm** (hệ số 1/1/2/3, cả năm, xếp loại, what-if) + **bảng tuần** (kéo việc, copy/paste plan, chốt tuần, rải cân theo sức) | **61/61** |
 | `tests/v112.js` | `node tests/v112.js` | **i18n đủ vi+en**, dấu hiệu đối xứng, **120 câu sinh cho mỗi môn đều có đáp án**, đọc đơn vị (kΩ, mA, km), **QR giải được ở cả 10 phiên bản**, thiệp không lộ tên | **88/88** |
 | `tests/interaction.js` | `node tests/interaction.js` | tên có dấu nháy, `uiConfirm`, xoay vòng sao lưu, `.ics`, thẻ → kế hoạch → thi thử, theme, bẫy Tab | **32/32** |
 | `tools/qa/*.js` | `playwright-cli` (trình duyệt thật) | giao diện: thời khoá biểu, Study OS, trường học, bảng vẽ, mô phỏng, quét 30 tuyến | 21/21 · 21/21 · 26/26 · 17/17 · 19/19 · audit |

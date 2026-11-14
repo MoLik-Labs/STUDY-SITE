@@ -185,6 +185,112 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
      w.document.querySelectorAll('.wk-col').length);
   ok('#/weekly có nút thêm việc cho từng ngày', w.document.querySelectorAll('.wk-add-sub').length === 7);
 
+
+  /* =========================================================
+     WEEK BOARD v2 — the beaverplans operations
+     ---------------------------------------------------------
+     Each of these is a state transition that used to be impossible:
+     a week could not be finished, a plan could not be reused, an item
+     could not move between days. They are tested as operations, not as
+     pixels, because the pixels follow from the state.
+     ========================================================= */
+  ev('state.weekly = null;');
+  const bp = ev("wkAddProject('Ôn thi','#c6542d').id");
+  const bt = ev(`wkAddTask('${bp}','Chương 3').id`);
+  ev(`wkAddSub('${bp}','${bt}','khó: 15 bài tụ điện',3,0);
+      wkAddSub('${bp}','${bt}','vừa: đọc lý thuyết',2,1);
+      wkAddSub('${bp}','${bt}','dễ: 5 công thức',1,2);`);
+
+  /* --- move one item, including across a week boundary --- */
+  const mvSub = ev(`wkState().projects[0].tasks[0].subs[0].id`);
+  ok('dời một việc sang thứ Sáu', ev(`wkMove('${bp}','${mvSub}',4,0)`) === true);
+  ok('việc đã ở thứ Sáu', ev(`wkState().projects[0].tasks[0].subs[0].day`) === 4);
+  ok('dời sang tuần sau thì đổi cả tuần',
+    ev(`wkMove('${bp}','${mvSub}',2,1)`) === true &&
+    ev(`wkState().projects[0].tasks[0].subs[0].w`) === 1);
+  ok('rời tuần cũ thì tuần cũ không còn việc đó',
+    ev('wkStats(0).all') === 2, ev('wkStats(0).all'));
+  ok('tuần mới có đúng một việc', ev('wkStats(1).all') === 1, ev('wkStats(1).all'));
+  ev('wkState().offset = 0;');
+
+  /* --- whole-task move --- */
+  const subCount = ev(`wkState().projects[0].tasks[0].subs.length`);
+  ok('dồn cả việc sang thứ Ba', ev(`wkMoveTask('${bp}','${bt}',1,0)`) === subCount, subCount);
+  ok('mọi việc con của việc đó đều sang thứ Ba',
+    ev(`wkState().projects[0].tasks[0].subs.every(s=>s.day===1)`));
+
+  /* --- scope: a week only shows its own work --- */
+  ok('việc của tuần 1 không lọt sang tuần 0',
+    ev(`wkMove('${bp}','${mvSub}',0,1)`) && ev('wkStats(0).all') === 2);
+
+  /* --- copy / paste --- */
+  const planTxt = ev('wkCopyPlan(0)');
+  ok('copy plan ra văn bản có cấu trúc', /"projects"/.test(planTxt) && planTxt.length > 40);
+  const pasted = ev(`wkPastePlan(${JSON.stringify(planTxt)}, 2)`);
+  ok('paste sang tuần khác', pasted.ok && pasted.added === 2, JSON.stringify(pasted));
+  ok('paste không tạo dự án trùng', ev('wkState().projects.length') === 1,
+    ev('wkState().projects.length'));
+  ok('paste vào đúng tuần đích', ev('wkStats(2).all') === 2, ev('wkStats(2).all'));
+  ok('paste rác bị từ chối', ev("wkPastePlan('không phải json',0)").ok === false);
+  ok('paste sai hình dạng bị từ chối', ev("wkPastePlan('{\"a\":1}',0)").ok === false);
+
+  /* --- end week ---
+     Reset first: the paste test above deliberately put work into week 2, and
+     a carry-over assertion against a dirty week measures the fixture, not the
+     behaviour. */
+  ev('state.weekly = null;');
+  ev(`const ep=wkAddProject('E').id; const et=wkAddTask(ep,'T').id;
+      wkAddSub(ep,et,'còn 1',3,0); wkAddSub(ep,et,'còn 2',2,1);
+      wkToggle(ep, wkState().projects[0].tasks[0].subs[0].id);`);
+  ev('wkState().offset = 0;');
+  const before = ev('wkStats(0)');
+  const end = ev('wkEndWeek(true)');
+  ok('chốt tuần mang việc còn lại sang tuần sau', end.carried === (before.all - before.done),
+    JSON.stringify(end));
+  ok('chốt tuần đẩy sang tuần sau', ev('wkState().offset') === 1);
+  ok('tuần đã chốt để lại dấu vết', !!ev('wkFinished(0)') && ev('wkFinished(0).all') === before.all);
+  ok('việc còn lại nằm ở tuần mới',
+    ev('wkStats(1).all') === before.all - before.done, ev('wkStats(1).all'));
+  ev('wkState().offset = 0;');
+
+  /* --- balanced spread respects the empty days --- */
+  ev('state.weekly = null;');
+  const sp = ev("wkAddProject('P').id");
+  const spT = ev(`wkAddTask('${sp}','T').id`);
+  ev(`[1,2,3,4,5,6,7].forEach((n,i)=>wkAddSub('${sp}','${spT}','việc '+(i+1), i<2?3:1, null));`);
+  ev('wkState().days = {0:1,2:1,4:1};');
+  ok('rải cân theo sức chỉ dùng ngày được bật',
+    ev(`wkSpreadBalanced('${sp}')`) === 7 &&
+    ev(`wkState().projects[0].tasks[0].subs.every(s=>[0,2,4].includes(s.day))`));
+  ok('rải cân không dồn hết vào một ngày',
+    ev(`new Set(wkState().projects[0].tasks[0].subs.map(s=>s.day)).size`) === 3);
+
+  /* --- load model --- */
+  const ld = ev('wkLoad(0)');
+  ok('tải mỗi ngày có 7 mục', Array.isArray(ld) && ld.length === 7);
+  ok('tải đếm đúng tổng độ khó', ld.reduce((a, x) => a + x.pts, 0) ===
+    ev(`wkState().projects[0].tasks[0].subs.reduce((a,s)=>a+s.diff,0)`),
+    JSON.stringify(ld.map(x => x.pts)));
+
+  /* --- lesson picker data --- */
+  ok('danh sách bài học lấy từ lộ trình thật', ev('wkAllLessons().length') === ev('TOTAL_SESS'),
+    ev('wkAllLessons().length') + ' vs ' + ev('TOTAL_SESS'));
+  ok('mỗi bài có đường dẫn đúng dạng', ev("wkAllLessons().every(x=>/^#\\/lesson\\/\\d+\\/\\d+$/.test(x.href))"));
+
+  /* --- the guide only appears on a genuinely empty week --- */
+  ev('state.weekly = null;');
+  w.location.hash = '#/__blank__'; await wait(20);
+  w.location.hash = '#/weekly'; await wait(200);
+  ok('tuần trống hiện hướng dẫn 3 bước', w.document.querySelectorAll('.wk-steps li').length === 3);
+  ev("const q=wkAddProject('X');const qq=wkAddTask(q.id,'Y');wkAddSub(q.id,qq.id,'việc',2,0);");
+  w.location.hash = '#/__blank__'; await wait(20);
+  w.location.hash = '#/weekly'; await wait(200);
+  ok('có việc rồi thì hướng dẫn biến mất', !w.document.querySelector('.wk-guide'));
+  ok('bảng 7 cột hiện ra', w.document.querySelectorAll('.wk-col').length === 7);
+  ok('mọi việc đều kéo được', [...w.document.querySelectorAll('.wk-item')]
+    .every(e => e.getAttribute('draggable') === 'true'));
+
+
   const pass = results.filter(r => r.pass).length;
   results.filter(r => !r.pass).forEach(r => console.log('  ✗ ' + r.n + (r.note ? ' — ' + r.note : '')));
   console.log(`\n${pass}/${results.length} bước đạt` + (pass === results.length ? '  ✓' : ''));

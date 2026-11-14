@@ -315,6 +315,83 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
   ok('#/share/lesson with a bad id does not crash', !!w.document.querySelector('#main') &&
     w.document.querySelector('#main').innerHTML.length > 200);
 
+
+  /* =========================================================
+     7. PHYSICS HUB + SUBJECT COVERAGE
+     ---------------------------------------------------------
+     The hub reads from real plan state and real answers, so these check
+     the derivation rather than the markup: a hub whose numbers do not
+     move is decoration.
+     ========================================================= */
+  ev('state.ans = {}; save();');
+  w.location.hash = '#/__blank__'; await wait(20);
+  w.location.hash = '#/physics'; await wait(200);
+  const ph = w.document.querySelector('#main');
+  ok('#/physics renders', ph && ph.innerHTML.length > 2500, ph ? ph.innerHTML.length : 0);
+  ok('#/physics shows a progress ring', !!ph.querySelector('.ph-ring svg'));
+  ok('#/physics shows the current percentage',
+    /\d+%/.test((ph.querySelector('.ph-ring-t b') || {}).textContent || ''));
+  ok('#/physics lists 4 phases', ph.querySelectorAll('.ph-phase').length === 4);
+  ok('#/physics groups the tools', ph.querySelectorAll('.ph-group').length >= 4);
+  ok('#/physics links only to real routes',
+    [...ph.querySelectorAll('.ph-tool')].every(a => /^#\/[a-z]/.test(a.getAttribute('href'))));
+  ok('#/physics points at the next unfinished session', !!ph.querySelector('.ph-next-t'));
+
+  /* the percentage has to move when the plan moves */
+  const before = (ph.querySelector('.ph-ring-t b') || {}).textContent;
+  ev("(function(){var d=DAYS[0],s=d.sessions[0];state.done[sid(d.n,s.n)]=1;save();})()");
+  w.location.hash = '#/__blank__'; await wait(20);
+  w.location.hash = '#/physics'; await wait(200);
+  const after = (w.document.querySelector('.ph-ring-t b') || {}).textContent;
+  ok('#/physics percentage follows real progress', before !== after, before + ' → ' + after);
+  ev("(function(){var d=DAYS[0],s=d.sessions[0];delete state.done[sid(d.n,s.n)];save();})()");
+
+  /* weak topics: derived from answers, and silent until there is enough data */
+  ok('#/physics does not invent weak topics from no answers',
+    !ev("phWeakTopics(3).length"));
+  ev(`[0,1,2].forEach(function(i){state.ans[i]={ok:false};});save();`);
+  ok('#/physics names a weak topic after 3 wrong answers',
+    ev("phWeakTopics(3).length") === 1, ev("JSON.stringify(phWeakTopics(3))"));
+  ok('#/physics reports the real rate, not a guess',
+    Math.round(ev("phWeakTopics(3)[0].rate") * 100) === 0);
+  ev('state.ans = {}; save();');
+
+  /* =========================================================
+     8. SUBJECT COVERAGE
+     Every grade-1-12 subject the shelf promises must actually carry
+     lessons, and every lesson must have a body you can read.
+     ========================================================= */
+  const coverage = ev('JSON.parse(JSON.stringify((function(){' +
+    'var t={};for(var g=1;g<=12;g++){SUBJECTS.forEach(function(s){' +
+    'var n=lessonList(g,s.id).length; if(n) t[s.id]=(t[s.id]||0)+n;});}return t;})()))');
+  ok('mọi môn có bài học thật', Object.keys(coverage).length >= 12, JSON.stringify(coverage));
+  ['toan', 'van', 'anh', 'hoa', 'vatli'].forEach(id => {
+    ok('môn ' + id + ' có ít nhất 5 bài', (coverage[id] || 0) >= 5, coverage[id] || 0);
+  });
+
+  /* no lesson may be an empty shell */
+  const empties = ev(`JSON.parse(JSON.stringify((function(){
+    var bad=[];
+    for (var g=1; g<=12; g++) SUBJECTS.forEach(function(s){
+      lessonList(g,s.id).forEach(function(l){
+        var n=(l.blocks||[]).length;
+        var hasQ=(l.blocks||[]).some(function(b){return b.k==='q';});
+        if (n<3 || !l.aim || !hasQ) bad.push(l.id+':'+l.t);
+      });
+    });
+    return bad;})()))`);
+  ok('không bài nào rỗng: đủ 3 khối, có mục tiêu và có câu hỏi',
+    empties.length === 0, empties.slice(0, 3).join(' | '));
+
+  /* a real lesson from the new content renders its blocks */
+  const sample = ev("lessonList(12,'toan')[0].id");
+  w.location.hash = '#/__blank__'; await wait(20);
+  w.location.hash = '#/read/' + sample; await wait(220);
+  const rd = w.document.querySelector('#main');
+  ok('bài học mới mở được', rd && rd.innerHTML.length > 1200, rd ? rd.innerHTML.length : 0);
+  ok('bài có công thức', !!rd.querySelector('.read-formula'));
+  ok('bài có câu hỏi tự kiểm tra', !!rd.querySelector('.read-q'));
+
   const pass = results.filter(r => r.pass).length;
   results.filter(r => !r.pass).forEach(r => console.log('  ✗ ' + r.n + (r.note ? ' — ' + r.note : '')));
   console.log(`\n${pass}/${results.length} bước đạt` + (pass === results.length ? '  ✓' : ''));

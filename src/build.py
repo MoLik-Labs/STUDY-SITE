@@ -11,7 +11,7 @@ import hashlib, io, os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
-VERSION = '11.4'          # một nguồn duy nhất; sinh ra meta, APP_VERSION, footer, sw.js
+VERSION = '11.5'          # một nguồn duy nhất; sinh ra meta, APP_VERSION, footer, sw.js
 
 def arg(flag, default):
     """--flag giá-trị, hoặc chỉ --flag (dùng giá trị mặc định)."""
@@ -62,46 +62,7 @@ data += '\n\n' + SRC('papers.js')
 
 css = SRC('app.css')
 qa = SRC('qa.js') + '\n\n' + SRC('content2.js') + '\n\n' + SRC('content3.js') + '\n\n' + SRC('content4.js')
-brandjs = SRC('brand.js')    # Study Focus Fox — tên, logo pixel, tiêu đề tab
-i18n = SRC('i18n.js')        # vi + en, cùng một bản dựng
-app = SRC('app.js')
-tools = SRC('tools.js')
-solver = SRC('solver.js') + '\n\n' + SRC('solver2.js')
-teacher = SRC('teacher.js')
-board = SRC('board.js')
-builder = SRC('builder.js')   # mạch lồng nhau — cần f2/f3 của solver.js
-sim = SRC('sim.js')
-school = SRC('school.js')
-seed_more = SRC('seed_more.js')
-study = SRC('study.js')
-sched = SRC('schedule.js')
-music = SRC('music.js')
-pomo = SRC('pomo.js')
-lab = SRC('lab.js')
-engine = SRC('engine.js')
-store = SRC('store.js')
-settings = SRC('settings.js')
-grades = SRC('grades.js')      # sổ điểm THCS/THPT — hệ số VN + what-if
-weekly = SRC('weekly.js')      # bàn lập kế hoạch tuần — dự án → việc → việc con
-game = SRC('game.js')          # Đấu trường Pixel — sinh câu vô hạn, 4 môn
-special = SRC('special.js')    # Góc Vật lí — đọc đề, hằng số, thang công thức
-share = SRC('share.js')        # thiệp tiến độ — vẽ trên máy, không tải lên
 cf = SRC('cloudflare.js')     # đăng ký service worker + trạng thái mạng
-
-ver_js = "/* phiên bản — sinh từ src/build.py */\nconst APP_VERSION = '" + VERSION + "';"
-
-# Các khối script, đúng thứ tự sẽ chèn vào HTML.
-SCRIPTS = [
-    ('DỮ LIỆU LỘ TRÌNH', data),
-    ('NGÂN HÀNG HỎI ĐÁP & TRẮC NGHIỆM', qa),
-    ('ỨNG DỤNG', ver_js + '\n' + brandjs + '\n' + store + '\n' + i18n + '\n' + app + '\n' + tools + '\n' + engine),
-    ('MÁY GIẢI · MẠCH · NHẠC · POMODORO · PHÒNG THÍ NGHIỆM',
-     solver + '\n' + teacher + '\n' + board + '\n' + builder + '\n' + sim + '\n' + school + '\n'
-     + seed_more + '\n' + study + '\n' + sched + '\n' + music + '\n' + pomo + '\n'
-     + settings + '\n' + grades + '\n' + weekly + '\n' + game + '\n' + special + '\n' + share + '\n' + lab),
-]
-
-# Áp giao diện trước khi vẽ để không nháy trắng — cũng là một khối inline.
 PREFS_JS = """/* áp màu trước khi vẽ để không nháy trắng */
 try{var P=JSON.parse(localStorage.getItem('vnl9.prefs')||'{}');
 if(P.theme)document.documentElement.setAttribute('data-theme',P.theme);
@@ -112,8 +73,97 @@ if(P.fs)document.documentElement.style.setProperty('--fs',String(P.fs));
 if(P.accent)document.documentElement.style.setProperty('--accent',P.accent);
 }catch(e){}"""
 
-SCRIPTS.insert(2, ('TUỲ BIẾN GIAO DIỆN TRƯỚC KHI VẼ', PREFS_JS))
-SCRIPTS.append(('CLOUDFLARE — service worker & trạng thái mạng', cf))
+ver_js = "/* phiên bản — sinh từ src/build.py */\nconst APP_VERSION = '" + VERSION + "';"
+
+# ================================================================
+# MODULES — one entry per <script> block, in load order.
+# ----------------------------------------------------------------
+# Why an explicit table instead of one giant concatenation:
+#   · a stack trace names the module that threw, so debugging starts where the
+#     bug is instead of in a 500 KB blob;
+#   · the browser lists each block separately in devtools, so a breakpoint
+#     survives an unrelated edit;
+#   · load order is data, visible in one place, rather than implied by the
+#     order of string concatenations;
+#   · each block gets its own CSP hash, so adding a module cannot invalidate
+#     the others.
+# Order matters: a module may use functions declared by any earlier module.
+# Everything here is a classic script sharing one global scope, which is why
+# a name must be declared exactly once — check.js enforces that.
+# ================================================================
+MODULES = [
+    ('DỮ LIỆU LỘ TRÌNH', 'data',
+     [('dữ liệu', data)]),
+
+    ('NGÂN HÀNG HỎI ĐÁP & TRẮC NGHIỆM', 'content',
+     [('hỏi đáp', SRC('qa.js')),
+      ('nội dung 2', SRC('content2.js')),
+      ('nội dung 3', SRC('content3.js')),
+      ('nội dung 4', SRC('content4.js'))]),
+
+    ('TUỲ BIẾN GIAO DIỆN TRƯỚC KHI VẼ', 'prefs', [('prefs', PREFS_JS)]),
+
+    ('LÕI — biến thể, lưu trữ, i18n, thương hiệu', 'core',
+     [('phiên bản', ver_js),
+      ('thương hiệu', SRC('brand.js')),
+      ('lưu trữ', SRC('store.js')),
+      ('song ngữ', SRC('i18n.js')),
+      ('khung ứng dụng', SRC('app.js')),
+      ('tiện ích', SRC('tools.js')),
+      ('máy tính', SRC('engine.js'))]),
+
+    ('VẬT LÍ — máy giải, mạch điện, phòng thí nghiệm', 'physics',
+     [('giải đề', SRC('solver.js')),
+      ('giải đề 2', SRC('solver2.js')),
+      ('dạy học', SRC('teacher.js')),
+      ('bảng mạch', SRC('board.js')),
+      ('mạch lồng nhau', SRC('builder.js')),
+      ('mô phỏng', SRC('sim.js')),
+      ('góc vật lí', SRC('special.js')),
+      ('mục Vật lí', SRC('physics.js'))]),
+
+    ('TRƯỜNG HỌC — lớp 1–12, sổ điểm, thẻ ghi nhớ', 'school',
+     [('trường học', SRC('school.js')),
+      ('dữ liệu thêm', SRC('seed_more.js')),
+      ('dữ liệu môn học', SRC('seed_subjects.js')),
+      ('học tập', SRC('study.js')),
+      ('sổ điểm', SRC('grades.js'))]),
+
+    ('THỜI GIAN — lịch, thời khoá biểu, tuần, pomodoro', 'time',
+     [('lịch biểu', SRC('schedule.js')),
+      ('kế hoạch tuần', SRC('weekly.js')),
+      ('pomodoro', SRC('pomo.js'))]),
+
+    ('NỘI DUNG — nhạc, đấu trường, thiết lập', 'extras',
+     [('nhạc', SRC('music.js')),
+      ('đấu trường', SRC('game.js')),
+      ('thiết lập', SRC('settings.js'))]),
+
+    ('CHIA SẺ — thiệp tiến độ, chia sẻ bài học', 'share',
+     [('chia sẻ', SRC('share.js'))]),
+
+    ('PHÒNG THÍ NGHIỆM TƯƠNG TÁC', 'lab', [('lab', SRC('lab.js'))]),
+
+    ('CLOUDFLARE — service worker & trạng thái mạng', 'cloudflare', [('cf', cf)]),
+]
+
+# Each module becomes its own <script>. Labels are kept short and stable: they
+# are what a stack trace shows, so they have to stay meaningful for years.
+SCRIPTS = [(label, '\n\n'.join(
+    '/* ---- %s ---- */\n%s' % (part, code) for part, code in parts))
+    for label, _slug, parts in MODULES]
+
+if len(SCRIPTS) != len(MODULES):
+    raise SystemExit('module table mismatch')
+
+SCRIPTS = [(label, '\n\n'.join(
+    '/* ---- %s ---- */\n%s' % (part, code) for part, code in parts))
+    for label, _slug, parts in MODULES]
+
+if len(SCRIPTS) != len(MODULES):
+    raise SystemExit('module table mismatch')
+
+# Áp giao diện trước khi vẽ để không nháy trắng — cũng là một khối inline.
 
 
 def csp_hash(raw):

@@ -71,6 +71,42 @@ jsFiles.forEach(f => {
   if (!buildPy.includes(`'${f}'`)) failWith(`src/${f} không được src/build.py ghép vào — mã chết hoặc quên thêm?`);
 });
 
+/* ---------- 5b. no duplicate top-level globals ----------
+   Every module is a classic script sharing ONE global scope. Two files
+   declaring the same name means the second silently wins — a bug that no
+   amount of clicking reveals, because the wrong function still runs and
+   still looks reasonable. This scan is the guard that keeps the split from
+   rotting: it fails the build on a collision instead of hoping nobody
+   notices. Template files are excluded; they are shipped, not bundled. */
+{
+  const seen = new Map();
+  const dupes = [];
+  jsFiles.forEach(f => {
+    const raw = fs.readFileSync(path.join(SRC, f), 'utf8');
+    /* strip comments and strings so a name inside a sentence is not counted */
+    const text = raw
+      .replace(/\/\*[\s\S]*?\*\//g, m => m.replace(/[^\n]/g, ' '))
+      .replace(/(^|[^:])\/\/[^\n]*/g, (m, p1) => p1 + ' '.repeat(m.length - p1.length))
+      .replace(/'(?:\\.|[^'\\])*'/g, "''")
+      .replace(/"(?:\\.|[^"\\])*"/g, '""')
+      .replace(/`(?:\\.|[^`\\])*`/g, '``');
+    const re = /^(?:function\s+([A-Za-z_$][\w$]*)|(?:const|let|var)\s+([A-Za-z_$][\w$]*))/gm;
+    let m;
+    while ((m = re.exec(text))) {
+      const name = m[1] || m[2];
+      if (seen.has(name) && seen.get(name) !== f) {
+        dupes.push(name + ' (' + seen.get(name) + ' & ' + f + ')');
+      } else if (!seen.has(name)) {
+        seen.set(name, f);
+      }
+    }
+  });
+  if (dupes.length) {
+    dupes.slice(0, 8).forEach(d => failWith('khai báo trùng tên toàn cục: ' + d));
+  }
+  console.log('biến toàn cục: ' + seen.size + ' tên · trùng: ' + dupes.length);
+}
+
 /* ---------- 6. router ↔ hàm render ---------- */
 const appSrc = fs.readFileSync(path.join(SRC, 'app.js'), 'utf8');
 const routes = [...appSrc.matchAll(/p\[0\]\s*===\s*'([a-z0-9]+)'[\s\S]{0,40}?render([A-Za-z0-9_]+)\(/g)]

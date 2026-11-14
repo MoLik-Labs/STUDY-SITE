@@ -157,6 +157,7 @@ function renderTop(){
       <span class="tb-more">
         <button class="tb-btn" id="tbMoreBtn" aria-expanded="false" aria-controls="tbMenu">${tl('more')} ▾</button>
         <span class="tb-menu" id="tbMenu" role="menu">
+          <a data-nav="#/physics" role="menuitem" class="tb-key">${tl('nav_physics')}</a>
           <a data-nav="#/study" role="menuitem">${tl('nav_study')}</a>
           <a data-nav="#/cards" role="menuitem">${tl('nav_cards')}</a>
           <a data-nav="#/practice" role="menuitem">${tl('nav_practice')}</a>
@@ -1056,7 +1057,11 @@ function renderQA(q0){
 ========================================================= */
 let libFilter={scope:'all',teacher:'all',q:''};
 function renderLibrary(){
-  const q=libFilter.q;
+  /* The search box wrote to this variable, so it has to be mutable. It was
+     `const`, and every keystroke threw "Assignment to constant variable" — the
+     library search was dead, with no visible error beyond the box not
+     filtering. Keep it in libFilter so the text survives a re-render. */
+  let q=libFilter.q;
   const counts={};
   Object.values(LIB).forEach(v=>counts[v.topic]=(counts[v.topic]||0)+1);
   $('#main').innerHTML=`
@@ -1120,14 +1125,14 @@ function renderLibrary(){
     $$('.chip[data-scope]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.scope===libFilter.scope));
     draw();
   });
-  $('#libq').oninput=e=>{q=e.target.value;draw();};
+  $('#libq').oninput=e=>{q=e.target.value;libFilter.q=q;draw();};
 }
 
 /* =========================================================
    RENDER — NOTES
 ========================================================= */
 function renderNotes(q0){
-  const q=q0||'';
+  let q=q0||'';
   $('#main').innerHTML=`
     <section class="wrap wide">
       <div class="page-head">
@@ -1381,6 +1386,7 @@ function render(){
   if(p[0]==='focus') return renderFocus();
   if(p[0]==='progress') return renderProgress();
   if(p[0]==='game') return renderGame();
+  if(p[0]==='physics') return renderPhysics();
   if(p[0]==='special') return renderSpecial();
   if(p[0]==='share'&&p[1]==='lesson'&&p[2]&&p[3]) return renderShareLesson(p[2],p[3]);
   if(p[0]==='share') return renderShare();

@@ -8,7 +8,7 @@
    Chỉ đường dẫn không phải tệp tĩnh (thực tế: /__version, và 404) mới tới đây.
    ========================================================= */
 
-const VERSION = '11.4';
+const VERSION = '11.5';
 
 /* Đọc phiên bản từ chính index.html đã deploy → một nguồn sự thật duy nhất,
    không phải sửa số ở hai nơi. */

@@ -3,6 +3,58 @@
 Định dạng theo [Keep a Changelog](https://keepachangelog.com/vi/1.1.0/), phiên bản theo [SemVer](https://semver.org/lang/vi/).
 Mọi thay đổi lớn đều có kiểm thử: `npm test` (check tĩnh + CSP + Worker + mô phỏng Workers + 83 bước jsdom).
 
+## [11.5.0] — 2026-11-14
+
+### Bốn lỗi làm chết trang — tìm bằng cách chạy thử, không phải đọc mã
+
+Không đoán. Tôi cho chạy hết 39 tuyến: bấm mọi nút, gõ vào mọi ô, nạp **13 dạng
+dữ liệu hỏng** vào localStorage, rồi đọc lại ngoại lệ.
+
+| Lỗi | Hậu quả |
+|---|---|
+| `cirTidy` gộp nhóm sai | Bấm "Xoá hết" rồi "Tự căn lại" là **bảng mạch chết** — vòng lặp gán một lá cây vào biến nhóm, lần sau đọc `.length` của `undefined` |
+| `builder` dời nút bằng chỉ số | Bấm "↓" ở con cuối cùng là **ném lỗi** — `parentAt` trả về lá, `.children` không tồn tại |
+| `cirModel` không kiểm tra cây đã lưu | Dữ liệu mạch hỏng (nhóm có `kids: null`) làm **#/build trắng trang** với mọi người từng ghi dở |
+| `renderLibrary` / `renderNotes` | Ô tìm kiếm **chết hoàn toàn** — gán vào biến `const`, mỗi lần gõ phím ném "Assignment to constant variable" |
+
+Sau khi sửa: **492 lượt tương tác** trên 39 tuyến, **507 tổ hợp** tuyến × dữ liệu
+hỏng — không còn ngoại lệ nào.
+
+### Tách mã để sửa lâu dài
+
+Bản dựng cũ nhồi 33 tệp vào **6 khối `<script>`** khổng lồ. Giờ là **11 mô-đun có
+tên**, khai báo trong một bảng duy nhất ở `src/build.py`:
+
+- stack trace ghi tên mô-đun, không phải một khối 500 KB;
+- mỗi mô-đun một hash CSP riêng — thêm mô-đun không làm hỏng hash của mô-đun khác;
+- thứ tự nạp là **dữ liệu**, đọc được một chỗ.
+
+**Chốt chặn mới trong `tools/check.js`:** mọi mô-đun dùng chung một phạm vi toàn
+cục, nên hai tệp khai báo cùng tên thì tệp sau **lặng lẽ thắng**. Giờ bản dựng
+**thất bại** khi có tên trùng (đã thử bằng cách cố tình thêm `const toast`).
+
+### Mục Vật lí `#/physics` — cửa vào cho cả môn
+
+Vật lí đã có nhiều thứ nhất (52 ca, 236 bài giảng, 8 công cụ) nhưng nằm rải rác
+sau chín mục menu; muốn học Vật lí phải biết mở trang nào. Giờ có một chỗ:
+vòng tiến độ, **ca tiếp theo bấm là vào**, bốn giai đoạn, công cụ nhóm theo *khi
+nào dùng*, công thức đã thuộc, và **chủ đề yếu** suy ra từ câu trả lời thật.
+
+### Các môn khác: từ vỏ rỗng thành có bài
+
+Shelf lớp 1–12 hứa 13 môn nhưng ngoài Vật lí mỗi môn chỉ có **1–2 bài**. Thêm
+**21 bài mới** cho Tiếng Anh (6 bài: thì, danh từ, hiện tại hoàn thành, bị động,
+mệnh đề quan hệ, điều kiện), Hoá (4), Toán (5), Ngữ văn (3) — mỗi bài có mục
+tiêu, ví dụ đã giải, **lỗi người học thật sự mắc**, và một câu hỏi tự kiểm tra.
+
+Đồng thời **sửa 5 bài cũ thiếu câu hỏi tự kiểm tra** — bài đọc mà không có gì để
+làm thì không phải bài học.
+
+Tổng: **103 bài** (trước 82). Kiểm thử mới bắt buộc mọi bài phải có mục tiêu,
+≥3 khối và ≥1 câu hỏi.
+
+---
+
 ## [11.4.0] — 2026-11-14
 
 ### Kế hoạch tuần — làm lại theo [beaverplans.com](https://beaverplans.com/)

@@ -709,6 +709,9 @@ function cirPaint(opt) {
 /* =========================================================
    6 · INTERACTION
    ========================================================= */
+/* Hàm gỡ listener cấp document của lượt vẽ trước (xem cirBind). */
+let bdDocOff = null;
+
 function cirBind() {
   const model = cirModel();
   document.body.classList.remove('bd-live');
@@ -881,14 +884,24 @@ function cirBind() {
     save(); toast('Đã lưu vào phiếu của tôi');
   };
 
-  document.addEventListener('pointerdown', e => {
+  /* Nghe trên document là đúng (popup phải đóng được khi bấm ra ngoài canvas),
+     nhưng listener cũ chưa bao giờ được gỡ: mỗi lần vào #/build lại gắn thêm
+     một cái, và cái của lượt trước vẫn chạy trên trang khác. Gỡ cái cũ trước
+     khi gắn cái mới, và gỡ hẳn khi rời trang. */
+  if (bdDocOff) { try { bdDocOff(); } catch (e) {} bdDocOff = null; }
+  const onDocDown = e => {
     const pop = document.querySelector('#bdPop');
     if (!pop) return;
     if (pop.contains(e.target)) return;
     if (e.target.closest && e.target.closest('[data-leaf]')) return;
     if (e.target.closest && e.target.closest('.bd-tool')) return;
     cirClosePop();
-  }, true);
+  };
+  document.addEventListener('pointerdown', onDocDown, true);
+  bdDocOff = () => {
+    document.removeEventListener('pointerdown', onDocDown, true);
+    document.onkeydown = null;
+  };
 
   document.onkeydown = e => {
     if (!document.querySelector('#bdCanvas')) return;

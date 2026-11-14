@@ -254,6 +254,12 @@ async function handle(method, pathname, headers) {
   }
   const stale = await handle('GET', '/__version', { 'If-None-Match': 'W/"cu"' });
   ok('ETag cũ → 200 kèm dữ liệu mới', stale.status === 200, stale.status);
+  /* RFC 9110: "*" khớp mọi biểu diễn hiện có. Trước đây Worker bỏ qua nên
+     luôn trả 200. */
+  for (const inm of ['*', 'W/*']) {
+    const r = await handle('GET', '/__version', { 'If-None-Match': inm });
+    ok('If-None-Match "*" → 304 (' + inm + ')', r.status === 304, r.status);
+  }
 
   /* (d) HEAD: cùng header, không body */
   const h2 = await handle('HEAD', '/__version');
@@ -285,6 +291,51 @@ async function handle(method, pathname, headers) {
     ok('mọi dòng thụt lề trong _headers là header hợp lệ', inRule.length === 0, inRule.slice(0, 2).join(' | '));
     const parsed = sf.headers['Content-Security-Policy'] || '';
     ok('CSP đọc được qua bộ phân tích của Cloudflare', parsed.includes("default-src"), parsed.slice(0, 30));
+  }
+
+  /* ---------- 11. Service worker: điều hướng ưu tiên mạng ----------
+     Trước đây điều hướng trả cache TRƯỚC nên người dùng kẹt ở bản cũ suốt
+     nhiều ngày. Giờ mạng trước, cache là lưới an toàn khi mất mạng. */
+  {
+    const swSrc = fs.readFileSync(path.join(DIST, 'sw.js'), 'utf8');
+    const listeners = {}; const store = {};
+    let CACHE = '';
+    const mk = () => ({
+      add: async u => { store[CACHE][u] = 'cached ' + u; },
+      put: async (k, v) => { store[CACHE][typeof k === 'string' ? k : k.url] = await v.text(); }
+    });
+    const caches = {
+      open: async () => { store[CACHE] = store[CACHE] || {}; return mk(); },
+      keys: async () => Object.keys(store),
+      delete: async k => { delete store[k]; },
+      match: async r => {
+        const k = typeof r === 'string' ? r : r.url;
+        const body = store[CACHE] && store[CACHE][k];
+        return body !== undefined ? new Response(body) : undefined;
+      }
+    };
+    const self = { addEventListener: (t, f) => listeners[t] = f, skipWaiting: () => {}, clients: { claim: () => Promise.resolve() } };
+    const location = { origin: 'https://x.dev' };
+    let online = true, calls = 0;
+    const fetch = async () => { calls++; if (!online) throw new Error('offline'); return new Response('FRESH', { status: 200, ok: true, type: 'basic' }); };
+    const api = new Function('self', 'caches', 'location', 'fetch', swSrc + ';return {get CACHE(){return CACHE}}')(self, caches, location, fetch);
+    CACHE = api.CACHE;
+    const nav = async () => { const w = []; listeners.fetch({ request: { method: 'GET', url: 'https://x.dev/', mode: 'navigate' }, respondWith: p => w.push(p) }); return w[0]; };
+    await listeners.install({ waitUntil: p => p });
+    const r1 = await nav();
+    ok('SW điều hướng: có mạng thì lấy bản mới', calls === 1 && (await r1.text()) === 'FRESH', 'calls=' + calls);
+    await new Promise(r => setTimeout(r, 10));
+    const c = await caches.match('./');
+    ok('SW điều hướng: ghi bản mới vào cache', c && (await c.text()) === 'FRESH');
+    online = false;
+    const off = await nav();
+    ok('SW điều hướng: mất mạng vẫn mở được từ cache', off && (await off.text()) === 'FRESH');
+    let hit = false;
+    listeners.fetch({ request: { method: 'GET', url: 'https://x.dev/__version', mode: 'cors' }, respondWith: () => { hit = true; } });
+    ok('SW không can thiệp /__version', hit === false);
+    hit = false;
+    listeners.fetch({ request: { method: 'POST', url: 'https://x.dev/', mode: 'cors' }, respondWith: () => { hit = true; } });
+    ok('SW bỏ qua request không phải GET', hit === false);
   }
 
   const pass = results.filter(r => r.pass).length;

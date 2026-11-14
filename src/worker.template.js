@@ -55,11 +55,15 @@ export default {
           headers: jsonHeaders({ Allow: 'GET, HEAD' }),
         });
       }
-      /* If-None-Match có thể chứa nhiều tag và/hoặc W/ — so khớp đúng cách
-         thay vì so nguyên chuỗi, nếu không 304 sẽ không bao giờ xảy ra với
-         trình duyệt thật (chúng gửi kèm tiền tố W/ và đôi khi cả danh sách). */
+      /* ETag yếu: W/"abc", "abc", W/abc, abc đều là cùng một tag. Chuẩn hoá
+         trước khi so — trước đây bỏ qua dạng W/abc nên vẫn trả 200 và tải
+         lại toàn bộ JSON dù nội dung không đổi. */
+      const norm = t => t.trim().replace(/^W\//, '').replace(/^"|"$/g, '');
       const inm = request.headers.get('If-None-Match') || '';
-      const hit = inm.split(',').map(s => s.trim()).some(t => t === ETAG || t === BUILD || t === '"' + BUILD + '"');
+      const hit = inm.split(',').some(t => {
+        const n = norm(t);
+        return n === BUILD || n === '*';
+      });
       if (hit) return new Response(null, { status: 304, headers: jsonHeaders() });
 
       const body = request.method === 'HEAD' ? null : payload();

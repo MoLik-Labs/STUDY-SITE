@@ -38,7 +38,11 @@ S.el_lamp = {
       { h: 'Bước 5 · Kiểm tra', f: 'P_nguồn = P_đ + P_b + P_r', c: `${f2(E * Id)} W = ${f2(Ud * Id)} + ${f2(Pb)} + ${f2(Id * Id * r)} — khớp.` }
     ];
     if (Ub <= 0) steps.push({ h: 'Lưu ý', f: 'U_b ≤ 0', c: 'Nguồn không đủ áp cho đèn sáng bình thường — phải tăng E hoặc giảm r/đổi đèn.' });
-    return { out, steps, draw: { type: 'circuit', topology: 'ser' } };
+    /* Hình vẽ: đèn (R_đ) nối tiếp biến trở (R_b), nguồn E có điện trở trong r.
+       Truyền đúng tên trường mà svgCircuit đọc (U/R1/R2/r) — trước đây chỉ
+       truyền topology nên hình in ra "U = undefined V". */
+    return { out, steps, draw: { type: 'circuit', topology: 'ser',
+      U: E, r: r, R1: +Rd.toFixed(2), R2: +Rb.toFixed(2) } };
   }
 };
 

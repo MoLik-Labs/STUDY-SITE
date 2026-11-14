@@ -11,7 +11,7 @@ import hashlib, io, os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
-VERSION = '11.8'          # một nguồn duy nhất; sinh ra meta, APP_VERSION, footer, sw.js
+VERSION = '11.9'          # một nguồn duy nhất; sinh ra meta, APP_VERSION, footer, sw.js
 
 def arg(flag, default):
     """--flag giá-trị, hoặc chỉ --flag (dùng giá trị mặc định)."""

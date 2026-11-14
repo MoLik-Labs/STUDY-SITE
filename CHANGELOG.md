@@ -3,6 +3,48 @@
 Định dạng theo [Keep a Changelog](https://keepachangelog.com/vi/1.1.0/), phiên bản theo [SemVer](https://semver.org/lang/vi/).
 Mọi thay đổi lớn đều có kiểm thử: `npm test` (check tĩnh + CSP + Worker + mô phỏng Workers + 1848 bước jsdom).
 
+## [11.9.0] — 2026-11-14
+
+Vòng "MODE DEEPER": rà soát toàn bộ codebase, sửa mọi lỗi tìm được và tối ưu
+hiệu suất. Không thêm tính năng mới — chỉ sửa lỗi, làm nhanh và làm chắc.
+
+### Lỗi đã sửa
+
+- **Bảng mạch rò rỉ listener cấp document** (`src/board.js`, `src/app.js`):
+  `cirBind` gắn phím tắt lên `document` và ghi đè `document.onkeydown` nhưng
+  không bao giờ gỡ. Rời khỏi trang bảng mạch, phím Delete/Escape vẫn bị bắt
+  trên mọi trang khác và lượt vẽ cũ nằm lại trong bộ nhớ. Giờ `bdDocOff()`
+  gỡ cả hai khi đổi route; kiểm chứng: 0 listener còn sống, `document.onkeydown === null`.
+- **Trang Studio vỡ khi ô chọn lớp nhận giá trị ngoài danh sách** (`src/school.js`):
+  `$('#stG').onchange` đọc `list[0].id` không kiểm tra; giá trị lạ (`''`, `'abc'`,
+  `'-1'`, `'999'`) gây `TypeError: Cannot read properties of undefined (reading 'id')`.
+  Giờ kẹp về lớp trước đó và hiện toast.
+- **Sơ đồ mạch in `U = undefined V`** (`src/solver.js`, `src/solver2.js`):
+  `svgCircuit` đọc `v.U`/`v.R1`/`v.R2` nhưng `S.el_lamp` trả `draw` không có
+  nhãn. Giờ solver truyền `{U, r, R1, R2}`, renderer hợp nhất `vals` với `d`,
+  và `svgCircuit` không in nhãn khi giá trị không phải số hữu hạn (không còn
+  `undefined Ω`). Kiểm chứng: cả 28 máy giải sạch, nhãn đúng `U = 12 V`, `r = 1 Ω`, `R₁ 12 Ω`, `R₂ 11 Ω`.
+- **Service worker kẹt bản cũ** (`src/sw.template.js`): điều hướng trả cache
+  TRƯỚC nên người dùng có thể dùng bản cũ nhiều ngày. Giờ ưu tiên mạng,
+  cache chỉ là lưới an toàn khi mất mạng; `/__version` không bao giờ bị can thiệp.
+- **Worker bỏ qua ETag dạng `W/abc` và wildcard `*`** (`src/worker.template.js`):
+  chuẩn hoá tag trước khi so, nên 304 xảy ra đúng cách với trình duyệt thật.
+
+### Hiệu suất
+
+- `topSync`/`renderTop`: cache tham chiếu phần tử + mảng `data-nav` thay vì
+  `$('#tbPhysN')` + `$$('#tbMenu [data-nav]')` mỗi lần render.
+  **2,31 ms → 0,049 ms (47×)**, `renderTop` 3,71 → 1,45 ms.
+- `railSync` cache danh sách link đang bật: ~3,8 → ~2,7 ms/lần.
+- Đo A/B toàn bộ 16 route (5 vòng × 3 lần): **7992 ms → 7255 ms, nhanh hơn 9,2% (1,10×)**.
+
+### Kiểm thử
+
+- Thêm kiểm thử hồi quy cho cả 4 nhóm sửa trên vào `tests/resilience.js` và
+  `tests/worker.js` (chiến lược điều hướng của SW, ETag wildcard).
+- Tổng: **28/28 · 22/22 · 59/59 · 54/54 · 41/41 · 61/61 · 190/190 · 1432/1432**,
+  `tools/check.js` → `mã chết: 0`.
+
 ## [11.8.0] — 2026-11-14
 
 Bản này không thêm tính năng. Nó sửa **những chỗ dữ liệu của người dùng có thể

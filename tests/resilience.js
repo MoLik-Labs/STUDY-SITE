@@ -151,6 +151,80 @@ function ok(name, cond, detail) {
   ok('nhập tệp hỏng không sinh ngoại lệ', importErrs.length === 0, importErrs[0]);
   dom2.window.close();
 
+  /* =========================================================
+     Điều khiển sai giá trị (không phải dữ liệu hỏng)
+     ========================================================= */
+  const vc3 = new VirtualConsole();
+  const ctlErrs = [];
+  vc3.on('jsdomError', e => {
+    const m = String((e.detail && e.detail.message) || e.message || '');
+    if (/Not implemented|getContext/.test(m)) return;
+    ctlErrs.push(m);
+  });
+  const dom3 = new JSDOM(html, {
+    runScripts: 'dangerously', url: 'http://localhost/x.html',
+    pretendToBeVisual: true, virtualConsole: vc3,
+  });
+  const w3 = dom3.window;
+  w3.scrollTo = () => {};
+  w3.HTMLElement.prototype.scrollIntoView = function () {};
+  await wait(400);
+
+  /* Select nhận giá trị không có trong danh sách (khôi phục form, trình duyệt
+     dịch trang, tiện ích tự điền) từng làm trang soạn bài ném lỗi ngay giữa
+     lúc gõ, vì subjectsFor() trả mảng rỗng rồi code đọc list[0].id. */
+  w3.location.hash = '#/studio';
+  await wait(250);
+  const before = ctlErrs.length;
+  w3.eval(`(function(){
+    var g=document.querySelector('#stG');
+    ['', 'abc', '-1', '999'].forEach(function(v){
+      g.value=v; g.dispatchEvent(new Event('change',{bubbles:true}));
+    });
+  })()`);
+  ok('lớp không hợp lệ không làm chết trang soạn bài', ctlErrs.length === before,
+    ctlErrs[ctlErrs.length - 1]);
+  ok('lớp không hợp lệ được kẹp về giá trị cũ',
+    w3.eval(`(function(){var g=document.querySelector('#stG');
+      return ['1','12','9'].indexOf(g.value)>=0;})()`) === true);
+
+  /* Hình vẽ của máy giải từng in "U = undefined V" vì dạng bài truyền tên
+     trường riêng (E/Ud) mà hình vẽ chỉ đọc U/R1. */
+  /* thẻ chỉ có trong DOM khi đúng nhóm đang mở, nên đi qua từng nhóm */
+  let drawn = 0;
+  for (const cat of ['el', 'quang', 'co', 'nhiet', 'tu']) {
+    w3.eval('calcState().cat=' + JSON.stringify(cat) + ';');
+    w3.location.hash = '#/x'; await wait(25);
+    w3.location.hash = '#/calc'; await wait(170);
+    const ids = JSON.parse(w3.eval(
+      `JSON.stringify(Array.from(document.querySelectorAll('#main .tile[data-id]')).map(function(e){return e.dataset.id}))`));
+    for (const id of ids) {
+      w3.eval('calcState().id=' + JSON.stringify(id) + ';');
+      w3.location.hash = '#/x'; await wait(20);
+      w3.location.hash = '#/calc'; await wait(110);
+      const d = w3.document.querySelector('#calcDraw');
+      const o = w3.document.querySelector('#calcOut');
+      const txt = (d ? d.textContent : '') + (o ? o.textContent : '');
+      drawn++;
+      ok('máy giải ' + id + ' không in undefined/NaN/Infinity',
+        !/undefined|NaN|Infinity/.test(txt), (txt.match(/undefined|NaN|Infinity/) || [''])[0]);
+    }
+  }
+  ok('đã kiểm tra toàn bộ máy giải', drawn >= 20, drawn + ' dạng');
+
+  /* Rời bảng mạch phải gỡ listener cấp document — nếu không nó bắt phím
+     Delete/Escape trên mọi trang khác và giữ cả lượt vẽ cũ trong bộ nhớ. */
+  await wait(50);
+  const live0 = w3.eval('document.onkeydown');
+  w3.location.hash = '#/build'; await wait(250);
+  w3.location.hash = '#/'; await wait(250);
+  const live1 = w3.eval('document.onkeydown');
+  ok('rời bảng mạch có gỡ phím tắt', live0 === null && live1 === null,
+    'trước=' + (live0 === null) + ' sau=' + (live1 === null));
+
+  ok('điều khiển sai giá trị không sinh ngoại lệ nào', ctlErrs.length === 0, ctlErrs[0]);
+  dom3.window.close();
+
   console.log(`\n${checks - fails}/${checks} bước đạt  ${fails ? '✗' : '✓'}`);
   process.exit(fails ? 1 : 0);
 })();

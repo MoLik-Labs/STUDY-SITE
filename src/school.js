@@ -854,8 +854,18 @@ function renderStudio(id) {
   ['#stT', '#stAim', '#stTag'].forEach(sel => { const el = $(sel); if (el) el.oninput = () => { syncFromForm(); paintPreview(); }; });
 
   $('#stG').onchange = e => {
-    g = +e.target.value;
-    const list = subjectsFor(g);
+    const val = +e.target.value;
+    /* Trình duyệt có thể trả về một giá trị không nằm trong danh sách (khôi
+       phục form, dịch trang, tiện ích tự điền). Khi đó subjectsFor() trả mảng
+       rỗng và `list[0].id` ném lỗi — trang soạn bài chết ngay giữa lúc gõ.
+       Kẹp về lớp hợp lệ gần nhất thay vì tin vào giá trị của thẻ select. */
+    const list = subjectsFor(val);
+    if (!list.length) {
+      e.target.value = String(g);
+      toast('Lớp này chưa có môn nào — giữ nguyên lớp đang chọn');
+      return;
+    }
+    g = val;
     const cur = $('#stS').value;
     $('#stS').innerHTML = list.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
     if (list.some(s => s.id === cur)) $('#stS').value = cur; else sj = list[0].id;

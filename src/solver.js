@@ -48,7 +48,11 @@ function svgCircuit(topology, v, r) {
   const battery = (x, y) => {
     P.push(`<rect x="${x - 14}" y="${y - 17}" width="28" height="34" fill="var(--paper)"/>`);
     P.push(`<path d="M${x - 10} ${y - 13}v26M${x + 10} ${y - 8}v16" stroke="var(--ink)" stroke-width="1.8"/>`);
-    P.push(`<text x="${x + 20}" y="${y + 4}" font-family="var(--mono)" font-size="10" fill="var(--ink-2)">U = ${v.U} V</text>`);
+    const uShown = (typeof v.U === 'number' && isFinite(v.U)) ? v.U
+      : ((typeof v.E === 'number' && isFinite(v.E)) ? v.E : null);
+    if (uShown !== null) {
+      P.push(`<text x="${x + 20}" y="${y + 4}" font-family="var(--mono)" font-size="10" fill="var(--ink-2)">${typeof v.E === 'number' && v.U === undefined ? 'E' : 'U'} = ${uShown} V</text>`);
+    }
     if (+v.r > 0) P.push(`<text x="${x}" y="${y - 22}" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--ink-3)">r = ${v.r} Ω</text>`);
   };
   const flow = (x, y) => P.push(`<path d="M${x} ${y}l-8 -4v8z" fill="var(--accent)"/>`);
@@ -56,6 +60,11 @@ function svgCircuit(topology, v, r) {
   const W = 100, H = 26;
 
   if (topology === 'ser') {
+    /* Một số dạng bài (ví dụ "đèn sáng bình thường") dùng tên trường riêng
+       (E, Ud, Pd) chứ không phải R1/R2/R3. Trước đây hình vẽ in thẳng
+       `U = ${v.U} V` nên hiện ra "U = undefined V" — đúng loại lỗi làm người
+       học mất tin vào lời giải. Chỉ vẽ nhãn khi thật sự có số. */
+    const num = x => (typeof x === 'number' && isFinite(x)) ? x : null;
     const n = +v.R3 > 0 ? 3 : 2, lbl = ['R₁', 'R₂', 'R₃'], val = [v.R1, v.R2, v.R3];
     wire(left, top, right, top); wire(left, bot, right, bot);
     wire(left, top, left, bot); wire(right, top, right, bot);
@@ -63,7 +72,8 @@ function svgCircuit(topology, v, r) {
     const gap = (right - left - n * W) / (n + 1);
     for (let i = 0; i < n; i++) {
       const x = left + gap + i * (W + gap);
-      res(x, top - H / 2, W, H, lbl[i], val[i] + ' Ω');
+      const rv = num(val[i]);
+      res(x, top - H / 2, W, H, lbl[i], rv === null ? '' : rv + ' Ω');
     }
     flow(320, bot - 5);
     P.push(`<text x="300" y="${bot - 9}" font-family="var(--mono)" font-size="9" fill="var(--accent)">I</text>`);
@@ -734,7 +744,9 @@ function renderCalc() {
   };
 
   const drawFor = d => {
-    if (d.type === 'circuit') return svgCircuit(d.topology, vals, { I: 0 });
+    /* hình vẽ có thể mang sẵn số liệu riêng (d.U, d.R1, …) do dạng bài tự
+       tính; nếu không thì dùng số người dùng vừa nhập. */
+    if (d.type === 'circuit') return svgCircuit(d.topology, Object.assign({}, vals, d), { I: 0 });
     if (d.type === 'lens') return svgLens(d.f, d.d, d.h, d.kind);
     if (d.type === 'meet') return svgMeet(d.x1, d.x2, d.v1, d.v2, d.same, d.t, d.pos);
     if (d.type === 'arch') return svgArch(d.sub, d.state, d.P, d.FA);

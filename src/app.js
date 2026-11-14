@@ -163,6 +163,7 @@ const qaOfTopic=t=>QA.filter(x=>x.t===t);
    Không dựng lại nghĩa là cũng không gắn lại listener — hết một nguồn rò rỉ. */
 let topSig = '';
 function topBuild(){
+  tbEls=null;
   const dc=doneCount();
   $('#top').innerHTML=`
     <div class="topbar-in">
@@ -226,18 +227,32 @@ function topSignature(){
           (typeof schoolState==='function'?(schoolState().grade+'|'+schoolState().subj):'')].join('~');
 }
 /* Cập nhật tại chỗ: con số tiến độ + trạng thái "đang ở đây". */
+/* Danh sách liên kết trong menu Khám phá không đổi giữa các lần điều hướng
+   (chỉ dựng lại khi topBuild chạy), nên giữ luôn mảng phần tử thay vì gọi
+   querySelectorAll mỗi lần — đo được 6,9 ms/lần, chiếm gần hết chi phí của
+   renderTop trong khi phần chỉ cần đổi là 2 nhãn chữ. */
+/* Hai nhãn chữ và một nút là tất cả những gì thanh trên cần cập nhật khi
+   chuyển trang. Tra DOM bằng $() mỗi lần tốn ~0,8 ms cho mỗi lần gọi trong
+   khi dựng lại cả thanh chỉ tốn ~3,7 ms — nên giữ sẵn phần tử. */
+let tbEls = null;
 function topSync(){
   const dc=doneCount();
   /* So trước khi ghi: gán textContent kể cả khi chuỗi không đổi vẫn làm
      trình duyệt đánh dấu lại layout của cả thanh. */
   const setText=(el,txt)=>{ if(el && el.textContent!==txt) el.textContent=txt; };
-  setText($('#tbPhysN'), dc+'/'+TOTAL_SESS);
-  setText($('#tbCount'), String(dc).padStart(2,'0')+' / '+TOTAL_SESS);
-  const h=location.hash||'#/';
-  $$('#tbMenu [data-nav]').forEach(a=>{
-    a.classList.toggle('on', (a.dataset.nav||'')===h.split('?')[0]);
-  });
-  const cur=$('#tbPhys'); if(cur) cur.classList.toggle('on', h.startsWith('#/physics'));
+  if(!tbEls){
+    const links=[...document.querySelectorAll('#tbMenu [data-nav]')];
+    tbEls={ physN:$('#tbPhysN'), count:$('#tbCount'), phys:$('#tbPhys'),
+      links:links, nav:links.map(a=>a.dataset.nav||'') };
+  }
+  setText(tbEls.physN, dc+'/'+TOTAL_SESS);
+  setText(tbEls.count, String(dc).padStart(2,'0')+' / '+TOTAL_SESS);
+  const h=(location.hash||'#/').split('?')[0];
+  for(let i=0;i<tbEls.links.length;i++){
+    const a=tbEls.links[i], want=tbEls.nav[i]===h;
+    if(a.classList.contains('on')!==want) a.classList.toggle('on', want);
+  }
+  if(tbEls.phys) tbEls.phys.classList.toggle('on', h.startsWith('#/physics'));
 }
 function renderTop(){
   if(!$('#tbMenu') || !document.querySelector('#tbCount') || topSig !== topSignature()) return topBuild();
@@ -318,15 +333,23 @@ function renderRail(){
      && railSig===railSignature()) return railSync();
   railBuild();
 }
+/* Danh sách [data-rail-on] chỉ đổi khi railBuild chạy — giữ lại thay vì
+   truy vấn lại DOM ở mỗi lần đổi trang (cùng lý do như topSync). */
+let railOnLinks = null;
 function railSync(){
   /* CHỈ cập nhật những gì hàm dựng ngăn kéo đánh dấu được (data-rail-on).
      Bản đầu quét mọi thẻ <a> và tự so khớp — nó ghi đè luôn lớp 'on' mà
      template đặt cho ca đang học, nên ngăn kéo mất dấu trang hiện tại. */
-  const h=location.hash||'#/';
-  $$('#rail [data-rail-on]').forEach(a=>{
+  const h=(location.hash||'#/').split('?')[0];
+  if(!railOnLinks || !railOnLinks.length || !document.contains(railOnLinks[0])){
+    railOnLinks=[...document.querySelectorAll('#rail [data-rail-on]')];
+  }
+  for(let i=0;i<railOnLinks.length;i++){
+    const a=railOnLinks[i];
     const base=(a.getAttribute('href')||'').split('?')[0];
-    a.classList.toggle('on', !!base && (base===h.split('?')[0] || (base!=='#/' && h.startsWith(base+'/'))));
-  });
+    const want=!!base && (base===h || (base!=='#/' && h.startsWith(base+'/')));
+    if(a.classList.contains('on')!==want) a.classList.toggle('on', want);
+  }
 }
 /* ---------- ngăn kéo ray: nhóm công cụ ----------
    Thanh ray từng có 48 lối ra phẳng, nhiều lối trùng nhau (Máy giải, Bảng mạch,
@@ -423,6 +446,7 @@ function railBuild(){
           </div>`).join('')}
       </div>
     </div>`;
+  railOnLinks=null;
   $$('#rail a').forEach(a=>a.addEventListener('click',closeRail));
   const more=$('#railMore');
   if(more) more.onclick=()=>{
@@ -1582,6 +1606,11 @@ function render(){
   }
   /* dọn thanh tiến độ đọc của trang bài học cũ */
   if (typeof readProgOff === 'function') { try { readProgOff(); } catch (e) {} }
+  /* rời #/build: gỡ listener cấp document của bảng mạch (nếu không nó sống
+     mãi và bắt phím Delete/Escape trên mọi trang khác) */
+  if (typeof bdDocOff !== 'undefined' && bdDocOff && !/^#\/build/.test(location.hash || '')) {
+    try { bdDocOff(); } catch (e) {}
+  }
   if (typeof syCleanup === 'function') { try { syCleanup(); } catch (e) {} }
   if (typeof mountDocks === 'function') mountDocks();
   const h=location.hash||'#/';

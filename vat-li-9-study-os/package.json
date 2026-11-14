@@ -1,0 +1,23 @@
+{
+  "name": "vat-li-9-study-os",
+  "version": "10.0.0",
+  "private": true,
+  "description": "Web tự học mọi thứ: Vật lí 9 & luyện thi chuyên Lý, trường học lớp 1-12, thời khoá biểu, kế hoạch, lịch, phòng thí nghiệm — tất cả trong một tệp HTML chạy offline.",
+  "keywords": ["vat-ly", "vat-li-9", "study", "timetable", "calendar", "flashcards", "offline", "single-file", "vietnamese"],
+  "homepage": "https://nggkhaiz.github.io/vat-li-9-study-os/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ngg.Khaiz/vat-li-9-study-os.git"
+  },
+  "author": "nggkhaiz <@nggkhaiz>",
+  "license": "MIT",
+  "scripts": {
+    "build": "python3 src/build.py",
+    "check": "node tools/check.js",
+    "serve": "python3 -m http.server 8124",
+    "test": "npm run build && npm run check"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mười ba ngày làm chủ Vật lí 9 — HSG KHTN 1 &amp; Chuyên Lý</title>
+<meta name="description" content="Lộ trình 13 ngày, 52 ca cho HSG KHTN 1 lớp 9 và thi Chuyên Lý: năng lượng cơ học, quang hình, điện học, điện từ, nhiệt học, ánh sáng và màu sắc, thực hành và luyện đề.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f4f1ea'/%3E%3Ctext x='7' y='24' font-family='Georgia,serif' font-size='21' fill='%2317150f'%3E%C2%BD%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f4f1ea; --paper-2:#eeeadf; --card:#fbfaf6;
+  --ink:#17150f; --ink-2:#4f4a41; --ink-3:#8b8478;
+  --rule:#dbd5c6; --rule-2:#c2baa7;
+  --accent:#8b2e22; --accent-soft:#f2e6e2;
+  --green:#3f6b4e; --green-soft:#f1f4ec;
+  --serif:"Lora","Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --sans:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --max:1180px;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;font-feature-settings:"kern" 1,"liga" 1}
+p{margin:0;text-wrap:pretty}
+h1,h2,h3,h4{margin:0;text-wrap:balance}
+a{color:inherit}
+button{font:inherit;color:inherit}
+::selection{background:#e6c9c2;color:var(--ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 32px}
+@media(max-width:680px){.wrap{padding:0 18px}}
+
+.kicker{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);font-weight:500}
+.kicker b{color:var(--ink);font-weight:600}
+.fx{font-family:var(--mono);font-size:.94em;letter-spacing:-.01em}
+.fx sub,.fx sup{font-size:.7em;line-height:0}
+
+/* masthead */
+.masthead{border-top:3px solid var(--ink)}
+.masthead-in{display:flex;justify-content:space-between;align-items:center;gap:18px;padding-block:11px 10px;border-bottom:1px solid var(--rule)}
+.masthead-in .right{display:flex;gap:22px}
+@media(max-width:760px){.masthead-in .right{display:none}}
+@media(max-width:620px){.mh-x{display:none}}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.22fr) minmax(0,.88fr);gap:64px;padding-block:50px 44px}
+@media(max-width:980px){.hero{grid-template-columns:1fr;gap:36px;padding-block:36px 32px}}
+.hero h1{font-family:var(--serif);font-weight:600;font-size:clamp(38px,5.4vw,66px);line-height:1.03;letter-spacing:-.028em;margin:16px 0 0}
+.hero h1 em{font-style:italic;color:var(--accent)}
+.lede{font-size:15.5px;line-height:1.68;color:var(--ink-2);max-width:56ch;margin-top:22px}
+.lede b{color:var(--ink);font-weight:600}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--rule);margin-top:34px}
+.fact{padding:13px 16px 0 0;border-right:1px solid var(--rule)}
+.fact:last-child{border-right:0}
+.fact dt{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+.fact dd{margin:0;font-family:var(--serif);font-size:23px;line-height:1.1;font-variant-numeric:tabular-nums}
+@media(max-width:560px){.facts{grid-template-columns:repeat(2,1fr)}.fact:nth-child(2){border-right:0}.fact{padding-top:11px;padding-bottom:11px;border-bottom:1px solid var(--rule)}}
+@media(max-width:430px){.hero h1{font-size:34px}.lede{font-size:14.5px}.day-num{font-size:44px}.s-title{font-size:14px}}
+
+.index{border:1px solid var(--ink);background:var(--card);align-self:start}
+.index-head{display:flex;justify-content:space-between;align-items:baseline;padding:13px 18px 12px;border-bottom:1px solid var(--ink)}
+.index-head span:first-child{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:600}
+.index-head span:last-child{font-family:var(--mono);font-size:9.5px;color:var(--ink-3);letter-spacing:.1em}
+.index-row{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:10px;align-items:start;padding:12px 18px;border-bottom:1px solid var(--rule)}
+.index-num{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);padding-top:2px}
+.index-name{font-size:13.5px;font-weight:500;line-height:1.35}
+.index-name i{display:block;font-style:normal;font-size:11px;font-weight:400;color:var(--ink-3);margin-top:2px}
+.index-name.cut{color:var(--ink-3);text-decoration:line-through;text-decoration-thickness:1px;text-decoration-color:var(--rule-2)}
+.index-name.cut i{text-decoration:none}
+.tag{font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;padding:2px 5px;border:1px solid currentColor;white-space:nowrap;margin-top:1px}
+.tag-core{color:var(--accent)}.tag-cut{color:var(--ink-3)}
+.tag-out{color:#6b5b3e}
+.index-note{padding:13px 18px 14px;background:var(--paper-2);font-size:11.5px;line-height:1.55;color:var(--ink-2)}
+.index-note b{color:var(--ink);font-weight:600}
+
+/* subnav */
+.subnav{position:sticky;top:0;z-index:50;background:var(--paper);border-top:1px solid var(--ink);border-bottom:1px solid var(--rule)}
+.subnav-in{display:flex;align-items:center;gap:30px;min-height:56px}
+.tabs{display:flex;gap:24px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{appearance:none;background:none;border:0;border-bottom:2px solid transparent;padding:19px 0 17px;font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);cursor:pointer;white-space:nowrap;transition:color .15s}
+.tab:hover{color:var(--ink-2)}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.tools{margin-left:auto;display:flex;align-items:center;gap:18px}
+.prog{display:flex;align-items:center;gap:9px}
+.prog-num{font-family:var(--mono);font-size:11px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.meter{width:56px;height:3px;background:var(--rule);position:relative;display:block}
+.meter i{position:absolute;inset:0 auto 0 0;background:var(--accent);width:0;transition:width .3s}
+.meter.sm{width:44px}
+.pomo{display:flex;align-items:center;gap:9px;padding-left:18px;border-left:1px solid var(--rule)}
+.pomo-time{font-family:var(--mono);font-size:12.5px;font-variant-numeric:tabular-nums;min-width:44px}
+.pomo-run,.pomo-reset{appearance:none;background:none;border:1px solid var(--rule-2);padding:3px 7px;font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:.15s}
+.pomo-run:hover,.pomo-reset:hover{border-color:var(--ink);background:var(--card)}
+.pomo-run[data-on="1"]{border-color:var(--accent);color:var(--accent)}
+.preset{appearance:none;background:none;border:0;padding:3px 2px;font-family:var(--mono);font-size:9.5px;color:var(--ink-3);cursor:pointer;border-bottom:1px solid transparent}
+.preset[aria-pressed="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+.search{display:flex;align-items:center;gap:7px;border-bottom:1px solid var(--rule-2);width:186px;padding:3px 0}
+.search svg{width:12px;height:12px;stroke:var(--ink-3);fill:none;stroke-width:1.5;flex:none}
+.search input{border:0;background:none;outline:none;width:100%;font:inherit;font-size:12px;color:var(--ink)}
+.search input::placeholder{color:var(--ink-3)}
+@media(max-width:1180px){
+  .subnav-in{flex-wrap:wrap;gap:0;padding-top:2px}
+  .tabs{order:1;width:100%}
+  .tools{order:2;width:100%;border-top:1px solid var(--rule);padding:9px 0;justify-content:space-between;gap:10px 14px;flex-wrap:wrap}
+  .pomo{border-left:0;padding-left:0}
+  .search{width:150px}
+}
+@media(max-width:620px){
+  .prog{display:none}
+  .subnav-in{padding-top:0}
+  .tabs{gap:0 18px;flex-wrap:wrap;overflow:visible;border-bottom:1px solid var(--rule);width:100%}
+  .tab{font-size:9.5px;letter-spacing:.05em;padding:11px 0 9px;flex:none}
+  .tools{flex-wrap:wrap;gap:10px 12px}
+  .search{width:100%;order:3}
+  .search input{font-size:12.5px}
+  .pomo{gap:7px}
+  .preset[data-min="90"]{display:none}
+}
+
+main{padding:0 0 80px}
+.view[hidden]{display:none}
+.view{padding-top:40px}
+
+/* rhythm */
+.rhythm{border:1px solid var(--rule);background:var(--card);display:grid;grid-template-columns:repeat(4,1fr);margin-bottom:8px}
+.rhythm-cell{padding:15px 18px 14px;border-right:1px solid var(--rule)}
+.rhythm-cell:last-child{border-right:0}
+.rhythm-cell .t{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);display:block;margin-bottom:5px}
+.rhythm-cell .h{font-family:var(--serif);font-size:15px;line-height:1.25}
+.rhythm-cell .d{font-size:11px;color:var(--ink-3);margin-top:3px}
+@media(max-width:880px){.rhythm{grid-template-columns:repeat(2,1fr)}.rhythm-cell:nth-child(2){border-right:0}.rhythm-cell:nth-child(-n+2){border-bottom:1px solid var(--rule)}}
+@media(max-width:640px){
+  .rhythm-cell{padding:12px 14px 11px;border-bottom:1px solid var(--rule)}
+  .rhythm-cell:nth-child(2n){border-right:0}
+  .rhythm-cell:nth-last-child(-n+2){border-bottom:0}
+  .rhythm-cell .h{font-size:14px}.rhythm-cell .d{font-size:10.5px}
+}
+
+/* filters */
+.filters{display:flex;align-items:center;gap:20px;padding:18px 0 16px;border-bottom:1px solid var(--rule);flex-wrap:wrap}
+.filters-label{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.chip{appearance:none;background:none;border:0;padding:0 0 2px;font-size:12px;font-weight:500;color:var(--ink-3);cursor:pointer;border-bottom:1px solid transparent;transition:.15s}
+.chip:hover{color:var(--ink)}
+.chip[aria-pressed="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.filters .count{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--ink-3)}
+.switch{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-size:12px;color:var(--ink-2);user-select:none}
+.switch input{position:absolute;opacity:0;width:0;height:0}
+.switch .box{width:30px;height:16px;border:1px solid var(--rule-2);background:var(--card);position:relative;transition:.18s}
+.switch .box::after{content:"";position:absolute;top:2px;left:2px;width:10px;height:10px;background:var(--ink-3);transition:.18s}
+.switch input:checked + .box{border-color:var(--accent);background:var(--accent-soft)}
+.switch input:checked + .box::after{left:16px;background:var(--accent)}
+@media(max-width:620px){.filters{gap:14px}.filters .count{display:none}}
+
+/* phase band */
+.phase-band{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin:44px 0 0;padding:10px 0 9px;border-top:2px solid var(--ink);border-bottom:1px solid var(--rule)}
+.phase-band .pb-t{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:600}
+.phase-band .pb-s{font-size:11.5px;color:var(--ink-2)}
+.phase-band .pb-c{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.day:first-of-type{margin-top:0}
+.fsep{width:1px;height:14px;background:var(--rule-2);display:inline-block}
+@media(max-width:620px){.phase-band{margin-top:30px}.phase-band .pb-s{display:none}}
+
+/* day */
+.day{padding:44px 0 6px;border-top:1px solid var(--rule);margin-top:36px}
+.day:first-of-type{border-top:0;margin-top:8px}
+.day-head{display:grid;grid-template-columns:104px minmax(0,1fr) auto;gap:26px;align-items:start;margin-bottom:26px}
+@media(max-width:820px){.day-head{grid-template-columns:64px minmax(0,1fr);gap:16px}.day-side{grid-column:2;margin-top:10px}}
+.day-num-label{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);display:block}
+.day-num{font-family:var(--serif);font-size:56px;line-height:.92;letter-spacing:-.04em;display:block;margin-top:4px;font-variant-numeric:tabular-nums}
+.day-theme{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+.day-theme.off{color:var(--ink-3)}
+.day-title{font-family:var(--serif);font-size:clamp(21px,2.4vw,28px);font-weight:600;line-height:1.2;letter-spacing:-.015em}
+.day-desc{font-size:13px;color:var(--ink-2);max-width:66ch;margin-top:8px;line-height:1.6}
+.day-side{display:flex;align-items:center;gap:10px;padding-top:6px}
+.day-count{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.day.is-ext{background:linear-gradient(var(--paper-2),var(--paper-2)) padding-box}
+.day.is-ext .day-num{color:var(--ink-3)}
+
+/* session */
+.sessions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;padding-bottom:36px;align-items:start}
+@media(max-width:900px){.sessions{grid-template-columns:1fr}}
+.session{position:relative;background:var(--card);border:1px solid var(--rule);padding:19px 20px 16px;display:flex;flex-direction:column;transition:border-color .18s,background .18s}
+.session::before{content:"";position:absolute;left:-1px;top:-1px;bottom:-1px;width:2px;background:transparent;transition:background .18s}
+.session:hover::before{background:var(--accent)}
+.session:hover{border-color:var(--rule-2)}
+.session.is-done{background:var(--green-soft);border-color:#cfd8c8}
+.session.is-done::before{background:var(--green)}
+.s-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:11px}
+.s-ca{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.s-ca b{color:var(--ink-2);font-weight:600}
+.tick{width:19px;height:19px;flex:none;border:1px solid var(--rule-2);background:transparent;display:grid;place-items:center;cursor:pointer;padding:0;transition:.15s}
+.tick svg{width:10px;height:10px;fill:none;stroke:#fff;stroke-width:2.4;stroke-linecap:square;opacity:0;transition:.15s}
+.tick:hover{border-color:var(--ink)}
+.is-done .tick{background:var(--green);border-color:var(--green)}
+.is-done .tick svg{opacity:1}
+.s-title{font-size:15px;font-weight:600;line-height:1.42;letter-spacing:-.005em;margin-bottom:6px}
+.s-obj{font-size:12.5px;line-height:1.62;color:var(--ink-2);margin-bottom:14px}
+.s-f{border-left:2px solid var(--rule-2);padding:1px 0 1px 11px;margin-bottom:15px}
+.s-f b{display:block;font-family:var(--sans);font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin-bottom:3px}
+.s-f .fx{display:block;color:var(--ink-2);font-size:11.5px;line-height:1.62}
+.vids{list-style:none;margin:0;padding:2px 0 0;border-top:1px solid var(--rule)}
+.vid{display:grid;grid-template-columns:13px 30px minmax(0,1fr) auto;gap:9px;align-items:center;padding:8px 0;border-bottom:1px solid var(--rule)}
+.vid:last-child{border-bottom:0}
+.vseen{width:11px;height:11px;border:1px solid var(--rule-2);background:transparent;padding:0;display:grid;place-items:center;cursor:pointer;flex:none}
+.vseen svg{width:7px;height:7px;fill:none;stroke:#fff;stroke-width:2.2;opacity:0}
+.vseen:hover{border-color:var(--ink)}
+.vseen.on{background:var(--green);border-color:var(--green)}
+.vseen.on svg{opacity:1}
+.vid-src{font-family:var(--mono);font-size:8.5px;letter-spacing:.05em;color:var(--ink-3);text-transform:uppercase}
+.vid-src.vna{color:var(--accent);font-weight:600}
+.vid-t{font-size:12px;line-height:1.45;text-decoration:none;color:var(--ink);border-bottom:1px solid transparent;transition:.14s;align-self:center}
+.vid-t:hover{color:var(--accent);border-bottom-color:var(--accent)}
+.vid-d{font-family:var(--mono);font-size:9.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.s-none{font-size:11.5px;color:var(--ink-3);font-style:italic;padding:10px 0 2px;border-top:1px solid var(--rule);font-family:var(--serif)}
+
+/* topic map */
+.tmap{border-top:1px solid var(--ink);margin-top:6px}
+.tm-head,.tm-row{display:grid;grid-template-columns:34px minmax(0,1.05fr) 118px minmax(0,1.55fr) 46px;gap:16px;align-items:start}
+.tm-head{padding:9px 0;border-bottom:1px solid var(--rule);font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.tm-row{padding:14px 0;border-bottom:1px solid var(--rule)}
+.tm-n{font-family:var(--mono);font-size:9.5px;color:var(--ink-3);padding-top:3px}
+.tm-name{font-size:14px;font-weight:600;line-height:1.4}
+.tm-name i{display:block;font-style:normal;font-size:11px;font-weight:400;color:var(--ink-3);margin-top:2px}
+.tm-why{font-size:12px;line-height:1.6;color:var(--ink-2)}
+.tm-c{font-family:var(--mono);font-size:10px;color:var(--ink-3);text-align:right;padding-top:3px}
+.st{font-family:var(--mono);font-size:8.5px;letter-spacing:.09em;text-transform:uppercase;border:1px solid currentColor;padding:2px 5px;display:inline-block;white-space:nowrap}
+.st-core{color:var(--accent)}
+.st-cut{color:var(--ink-3)}
+.st-out{color:#6b5b3e}
+.st-tool{color:var(--green)}
+.filters .fsep{align-self:center}
+.tm-row.is-core .tm-name{color:var(--ink)}
+@media(max-width:820px){
+  .tm-head{display:none}
+  .tm-row{grid-template-columns:26px minmax(0,1fr);gap:10px 12px}
+  .tm-st{grid-column:2}
+  .tm-why{grid-column:2}
+  .tm-c{display:none}
+}
+
+/* library */
+.lib-intro{display:flex;justify-content:space-between;align-items:baseline;gap:24px;padding:0 0 16px;border-bottom:1px solid var(--ink);flex-wrap:wrap}
+.lib-intro h2{font-family:var(--serif);font-size:24px;font-weight:600;letter-spacing:-.015em}
+.lib-intro p{font-size:12px;color:var(--ink-3);max-width:62ch}
+.lib-group{margin-top:32px}
+.lib-h{display:flex;align-items:baseline;gap:12px;padding-bottom:8px;border-bottom:1px solid var(--rule-2);flex-wrap:wrap}
+.lib-h .n{font-family:var(--mono);font-size:10.5px;color:var(--accent)}
+.lib-h h3{font-family:var(--serif);font-size:19px;font-weight:600;letter-spacing:-.01em}
+.lib-h .c{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--ink-3)}
+.lib-row{display:grid;grid-template-columns:26px minmax(0,1fr) 44px 60px 16px;gap:14px;align-items:center;padding:10px 4px 10px 0;border-bottom:1px solid var(--rule);text-decoration:none;transition:background .12s}
+.lib-row:hover{background:#efeadd}
+.lib-row:hover .lib-t{color:var(--accent)}
+.lib-row:hover .lib-a{transform:translateX(2px);color:var(--accent)}
+.lib-i{font-family:var(--mono);font-size:9.5px;color:var(--ink-3)}
+.lib-t{font-size:13px;line-height:1.45}
+.lib-t em{font-style:normal;font-family:var(--mono);font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent);padding:0 3px;margin-right:7px;vertical-align:1px}
+.lib-src{font-family:var(--mono);font-size:9px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3)}
+.lib-src.vna{color:var(--accent);font-weight:600}
+.lib-d{font-family:var(--mono);font-size:10px;color:var(--ink-3);text-align:right;font-variant-numeric:tabular-nums}
+.lib-a{font-size:12px;color:var(--ink-3);transition:.15s}
+@media(max-width:720px){.lib-row{grid-template-columns:22px minmax(0,1fr) 40px 52px;gap:10px}.lib-a{display:none}}
+
+/* notes */
+.notes{display:grid;grid-template-columns:1fr 1fr;gap:44px 52px;margin-top:6px}
+@media(max-width:900px){.notes{grid-template-columns:1fr;gap:34px}}
+.note-h{display:flex;align-items:baseline;gap:10px;padding-bottom:8px;border-bottom:2px solid var(--ink);margin-bottom:2px}
+.note-h .n{font-family:var(--mono);font-size:10px;color:var(--accent)}
+.note-h h3{font-family:var(--serif);font-size:18px;font-weight:600}
+.note-h .g{margin-left:auto;font-family:var(--mono);font-size:9px;color:var(--ink-3);letter-spacing:.1em;text-transform:uppercase}
+.note-h.off{border-bottom-color:var(--rule-2)}
+.note-h.off h3{color:var(--ink-2)}
+.note-row{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:16px;padding:9px 0;border-bottom:1px solid var(--rule);align-items:baseline}
+.note-k{font-size:12px;color:var(--ink-2);line-height:1.45}
+.note-f{font-family:var(--mono);font-size:11.5px;color:var(--ink);line-height:1.55}
+.note-f sub,.note-f sup{font-size:.7em;line-height:0}
+.note-foot{font-size:11px;color:var(--ink-3);line-height:1.55;margin-top:11px;padding-left:11px;border-left:2px solid var(--accent-soft);font-style:italic;font-family:var(--serif)}
+
+/* papers */
+.papers-group{margin-top:34px}
+.papers-h{display:flex;align-items:baseline;gap:12px;padding-bottom:8px;border-bottom:1px solid var(--rule-2)}
+.papers-h h3{font-family:var(--serif);font-size:18px;font-weight:600}
+.papers-h .c{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--ink-3)}
+.papers{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
+@media(max-width:980px){.papers{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:620px){.papers{grid-template-columns:1fr}}
+.paper{border:1px solid var(--rule);background:var(--card);padding:14px 15px 12px;display:flex;flex-direction:column;min-height:112px}
+.paper.no-pdf{background:var(--paper-2)}
+.paper.no-pdf h4{font-size:12.5px}
+.paper-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.paper-top span:first-child{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.paper-top span:last-child{font-family:var(--mono);font-size:9px;color:var(--ink-3)}
+.paper h4{font-size:13px;font-weight:600;line-height:1.4;margin:7px 0 14px}
+.paper-links{margin-top:auto;display:flex;flex-wrap:wrap;gap:14px;padding-top:9px;border-top:1px solid var(--rule)}
+.paper-links a{font-size:11.5px;text-decoration:none;color:var(--ink-2);border-bottom:1px solid var(--rule-2);padding-bottom:1px;transition:.14s}
+.paper-links a:hover{color:var(--accent);border-bottom-color:var(--accent)}
+
+.empty{border:1px solid var(--rule);background:var(--card);padding:60px 30px;text-align:center;margin:30px 0}
+.empty h3{font-family:var(--serif);font-size:20px;font-weight:600;margin-bottom:6px}
+.empty p{font-size:13px;color:var(--ink-3)}
+
+footer{border-top:1px solid var(--rule);padding:26px 0 40px}
+.foot{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:flex-start}
+.foot p{font-size:11px;color:var(--ink-3);line-height:1.65;max-width:64ch}
+.foot .sig{font-family:var(--serif);font-size:13px;font-style:italic;color:var(--ink-2)}
+
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+@media print{
+  .subnav,.search,.pomo,.filters,.index-note,.foot .sig{display:none!important}
+  body{background:#fff;font-size:11px}
+  .day{page-break-inside:avoid}.session{break-inside:avoid}
+  .hero{padding:20px 0}
+}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap masthead-in">
+    <span class="kicker"><b>Vật lí 9</b><span class="mh-x"> · Bồi dưỡng HSG KHTN 1 &amp; thi Chuyên Lý</span></span>
+    <span class="right">
+      <span class="kicker">13 ngày · 4 giai đoạn</span>
+      <span class="kicker">52 ca · <b id="mast-count">0</b> bài giảng</span>
+      <span class="kicker">10 / 2026</span>
+    </span>
+  </div>
+</header>
+
+<section class="wrap hero">
+  <div>
+    <span class="kicker">Giới hạn chương trình · Ảnh 1 &amp; Ảnh 2 · và toàn bộ phần còn lại</span>
+    <h1>Mười ba ngày<br>làm chủ <em>Vật lí 9</em></h1>
+    <p class="lede">
+      <b>52 ca</b> trải hết chương trình: năng lượng cơ học, quang hình, <b>điện học</b>, điện từ, nhiệt học,
+      ánh sáng, thực hành và luyện đề. Bảy ngày đầu là lõi năng lượng — quang hình — điện học; sáu ngày sau
+      phủ nốt phần Ảnh 2 đã cắt, phần chỉ thi Chuyên mới hỏi, và ngày cuối để thực hành — quét lý thuyết — tổng duyệt. Bài giảng chọn từ
+      <b>thầy Vũ Ngọc Anh (VNA)</b> và các giáo viên chuyên luyện HSG 9.
+    </p>
+    <dl class="facts">
+      <div class="fact"><dt>Lộ trình</dt><dd>13 ngày</dd></div>
+      <div class="fact"><dt>Số ca</dt><dd>52 ca</dd></div>
+      <div class="fact"><dt>Bài giảng</dt><dd id="fact-videos">0</dd></div>
+      <div class="fact"><dt>Giờ học</dt><dd>≈ 180 h</dd></div>
+    </dl>
+  </div>
+
+  <aside class="index" aria-label="Mục lục chương trình">
+    <div class="index-head"><span>Giới hạn chương trình</span><span>KHTN 1</span></div>
+    <div class="index-row">
+      <span class="index-num">01</span>
+      <span class="index-name cut">Chuyển động cơ học<i>Lớp 8 · tốc độ, nhiều vật, tính tương đối</i></span>
+      <span class="tag tag-cut">cắt bỏ</span>
+    </div>
+    <div class="index-row">
+      <span class="index-num">02</span>
+      <span class="index-name cut">Áp suất &amp; lực đẩy Archimedes<i>Lớp 8 · rắn, lỏng, khí, bình thông nhau</i></span>
+      <span class="tag tag-cut">cắt bỏ</span>
+    </div>
+    <div class="index-row">
+      <span class="index-num">03</span>
+      <span class="index-name">Năng lượng cơ học<i>Lớp 9 · công, công suất, máy cơ, cơ năng</i></span>
+      <span class="tag tag-core">trọng tâm</span>
+    </div>
+    <div class="index-row">
+      <span class="index-num">04</span>
+      <span class="index-name">Quang hình<i>Lớp 9 · khúc xạ, thấu kính, hệ quang</i></span>
+      <span class="tag tag-core">trọng tâm</span>
+    </div>
+    <div class="index-row">
+      <span class="index-num">05</span>
+      <span class="index-name">Điện học<i>Lớp 9 · định luật Ôm, mạch điện, công suất</i></span>
+      <span class="tag tag-out">bổ sung</span>
+    </div>
+    <div class="index-row">
+      <span class="index-num">06+</span>
+      <span class="index-name">Điện từ · Nhiệt · Ánh sáng · Thực hành<i>Bảy chủ đề còn lại của chương trình</i></span>
+      <span class="tag tag-out">bổ sung</span>
+    </div>
+    <p class="index-note">
+      <b>Từ Ảnh 2:</b> “Cắt bỏ phần chuyển động và áp suất”. Hai phần đó vẫn có mặt ở <b>giai đoạn II</b>
+      (ngày 8–9) làm dự phòng. Toàn bộ 12 chủ đề — kể cả phần ngoài giới hạn — nằm ở tab
+      <b>Danh mục chủ đề</b> kèm lý do giữ hoặc bỏ.
+    </p>
+  </aside>
+</section>
+
+<nav class="subnav">
+  <div class="wrap subnav-in">
+    <div class="tabs" role="tablist" aria-label="Khu vực">
+      <button class="tab" role="tab" aria-selected="true"  data-tab="plan">Lộ trình</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="map">Danh mục chủ đề</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="library">Thư viện</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="notes">Sổ tay</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="papers">Đề &amp; lời giải</button>
+    </div>
+    <div class="tools">
+      <div class="prog" title="Tiến độ">
+        <span class="prog-num" id="prog-num">00 / 52</span>
+        <span class="meter"><i id="prog-bar"></i></span>
+      </div>
+      <div class="pomo" aria-label="Đồng hồ Pomodoro">
+        <span class="pomo-time" id="pomo-time">25:00</span>
+        <button class="preset" data-min="25" aria-pressed="true">25</button>
+        <button class="preset" data-min="50" aria-pressed="false">50</button>
+        <button class="preset" data-min="90" aria-pressed="false">90</button>
+        <button class="pomo-run" id="pomo-run" data-on="0">Chạy</button>
+        <button class="pomo-reset" id="pomo-reset" title="Đặt lại">↺</button>
+      </div>
+      <label class="search">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.6"/><path d="M10.5 10.5 14 14"/></svg>
+        <input id="q" type="search" placeholder="Tìm: thấu kính, mạch cầu…" aria-label="Tìm kiếm">
+      </label>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <!-- PLAN -->
+  <section class="wrap view" id="view-plan" role="tabpanel">
+    <div class="rhythm">
+      <div class="rhythm-cell"><span class="t">Ca sáng · 07:00–11:30</span><span class="h">Nạp bản chất</span><p class="d">Lý thuyết và phương pháp, não tỉnh nhất</p></div>
+      <div class="rhythm-cell"><span class="t">Ca chiều · 13:30–17:30</span><span class="h">Dạng bài nâng cao</span><p class="d">Tự luận HSG, viết lời giải đầy đủ</p></div>
+      <div class="rhythm-cell"><span class="t">Ca tối · 19:00–22:30</span><span class="h">Vận dụng cao</span><p class="d">Câu phân loại 9–10, hệ quang, biến thiên</p></div>
+      <div class="rhythm-cell"><span class="t">Ca đêm · 22:45–01:15</span><span class="h">Thực chiến</span><p class="d">Bấm giờ làm đề, chữa và chốt lỗi</p></div>
+    </div>
+
+    <div class="filters">
+      <span class="filters-label">Lọc</span>
+      <button class="chip" data-filter="all"  aria-pressed="true">Tất cả</button>
+      <button class="chip" data-filter="vna"  aria-pressed="false">Có bài VNA</button>
+      <button class="chip" data-filter="core" aria-pressed="false">Trọng tâm</button>
+      <button class="chip" data-filter="todo" aria-pressed="false">Chưa học</button>
+      <span class="fsep" aria-hidden="true"></span>
+      <button class="chip" data-phase="all" aria-pressed="true">Cả 4 giai đoạn</button>
+      <button class="chip" data-phase="I"   aria-pressed="false">I · Lõi 7 ngày</button>
+      <button class="chip" data-phase="II"  aria-pressed="false">II · Lớp 8</button>
+      <button class="chip" data-phase="III" aria-pressed="false">III · Điện từ – nhiệt</button>
+      <button class="chip" data-phase="IV"  aria-pressed="false">IV · Còn lại</button>
+      <span class="count" id="plan-count">52 ca</span>
+    </div>
+
+    <div id="plan-days"></div>
+  </section>
+
+  <!-- TOPIC MAP -->
+  <section class="wrap view" id="view-map" role="tabpanel" hidden>
+    <div class="lib-intro">
+      <h2>Danh mục chủ đề</h2>
+      <p>Toàn bộ những gì một đề HSG Vật lí 9 có thể hỏi — kể cả phần đã bị cắt khỏi giới hạn. Cột “vì sao” là lý do tôi giữ hoặc bỏ; bạn tự quyết định học hay không.</p>
+    </div>
+    <div class="tmap" id="tmap"></div>
+  </section>
+
+  <!-- LIBRARY -->
+  <section class="wrap view" id="view-library" role="tabpanel" hidden>
+    <div class="lib-intro">
+      <h2>Thư viện bài giảng</h2>
+      <p>Tuyển chọn theo cả 12 chủ đề của chương trình. Bài đánh dấu <em>CHỌN</em> là bài nên xem trước. Một số bài của thầy VNA nằm trong khoá Vật lí 10–12 nhưng nội dung trùng với HSG 9 (lực, năng lượng, áp suất, quang hình) — giữ lại vì kỹ thuật đồ thị và cách biện luận tốt hơn bài THCS. Rê chuột vào mã giáo viên để xem tên đầy đủ.</p>
+    </div>
+    <div class="filters">
+      <span class="filters-label">Lọc</span>
+      <button class="chip" data-scope="all"  aria-pressed="true">Tất cả</button>
+      <button class="chip" data-scope="core" aria-pressed="false">Trong giới hạn</button>
+      <button class="chip" data-scope="out"  aria-pressed="false">Ngoài giới hạn</button>
+      <button class="chip" data-scope="pick" aria-pressed="false">Chỉ bài chọn</button>
+      <button class="chip" data-scope="vna"  aria-pressed="false">Chỉ thầy VNA</button>
+      <span class="count" id="lib-count"></span>
+    </div>
+    <div id="lib-groups"></div>
+  </section>
+
+  <!-- NOTES -->
+  <section class="wrap view" id="view-notes" role="tabpanel" hidden>
+    <div class="lib-intro">
+      <h2>Sổ tay công thức</h2>
+      <p>Bốn chủ đề trong giới hạn, cộng hai khối ngoài giới hạn (điện học, nhiệt học) cho trường hợp đề ra rộng.</p>
+    </div>
+    <div class="notes" id="notes"></div>
+  </section>
+
+  <!-- PAPERS -->
+  <section class="wrap view" id="view-papers" role="tabpanel" hidden>
+    <div class="lib-intro">
+      <h2>Đề &amp; lời giải</h2>
+      <p>Bộ đề PDF kèm lời giải trên Mapstudy, và các đề HSG – Chuyên 2024–2026 đã được chữa công khai.</p>
+    </div>
+    <div id="papers"></div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <p>
+      Bài giảng thuộc về thầy Vũ Ngọc Anh (VNA), thầy Đỗ Văn Đoàn, thầy Nguyễn Hữu Lộc, thầy Vũ Tuấn Anh,
+      thầy Phạm Quốc Toản và các kênh ghi nguồn trong danh sách. Đề và lời giải: Mapstudy.
+      Trang này chỉ là lịch học, không lưu trữ nội dung bài giảng. Tiến độ lưu trong trình duyệt của bạn.
+    </p>
+    <span class="sig">Học đúng thứ tự, chữa đúng lỗi.</span>
+  </div>
+</footer>
+
+<script>
+/* =========================================================
+   TOPICS — toàn bộ phổ HSG Vật lí 9
+   scope: core (trong giới hạn) · cut (bị cắt, giữ dự phòng)
+          out (ngoài giới hạn)  · tool (đề & kỹ năng)
+========================================================= */
+const WHO={VNA:'Thầy Vũ Ngọc Anh',ĐVĐ:'Thầy Đỗ Văn Đoàn',NHL:'Thầy Nguyễn Hữu Lộc',
+  VTA:'Thầy Vũ Tuấn Anh',PQT:'Thầy Phạm Quốc Toản',TS:'Thạc sĩ Vật lí Thầy Sĩ',
+  HT:'Thầy Hoàng Tiến',K:'Kênh bài giảng khác'};
+
+const TOPICS=[
+ {id:1,n:'01',name:'Chuyển động cơ học',sub:'Lớp 8 · tốc độ, nhiều vật, tính tương đối',scope:'cut',
+  why:'Ảnh 1 có, Ảnh 2 cắt. Vẫn giữ 1 ngày vì đề Chuyên gần như năm nào cũng có câu hai vật gặp nhau hoặc cộng vận tốc.'},
+ {id:2,n:'02',name:'Áp suất &amp; lực đẩy Archimedes',sub:'Lớp 8 · rắn, lỏng, khí, bình thông nhau, hợp lực',scope:'cut',
+  why:'Cắt theo Ảnh 2. Nhưng “công của lực biến thiên” (Chủ đề 3) chỉ giải được khi dùng đúng F<sub>A</sub> thay đổi theo độ sâu — nên giữ 1 ngày.'},
+ {id:3,n:'03',name:'Năng lượng cơ học',sub:'Lớp 9 · công, công suất, máy cơ, cơ năng',scope:'core',
+  why:'Trọng tâm số 1. Chiếm phần lớn điểm tự luận, và là chỗ dễ mất điểm nhất nếu không chắc định lí biến thiên động năng.'},
+ {id:4,n:'04',name:'Quang hình',sub:'Lớp 9 · khúc xạ, phản xạ toàn phần, thấu kính, hệ quang',scope:'core',
+  why:'Trọng tâm số 2. Câu quang hình gần như chắc chắn có; sai hình là mất trọn điểm dù kết quả đúng.'},
+ {id:5,n:'05',name:'Điện học',sub:'Lớp 9 · định luật Ôm, mạch điện, công suất, Jun–Lenxơ',scope:'out',
+  why:'Chương lớn nhất của Vật lí 9 nhưng không có trong cả hai ảnh. Đã đưa vào lõi 7 ngày vì đề Chuyên gần như chắc chắn có câu điện.'},
+ {id:6,n:'06',name:'Điện từ học',sub:'Lớp 9 · nam châm, từ phổ, lực từ, cảm ứng, máy biến áp',scope:'out',
+  why:'Ở THCS chủ yếu là lý thuyết và thực hành, ít tính toán. Câu lý thuyết trong đề lại dễ ăn điểm nhất — đáng học 1 ngày.'},
+ {id:7,n:'07',name:'Nhiệt học',sub:'Lớp 8–9 · cân bằng nhiệt, chuyển thể, năng suất toả nhiệt',scope:'out',
+  why:'Đề HSG truyền thống luôn có một câu nhiệt. Không có trong hai ảnh, nhưng bỏ thì rất phí.'},
+ {id:8,n:'08',name:'Quang mở rộng',sub:'Gương phẳng, tán sắc, mắt, kính lúp',scope:'out',
+  why:'Ảnh 1 chỉ ghi “Quang hình” nên phần này nằm ở rìa. Tán sắc và mắt hay ra ở dạng lý thuyết; gương phẳng ra ở đề lớp 8–9.'},
+ {id:9,n:'09',name:'Ánh sáng &amp; màu sắc',sub:'Lớp 9 · trắng – màu – tác dụng của ánh sáng',scope:'out',
+  why:'Thuần lý thuyết, học nhanh, và gần như chắc chắn có 1 câu nhận biết trong đề học kì hoặc đề tỉnh.'},
+ {id:10,n:'10',name:'Bảo toàn &amp; chuyển hoá năng lượng',sub:'Định luật bảo toàn, hiệu suất, hao phí',scope:'out',
+  why:'Là câu nối giữa phần cơ, phần điện và phần nhiệt — hiểu chỗ này thì giải thích được mọi bài hiệu suất.'},
+ {id:11,n:'11',name:'Thực hành – thí nghiệm',sub:'Đo tiêu cự · đo khối lượng riêng · sai số',scope:'out',
+  why:'Thường 1–2 điểm trong đề Chuyên, và gần như không ai ôn. Tỉ lệ ăn điểm trên giờ học cao nhất trong danh sách.'},
+ {id:12,n:'12',name:'Đề thi &amp; lý thuyết trọng tâm',sub:'Đề tỉnh 2024–2026 · đề Chuyên · bảng tra',scope:'tool',
+  why:'Không phải chủ đề kiến thức mà là nguồn thực chiến và bảng tra lý thuyết. Dùng ở các ca đêm và hai ngày tổng duyệt.'}
+];
+
+/* =========================================================
+   LIBRARY — id YouTube thật, thời lượng thật
+   who: VNA · ĐVĐ (Đỗ Văn Đoàn) · NHL (Nguyễn Hữu Lộc)
+        VTA (Vũ Tuấn Anh) · PQT (Phạm Quốc Toản) · HSG · K (kênh khác)
+   pick: 1 = bài nên xem trước
+========================================================= */
+const LIB={
+ /* 01 chuyển động */
+ 'eAL9-wGurE0':{t:'Chuyển động thẳng và một số khái niệm',d:'24:19',who:'VNA',topic:1,pick:1},
+ '17-EMFgGmFA':{t:'Độ dịch chuyển và quãng đường đi được',d:'29:37',who:'VNA',topic:1},
+ 'vEPuSG8nNZk':{t:'Phương trình chuyển động thẳng đều',d:'8:04',who:'VNA',topic:1},
+ 'T76n4yPqhWI':{t:'Bài tập về khoảng cách hai vật chuyển động',d:'18:30',who:'VNA',topic:1,pick:1},
+ 'm87_DNtmxFs':{t:'Tổng ôn chuyển động cơ học — Phần 1',d:'2:13:05',who:'ĐVĐ',topic:1,pick:1},
+ 'xsJES1DqA6M':{t:'Chuyển động cơ học — Phần 2, nâng cao',d:'1:21:31',who:'ĐVĐ',topic:1},
+ 'asFWrsuT7yQ':{t:'Chuyên đề vận tốc trung bình',d:'36:11',who:'ĐVĐ',topic:1,pick:1},
+ 'Q9P1PR43g54':{t:'Tính tương đối của chuyển động — cộng vận tốc',d:'1:28:55',who:'VTA',topic:1,pick:1},
+ 'jwujepmMajA':{t:'Vận dụng cao: cộng vận tốc',d:'1:02:54',who:'VTA',topic:1},
+ 'n2V7q053paI':{t:'Dạng toán chuyển động thẳng đều',d:'1:27:45',who:'NHL',topic:1},
+ 'dkWeW7nESfg':{t:'Bài toán tính tương đối của chuyển động',d:'54:18',who:'NHL',topic:1},
+ 'PhEZEIC9rx0':{t:'Thuyền xuôi dòng — ngược dòng',d:'1:18:33',who:'NHL',topic:1},
+ 'bnDO3Y6hI4E':{t:'Chuyển động trên thang cuốn',d:'35:33',who:'NHL',topic:1},
+ '-SM8-b2XwZM':{t:'Bài tập chuyển động tròn',d:'37:07',who:'NHL',topic:1},
+
+ /* 02 áp suất – archimedes */
+ 'cBFLWKPH7y4':{t:'Vật lí 8 — Tổng hợp và phân tích lực',d:'1:17:51',who:'VNA',topic:2,pick:1},
+ 'x74-khjrigM':{t:'Quy tắc tổng hợp lực (2K10 XPS)',d:'24:29',who:'VNA',topic:2,pick:1},
+ 'HxhgnLEIacU':{t:'Quy tắc tổng hợp lực — bản đầy đủ',d:'1:02:30',who:'VNA',topic:2},
+ 'fZTBmVe2MWw':{t:'Điều kiện cân bằng của vật',d:'49:01',who:'VNA',topic:2},
+ 'uK_KYJ0-A-M':{t:'Vật lí 8 — Áp lực',d:'1:33:25',who:'VNA',topic:2},
+ 'Pg-0WK0_gco':{t:'Áp suất chất lỏng — lí thuyết',d:'24:22',who:'VNA',topic:2},
+ 'ysDMA00UDzI':{t:'Áp suất khí quyển — lí thuyết',d:'34:33',who:'VNA',topic:2},
+ 'Qf8eeFchqCM':{t:'Kĩ năng giải bài toán áp suất chất khí, chất lỏng',d:'1:08:30',who:'VNA',topic:2,pick:1},
+ 'W8LSChh7kbE':{t:'Áp suất — lí thuyết và dạng bài',d:'2:29:39',who:'VNA',topic:2},
+ 'w8pNPplgMAA':{t:'Áp suất — bình thông nhau',d:'1:16:39',who:'ĐVĐ',topic:2,pick:1},
+ 'plVNWJyHoHM':{t:'Áp suất, bình thông nhau, lực đẩy Archimedes',d:'1:23:19',who:'ĐVĐ',topic:2},
+ 'wyzvoW3Fis4':{t:'Chuyên đề lực đẩy Archimedes',d:'51:53',who:'ĐVĐ',topic:2,pick:1},
+ 'pkMNm7r5p8k':{t:'Bài tập bình thông nhau và lực đẩy Archimedes',d:'22:34',who:'ĐVĐ',topic:2},
+
+ /* 03 năng lượng cơ học */
+ 'U0Sp652BTfs':{t:'Công và công suất — chuyên đề KHTN 9',d:'2:00:08',who:'ĐVĐ',topic:3,pick:1},
+ '2clTBf-WnU0':{t:'Máy cơ đơn giản — tuyển tập bài tập hay',d:'1:17:37',who:'ĐVĐ',topic:3,pick:1},
+ 'Fj2u23EZjfw':{t:'Máy cơ đơn giản (ôn Chuyên)',d:'45:39',who:'ĐVĐ',topic:3},
+ 'xQIIOCm07r0':{t:'Đòn bẩy — chuyên đề máy cơ',d:'17:02',who:'ĐVĐ',topic:3,pick:1},
+ 'awF2wkzHGeg':{t:'Mặt phẳng nghiêng — bài tập hay',d:'18:15',who:'ĐVĐ',topic:3,pick:1},
+ 'uGzBxGegii4':{t:'Động năng, thế năng, cơ năng — nâng cao',d:'31:00',who:'ĐVĐ',topic:3,pick:1},
+ 'NW70ec09CAw':{t:'Các dạng bài cơ năng và bảo toàn cơ năng',d:'1:16:10',who:'K',topic:3,pick:1},
+ 'gx_8WVo9xi4':{t:'Bài tập động năng, thế năng, cơ năng',d:'1:30:31',who:'NHL',topic:3},
+ '04n0cIGh38w':{t:'Chuyên đề cơ năng — Phần 1',d:'1:18:45',who:'ĐVĐ',topic:3},
+ 'cXfEE4wZmtM':{t:'Công – công suất nâng cao — Phần 1',d:'45:06',who:'ĐVĐ',topic:3},
+ '8mCYDGSAiYQ':{t:'Công – công suất nâng cao — Phần 2',d:'53:19',who:'ĐVĐ',topic:3},
+ 'JVp9vwlgHCU':{t:'Đọc đồ thị lực đàn hồi (VL11)',d:'1:06:17',who:'VNA',topic:3,pick:1},
+ 'iNyh6mnOEeU':{t:'Đồ thị lực và năng lượng đặc biệt (VL11)',d:'1:13:26',who:'VNA',topic:3,pick:1},
+ 'q-D2JHA0UP8':{t:'KHTN 9 — Bài 5: Công – công suất',d:'43:20',who:'NHL',topic:3},
+ 'Eo4ffdXR9e4':{t:'Sửa bài tập công cơ học – công suất',d:'38:32',who:'NHL',topic:3},
+ 'nLfuWU172qE':{t:'Động năng – thế năng (lí thuyết)',d:'36:37',who:'NHL',topic:3},
+ 'DMDxeiQIyR8':{t:'Bài 1: Động năng – thế năng',d:'38:30',who:'NHL',topic:3},
+ 'vdSbi3iJiNI':{t:'Ôn tập và sửa bài tập cơ năng',d:'44:27',who:'NHL',topic:3},
+ 'Hz7mB5D_R5k':{t:'Chữa đề giữa HK2 — Đề số 1',d:'1:07:35',who:'VNA',topic:3,pick:1},
+ 'lI1MbzzMKfc':{t:'Chữa đề giữa HK2 — Đề số 2',d:'47:56',who:'VNA',topic:3,pick:1},
+ 'G_AVHzNjbS0':{t:'Chữa đề giữa HK2 — Đề số 3',d:'42:24',who:'VNA',topic:3},
+ 'vbn20m8cOX8':{t:'Chữa đề giữa HK2 — Đề số 4',d:'41:16',who:'VNA',topic:3},
+ '7nklCEJrsVQ':{t:'Chữa đề giữa HK2 — Đề số 5',d:'41:55',who:'VNA',topic:3},
+ 'hc9ef_G2ScI':{t:'Chữa đề cuối HK2 — Đề số 1',d:'1:14:39',who:'VNA',topic:3,pick:1},
+ 'UPNOIsrBdsI':{t:'Ôn tập học kì 2 — Số 1',d:'59:20',who:'VNA',topic:3},
+ 'xyrAFon9JAY':{t:'Ôn tập học kì 2 — Số 2',d:'44:34',who:'VNA',topic:3},
+ 'RTpO9HXYCcs':{t:'Ôn tập học kì 2 — Số 3',d:'1:03:12',who:'VNA',topic:3},
+ 'kBnODOadung':{t:'Chữa đề giữa HK2 — Đề số 2 (bản đầy đủ)',d:'1:08:19',who:'VNA',topic:3},
+
+ /* 04 quang hình */
+ '6VwyPVWh4Yo':{t:'Khúc xạ ánh sáng — Phần 1',d:'25:47',who:'VNA',topic:4,pick:1},
+ 'zzBWJwfcv-g':{t:'Khúc xạ ánh sáng — Phần 2',d:'29:37',who:'VNA',topic:4,pick:1},
+ 'RFUdeSFyJSY':{t:'Khúc xạ ánh sáng — Phần 3',d:'32:27',who:'VNA',topic:4},
+ 'fxVflcyHPUI':{t:'Khúc xạ ánh sáng nâng cao',d:'1:14:41',who:'VNA',topic:4,pick:1},
+ 'oPOb4zvJw3U':{t:'Phản xạ toàn phần',d:'1:06:08',who:'VNA',topic:4,pick:1},
+ 'XUNfCLJnjws':{t:'Thấu kính hội tụ',d:'1:15:03',who:'VNA',topic:4,pick:1},
+ 'dQV8P_485yA':{t:'Bài tập thấu kính hay và khó',d:'1:01:20',who:'VNA',topic:4,pick:1},
+ 'fJrlfj9gwQw':{t:'Vẽ hình thấu kính và phương pháp trục phụ — P1',d:'58:09',who:'HSG',topic:4,pick:1},
+ 'XhuV2S1PS0I':{t:'Xác định quang tâm, tiêu cự, dựng ảnh — P2',d:'1:09:02',who:'HSG',topic:4,pick:1},
+ 'XDjfEadigTM':{t:'Hệ vật — màn — P3',d:'1:09:17',who:'HSG',topic:4},
+ 'kBJHUQfVbC4':{t:'Dịch chuyển vật — ảnh — P4',d:'1:15:48',who:'HSG',topic:4,pick:1},
+ '_G23Jp8fjQ8':{t:'Vận tốc ảnh, dịch chuyển vuông góc — P6',d:'35:02',who:'HSG',topic:4},
+ 'XnbrWAL96Zs':{t:'Vệt sáng trên màn — P7',d:'58:42',who:'HSG',topic:4},
+ 'mHbk1C4AEM8':{t:'Hệ thấu kính',d:'41:04',who:'HSG',topic:4,pick:1},
+ 'I1JRsAY6hc4':{t:'Hệ thấu kính — gương phẳng',d:'9:30',who:'HSG',topic:4},
+ 'nL5I7DK83yk':{t:'Thấu kính — lí thuyết và dạng bài',d:'1:34:10',who:'NHL',topic:4},
+ '1TYKM2KW850':{t:'Bài toán dời thấu kính',d:'29:14',who:'NHL',topic:4},
+ 'kThjcDp5i6g':{t:'Bài toán dời vật — dời thấu kính',d:'1:04:04',who:'NHL',topic:4},
+ 'pTIyanwgdZU':{t:'Bài tập thấu kính',d:'1:09:30',who:'NHL',topic:4},
+ 'JcxyorAxB8g':{t:'Thấu kính hội tụ — thấu kính phân kì',d:'1:22:10',who:'NHL',topic:4},
+ 'Xb5lQu1hNdQ':{t:'Khúc xạ ánh sáng — phản xạ toàn phần',d:'50:58',who:'NHL',topic:4},
+ 'gdhQqleKfNg':{t:'Khúc xạ ánh sáng',d:'40:27',who:'NHL',topic:4},
+ 'sjZg8nF4cDY':{t:'Luyện tập khúc xạ ánh sáng',d:'45:14',who:'NHL',topic:4},
+ 'g65Ymv_gCd0':{t:'Các dạng bài tập lăng kính',d:'55:24',who:'HSG',topic:4},
+ '6I-ovhL5SXU':{t:'Lăng kính',d:'39:29',who:'PQT',topic:4,pick:1},
+
+ /* 05 điện học — ngoài giới hạn */
+ 'NsLcixpbKEo':{t:'Mở đầu về điện học',d:'31:33',who:'VNA',topic:5,pick:1},
+ 'dHtq0fzkQXc':{t:'Dòng điện và mạch điện',d:'30:25',who:'VNA',topic:5,pick:1},
+ '7geDlsQB2Jw':{t:'Bài 1: Mở đầu về điện học (2K9)',d:'31:33',who:'VNA',topic:5},
+ '6kDzYC_fm_A':{t:'Đoạn mạch nối tiếp và song song',d:'28:51',who:'VNA',topic:5,pick:1},
+ '9z7kFFamQco':{t:'Chữa bài tập mạch điện và định luật Ôm',d:'29:26',who:'VNA',topic:5,pick:1},
+ 'VVdKVOGClOs':{t:'Điện trở — định luật Ôm (nền tảng)',d:'1:16:52',who:'VNA',topic:5,pick:1},
+ 's02n9GzqPCM':{t:'Mạch chứa ampe kế và vôn kế',d:'1:13:31',who:'VNA',topic:5,pick:1},
+ 'Bnm0JTyrkYI':{t:'Năng lượng điện — công suất điện',d:'1:03:19',who:'VNA',topic:5,pick:1},
+ 'dvTn8Bpat1A':{t:'Bài toán về định luật Jun–Lenxơ',d:'1:15:24',who:'VNA',topic:5,pick:1},
+ '2s-uH9f4l40':{t:'Thay đổi R để công suất cực đại',d:'1:05:47',who:'VNA',topic:5,pick:1},
+ 'VS9oYvUlx3Q':{t:'Cực trị công suất',d:'1:22:08',who:'VNA',topic:5},
+ 'DusXiFPSUkw':{t:'Mạch chứa bóng đèn',d:'1:27:56',who:'VNA',topic:5,pick:1},
+ 'nWReve1gZ4I':{t:'An toàn sử dụng điện',d:'1:17:38',who:'VNA',topic:5},
+ 'v3grJyt4ykg':{t:'Mạch điện phức tạp — vẽ lại mạch điện',d:'1:29:28',who:'ĐVĐ',topic:5,pick:1},
+ '-kZtmw_NQZM':{t:'Vẽ lại mạch điện (bổ sung)',d:'42:03',who:'ĐVĐ',topic:5},
+ '2PHDja91ruo':{t:'Mạch cầu — mạch cầu cân bằng',d:'31:30',who:'ĐVĐ',topic:5,pick:1},
+ 'BUqt5loiOrI':{t:'Mạch cầu dây (biến trở)',d:'1:19:49',who:'ĐVĐ',topic:5,pick:1},
+ 'bJZghBj599k':{t:'Mạch có điện trở của vôn kế và ampe kế',d:'39:41',who:'ĐVĐ',topic:5,pick:1},
+ '5A2gCiLfI8o':{t:'Công suất cực đại của điện trở',d:'47:17',who:'ĐVĐ',topic:5},
+ 'wqQFhHTHDgY':{t:'Điện trở của dây dẫn — biến trở',d:'49:22',who:'ĐVĐ',topic:5},
+ 'c45lCPfOPrw':{t:'Điện năng – công suất – Jun–Lenxơ',d:'30:40',who:'ĐVĐ',topic:5,pick:1},
+ 'I2AMQGS7_AA':{t:'Chuyên đề điện học — video 1',d:'45:24',who:'ĐVĐ',topic:5,pick:1},
+ 'nNp8e0lZ4h8':{t:'Chuyên đề điện học nâng cao',d:'32:08',who:'ĐVĐ',topic:5},
+ 'TGfaQbtMWrc':{t:'Mạch điện đơn giản, số chỉ vôn kế — ampe kế',d:'48:25',who:'ĐVĐ',topic:5},
+ 'Mj28TfWZiBI':{t:'Công thức tính nhanh phần điện',d:'9:37',who:'ĐVĐ',topic:5},
+ 'i8xFfHjhYPw':{t:'Mạch điện chứa điện trở R — định luật Ôm',d:'38:36',who:'ĐVĐ',topic:5},
+ 'CMU1dO1a0Ng':{t:'Tính số chỉ ampe kế',d:'12:18',who:'ĐVĐ',topic:5},
+ 'wQNWHICgHZs':{t:'Tổng quát về chủ đề điện',d:'38:01',who:'NHL',topic:5},
+ 'Hp6PIvrBuBk':{t:'Vẽ lại mạch — điện trở tương đương',d:'1:11:57',who:'NHL',topic:5,pick:1},
+ 'CcZOxwN07SE':{t:'Bài toán định luật Ôm — P1',d:'55:16',who:'NHL',topic:5},
+ '9ZJf7YMYw3k':{t:'Mạch cầu cân bằng',d:'1:16:22',who:'NHL',topic:5},
+ 'f9FIAGcyh0U':{t:'Bài toán định luật Ôm — P2',d:'1:41:26',who:'NHL',topic:5},
+ '3nPF-mT4K3I':{t:'Bài toán định luật Ôm — P3',d:'1:27:54',who:'NHL',topic:5},
+ '_J9xm7ZxlGs':{t:'Công suất cực đại trên biến trở',d:'1:30:43',who:'NHL',topic:5,pick:1},
+ 'V0suP7NIRII':{t:'Biến trở và cực trị ampe kế',d:'23:18',who:'ĐVĐ',topic:5},
+ 'EKgkdR56f-c':{t:'Năng lượng điện — công suất điện',d:'43:44',who:'NHL',topic:5},
+ 'HGY8Y7YsH4w':{t:'Bài tập đoạn mạch nối tiếp – song song',d:'55:10',who:'NHL',topic:5},
+ 'ZIeGj4_ui08':{t:'Bài tập điện trở — định luật Ôm',d:'30:27',who:'NHL',topic:5},
+
+ /* 06 điện từ — ngoài giới hạn */
+ 'ZFv_CqSJm74':{t:'Hiện tượng cảm ứng điện từ',d:'43:25',who:'NHL',topic:6,pick:1},
+ 'g8_hYVISNA0':{t:'Cảm ứng điện từ, nguyên tắc tạo dòng xoay chiều',d:'16:43',who:'K',topic:6,pick:1},
+ 'AHER9q0p1Zo':{t:'Bài 14: Cảm ứng điện từ',d:'23:37',who:'K',topic:6},
+ 'ZiK7EEvCUIk':{t:'Cảm ứng điện từ (tóm tắt)',d:'9:58',who:'K',topic:6},
+ '-Av1tPAHbAg':{t:'Cảm ứng điện từ — dòng điện xoay chiều',d:'23:39',who:'K',topic:6},
+ 'R85QPqR0WfM':{t:'Thí nghiệm dòng điện cảm ứng bằng nam châm điện',d:'0:42',who:'K',topic:6},
+ 'NkfS6RKlH9Q':{t:'Từ trường — bài giảng nền tảng',d:'1:01:34',who:'VNA',topic:6,pick:1},
+ 'svHtnziH8dM':{t:'Lực từ',d:'1:00:40',who:'VNA',topic:6},
+ 'WTANEKKZ0iQ':{t:'Hiện tượng cảm ứng điện từ',d:'1:06:18',who:'VNA',topic:6},
+ 'bJvMAdB17ho':{t:'Cảm ứng điện từ — học lại từ đầu',d:'1:08:24',who:'VNA',topic:6},
+
+ /* 07 nhiệt học — ngoài giới hạn */
+ '57Wmz-wOx-U':{t:'Chuyên đề nhiệt học (bản quan trọng)',d:'26:50',who:'ĐVĐ',topic:7,pick:1},
+ 'WbYuoXGAKPk':{t:'Tuyển tập bài tập nhiệt học hay nhất',d:'59:01',who:'ĐVĐ',topic:7,pick:1},
+ '2RA6xtqs6zg':{t:'Trao đổi nhiệt — dạng 2',d:'44:38',who:'ĐVĐ',topic:7},
+ '3l24Funxkx8':{t:'Trao đổi nhiệt — dạng 2 (tiếp)',d:'48:08',who:'ĐVĐ',topic:7},
+ '2y8CkmZUNAc':{t:'Trao đổi nhiệt — dạng cơ bản',d:'26:21',who:'ĐVĐ',topic:7},
+ 'RNYPQ_NWRe8':{t:'Năng suất toả nhiệt, hiệu suất động cơ nhiệt',d:'35:50',who:'ĐVĐ',topic:7,pick:1},
+ 'Ks3oE1qabsY':{t:'Ôn tập nhiệt năng – nội năng – nhiệt lượng',d:'26:45',who:'NHL',topic:7},
+ 'uB8JsAVarA0':{t:'Thang nhiệt độ — tính nhiệt lượng',d:'1:02:33',who:'NHL',topic:7},
+ '1S71dcyrTck':{t:'Phương trình cân bằng nhiệt',d:'1:14:07',who:'NHL',topic:7,pick:1},
+ 'pvsHjA5dK8E':{t:'Bài tập tính nhiệt lượng',d:'37:26',who:'NHL',topic:7},
+ '71Xi4erCawU':{t:'Phương trình cân bằng nhiệt — nâng cao',d:'1:44:03',who:'NHL',topic:7,pick:1},
+ 'VY80vO9TquA':{t:'Năng suất toả nhiệt — động cơ nhiệt',d:'1:55:20',who:'NHL',topic:7},
+ '9m6OmHqElSk':{t:'Bài toán liên quan đến đồ thị nhiệt',d:'1:29:37',who:'NHL',topic:7,pick:1},
+ '5Ei6Z3rBDYg':{t:'Chuyên đề nhiệt học — phần 2',d:'54:36',who:'TS',topic:7},
+
+ /* 08 quang mở rộng — ngoài giới hạn */
+ 'Xx1jLCPVPI0':{t:'Gương phẳng — chuyên đề quang học',d:'29:35',who:'ĐVĐ',topic:8,pick:1},
+ 'sa43x_nh5MM':{t:'Tuyển tập bài tập quang học chọn lọc',d:'56:39',who:'ĐVĐ',topic:8},
+ 'Ooud1SVhuRU':{t:'Phản xạ ánh sáng — ảnh qua gương phẳng',d:'1:04:10',who:'NHL',topic:8},
+ 'WDrfyXS__34':{t:'Vùng nhìn thấy của gương phẳng — P2',d:'31:43',who:'NHL',topic:8},
+ 'A4mJSCWjEdg':{t:'Số ảnh tạo bởi gương phẳng',d:'43:24',who:'NHL',topic:8},
+ 'JHSgF7xUtRo':{t:'Tán sắc ánh sáng qua lăng kính',d:'39:21',who:'NHL',topic:9,pick:1},
+ 'ZBfk9N6vRcU':{t:'Kính lúp',d:'7:01',who:'K',topic:8,pick:1},
+ 'N0h9WJvfpwE':{t:'Thấu kính – kính lúp',d:'25:25',who:'K',topic:8},
+ 'khQvw4R4lAo':{t:'Thấu kính phân kì',d:'13:37',who:'K',topic:8,pick:1},
+ 'iiyEtROGXCU':{t:'Thấu kính phân kì — ảnh của vật',d:'34:12',who:'K',topic:8},
+ 'x5RFe2km-UQ':{t:'Mắt — tật khúc xạ của mắt',d:'55:38',who:'NHL',topic:8,pick:1},
+ '_W-wi9w-c8g':{t:'Bài tập hay và khó về mắt',d:'1:00:45',who:'VNA',topic:8},
+ 'hryvdb9MluE':{t:'Vẽ đường đi tia sáng qua 2 gương phẳng',d:'18:19',who:'ĐVĐ',topic:8},
+
+ /* 09 thực hành — ngoài giới hạn */
+ 'pgMu5IZddF4':{t:'Bài toán thực nghiệm đo khối lượng riêng, trọng lượng',d:'35:01',who:'ĐVĐ',topic:11,pick:1},
+ 'FVpyPSfLxeU':{t:'Thực hành đo tiêu cự thấu kính hội tụ',d:'8:14',who:'K',topic:11,pick:1},
+ 'xgYu-p6lBmA':{t:'Bài 9: Thực hành đo tiêu cự',d:'13:46',who:'K',topic:11},
+ 'hb4NsD5j3ak':{t:'Đo tiêu cự bằng phương pháp Silbermann',d:'3:11',who:'K',topic:11,pick:1},
+ '1EAluSaGSAE':{t:'Thực hành đo tiêu cự (KNTT)',d:'6:06',who:'K',topic:11},
+ 'VIqr9Zdufsg':{t:'Xác định tiêu cự thấu kính hội tụ',d:'2:59',who:'K',topic:11},
+ '63Wx0eyP7u4':{t:'SBT bài thực hành đo tiêu cự',d:'36:31',who:'K',topic:11},
+
+ /* 10 đề & chữa đề */
+ 'GjFKD0nY20M':{t:'Chữa đề khảo sát chất lượng — Sở Nam Định',d:'1:03:54',who:'VNA',topic:12,pick:1},
+ 'Gc4Ida3yxok':{t:'Sửa đề 4 — HSG tỉnh Bình Định 2025–2026',d:'1:05:10',who:'NHL',topic:12,pick:1},
+ 'IblmRnOFMRk':{t:'Câu quang học — đề HSG 2024–2025 theo form mới',d:'32:23',who:'ĐVĐ',topic:12,pick:1},
+ 'L1lua6KC6wQ':{t:'Câu điện học — đề HSG 2024–2025',d:'36:15',who:'ĐVĐ',topic:12,pick:1},
+ '-3X_NV81yJs':{t:'Đáp án đề HSG tỉnh Nam Định 2021–2022',d:'55:40',who:'ĐVĐ',topic:12},
+ 'E8Saj7cQMg4':{t:'Giải đề HSG — Quảng Nam 2024–2025',d:'14:28',who:'TS',topic:12},
+ '6S8ppzn5gxI':{t:'Giải đề HSG — Hưng Yên 2025–2026',d:'15:15',who:'TS',topic:12},
+ 'QB6-RW5CrEQ':{t:'Giải đề vào 10 Chuyên Lí — Hà Nam 2025–2026',d:'22:48',who:'TS',topic:12,pick:1},
+ 'fk_iUQmNlg8':{t:'Giải đề vào 10 chuyên Lí — Đồng Nai 2025–2026',d:'12:26',who:'TS',topic:12},
+ '6fAcna2GHCk':{t:'Đề HSG Bắc Ninh 2016–2017 — câu cơ học',d:'24:06',who:'TS',topic:12},
+ 'xHYosJGzI-Q':{t:'Chuỗi câu phân loại — HSG Thanh Hoá 2025–2026',d:'22:04',who:'HT',topic:12},
+ '793w6tothqc':{t:'Đề thi HSG — TP.HCM 2025–2026',d:'23:19',who:'HT',topic:12},
+ 'miY8kLHvtbk':{t:'Chữa đề giữa HK1 — Đề số 1',d:'59:25',who:'VNA',topic:12},
+ 'cgu2C6KTUq8':{t:'KHTN 9 — Bài 4: Công – công suất',d:'44:54',who:'NHL',topic:12},
+
+ /* bổ sung: điện, điện từ, ánh sáng, bảo toàn năng lượng, lý thuyết */
+'fmV542YQ8QM':{t:'KHTN 9 — Cơ năng và bảo toàn cơ năng',d:'30:41',who:'NHL',topic:3,pick:1},
+ 'emlWHSSXv4o':{t:'KHTN 9 — Điện trở và định luật Ôm',d:'18:05',who:'K',topic:5},
+ 'Fc6a6Q5drYE':{t:'Điện trở, định luật Ôm (tóm tắt)',d:'9:37',who:'K',topic:5},
+ 'SIZhgE2ONtY':{t:'KHTN 9 — Đoạn mạch nối tiếp, song song',d:'10:54',who:'K',topic:5,pick:1},
+ 'J43kkIKab1o':{t:'Đoạn mạch nối tiếp (tóm tắt)',d:'8:58',who:'K',topic:5},
+ 'A4GbvKE2F74':{t:'KHTN 9 — Năng lượng dòng điện và công suất điện',d:'13:49',who:'K',topic:5,pick:1},
+ 'IG4MgiR0-Tc':{t:'Công suất điện (tóm tắt)',d:'12:16',who:'K',topic:5},
+ '6Esw-JppkhY':{t:'Chữa bài tập mạch nối tiếp, song song',d:'58:41',who:'K',topic:5},
+ 'LqxGjumXf7M':{t:'Kỹ thuật vẽ lại sơ đồ mạch điện',d:'29:28',who:'K',topic:5,pick:1},
+ 'IxVWiLZ_kdw':{t:'Vẽ lại mạch tương đương — chập, tách điểm',d:'1:07:37',who:'K',topic:5},
+ 'E6qIHrVGGnM':{t:'Ôn tập chương điện học',d:'22:59',who:'K',topic:5},
+ 'sdwSedmJkD8':{t:'Điện học — chuyên đề P2',d:'42:21',who:'TS',topic:5},
+ 'K3vIrWWdTds':{t:'Ôn thi HSG phần điện học',d:'21:31',who:'K',topic:5},
+ '2N98Fp_V2Yk':{t:'Lực điện từ — quy tắc bàn tay trái',d:'14:02',who:'K',topic:6,pick:1},
+ 'llEAqRI4Emw':{t:'Bài tập vận dụng quy tắc bàn tay trái',d:'13:51',who:'K',topic:6},
+ 'Rs7LesqEUAY':{t:'Máy biến thế và truyền tải điện năng',d:'23:28',who:'K',topic:6,pick:1},
+ 'QOpqfIaNS4o':{t:'Truyền tải điện năng — máy biến áp (KHTN 9)',d:'2:33',who:'K',topic:6},
+ '4V0QIB_nUrg':{t:'Truyền tải điện năng và máy biến thế',d:'8:10',who:'K',topic:6},
+ 'oQbkf3PG2A8':{t:'Máy phát điện xoay chiều',d:'7:48',who:'K',topic:6},
+ 'a5D9bp2MrRQ':{t:'Ánh sáng trắng, ánh sáng màu, phân tích ánh sáng trắng',d:'35:08',who:'K',topic:9,pick:1},
+ 'C-fIddvpA1c':{t:'Màu sắc các vật dưới ánh sáng trắng và ánh sáng màu',d:'17:50',who:'K',topic:9,pick:1},
+ 'q6arFzyB8zs':{t:'Màu sắc của vật và các tác dụng của ánh sáng',d:'35:04',who:'K',topic:9},
+ '-SSSPVY9QpY':{t:'Các tác dụng của ánh sáng',d:'15:44',who:'K',topic:9,pick:1},
+ 'qrKpYuPM7AI':{t:'Màu sắc các vật (tóm tắt)',d:'9:45',who:'K',topic:9},
+ '_ejzHzDn4Jk':{t:'Định luật bảo toàn năng lượng',d:'19:34',who:'K',topic:10,pick:1},
+ 'nzOiDjzi79o':{t:'Hiệu suất — điện năng — nhiệt lượng',d:'16:43',who:'K',topic:10},
+ 'ZdpSrY6Omhc':{t:'Sự chuyển hoá và bảo toàn năng lượng',d:'14:39',who:'K',topic:10},
+ 'vfCiMCJ4X7k':{t:'Tóm tắt kiến thức trọng tâm HK1 — Vật lí KHTN 9',d:'1:20:20',who:'K',topic:12,pick:1},
+ 'A_8By_GFq2k':{t:'Trọn bộ kiến thức trọng tâm Vật lí 9 HK2',d:'1:05:07',who:'K',topic:12,pick:1},
+ 'd8g7sNn0R8M':{t:'Tổng hợp Vật lí THCS 6–7–8–9',d:'1:43:36',who:'K',topic:12},
+ 'LqI0egGrD60':{t:'Ôn tập học kì 2 Vật lí 9',d:'1:35:47',who:'K',topic:12},
+ 'YhhDu5dqQ-8':{t:'Ôn tổng hợp lí thuyết KHTN 9',d:'1:33:39',who:'K',topic:12},
+ 'Fz0UGFw1cYA':{t:'Từ phổ, đường sức từ',d:'27:40',who:'K',topic:6,pick:1},
+ 'xw1oY_eyykY':{t:'Nam châm vĩnh cửu',d:'16:02',who:'K',topic:6,pick:1},
+ 'khos38TzRmw':{t:'Sự nhiễm từ của sắt, thép — nam châm điện',d:'8:26',who:'K',topic:6},
+ 'W_witOjaG2E':{t:'KHTN 9 — Tác dụng của dòng điện xoay chiều',d:'13:21',who:'K',topic:6,pick:1},
+ '08CwX2bcXk0':{t:'Nam châm vĩnh cửu và tác dụng từ của dòng điện',d:'11:54',who:'K',topic:6},
+
+ 'bxVuj5vlEjw':{t:'Khúc xạ ánh sáng (KHTN 9 — Bài 5)',d:'17:07',who:'K',topic:4},
+ 'NkwK-y0Px40':{t:'Thấu kính — cách vẽ ảnh qua thấu kính',d:'1:13:23',who:'NHL',topic:4,pick:1},
+ '6PI8g3tYtBA':{t:'Cách vẽ ảnh và công thức thấu kính',d:'28:22',who:'K',topic:4},
+ 'kHiYqiVhVL4':{t:'Sự tạo ảnh trong máy ảnh (Bài 47)',d:'13:08',who:'K',topic:4},
+ 'XxFBcc0N_Vs':{t:'Động cơ điện một chiều (Bài 28)',d:'17:13',who:'K',topic:6,pick:1},
+ 'RVCN84L9S2U':{t:'Động cơ điện một chiều — OLM',d:'8:44',who:'K',topic:6},
+ 'h9-l82YGQKY':{t:'Phản xạ ánh sáng — ảnh tạo bởi gương phẳng',d:'36:08',who:'NHL',topic:8,pick:1},
+ 'XPyCbn7f8PA':{t:'Ảnh của vật tạo bởi gương phẳng',d:'8:03',who:'K',topic:8},
+ 'gBWh0C9lu1M':{t:'Mắt cận và mắt lão (Bài 49)',d:'18:56',who:'K',topic:8,pick:1},
+ 'NNRVlH8EoFY':{t:'Mắt (Bài 48)',d:'9:57',who:'K',topic:8},
+ '87Q2rPCs17Y':{t:'Kính lúp — bài tập thấu kính',d:'19:02',who:'K',topic:8,pick:1},
+ 'ogjd9MMzTfY':{t:'Sự tạo ảnh trong máy ảnh',d:'6:33',who:'K',topic:8},
+ 'rJYA2gVBgOQ':{t:'Tán sắc ánh sáng — màu sắc của vật',d:'1:00:42',who:'NHL',topic:9,pick:1},
+ 'bwQm0XKIhKY':{t:'Hiện tượng tán sắc ánh sáng',d:'24:32',who:'K',topic:9},
+ 'f-AQE84f4iI':{t:'Lăng kính (KHTN 9 — Bài 7)',d:'21:09',who:'K',topic:9},
+ 'EMnltQzfF2k':{t:'Thực hành đo tiêu cự thấu kính hội tụ',d:'5:49',who:'K',topic:11},
+ 'xzSXExA-Nak':{t:'Vì sao không đo thẳng từ O đến F?',d:'2:45',who:'K',topic:11},
+
+ 'wdh0tnp4644':{t:'Định luật bảo toàn năng lượng (Bài 60)',d:'30:12',who:'K',topic:10,pick:1},
+ 'WINwdj2-hxI':{t:'Định luật bảo toàn năng lượng — Vật lý 9',d:'30:05',who:'K',topic:10},
+ '5EAcVN_DNXs':{t:'Bảo toàn năng lượng — bài giảng đầy đủ',d:'37:23',who:'K',topic:10},
+ 'etDQ2AdM7_8':{t:'Bảo toàn năng lượng — tóm tắt 3 phút',d:'3:30',who:'K',topic:10},
+ '2BeA7HTauRI':{t:'Thực hành xác định khối lượng riêng',d:'10:27',who:'K',topic:11,pick:1},
+ '4GMBmToG8k4':{t:'Sai số của phép đo một đại lượng vật lí',d:'39:15',who:'PQT',topic:11,pick:1},
+};
+
+/* =========================================================
+   PLAN — 7 ngày lõi
+========================================================= */
+const PLAN=[
+ {n:1,theme:'Chủ đề 2 → 3',core:true,title:'Lực, công và công của lực biến thiên',
+  desc:'Mở màn bằng phần dễ bị bỏ qua nhất: viết đúng lực. Sau đó đi thẳng vào công, công suất và câu ăn điểm về công của lực biến thiên.',
+  sessions:[
+   {n:1,time:'07:00–11:30',label:'Ca sáng',title:'Tổng hợp, phân tích lực và điều kiện cân bằng',
+    obj:'Quy tắc hình bình hành, phép chiếu lực lên mặt phẳng nghiêng, moment lực. Chốt phần này trước vì mọi bài toán năng lượng đều phải viết đúng phương trình lực.',
+    f:'F<sup>2</sup> = F<sub>1</sub><sup>2</sup> + F<sub>2</sub><sup>2</sup> + 2F<sub>1</sub>F<sub>2</sub>·cos α  ·  P<sub>x</sub> = P·sin α  ·  P<sub>y</sub> = P·cos α  ·  M = F·d',
+    v:['cBFLWKPH7y4','HxhgnLEIacU','x74-khjrigM','fZTBmVe2MWw']},
+   {n:2,time:'13:30–17:30',label:'Ca chiều',title:'Công, công suất và hiệu suất',
+    obj:'Phân biệt công dương — công âm — công cản; công suất trung bình và tức thời; dựng biểu thức hiệu suất cho máy cơ và động cơ.',
+    f:'A = F·s·cos α  ·  P = A/t = F·v  ·  H = A<sub>ích</sub>/A<sub>toàn phần</sub>',
+    v:['U0Sp652BTfs','cXfEE4wZmtM']},
+   {n:3,time:'19:00–22:30',label:'Ca tối',title:'Công của lực biến thiên — đọc đồ thị F–s',
+    obj:'Khi lực biến thiên bậc nhất theo quãng đường (lò xo, lực kéo vật đang nhúng trong chất lỏng), công bằng diện tích hình thang dưới đồ thị. Đây là câu phân loại của đề Chuyên.',
+    f:'A = ½(F<sub>1</sub> + F<sub>2</sub>)·s  ·  A = ½·k·x<sup>2</sup>',
+    v:['JVp9vwlgHCU','iNyh6mnOEeU']},
+   {n:4,time:'22:45–01:15',label:'Ca đêm',title:'Thực chiến: đề giữa kì 2 của thầy VNA',
+    obj:'Bấm 45 phút làm đề trước khi xem chữa, sau đó ghi lại từng lỗi sai. Mục tiêu: nhận diện dạng bài trong 30 giây đầu.',
+    f:'Quy trình: 45′ làm → 60′ chữa → 15′ chốt lỗi',
+    v:['Hz7mB5D_R5k','lI1MbzzMKfc']}
+  ]},
+
+ {n:2,theme:'Chủ đề 3',core:true,title:'Máy cơ đơn giản và cơ năng',
+  desc:'Máy cơ đơn giản và toàn bộ họ bài toán cơ năng — phần chiếm nhiều điểm nhất trong Chủ đề 3.',
+  sessions:[
+   {n:1,time:'07:00–11:30',label:'Ca sáng',title:'Máy cơ đơn giản và định luật về công',
+    obj:'Ròng rọc, đòn bẩy, mặt phẳng nghiêng; quan hệ giữa lực và quãng đường; hiệu suất khi có ma sát hoặc ròng rọc có khối lượng.',
+    f:'F·s = P·h  ·  F<sub>1</sub>·d<sub>1</sub> = F<sub>2</sub>·d<sub>2</sub>  ·  H = A<sub>ích</sub>/A<sub>toàn phần</sub>',
+    v:['2clTBf-WnU0','Fj2u23EZjfw']},
+   {n:2,time:'13:30–17:30',label:'Ca chiều',title:'Đòn bẩy và mặt phẳng nghiêng nâng cao',
+    obj:'Ca nhẹ video, nặng bài tập: đòn bẩy có vật nhúng chất lỏng, thanh đồng chất, điểm tựa di động; mặt phẳng nghiêng có ma sát. Dành ít nhất 3 giờ để tự giải.',
+    f:'F<sub>1</sub>·d<sub>1</sub> = F<sub>2</sub>·d<sub>2</sub>  ·  F = P·sin α + F<sub>ms</sub>',
+    v:['xQIIOCm07r0','awF2wkzHGeg']},
+   {n:3,time:'19:00–22:30',label:'Ca tối',title:'Động năng, thế năng, cơ năng',
+    obj:'Định nghĩa và đơn vị; chọn mốc thế năng; định lí biến thiên động năng — vũ khí cho bài toán có ma sát.',
+    f:'W<sub>đ</sub> = ½mv<sup>2</sup>  ·  W<sub>t</sub> = P·h  ·  W = W<sub>đ</sub> + W<sub>t</sub>',
+    v:['uGzBxGegii4','nLfuWU172qE','gx_8WVo9xi4']},
+   {n:4,time:'22:45–01:15',label:'Ca đêm',title:'Bảo toàn cơ năng và các bài toán hệ',
+    obj:'Cơ năng bảo toàn khi không có ma sát: con lắc, mặt cầu, vật trượt không vận tốc đầu. Mở rộng cho hệ có ma sát bằng định lí năng lượng.',
+    f:'W<sub>1</sub> = W<sub>2</sub>  ·  W<sub>sau</sub> − W<sub>đầu</sub> = A<sub>ms</sub>',
+    v:['NW70ec09CAw','04n0cIGh38w','G_AVHzNjbS0']}
+  ]},
+
+ {n:3,theme:'Chủ đề 4',core:true,title:'Quang hình I — khúc xạ, phản xạ toàn phần, lăng kính',
+  desc:'Toàn bộ phần quang hình cổ điển trước khi vào thấu kính: khúc xạ, phản xạ toàn phần, lăng kính.',
+  sessions:[
+   {n:1,time:'07:00–11:30',label:'Ca sáng',title:'Khúc xạ ánh sáng — ba tiết lý thuyết của thầy VNA',
+    obj:'Định luật khúc xạ, chiết suất tỉ đối và tuyệt đối, hệ thức n = c/v, ảnh của vật dưới mặt nước.',
+    f:'n<sub>1</sub>·sin i = n<sub>2</sub>·sin r  ·  n<sub>21</sub> = n<sub>2</sub>/n<sub>1</sub> = v<sub>1</sub>/v<sub>2</sub>',
+    v:['6VwyPVWh4Yo','zzBWJwfcv-g','gdhQqleKfNg']},
+   {n:2,time:'13:30–17:30',label:'Ca chiều',title:'Khúc xạ nâng cao và phản xạ toàn phần',
+    obj:'Bản mặt song song, lưỡng chất phẳng, góc giới hạn phản xạ toàn phần; bài toán đĩa gỗ che nguồn sáng dưới nước.',
+    f:'sin i<sub>gh</sub> = n<sub>2</sub>/n<sub>1</sub>  ·  R<sub>min</sub> = h·tan i<sub>gh</sub>',
+    v:['RFUdeSFyJSY','fxVflcyHPUI','Xb5lQu1hNdQ']},
+   {n:3,time:'19:00–22:30',label:'Ca tối',title:'Phản xạ toàn phần và lăng kính',
+    obj:'Điều kiện phản xạ toàn phần; lăng kính, góc lệch và góc lệch cực tiểu; đường đi của tia sáng qua lăng kính.',
+    f:'D<sub>min</sub> = 2i − A  ·  sin((D<sub>min</sub> + A)/2) = n·sin(A/2)',
+    v:['oPOb4zvJw3U','g65Ymv_gCd0']},
+   {n:4,time:'22:45–01:15',label:'Ca đêm',title:'Lăng kính và hệ gương phẳng',
+    obj:'Lăng kính có phản xạ toàn phần bên trong; vẽ đường đi của tia sáng qua hệ hai gương phẳng — kỹ năng vẽ hình của đề HSG.',
+    f:'Ảnh qua gương: d′ = d  ·  i′ = i',
+    v:['6I-ovhL5SXU','hryvdb9MluE']}
+  ]},
+
+ {n:4,theme:'Chủ đề 4',core:true,title:'Quang hình II — thấu kính và hệ quang',
+  desc:'Ngày nặng nhất về quang hình. Đây là nơi đề Chuyên phân loại điểm 9–10, và cũng là phần dễ mất điểm nhất nếu vẽ hình sai.',
+  sessions:[
+   {n:1,time:'07:00–11:30',label:'Ca sáng',title:'Thấu kính hội tụ — từ dựng ảnh đến bài tập khó',
+    obj:'Dựng ảnh bằng ba tia đặc biệt; chứng minh công thức thấu kính bằng tam giác đồng dạng để trình bày tự luận; các bài quen thuộc trong đề thi.',
+    f:'1/f = 1/d + 1/d′  ·  A′B′/AB = d′/d',
+    v:['XUNfCLJnjws','dQV8P_485yA','JcxyorAxB8g']},
+   {n:2,time:'13:30–17:30',label:'Ca chiều',title:'Vẽ hình, trục phụ, xác định quang tâm và tiêu cự',
+    obj:'Dựng ảnh của điểm sáng nằm ngoài trục chính; tìm quang tâm, tiêu điểm khi biết vật và ảnh. Kỹ năng bắt buộc cho câu quang hình tự luận.',
+    f:'Tia song song trục phụ → tia ló qua tiêu điểm phụ',
+    v:['fJrlfj9gwQw','XhuV2S1PS0I','nL5I7DK83yk']},
+   {n:3,time:'19:00–22:30',label:'Ca tối',title:'Dịch chuyển vật — thấu kính — màn',
+    obj:'Phương pháp Bessel, hai vị trí thấu kính cho ảnh rõ, vận tốc dịch chuyển của ảnh. Đây là dạng bài xuất hiện gần như mỗi năm.',
+    f:'f = (L<sup>2</sup> − l<sup>2</sup>)/(4L)  ·  h = √(h<sub>1</sub>·h<sub>2</sub>)',
+    v:['XDjfEadigTM','kBJHUQfVbC4','_G23Jp8fjQ8']},
+   {n:4,time:'22:45–01:15',label:'Ca đêm',title:'Hệ thấu kính, hệ gương — thấu kính và mắt',
+    obj:'Ảnh qua hệ hai thấu kính đồng trục; thấu kính ghép gương phẳng; mắt và các tật khúc xạ.',
+    f:'d<sub>2</sub> = a − d′<sub>1</sub>  ·  k<sub>hệ</sub> = k<sub>1</sub>·k<sub>2</sub>',
+    v:['XnbrWAL96Zs','mHbk1C4AEM8','I1JRsAY6hc4','_W-wi9w-c8g']}
+  ]},
+
+ {n:5,theme:'Chủ đề 2 · Ảnh 2 đã cắt',core:false,title:'Áp suất, bình thông nhau và Archimedes',
+  desc:'Giữ lại theo Ảnh 1 và để phục vụ câu công của lực biến thiên ở Ngày 1. Nếu chỉ thi HSG theo Ảnh 2, có thể bỏ trọn ngày này.',
+  sessions:[
+   {n:1,time:'07:00–11:30',label:'Ca sáng',title:'Áp suất chất rắn, chất lỏng, chất khí',
+    obj:'Áp lực và áp suất; p = d·h; áp suất khí quyển và thí nghiệm Torricelli.',
+    f:'p = F/S  ·  p = d·h  ·  1 atm ≈ 76 cmHg',
+    v:['uK_KYJ0-A-M','Pg-0WK0_gco','ysDMA00UDzI']},
+   {n:2,time:'13:30–17:30',label:'Ca chiều',title:'Bình thông nhau và máy nén thuỷ lực',
+    obj:'Mặt thoáng cùng chất lỏng; nhiều chất lỏng không hoà tan; nguyên lí Pascal và bài toán piston.',
+    f:'p<sub>A</sub> = p<sub>B</sub>  ·  F<sub>1</sub>/S<sub>1</sub> = F<sub>2</sub>/S<sub>2</sub>',
+    v:['Qf8eeFchqCM','w8pNPplgMAA']},
+   {n:3,time:'19:00–22:30',label:'Ca tối',title:'Lực đẩy Archimedes — đủ dạng',
+    obj:'Vật nổi, vật chìm, vật lơ lửng; hệ vật nối dây; khối trụ chìm một phần; bài toán nước đá tan.',
+    f:'F<sub>A</sub> = d·V<sub>chìm</sub>  ·  vật nổi: F<sub>A</sub> = P',
+    v:['wyzvoW3Fis4','plVNWJyHoHM','pkMNm7r5p8k']},
+   {n:4,time:'22:45–01:15',label:'Ca đêm',title:'Archimedes gặp công của lực biến thiên',
+    obj:'Kéo khối trụ ra khỏi chất lỏng: lực kéo biến thiên tuyến tính, công bằng diện tích đồ thị. Đây chính là câu nối Chủ đề 2 với Chủ đề 3 — lý do không nên bỏ hẳn phần áp suất.',
+    f:'A = ½(F<sub>1</sub> + F<sub>2</sub>)·s  ·  s<sub>thực</sub> = h·(S − s)/S',
+    v:['W8LSChh7kbE']}
+  ]},
+
+ {n:6,theme:'Chủ đề 1 · Ảnh 2 đã cắt',core:false,title:'Chuyển động cơ học và cộng vận tốc',
+  desc:'Bài toán nhiều vật, vận tốc trung bình, tính tương đối — nội dung Chủ đề 1 của Ảnh 1. Giữ làm dự phòng cho kì thi Chuyên.',
+  sessions:[
+   {n:1,time:'07:00–11:30',label:'Ca sáng',title:'Chuyển động thẳng, quãng đường và độ dịch chuyển',
+    obj:'Phân biệt quãng đường và độ dịch chuyển; phương trình chuyển động thẳng đều; đọc đồ thị toạ độ — thời gian.',
+    f:'x = x<sub>0</sub> + v·t  ·  v<sub>tb</sub> = s/t',
+    v:['eAL9-wGurE0','17-EMFgGmFA','vEPuSG8nNZk']},
+   {n:2,time:'13:30–17:30',label:'Ca chiều',title:'Tổng ôn chuyển động cơ học — phần 1',
+    obj:'Bài giảng hai giờ của thầy Đỗ Văn Đoàn: hệ thống toàn bộ dạng toán chuyển động trong đề HSG 9. Xem 1,25× và ghi lại cách trình bày, không chỉ ghi đáp án.',
+    f:'Chọn mốc thời gian và mốc toạ độ trước khi viết phương trình',
+    v:['m87_DNtmxFs','n2V7q053paI']},
+   {n:3,time:'19:00–22:30',label:'Ca tối',title:'Nhiều vật cùng phương và vận tốc trung bình',
+    obj:'Hai vật cùng chiều, ngược chiều, xuất phát lệch giờ; vận tốc trung bình trên nhiều chặng và điều kiện dùng trung bình điều hoà.',
+    f:'t = s/(v<sub>1</sub> − v<sub>2</sub>)  ·  t = s/(v<sub>1</sub> + v<sub>2</sub>)  ·  v<sub>tb</sub> = (s<sub>1</sub>+s<sub>2</sub>)/(t<sub>1</sub>+t<sub>2</sub>)',
+    v:['xsJES1DqA6M','asFWrsuT7yQ','T76n4yPqhWI']},
+   {n:4,time:'22:45–01:15',label:'Ca đêm',title:'Tính tương đối của chuyển động và cộng vận tốc',
+    obj:'Công thức cộng vận tốc; thuyền — nước — bờ; hai vật chuyển động vuông góc. Kết ca bằng đề giữa HK1 của thầy VNA.',
+    f:'v<sub>13</sub> = v<sub>12</sub> + v<sub>23</sub>  ·  v<sub>12</sub> = |v<sub>1</sub> − v<sub>2</sub>|',
+    v:['Q9P1PR43g54','jwujepmMajA','PhEZEIC9rx0']}
+  ]},
+
+ {n:7,theme:'Tổng ôn',core:true,title:'Thi thử và chốt sổ',
+  desc:'Không học thêm kiến thức mới. Chỉ thi thử, chữa lỗi và viết lại sổ tay bằng trí nhớ.',
+  sessions:[
+   {n:1,time:'07:00–11:30',label:'Ca sáng',title:'Rà soát năng lượng qua hai đề cuối kì',
+    obj:'Đề cuối HK2 số 1 và đề ôn tập số 1: tự giải trước, chỉ xem chữa ở câu sai. Đánh dấu lỗi theo dạng bài, không theo số câu.',
+    f:'Ghi lỗi theo dạng: lực · công · năng lượng · quang',
+    v:['hc9ef_G2ScI','UPNOIsrBdsI']},
+   {n:2,time:'13:30–17:30',label:'Ca chiều',title:'Xử lý ba đề ôn tập còn lại',
+    obj:'Chọn lọc câu theo đúng 4 chủ đề trong giới hạn. Mục tiêu là tốc độ và độ chính xác, không phải làm hết đề.',
+    f:'Mỗi đề 25′ — chỉ làm câu thuộc giới hạn chương trình',
+    v:['xyrAFon9JAY','RTpO9HXYCcs','kBnODOadung']},
+   {n:3,time:'19:00–22:30',label:'Ca tối',title:'Thi thử 150 phút — đề tổng hợp tự ghép',
+    obj:'Tự ghép một đề 5 câu: lực, công — năng lượng, quang hình, áp suất, bài toán biến thiên. Bấm giờ, không mở tài liệu, viết lời giải đầy đủ như trong phòng thi.',
+    f:'20′ đọc đề · 120′ làm · 10′ soát đơn vị và dấu',
+    v:[]},
+   {n:4,time:'22:45–01:15',label:'Ca đêm',title:'Chốt sổ: chữa đề và viết lại sổ tay lỗi',
+    obj:'Chữa đề giữa HK2 số 5 của thầy VNA, đối chiếu với sổ tay lỗi. Kết thúc bằng việc viết lại một trang công thức bằng trí nhớ, không nhìn tài liệu.',
+    f:'Active recall: viết lại → kiểm tra → bổ sung',
+    v:['7nklCEJrsVQ']}
+  ]}
+];
+
+/* =========================================================
+   EXTRA — ngày 5–7 và ngày 10 của lộ trình
+========================================================= */
+const EXT=[
+ {n:8,theme:'Chủ đề 5 · ngoài giới hạn',core:false,title:'Điện học I — từ dòng điện đến mạch điện',
+  desc:'Chương lớn nhất của Vật lí 9 nhưng không có trong hai ảnh. Chỉ học nếu bạn thi Chuyên, hoặc trường ra đề theo SGK cũ.',
+  sessions:[
+   {n:1,time:'07:00–11:30',label:'Ca sáng',title:'Dòng điện, hiệu điện thế và định luật Ôm',
+    obj:'Khái niệm dòng điện, chiều dòng điện, ampe kế và vôn kế mắc đúng; định luật Ôm cho đoạn mạch; điện trở phụ thuộc chiều dài, tiết diện, vật liệu.',
+    f:'I = U/R  ·  R = ρ·l/S  ·  R<sub>nt</sub> = R<sub>1</sub>+R<sub>2</sub>  ·  1/R<sub>ss</sub> = 1/R<sub>1</sub>+1/R<sub>2</sub>',
+    v:['NsLcixpbKEo','dHtq0fzkQXc','VVdKVOGClOs']},
+   {n:2,time:'13:30–17:30',label:'Ca chiều',title:'Đoạn mạch nối tiếp — song song và bài tập',
+    obj:'Tính điện trở tương đương, chia dòng — chia áp, mạch hỗn hợp đơn giản. Đây là nền cho toàn bộ phần còn lại.',
+    f:'U = U<sub>1</sub>+U<sub>2</sub>  ·  I = I<sub>1</sub>+I<sub>2</sub>  ·  I<sub>1</sub>R<sub>1</sub> = I<sub>2</sub>R<sub>2</sub>',
+    v:['6kDzYC_fm_A','HGY8Y7YsH4w','ZIeGj4_ui08']},
+   {n:3,time:'19:00–22:30',label:'Ca tối',title:'Vẽ lại mạch điện phức tạp',
+    obj:'Chập các điểm cùng điện thế, đánh số nút, xử lý ampe kế và vôn kế có điện trở. Kỹ năng quyết định của câu điện học HSG.',
+    f:'V<sub>A</sub> = V<sub>B</sub> ⇒ chập nút  ·  ampe kế lí tưởng: R = 0',
+    v:['9z7kFFamQco','Hp6PIvrBuBk','v3grJyt4ykg']},
+   {n:4,time:'22:45–01:15',label:'Ca đêm',title:'Thực chiến: mạch điện và số chỉ dụng cụ',
+    obj:'Chữa các bài mạch điện đơn giản, số chỉ vôn kế — ampe kế, và mạch chứa bóng đèn. Mục tiêu: đọc đề là vẽ được mạch tương đương.',
+    f:'Đèn sáng bình thường: I = I<sub>đm</sub>, U = U<sub>đm</sub>',
+    v:['s02n9GzqPCM','TGfaQbtMWrc','DusXiFPSUkw']}
+  ]},
+
+ {n:9,theme:'Chủ đề 5 · ngoài giới hạn',core:false,title:'Điện học II — mạch cầu, công suất, cực trị',
+  desc:'Phần phân loại của đề Chuyên. Nếu chỉ học một nửa điện học, hãy học nửa này.',
+  sessions:[
+   {n:1,time:'07:00–11:30',label:'Ca sáng',title:'Mạch cầu cân bằng và không cân bằng',
+    obj:'Điều kiện cầu cân bằng, nhận dạng cầu cân bằng để bỏ nhánh giữa; với cầu không cân bằng dùng chuyển đổi sao — tam giác.',
+    f:'R<sub>1</sub>R<sub>4</sub> = R<sub>2</sub>R<sub>3</sub> ⇒ I<sub>5</sub> = 0',
+    v:['2PHDja91ruo','9ZJf7YMYw3k']},
+   {n:2,time:'13:30–17:30',label:'Ca chiều',title:'Mạch cầu dây và biến trở',
+    obj:'Cầu dây với con chạy, tìm vị trí để cầu cân bằng; biến trở như một điện trở thay đổi được — nền của mọi bài cực trị.',
+    f:'R<sub>x</sub> ∝ l<sub>x</sub>  ·  R<sub>1</sub>/R<sub>2</sub> = l<sub>1</sub>/l<sub>2</sub>',
+    v:['BUqt5loiOrI','wqQFhHTHDgY']},
+   {n:3,time:'19:00–22:30',label:'Ca tối',title:'Công suất điện, Jun–Lenxơ, hiệu suất',
+    obj:'Công suất tiêu thụ, điện năng, nhiệt lượng toả ra, hiệu suất bếp điện và động cơ. Dạng bài gắn với đời sống, hay ra ở đề tỉnh.',
+    f:'P = UI = I<sup>2</sup>R = U<sup>2</sup>/R  ·  Q = I<sup>2</sup>Rt  ·  A = P·t',
+    v:['c45lCPfOPrw','dvTn8Bpat1A','Bnm0JTyrkYI']},
+   {n:4,time:'22:45–01:15',label:'Ca đêm',title:'Cực trị công suất trên biến trở',
+    obj:'Tìm R để công suất trên một nhánh cực đại; bất đẳng thức Cauchy và điều kiện R<sub>x</sub> = R<sub>0</sub>. Câu khó nhất của phần điện.',
+    f:'P<sub>max</sub> = U<sup>2</sup>/(4R<sub>0</sub>) ⇔ R<sub>x</sub> = R<sub>0</sub>',
+    v:['2s-uH9f4l40','5A2gCiLfI8o','_J9xm7ZxlGs']}
+  ]},
+
+];
+
+/* =========================================================
+   BỐN NGÀY CÒN LẠI CỦA CHƯƠNG TRÌNH
+========================================================= */
+const MORE=[
+ {n:10,theme:'Chủ đề 6 · ngoài giới hạn',core:false,title:'Điện từ học — nam châm, cảm ứng, máy biến áp',
+  desc:'Ở THCS phần này chủ yếu là lý thuyết và thực hành, ít tính toán — nhưng câu lý thuyết lại dễ ăn điểm nhất. Đây cũng là chỗ giải thích vì sao có dòng xoay chiều và vì sao phải dùng máy biến áp.',
+  sessions:[
+   {n:1,time:'07:00–11:30',label:'Ca sáng',title:'Nam châm, từ trường và từ phổ',
+    obj:'Nam châm vĩnh cửu, tương tác giữa hai cực; từ phổ và đường sức từ; sự nhiễm từ của sắt, thép; cấu tạo nam châm điện và cách làm tăng lực từ.',
+    f:'Đường sức từ đi ra ở cực Bắc, đi vào ở cực Nam  ·  nam châm điện: tăng số vòng, tăng dòng',
+    v:['xw1oY_eyykY','Fz0UGFw1cYA','khos38TzRmw','08CwX2bcXk0']},
+   {n:2,time:'13:30–17:30',label:'Ca chiều',title:'Lực điện từ và quy tắc bàn tay trái',
+    obj:'Chiều lực điện từ phụ thuộc chiều dòng điện và chiều đường sức từ; vận dụng quy tắc bàn tay trái; nguyên lí hoạt động của động cơ điện một chiều.',
+    f:'Quy tắc bàn tay trái: chiều dòng điện — chiều từ trường — chiều lực từ',
+    v:['2N98Fp_V2Yk','llEAqRI4Emw','svHtnziH8dM']},
+   {n:3,time:'19:00–22:30',label:'Ca tối',title:'Cảm ứng điện từ và máy phát điện',
+    obj:'Điều kiện xuất hiện dòng điện cảm ứng; nguyên tắc tạo dòng xoay chiều; cấu tạo máy phát điện xoay chiều và tác dụng của dòng xoay chiều.',
+    f:'Dòng cảm ứng xuất hiện khi số đường sức từ qua tiết diện ống dây biến thiên',
+    v:['ZFv_CqSJm74','g8_hYVISNA0','W_witOjaG2E','oQbkf3PG2A8']},
+   {n:4,time:'22:45–01:15',label:'Ca đêm',title:'Máy biến áp và truyền tải điện năng',
+    obj:'Cấu tạo, nguyên lí và công thức máy biến áp; vì sao tăng hiệu điện thế lại giảm hao phí; bài toán tính số vòng dây và công suất hao phí trên đường dây.',
+    f:'U<sub>1</sub>/U<sub>2</sub> = n<sub>1</sub>/n<sub>2</sub>  ·  P<sub>hao phí</sub> = P<sup>2</sup>R/U<sup>2</sup>',
+    v:['Rs7LesqEUAY','4V0QIB_nUrg','QOpqfIaNS4o','NkfS6RKlH9Q']}
+  ]},
+
+ {n:11,theme:'Chủ đề 7 · ngoài giới hạn',core:false,title:'Nhiệt học — cân bằng nhiệt, chuyển thể, động cơ nhiệt',
+  desc:'Đề HSG truyền thống gần như luôn có một câu nhiệt. Phần này không khó, nhưng dễ sai dấu nhiệt độ và dễ quên biện luận trạng thái cuối của hệ.',
+  sessions:[
+   {n:1,time:'07:00–11:30',label:'Ca sáng',title:'Nhiệt năng, nhiệt lượng và cân bằng nhiệt',
+    obj:'Phân biệt nhiệt năng — nhiệt lượng — nhiệt dung riêng; viết đúng phương trình cân bằng nhiệt cho hai và ba vật; đổi đơn vị và kiểm tra dấu.',
+    f:'Q = mcΔt  ·  ΣQ<sub>toả</sub> = ΣQ<sub>thu</sub>',
+    v:['57Wmz-wOx-U','Ks3oE1qabsY','uB8JsAVarA0']},
+   {n:2,time:'13:30–17:30',label:'Ca chiều',title:'Cân bằng nhiệt nâng cao và trao đổi nhiệt',
+    obj:'Bài toán có hao phí ra môi trường, rót nước luân phiên giữa hai bình, trao đổi nhiệt qua thanh dẫn. Đây là dạng phân loại của câu nhiệt.',
+    f:'Q<sub>toả</sub> = Q<sub>thu</sub> + Q<sub>hao phí</sub>',
+    v:['1S71dcyrTck','71Xi4erCawU','2RA6xtqs6zg']},
+   {n:3,time:'19:00–22:30',label:'Ca tối',title:'Chuyển thể, năng suất toả nhiệt, động cơ nhiệt',
+    obj:'Nóng chảy, đông đặc, bay hơi; biện luận nước đá có tan hết không; năng suất toả nhiệt của nhiên liệu và hiệu suất động cơ nhiệt.',
+    f:'Q<sub>nc</sub> = λm  ·  Q = qm  ·  H = Q<sub>ích</sub>/Q<sub>tp</sub>',
+    v:['RNYPQ_NWRe8','VY80vO9TquA','WbYuoXGAKPk']},
+   {n:4,time:'22:45–01:15',label:'Ca đêm',title:'Đồ thị nhiệt và thực chiến',
+    obj:'Đọc đồ thị nhiệt độ — thời gian để suy ra nhiệt dung riêng, nhiệt nóng chảy và công suất bếp. Kết ca bằng một đề nhiệt đã chữa.',
+    f:'Độ dốc đồ thị nhiệt độ theo thời gian: tan α = P/(mc)',
+    v:['9m6OmHqElSk','pvsHjA5dK8E','5Ei6Z3rBDYg']}
+  ]},
+
+ {n:12,theme:'Chủ đề 8–9 · ngoài giới hạn',core:false,title:'Quang mở rộng — gương phẳng, tán sắc, ánh sáng, mắt',
+  desc:'Ảnh 1 chỉ ghi “Quang hình”, nên gương phẳng, tán sắc, màu sắc và mắt nằm ở rìa. Nhưng đây là chỗ dễ ăn điểm lý thuyết, và là phần bắt buộc của đề lớp 8–9 truyền thống.',
+  sessions:[
+   {n:1,time:'07:00–11:30',label:'Ca sáng',title:'Gương phẳng — ảnh, vùng nhìn thấy, số ảnh',
+    obj:'Tính chất ảnh qua gương phẳng; vẽ vùng nhìn thấy; hệ hai gương hợp góc α và công thức số ảnh; đường đi tia sáng qua hai gương.',
+    f:'d′ = d  ·  n = 360°/α − 1  ·  tia phản xạ quay 2α khi gương quay α',
+    v:['Xx1jLCPVPI0','Ooud1SVhuRU','WDrfyXS__34','A4mJSCWjEdg']},
+   {n:2,time:'13:30–17:30',label:'Ca chiều',title:'Tán sắc, ánh sáng trắng và ánh sáng màu',
+    obj:'Thí nghiệm Newton, quang phổ của ánh sáng trắng, sự trộn các ánh sáng màu. Phần này ra chủ yếu ở dạng lý thuyết và nhận biết.',
+    f:'Lăng kính tách ánh sáng trắng thành dải màu liên tục',
+    v:['JHSgF7xUtRo','a5D9bp2MrRQ','nwJlOkhY_4o']},
+   {n:3,time:'19:00–22:30',label:'Ca tối',title:'Màu sắc các vật và các tác dụng của ánh sáng',
+    obj:'Vì sao vật có màu này dưới ánh sáng trắng lại có màu khác dưới ánh sáng màu; tác dụng nhiệt, sinh học, quang điện của ánh sáng.',
+    f:'Vật màu X tán xạ mạnh ánh sáng màu X và hấp thụ các màu khác',
+    v:['C-fIddvpA1c','q6arFzyB8zs','-SSSPVY9QpY','qrKpYuPM7AI']},
+   {n:4,time:'22:45–01:15',label:'Ca đêm',title:'Mắt, kính lúp và bài tập quang mở rộng',
+    obj:'Cấu tạo mắt, điểm cực cận — cực viễn, các tật khúc xạ và cách sửa; kính lúp và số bội giác; bài tập tổng hợp quang học.',
+    f:'Kính lúp: G = 25/f  (f tính bằng cm)',
+    v:['x5RFe2km-UQ','_W-wi9w-c8g','ZBfk9N6vRcU','khQvw4R4lAo']}
+  ]},
+
+ {n:13,theme:'Chủ đề 10–12 · tổng duyệt',core:false,title:'Thực hành, lý thuyết trọng tâm và đại tổng duyệt',
+  desc:'Ngày cuối không học dạng mới. Thực hành, quét lý thuyết toàn chương trình, rồi thi thử một lần cuối với đủ cả bốn phần.',
+  sessions:[
+   {n:1,time:'07:00–11:30',label:'Ca sáng',title:'Thực hành — đo tiêu cự, đo khối lượng riêng',
+    obj:'Phương pháp Silbermann và bố trí thí nghiệm đo tiêu cự; đo khối lượng riêng bằng bình chia độ và lực kế; cách ghi số liệu và xử lý sai số.',
+    f:'f = (L<sup>2</sup> − l<sup>2</sup>)/(4L)  ·  D = m/V  ·  sai số tuyệt đối và tương đối',
+    v:['FVpyPSfLxeU','hb4NsD5j3ak','VIqr9Zdufsg','pgMu5IZddF4']},
+   {n:2,time:'13:30–17:30',label:'Ca chiều',title:'Quét lý thuyết trọng tâm toàn chương trình',
+    obj:'Xem lại các bảng tóm tắt và tự ghi lại theo bốn nhóm: cơ — điện — quang — nhiệt. Mục tiêu là trả lời được câu hỏi lý thuyết mà không cần mở vở.',
+    f:'Ghi theo 4 nhóm, mỗi nhóm một trang A4',
+    v:['vfCiMCJ4X7k','A_8By_GFq2k','LqI0egGrD60','d8g7sNn0R8M']},
+   {n:3,time:'19:00–22:30',label:'Ca tối',title:'Bảo toàn và chuyển hoá năng lượng',
+    obj:'Định luật bảo toàn năng lượng, hiệu suất của quá trình chuyển hoá, hao phí. Đây là câu nối giữa phần cơ, phần điện và phần nhiệt.',
+    f:'Năng lượng không tự sinh ra và không tự mất đi, chỉ chuyển hoá  ·  H = A<sub>có ích</sub>/A<sub>toàn phần</sub>',
+    v:['_ejzHzDn4Jk','ZdpSrY6Omhc','nzOiDjzi79o','YhhDu5dqQ-8']},
+   {n:4,time:'22:45–01:15',label:'Ca đêm',title:'Đại tổng duyệt — thi thử 150 phút và chốt sổ',
+    obj:'Tự ghép đề 5 câu đủ cả bốn phần: cơ — điện — quang — nhiệt, cộng một câu thực hành. Bấm giờ, không mở tài liệu. Sau đó chỉ chữa câu sai và viết lại trang công thức cuối cùng.',
+    f:'20′ đọc đề · 120′ làm · 10′ soát đơn vị, dấu và kết luận',
+    v:[]}
+  ]}
+];
+
+/* =========================================================
+   LỊCH TRÌNH ĐẦY ĐỦ — 13 ngày, 52 ca
+   I  : lõi 7 ngày (năng lượng · quang · điện)
+   II : đủ bộ lớp 8 (phần Ảnh 2 đã cắt)
+   III: điện từ & nhiệt
+   IV : quang mở rộng, ánh sáng, thực hành
+========================================================= */
+const SCHEDULE=(()=>{
+  const order=[PLAN[0],PLAN[1],PLAN[2],PLAN[3],EXT[0],EXT[1],PLAN[6],PLAN[4],PLAN[5],MORE[0],MORE[1],MORE[2],MORE[3]];
+  order.forEach((d,i)=>{
+    d.n=i+1;
+    d.phase=i<=6?'I':i<=8?'II':i<=10?'III':'IV';
+  });
+  return order;
+})();
+
+const PHASES={
+  I  :{t:'Giai đoạn I · lõi 7 ngày',s:'Năng lượng cơ học · Quang hình · Điện học — phần chắc chắn có trong đề'},
+  II :{t:'Giai đoạn II · đủ bộ lớp 8',s:'Áp suất, Archimedes, chuyển động — phần Ảnh 2 đã cắt, giữ làm dự phòng'},
+  III:{t:'Giai đoạn III · điện từ và nhiệt',s:'Nam châm, cảm ứng, máy biến áp, cân bằng nhiệt, động cơ nhiệt'},
+  IV :{t:'Giai đoạn IV · phần còn lại',s:'Gương phẳng, tán sắc, màu sắc, mắt, thực hành, lý thuyết, tổng duyệt'}
+};
+
+/* =========================================================
+   NOTES
+========================================================= */
+const NOTES=[
+ {n:'01',name:'Chuyển động cơ học',grade:'Lớp 8 · đã cắt',off:true,rows:[
+  ['Vận tốc trung bình','v<sub>tb</sub> = s/t'],
+  ['Nhiều chặng liên tiếp','v<sub>tb</sub> = (s<sub>1</sub> + s<sub>2</sub>)/(t<sub>1</sub> + t<sub>2</sub>)'],
+  ['Hai vật ngược chiều','t = s/(v<sub>1</sub> + v<sub>2</sub>)'],
+  ['Hai vật cùng chiều','t = s/(v<sub>1</sub> − v<sub>2</sub>)'],
+  ['Cộng vận tốc','v<sub>13</sub> = v<sub>12</sub> + v<sub>23</sub>']
+ ],foot:'Chọn mốc thời gian và mốc toạ độ trước khi viết bất kỳ phương trình nào.'},
+
+ {n:'02',name:'Áp suất &amp; Archimedes',grade:'Lớp 8 · đã cắt',off:true,rows:[
+  ['Áp suất chất rắn','p = F/S'],
+  ['Áp suất chất lỏng','p = d·h'],
+  ['Máy nén thuỷ lực','F<sub>1</sub>/S<sub>1</sub> = F<sub>2</sub>/S<sub>2</sub>'],
+  ['Lực đẩy Archimedes','F<sub>A</sub> = d·V<sub>chìm</sub>'],
+  ['Hợp lực hai lực','F<sup>2</sup> = F<sub>1</sub><sup>2</sup> + F<sub>2</sub><sup>2</sup> + 2F<sub>1</sub>F<sub>2</sub>·cos α']
+ ],foot:'Khi kéo vật ra khỏi chất lỏng, F<sub>A</sub> giảm tuyến tính theo độ sâu — công phải tính bằng diện tích đồ thị.'},
+
+ {n:'03',name:'Năng lượng cơ học',grade:'Lớp 9 · trọng tâm',rows:[
+  ['Công','A = F·s·cos α'],
+  ['Công suất','P = A/t = F·v'],
+  ['Công của lực biến thiên','A = ½(F<sub>1</sub> + F<sub>2</sub>)·s'],
+  ['Lò xo','A = ½·k·x<sup>2</sup>'],
+  ['Đòn bẩy','F<sub>1</sub>·d<sub>1</sub> = F<sub>2</sub>·d<sub>2</sub>'],
+  ['Hiệu suất','H = A<sub>ích</sub>/A<sub>toàn phần</sub>'],
+  ['Động năng','W<sub>đ</sub> = ½mv<sup>2</sup>'],
+  ['Thế năng trọng trường','W<sub>t</sub> = P·h = mgh'],
+  ['Bảo toàn cơ năng','W<sub>đ</sub> + W<sub>t</sub> = hằng số'],
+  ['Có ma sát','W<sub>sau</sub> − W<sub>đầu</sub> = A<sub>ms</sub>']
+ ],foot:'Ba câu hỏi trước mọi bài năng lượng: mốc thế năng ở đâu, lực nào sinh công, có ma sát chưa.'},
+
+ {n:'04',name:'Quang hình',grade:'Lớp 9 · trọng tâm',rows:[
+  ['Định luật khúc xạ','n<sub>1</sub>·sin i = n<sub>2</sub>·sin r'],
+  ['Chiết suất tỉ đối','n<sub>21</sub> = n<sub>2</sub>/n<sub>1</sub> = v<sub>1</sub>/v<sub>2</sub>'],
+  ['Góc giới hạn','sin i<sub>gh</sub> = n<sub>2</sub>/n<sub>1</sub>  (n<sub>1</sub> &gt; n<sub>2</sub>)'],
+  ['Thấu kính','1/f = 1/d + 1/d′'],
+  ['Độ phóng đại','A′B′/AB = d′/d'],
+  ['Công thức Bessel','f = (L<sup>2</sup> − l<sup>2</sup>)/(4L)'],
+  ['Hai ảnh rõ','h = √(h<sub>1</sub>·h<sub>2</sub>)'],
+  ['Hệ hai thấu kính','d<sub>2</sub> = a − d′<sub>1</sub>'],
+  ['Lăng kính','D<sub>min</sub> = 2i − A']
+ ],foot:'Vẽ hình trước, viết công thức sau. Sai hình là mất trọn điểm câu quang dù kết quả đúng.'},
+
+ {n:'05',name:'Điện học',grade:'Lớp 9 · bổ sung',off:true,rows:[
+  ['Định luật Ôm','I = U/R'],
+  ['Điện trở dây dẫn','R = ρ·l/S'],
+  ['Nối tiếp','R = R<sub>1</sub>+R<sub>2</sub>  ·  U = U<sub>1</sub>+U<sub>2</sub>'],
+  ['Song song','1/R = 1/R<sub>1</sub>+1/R<sub>2</sub>  ·  I = I<sub>1</sub>+I<sub>2</sub>'],
+  ['Công suất điện','P = UI = I<sup>2</sup>R = U<sup>2</sup>/R'],
+  ['Điện năng','A = P·t = UIt'],
+  ['Jun–Lenxơ','Q = I<sup>2</sup>Rt'],
+  ['Cầu cân bằng','R<sub>1</sub>R<sub>4</sub> = R<sub>2</sub>R<sub>3</sub>'],
+  ['Cực trị công suất','P<sub>max</sub> = U<sup>2</sup>/(4R<sub>0</sub>) ⇔ R<sub>x</sub> = R<sub>0</sub>']
+ ],foot:'Câu điện học trong đề HSG gần như luôn là: vẽ lại mạch → tính R tương đương → biện luận cực trị.'},
+
+ {n:'06',name:'Điện từ học',grade:'Lớp 9 · bổ sung',off:true,rows:[
+  ['Máy biến áp','U<sub>1</sub>/U<sub>2</sub> = n<sub>1</sub>/n<sub>2</sub>'],
+  ['Máy biến áp lí tưởng','U<sub>1</sub>I<sub>1</sub> = U<sub>2</sub>I<sub>2</sub>'],
+  ['Công suất hao phí','P<sub>hp</sub> = P<sup>2</sup>R/U<sup>2</sup>'],
+  ['Quy tắc bàn tay trái','Chiều dòng điện — chiều từ trường — chiều lực từ'],
+  ['Quy tắc nắm tay phải','Chiều dòng điện trong ống dây — chiều đường sức từ'],
+  ['Cảm ứng điện từ','Số đường sức từ qua tiết diện biến thiên ⇒ có dòng cảm ứng']
+ ],foot:'Hai câu hỏi của đề: chiều lực từ (bàn tay trái) và số vòng dây của máy biến áp.'},
+
+ {n:'07',name:'Nhiệt học',grade:'Lớp 8–9 · bổ sung',off:true,rows:[
+  ['Nhiệt lượng','Q = mcΔt'],
+  ['Cân bằng nhiệt','ΣQ<sub>toả</sub> = ΣQ<sub>thu</sub>'],
+  ['Nóng chảy','Q = λm'],
+  ['Bay hơi','Q = Lm'],
+  ['Năng suất toả nhiệt','Q = qm'],
+  ['Hiệu suất bếp / động cơ','H = Q<sub>ích</sub>/Q<sub>tp</sub>'],
+  ['Đồ thị nhiệt','tan α = P/(mc)']
+ ],foot:'Một câu nhiệt trong đề HSG thường phải biện luận trạng thái cuối: nước đá tan hết hay chưa.'},
+
+ {n:'08',name:'Ánh sáng &amp; kính lúp',grade:'Bổ sung',off:true,rows:[
+  ['Tán sắc','Ánh sáng trắng qua lăng kính tách thành dải màu'],
+  ['Màu sắc vật','Vật màu X tán xạ mạnh ánh sáng màu X'],
+  ['Kính lúp','G = 25/f  (f tính bằng cm)'],
+  ['Ảnh qua gương phẳng','d′ = d  ·  ảnh đối xứng qua gương'],
+  ['Số ảnh hai gương','n = 360°/α − 1'],
+  ['Mắt cận','Đeo thấu kính phân kì, f = −OC<sub>v</sub>']
+ ],foot:'Phần này chủ yếu là lý thuyết: học bảng màu sắc và điều kiện tán sắc là đủ điểm.'}
+];
+
+/* =========================================================
+   PAPERS
+========================================================= */
+const PAPERS=[
+   {group:'Chuyên Lý 2025–2026 — chữa đề',sub:'Chỉ có video chữa · 5 tỉnh thành',items:[
+  {n:'Thái Bình',t:'Vào 10 Chuyên Lí 2025–2026',exam:'',sol:'',vid:'4kIl2GLprE0'},
+  {n:'Hà Nam',t:'Vào 10 Chuyên Lí 2025–2026',exam:'',sol:'',vid:'S8X4z9KTNAU'},
+  {n:'Đắk Lắk',t:'Vào 10 Chuyên Lí 2025–2026',exam:'',sol:'',vid:'P8uO0cu6Fww'},
+  {n:'Đà Nẵng',t:'Vào 10 Chuyên Lí 2025–2026',exam:'',sol:'',vid:'Zxm6szRyFQA'},
+  {n:'Chuyên KHTN Huế',t:'Vào 10 Chuyên Lí 2025–2026',exam:'',sol:'',vid:'u7Y1zGj2-UU'}
+ ]},
+ {group:'Mapstudy — Giữa HK1 (động học)',sub:'Vật lí 10 · dùng cho Chủ đề 1',items:[
+  {n:'Đề 01',t:'Chuyển động cơ học',exam:'147ulUAW7HApk0r-Jl3gWJChwzXWlxeT-',sol:'1g9Vwm2s9Hdf84NHYfYj1KTxCTdOaVO4I',vid:'dYoWkTSVJ7Q'},
+  {n:'Đề 02',t:'Chuyển động cơ học',exam:'1x5WA7qQQ9-qE3dtJWYNg_Q4CCUDWmHgp',sol:'19yvgRg3CxPT0eO0cCyinfMv0WBmZYLbT',vid:'miY8kLHvtbk'},
+  {n:'Đề 03',t:'Chuyển động cơ học',exam:'1-UrrG5PHWz2_rqCMEPio8b0Tl4xCvJiA',sol:'15H9XM8UFgmz8ZdgrPeyeqC8mhBCS0147',vid:'NXi1vyKnZCg'},
+  {n:'Đề 04',t:'Chuyển động cơ học',exam:'1VXsuqAdZqavxN4Nmb8TNV2Ibgx9ILtu3',sol:'123py5xc_MvXPQQExhfNz7ByXqcarOcSh',vid:'vEF0UUT2SZ8'},
+  {n:'Đề 05',t:'Chuyển động cơ học',exam:'16sRpPeEGCm_x6jPqBZVr8ISpGgg6mt5Q',sol:'1ehpq-MVlE98k68SL7KuQ3Ehn3h6RPfCV',vid:'8ACsMTWwnag'}
+ ]},
+ {group:'Mapstudy — Cuối HK1 (lực, cân bằng)',sub:'Vật lí 10 · dùng cho Chủ đề 2',items:[
+  {n:'Đề 01',t:'Tổng hợp, phân tích lực',exam:'1S9k_q3GaryTDM1kqEDvLoSf5VwatJRVG',sol:'1uswJIVne_TV_bB3obWJNT0KCKELNXW2z',vid:'eVxQ-oQ7RiU'},
+  {n:'Đề 02',t:'Cân bằng lực',exam:'1oUrScHkqu4HFJmIR3IgNq6X7KzXJIixk',sol:'1U8uNoHrZKPfufPgpEv4Tx7URmldjPxoS',vid:'9YHDRBikBTc'},
+  {n:'Đề 03',t:'Cân bằng lực',exam:'1GZfknVi3z04eS0XI26dayNgx5kl1ORkS',sol:'12X1Ut__hcVuEiyZs13ULSRFVAfRnuggK',vid:'8xyQ3_3qMPE'}
+ ]},
+ {group:'Mapstudy — Giữa HK2 (công, năng lượng)',sub:'Vật lí 10 · dùng cho Chủ đề 3',items:[
+  {n:'Đề 01',t:'Công, công suất, cơ năng',exam:'1FdImthij4eDQlavAA0w6tVkXAddYAS71',sol:'',vid:'GRzzK5U3cbM'},
+  {n:'Đề 02',t:'Công, công suất, cơ năng',exam:'1nHfELEZfSdmjhHlNL0m45P1_AfVBeGm6',sol:'1mAnlABpdThZPD5LuIOjtSrqK4AfL_2sx',vid:'lI1MbzzMKfc'},
+  {n:'Đề 03',t:'Cơ năng, bảo toàn cơ năng',exam:'1N9B6l-FSJTyT5sujfWQZfjJtvyqeTD60',sol:'1UN1wvBstXgUlrNQqbIJUfv84xmSreYYH',vid:'G_AVHzNjbS0'},
+  {n:'Đề 04',t:'Cơ năng, bảo toàn cơ năng',exam:'1JdD9dapwdPDHaibCFgw3wSiZXWXOrzEX',sol:'',vid:'vbn20m8cOX8'}
+ ]},
+ {group:'Đề HSG &amp; Chuyên 2024–2026',sub:'Chữa công khai · không kèm PDF',items:[
+  {n:'Bình Định',t:'HSG tỉnh 2025–2026 — đề 4',exam:'',sol:'',vid:'Gc4Ida3yxok'},
+  {n:'Hà Nam',t:'Vào 10 Chuyên Lí 2025–2026',exam:'',sol:'',vid:'QB6-RW5CrEQ'},
+  {n:'Đồng Nai',t:'Vào 10 chuyên Lí 2025–2026',exam:'',sol:'',vid:'fk_iUQmNlg8'},
+  {n:'Quảng Nam',t:'HSG 2024–2025',exam:'',sol:'',vid:'E8Saj7cQMg4'},
+  {n:'Hưng Yên',t:'HSG 2025–2026',exam:'',sol:'',vid:'6S8ppzn5gxI'},
+  {n:'Thanh Hoá',t:'HSG 2025–2026 — câu phân loại',exam:'',sol:'',vid:'xHYosJGzI-Q'},
+  {n:'TP.HCM',t:'HSG 2025–2026',exam:'',sol:'',vid:'793w6tothqc'},
+  {n:'Nam Định',t:'HSG 2021–2022 — đáp án',exam:'',sol:'',vid:'-3X_NV81yJs'},
+  {n:'Bắc Ninh',t:'HSG 2016–2017 — câu cơ học',exam:'',sol:'',vid:'6fAcna2GHCk'},
+  {n:'Form mới',t:'Câu quang học — đề HSG 2024–2025',exam:'',sol:'',vid:'IblmRnOFMRk'},
+  {n:'Form mới',t:'Câu điện học — đề HSG 2024–2025',exam:'',sol:'',vid:'L1lua6KC6wQ'}
+ ]}
+];
+
+/* =========================================================
+   STATE
+========================================================= */
+const KEY='vnap.v7';
+let state=(()=>{try{const s=JSON.parse(localStorage.getItem(KEY)||'{}');
+  return {done:s.done||{},seen:s.seen||{},tab:s.tab||'plan',filter:s.filter||'all',
+          scope:s.scope||'all',phase:s.phase||'all'};}
+  catch(e){return {done:{},seen:{},tab:'plan',filter:'all',scope:'all',phase:'all'};}})();
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify({done:state.done,seen:state.seen,tab:state.tab,filter:state.filter,scope:state.scope,phase:state.phase}));}catch(e){}};
+
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const norm=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d');
+const VID_COUNT=Object.keys(LIB).length;
+$('#mast-count').textContent=VID_COUNT;
+$('#fact-videos').textContent=VID_COUNT;
+const TP_SCOPE=TOPICS.reduce((m,t)=>(m[t.id]=t.scope,m),{});
+const sid=(d,s)=>`d${d}s${s}`;
+const allDays=()=>SCHEDULE;
+
+/* =========================================================
+   RENDER — PLAN
+========================================================= */
+function sessionHTML(day,s){
+  const id=sid(day.n,s.n), done=!!state.done[id];
+  const vids=s.v.length?s.v.map(yt=>{
+    const v=LIB[yt]; if(!v) return '';
+    const key=id+'-'+yt, seen=!!state.seen[key];
+    return `<li class="vid">
+      <button class="vseen${seen?' on':''}" data-seen="${key}" aria-label="Đánh dấu đã xem" aria-pressed="${seen}">
+        <svg viewBox="0 0 10 10"><path d="M1 5.2 3.8 8 9 2"/></svg>
+      </button>
+      <span class="vid-src${v.who==='VNA'?' vna':''}" title="${WHO[v.who]||v.who}">${v.who}</span>
+      <a class="vid-t" href="https://www.youtube.com/watch?v=${yt}" target="_blank" rel="noopener">${v.t}</a>
+      <span class="vid-d">${v.d||'—'}</span>
+    </li>`;
+  }).join(''):'';
+
+  return `<article class="session${done?' is-done':''}" data-card="${id}">
+    <div class="s-top">
+      <span class="s-ca"><b>Ca ${s.n}</b> · ${s.label} · ${s.time}</span>
+      <button class="tick" data-done="${id}" aria-pressed="${done}" aria-label="Đánh dấu hoàn thành ca ${s.n}">
+        <svg viewBox="0 0 12 12"><path d="M1.5 6.3 4.6 9.6 10.5 2.4"/></svg>
+      </button>
+    </div>
+    <h3 class="s-title">${s.title}</h3>
+    <p class="s-obj">${s.obj}</p>
+    <div class="s-f"><b>Công thức</b><span class="fx">${s.f}</span></div>
+    ${vids?`<ul class="vids">${vids}</ul>`:`<p class="s-none">Không có video — ca tự luyện và bấm giờ.</p>`}
+  </article>`;
+}
+
+function renderPlan(){
+  const q=norm(($('#q').value||'').trim());
+  const host=$('#plan-days'); host.innerHTML='';
+  const days=allDays().filter(d=>state.phase==='all'||d.phase===state.phase);
+  let shown=0,total=0,lastPhase=null;
+
+  days.forEach(day=>{
+    const all=day.sessions.map(s=>({...s,id:sid(day.n,s.n)}));
+    total+=all.length;
+    const list=all.filter(s=>{
+      if(state.filter==='vna' && !s.v.some(y=>LIB[y]&&LIB[y].who==='VNA')) return false;
+      if(state.filter==='core' && !day.core) return false;
+      if(state.filter==='todo' && state.done[s.id]) return false;
+      if(q){
+        const hay=norm([s.title,s.obj,s.f.replace(/<[^>]+>/g,' '),s.v.map(y=>LIB[y]?(LIB[y].t+' '+(WHO[LIB[y].who]||'')):'').join(' '),day.title].join(' '));
+        if(!hay.includes(q)) return false;
+      }
+      return true;
+    });
+    if(!list.length) return;
+    shown+=list.length;
+    const doneCount=all.filter(s=>state.done[s.id]).length;
+    const pct=Math.round(doneCount/all.length*100);
+
+    if(day.phase!==lastPhase){
+      lastPhase=day.phase;
+      const band=document.createElement('div');
+      band.className='phase-band';
+      const inPhase=allDays().filter(d=>d.phase===day.phase);
+      band.innerHTML=`<span class="pb-t">${PHASES[day.phase].t}</span>
+        <span class="pb-s">${PHASES[day.phase].s}</span>
+        <span class="pb-c">${inPhase.length} ngày · ${inPhase.length*4} ca</span>`;
+      host.appendChild(band);
+    }
+
+    const el=document.createElement('section');
+    el.className='day';
+    el.innerHTML=`
+      <div class="day-head">
+        <div><span class="day-num-label">Ngày</span><span class="day-num">${String(day.n).padStart(2,'0')}</span></div>
+        <div>
+          <p class="day-theme${day.core?'':' off'}">${day.theme}</p>
+          <h2 class="day-title">${day.title}</h2>
+          <p class="day-desc">${day.desc}</p>
+        </div>
+        <div class="day-side">
+          <span class="meter sm"><i style="width:${pct}%"></i></span>
+          <span class="day-count">${doneCount}/${all.length}</span>
+        </div>
+      </div>
+      <div class="sessions">${list.map(s=>sessionHTML(day,s)).join('')}</div>`;
+    host.appendChild(el);
+  });
+
+  if(!shown) host.innerHTML=`<div class="empty"><h3>Không có ca nào khớp</h3><p>Thử từ khoá khác, hoặc bỏ bộ lọc đang bật.</p></div>`;
+  $('#plan-count').textContent=`${shown} / ${total} ca`;
+  syncProgress();
+}
+
+/* =========================================================
+   RENDER — TOPIC MAP
+========================================================= */
+function renderMap(){
+  const counts={};
+  Object.values(LIB).forEach(v=>counts[v.topic]=(counts[v.topic]||0)+1);
+  const label={core:'Trọng tâm',cut:'Ảnh 2 đã cắt',out:'Ngoài giới hạn',tool:'Bổ trợ'};
+  const cls={core:'st-core',cut:'st-cut',out:'st-out',tool:'st-tool'};
+  $('#tmap').innerHTML=`
+    <div class="tm-head"><span></span><span>Chủ đề</span><span>Trạng thái</span><span>Vì sao giữ / bỏ</span><span>Bài</span></div>
+    ${TOPICS.map(t=>`
+      <div class="tm-row${t.scope==='core'?' is-core':''}">
+        <span class="tm-n">${t.n}</span>
+        <div class="tm-name">${t.name}<i>${t.sub}</i></div>
+        <div class="tm-st"><span class="st ${cls[t.scope]}">${label[t.scope]}</span></div>
+        <div class="tm-why">${t.why}</div>
+        <div class="tm-c">${counts[t.id]||0}</div>
+      </div>`).join('')}`;
+}
+
+/* =========================================================
+   RENDER — LIBRARY
+========================================================= */
+function renderLib(){
+  const q=norm(($('#q').value||'').trim());
+  const host=$('#lib-groups'); host.innerHTML='';
+  let total=0;
+
+  TOPICS.forEach(tp=>{
+    const rows=Object.entries(LIB).filter(([yt,v])=>{
+      if(v.topic!==tp.id) return false;
+      const scope=TP_SCOPE[tp.id];
+      if(state.scope==='core' && scope!=='core') return false;
+      if(state.scope==='out'  && scope==='core') return false;
+      if(state.scope==='pick' && !v.pick) return false;
+      if(state.scope==='vna'  && v.who!=='VNA') return false;
+      if(q && !norm(v.t+' '+yt+' '+(WHO[v.who]||'')+' '+v.who).includes(q)) return false;
+      return true;
+    });
+    if(!rows.length) return;
+    total+=rows.length;
+    // sắp xếp: bài chọn lên trước
+    rows.sort((a,b)=>(b[1].pick?1:0)-(a[1].pick?1:0));
+
+    const g=document.createElement('section');
+    g.className='lib-group';
+    g.innerHTML=`
+      <div class="lib-h">
+        <span class="n">${tp.n}</span>
+        <h3>${tp.name}</h3>
+        <span class="st ${tp.scope==='core'?'st-core':tp.scope==='cut'?'st-cut':tp.scope==='tool'?'st-tool':'st-out'}">${tp.scope==='core'?'Trong giới hạn':tp.scope==='cut'?'Đã cắt':tp.scope==='tool'?'Bổ trợ':'Ngoài giới hạn'}</span>
+        <span class="c">${rows.length} bài · ${tp.sub.split('·')[0].trim()}</span>
+      </div>
+      ${rows.map(([yt,v],i)=>`
+        <a class="lib-row" href="https://www.youtube.com/watch?v=${yt}" target="_blank" rel="noopener">
+          <span class="lib-i">${String(i+1).padStart(2,'0')}</span>
+          <span class="lib-t">${v.pick?'<em>chọn</em>':''}${v.t}</span>
+          <span class="lib-src${v.who==='VNA'?' vna':''}" title="${WHO[v.who]||v.who}">${v.who}</span>
+          <span class="lib-d">${v.d||'—'}</span>
+          <span class="lib-a">↗</span>
+        </a>`).join('')}`;
+    host.appendChild(g);
+  });
+
+  $('#lib-count').textContent=total?`${total} bài`:'0 bài';
+  if(!total) host.innerHTML=`<div class="empty"><h3>Không tìm thấy bài giảng</h3><p>Thử “thấu kính”, “mạch cầu”, “nhiệt” — không cần gõ dấu.</p></div>`;
+}
+
+/* =========================================================
+   RENDER — NOTES & PAPERS
+========================================================= */
+function renderNotes(){
+  $('#notes').innerHTML=NOTES.map(g=>`
+    <section>
+      <div class="note-h${g.off?' off':''}">
+        <span class="n">${g.n}</span><h3>${g.name}</h3><span class="g">${g.grade}</span>
+      </div>
+      ${g.rows.map(([k,v])=>`<div class="note-row"><span class="note-k">${k}</span><span class="note-f">${v}</span></div>`).join('')}
+      <p class="note-foot">${g.foot}</p>
+    </section>`).join('');
+}
+
+function renderPapers(){
+  $('#papers').innerHTML=PAPERS.map(g=>`
+    <section class="papers-group">
+      <div class="papers-h"><h3>${g.group}</h3><span class="c">${g.sub} · ${g.items.length} đề</span></div>
+      <div class="papers">
+        ${g.items.map(p=>`
+          <article class="paper${p.exam?'':' no-pdf'}">
+            <div class="paper-top"><span>${p.n}</span><span>${p.exam?'PDF':'VIDEO'}</span></div>
+            <h4>${p.t}</h4>
+            ${p.exam?`<div class="paper-links">
+              <a href="https://drive.google.com/file/d/${p.exam}/view" target="_blank" rel="noopener">Đề PDF</a>
+              ${p.sol?`<a href="https://drive.google.com/file/d/${p.sol}/view" target="_blank" rel="noopener">Lời giải</a>`:''}
+              <a href="https://www.youtube.com/watch?v=${p.vid}" target="_blank" rel="noopener">Video chữa</a>
+            </div>`:`<div class="paper-links">
+              <a href="https://www.youtube.com/watch?v=${p.vid}" target="_blank" rel="noopener">Mở video chữa ↗</a>
+            </div>`}
+          </article>`).join('')}
+      </div>
+    </section>`).join('');
+}
+
+/* =========================================================
+   PROGRESS / TABS / EVENTS
+========================================================= */
+function syncProgress(){
+  const days=allDays();
+  const total=days.reduce((a,d)=>a+d.sessions.length,0);
+  const done=days.reduce((a,d)=>a+d.sessions.filter(s=>state.done[sid(d.n,s.n)]).length,0);
+  $('#prog-num').textContent=`${String(done).padStart(2,'0')} / ${total}`;
+  $('#prog-bar').style.width=(total?done/total*100:0)+'%';
+}
+
+function setTab(name){
+  state.tab=name; save();
+  $$('.tab').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===name)));
+  ['plan','map','library','notes','papers'].forEach(k=>{$('#view-'+k).hidden=(k!==name);});
+  if(name==='library') renderLib();
+  if(name==='map') renderMap();
+  if(name==='notes') renderNotes();
+  if(name==='papers') renderPapers();
+  window.scrollTo({top:0,behavior:'instant'});
+}
+$$('.tab').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
+
+document.addEventListener('click',e=>{
+  const d=e.target.closest('[data-done]');
+  if(d){
+    const id=d.dataset.done;
+    if(state.done[id]) delete state.done[id]; else state.done[id]=true;
+    save();
+    const card=d.closest('.session');
+    card.classList.toggle('is-done',!!state.done[id]);
+    d.setAttribute('aria-pressed',String(!!state.done[id]));
+    const dayN=Number(id.slice(1,id.indexOf('s')));
+    const day=allDays().find(x=>x.n===dayN);
+    if(day){
+      const done=day.sessions.filter(s=>state.done[sid(day.n,s.n)]).length;
+      const pct=Math.round(done/day.sessions.length*100);
+      const side=card.closest('.day').querySelector('.day-side');
+      if(side){side.querySelector('.meter i').style.width=pct+'%';side.querySelector('.day-count').textContent=`${done}/${day.sessions.length}`;}
+    }
+    syncProgress(); return;
+  }
+  const v=e.target.closest('[data-seen]');
+  if(v){
+    const k=v.dataset.seen;
+    if(state.seen[k]) delete state.seen[k]; else state.seen[k]=true;
+    save();
+    v.classList.toggle('on',!!state.seen[k]);
+    v.setAttribute('aria-pressed',String(!!state.seen[k]));
+  }
+});
+
+$$('.chip[data-filter]').forEach(b=>{
+  b.setAttribute('aria-pressed',String(b.dataset.filter===state.filter));
+  b.addEventListener('click',()=>{
+    state.filter=b.dataset.filter; save();
+    $$('.chip[data-filter]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.filter===state.filter)));
+    renderPlan();
+  });
+});
+$$('.chip[data-scope]').forEach(b=>{
+  b.addEventListener('click',()=>{
+    state.scope=b.dataset.scope; save();
+    $$('.chip[data-scope]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.scope===state.scope)));
+    renderLib();
+  });
+});
+
+$$('.chip[data-phase]').forEach(b=>{
+  b.setAttribute('aria-pressed',String(b.dataset.phase===state.phase));
+  b.addEventListener('click',()=>{
+    state.phase=b.dataset.phase; save();
+    $$('.chip[data-phase]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.phase===state.phase)));
+    renderPlan();
+  });
+});
+
+$('#q').addEventListener('input',()=>{
+  if(state.tab==='library') renderLib(); else if(state.tab==='plan') renderPlan();
+});
+$('#q').addEventListener('keydown',e=>{
+  if(e.key==='Escape'){$('#q').value='';renderPlan();renderLib();$('#q').blur();}
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='/' && document.activeElement!==$('#q')){e.preventDefault();$('#q').focus();}
+});
+
+/* pomodoro */
+let pmTotal=25*60,pmLeft=pmTotal,pmTimer=null,pmOn=false;
+const pmTime=$('#pomo-time'),pmRun=$('#pomo-run');
+const fmt=s=>`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+function pmPaint(){pmTime.textContent=fmt(pmLeft);pmTime.style.color=(pmOn&&pmLeft<=60)?'var(--accent)':'';}
+function pmStop(){clearInterval(pmTimer);pmTimer=null;pmOn=false;pmRun.dataset.on='0';pmRun.textContent='Chạy';pmPaint();}
+$$('.preset').forEach(b=>b.addEventListener('click',()=>{
+  pmStop(); pmTotal=pmLeft=Number(b.dataset.min)*60;
+  $$('.preset').forEach(x=>x.setAttribute('aria-pressed',String(x===b))); pmPaint();
+}));
+pmRun.addEventListener('click',()=>{
+  if(pmOn){pmStop();return;}
+  pmOn=true;pmRun.dataset.on='1';pmRun.textContent='Dừng';
+  pmTimer=setInterval(()=>{
+    pmLeft--;
+    if(pmLeft<=0){pmStop();pmLeft=pmTotal;pmPaint();pmTime.textContent='00:00';}
+    else pmPaint();
+  },1000);
+});
+$('#pomo-reset').addEventListener('click',()=>{pmStop();pmLeft=pmTotal;pmPaint();});
+
+/* start */
+renderPlan();
+setTab(state.tab||'plan');
+</script>
+</body>
+</html>

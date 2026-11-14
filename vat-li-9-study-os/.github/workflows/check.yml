@@ -1,0 +1,29 @@
+name: Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-and-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Dựng lại index.html từ src/
+        run: python3 src/build.py
+
+      - name: Bản build phải khớp với bản đã commit
+        run: git diff --exit-code -- index.html
+
+      - name: Kiểm tra cú pháp JS/CSS
+        run: node tools/check.js

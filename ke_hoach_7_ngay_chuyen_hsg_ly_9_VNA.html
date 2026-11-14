@@ -1,0 +1,1593 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chiến Dịch 7 Ngày Làm Chủ Vật Lý 9 (HSG KHTN 1 & Thi Chuyên) - Ưu Tiên Thầy Vũ Ngọc Anh (VNA)</title>
+<style>
+  :root {
+    --bg: #0b0f19;
+    --card: #131b2e;
+    --card-hover: #1a2540;
+    --border: #263554;
+    --primary: #38bdf8;
+    --primary-glow: rgba(56, 189, 248, 0.2);
+    --accent: #f59e0b;
+    --success: #10b981;
+    --danger: #f43f5e;
+    --purple: #a855f7;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding-bottom: 60px;
+  }
+  a { color: var(--primary); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* Header */
+  .hero {
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 28px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-container { max-width: 1200px; margin: 0 auto; }
+  .badge-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .badge {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 999px;
+    letter-spacing: 0.5px;
+  }
+  .badge-vna { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+  .badge-chuyen { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); }
+  .badge-hardcore { background: rgba(244, 63, 94, 0.2); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.4); }
+  .hero h1 { font-size: 26px; font-weight: 800; margin-bottom: 8px; color: #fff; }
+  .hero p { color: var(--muted); font-size: 14.5px; max-width: 900px; }
+
+  /* Top Sticky Dashboard */
+  .sticky-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+  }
+  .sticky-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .progress-wrap { flex: 1; min-width: 240px; }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+  .progress-bar-bg {
+    height: 10px;
+    background: #1e293b;
+    border-radius: 999px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .progress-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #38bdf8, #10b981);
+    transition: width 0.3s ease;
+  }
+
+  /* Pomodoro Timer */
+  .pomo-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #1e293b;
+    padding: 6px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+  .pomo-time {
+    font-family: monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent);
+    min-width: 60px;
+  }
+  .btn {
+    background: var(--primary);
+    color: #0b0f19;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 12.5px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-outline {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-outline:hover { background: var(--card-hover); }
+  .btn-accent { background: var(--accent); color: #0b0f19; }
+
+  /* Main Container & Tabs */
+  .container { max-width: 1200px; margin: 24px auto; padding: 0 20px; }
+  .nav-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 14px;
+  }
+  .tab-btn {
+    background: var(--card);
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tab-btn.active {
+    background: var(--primary);
+    color: #0b0f19;
+    border-color: var(--primary);
+    box-shadow: 0 0 15px var(--primary-glow);
+  }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* Alert / Strategic Box */
+  .strategy-box {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(56, 189, 248, 0.08));
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 24px;
+  }
+  .strategy-box h3 { color: #fbbf24; font-size: 16px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .strategy-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+    margin-top: 12px;
+  }
+  .strategy-card {
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 13.5px;
+  }
+  .strategy-card strong { color: var(--primary); }
+
+  /* Mode Switcher */
+  .mode-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: center;
+  }
+  .mode-bar span { font-size: 13.5px; font-weight: 600; color: var(--muted); }
+
+  /* Day Cards */
+  .day-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 22px;
+    overflow: hidden;
+  }
+  .day-header {
+    background: linear-gradient(90deg, #1e293b, #131b2e);
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+  .day-title { font-size: 18px; font-weight: 800; color: #fff; }
+  .day-sub { font-size: 13px; color: var(--primary); font-weight: 600; }
+  .sessions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 14px;
+    padding: 18px;
+  }
+  .session-box {
+    background: #0f1626;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: border-color 0.2s;
+  }
+  .session-box.done {
+    border-color: var(--success);
+    background: rgba(16, 185, 129, 0.06);
+  }
+  .session-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .session-time {
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: rgba(56, 189, 248, 0.15);
+    color: var(--primary);
+  }
+  .session-time.night { background: rgba(168, 85, 247, 0.2); color: #c084fc; }
+  .session-check {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--muted);
+    cursor: pointer;
+    user-select: none;
+  }
+  .session-check input { width: 16px; height: 16px; accent-color: var(--success); cursor: pointer; }
+  .session-name { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+  .session-desc { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+  .video-links {
+    border-top: 1px dashed var(--border);
+    padding-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .v-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(30, 41, 59, 0.7);
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12.5px;
+    border: 1px solid transparent;
+  }
+  .v-link:hover { border-color: var(--primary); text-decoration: none; }
+  .v-tag {
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-right: 6px;
+    flex-shrink: 0;
+  }
+  .v-tag.vna { background: #f59e0b; color: #000; }
+  .v-tag.hsg { background: #38bdf8; color: #000; }
+  .v-tag.pdf { background: #10b981; color: #000; }
+  .v-dur { font-size: 11px; color: var(--muted); margin-left: 8px; flex-shrink: 0; }
+
+  /* Video Library Filter */
+  .filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .lib-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .lib-table th, .lib-table td {
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-size: 13.5px;
+  }
+  .lib-table th { background: #1e293b; color: var(--primary); font-weight: 700; }
+  .lib-table tr:hover { background: var(--card-hover); }
+
+  /* Formula Cheat Sheet */
+  .formula-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 18px;
+  }
+  .formula-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+  }
+  .formula-card h3 {
+    color: var(--accent);
+    font-size: 16px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+  }
+  .formula-item {
+    background: #0f1626;
+    border-left: 3px solid var(--primary);
+    padding: 10px 12px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 10px;
+    font-size: 13.5px;
+  }
+  .formula-item code {
+    display: block;
+    color: #38bdf8;
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-weight: 700;
+    margin: 4px 0;
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-container">
+    <div class="badge-row">
+      <span class="badge badge-vna">★ Ưu Tiên Số 1: Thầy Vũ Ngọc Anh (VNA - Mapstudy)</span>
+      <span class="badge badge-chuyen">HSG KHTN 1 (Vật Lý 9) & Thi Chuyên Lý 10</span>
+      <span class="badge badge-hardcore">Chế Độ: Cày Ngày Cày Đêm (14–15h/Ngày × 7 Ngày)</span>
+    </div>
+    <h1>CHIẾN DỊCH 7 NGÀY LÀM CHỦ TOÀN BỘ VẬT LÝ 9 (HSG & CHUYÊN)</h1>
+    <p>Lộ trình thiết kế riêng theo đúng 2 bảng giới hạn chương trình của bạn: Kết hợp tư duy bản chất, đồ thị, giải nhanh đỉnh cao của <strong>Thầy Vũ Ngọc Anh (VNA)</strong> và các chuyên đề tự luận nâng cao đặc thù của <strong>HSG KHTN 9 & Thi Chuyên Vật Lý</strong>.</p>
+  </div>
+</div>
+
+<div class="sticky-bar">
+  <div class="sticky-inner">
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span>Tiến độ hoàn thành Chiến dịch 7 Ngày (28 Ca cày):</span>
+        <span id="prog-text">0 / 28 Ca (0%)</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="prog-fill"></div>
+      </div>
+    </div>
+    <div class="pomo-box">
+      <span style="font-size:12px;font-weight:700;color:#94a3b8;">⏱ POMODORO CÀY ĐÊM:</span>
+      <span class="pomo-time" id="pomo-display">50:00</span>
+      <button class="btn" onclick="togglePomo()" id="pomo-btn">Bắt đầu</button>
+      <button class="btn btn-outline" onclick="resetPomo(50)">50p</button>
+      <button class="btn btn-outline" onclick="resetPomo(90)">90p</button>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="strategy-box">
+    <h3>⚡ GIẢI MÃ CHIẾN THUẬT TỪ 2 BỨC ẢNH GIỚI HẠN CHƯƠNG TRÌNH CỦA BẠN</h3>
+    <p style="font-size:13.5px; color:#e2e8f0;">
+      Qua đối chiếu <strong>Ảnh 1</strong> (Chi tiết Chủ đề 1, 2, 3) và <strong>Ảnh 2</strong> (Tổng quan 4 Chủ đề KHTN 1 kèm ghi chú vàng <em>"Cắt bỏ phần chuyển động và áp suất"</em>), đây là bẫy chết người mà 90% học sinh mắc phải và cách chúng ta xử lý gọn trong 7 ngày:
+    </p>
+    <div class="strategy-grid">
+      <div class="strategy-card">
+        <strong>1. Trọng tâm bất khả xâm phạm (Chiếm 70-80% điểm):</strong><br>
+        <strong>Chủ đề 3 (Năng lượng cơ học)</strong> & <strong>Chủ đề 4 (Quang hình học)</strong> xuất hiện ở cả đề HSG (dù có cắt giảm) lẫn đề Thi Chuyên. Do đó <strong>Ngày 1, 2, 3, 4</strong> (4 ngày đầu tiên khi não sung sức nhất) sẽ dồn hỏa lực cày nát 2 chủ đề này cùng hệ công cụ Lực của thầy VNA!
+      </div>
+      <div class="strategy-card">
+        <strong>2. Tại sao KHÔNG ĐƯỢC BỎ "Tổng hợp lực" & "Archimedes"?</strong><br>
+        Ngay cả khi đề HSG địa phương cắt câu hỏi riêng về Chuyển động & Áp suất, thì trong <strong>Chủ đề 3 (Công của lực biến thiên & Máy cơ đơn giản)</strong>, đề thi HSG luôn ra bài toán: <em>Kéo/nhấn vật chìm trong nước (Lực đẩy Archimedes biến thiên theo độ sâu -> tính Công của lực biến thiên)</em> hoặc <em>Phân tích lực trên mặt phẳng nghiêng, ròng rọc</em>!
+      </div>
+      <div class="strategy-card">
+        <strong>3. Cách học Thầy Vũ Ngọc Anh (VNA) hiệu quả gấp 3 lần:</strong><br>
+        Thầy VNA có cả bài giảng trực tiếp <strong>Vật lý 8, 9 (Tổng hợp lực, Áp lực, Khúc xạ, Thấu kính hội tụ)</strong> lẫn các chuyên đề <strong>Vật lý 10, 11 (Động học, Hợp lực, Công - Cơ năng, Đồ thị lực biến thiên, Thấu kính khó)</strong> trùng khít 100% với toán HSG/Chuyên Lý 9. Xem VNA ở tốc độ <strong>1.25x - 1.5x</strong> để nạp tư duy bản chất, sau đó cày bài tập tự luận HSG 9!
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="switchTab('tab-plan', this)">📅 Lộ Trình 7 Ngày (28 Ca Cày Ngày Đêm)</button>
+    <button class="tab-btn" onclick="switchTab('tab-videos', this)">🎬 Kho 42+ Video Bài Giảng Đã Crawl (VNA + HSG 9)</button>
+    <button class="tab-btn" onclick="switchTab('tab-formulas', this)">🧠 Sổ Tay Bản Chất & Tuyệt Chiêu Giải Nhanh VNA</button>
+    <button class="tab-btn" onclick="switchTab('tab-pdfs', this)">📄 Kho Đề PDF & Tài Liệu Mapstudy</button>
+  </div>
+
+  <!-- TAB 1: 7-DAY PLAN -->
+  <div id="tab-plan" class="tab-content active">
+    <div class="mode-bar">
+      <span>Lọc lộ trình theo mục tiêu ưu tiên:</span>
+      <button class="btn" onclick="filterDays('all')">Tất cả 7 Ngày (Full Chuyên + HSG: Chủ đề 1, 2, 3, 4)</button>
+      <button class="btn btn-outline" onclick="filterDays('core')">Ưu tiên Trọng tâm Ảnh 2 (Năng lượng cơ học + Quang hình + Hợp lực)</button>
+      <button class="btn btn-outline" onclick="resetProgress()">Xoá tích làm lại</button>
+    </div>
+
+    <!-- NGÀY 1 -->
+    <div class="day-card" data-type="core">
+      <div class="day-header">
+        <div>
+          <div class="day-title">NGÀY 1: NỀN TẢNG LỰC VNA & CÔNG - CÔNG SUẤT - CÔNG CỦA LỰC BIẾN THIÊN</div>
+          <div class="day-sub">Mục tiêu: Làm chủ Phân tích/Tổng hợp lực (Chủ đề 2) + Công, Công suất & Tuyệt chiêu Đồ thị Công của lực biến thiên (Chủ đề 3)</div>
+        </div>
+        <span class="badge badge-vna">Trọng tâm Số 1 • 14.5 Giờ</span>
+      </div>
+      <div class="sessions-grid">
+        <div class="session-box" id="sec-d1s1">
+          <div>
+            <div class="session-top">
+              <span class="session-time">CA SÁNG (07:00 – 11:30)</span>
+              <label class="session-check"><input type="checkbox" onchange="toggleSession('d1s1', this)"> Hoàn thành</label>
+            </div>
+            <div class="session-name">1. Phân tích & Tổng hợp lực – Điều kiện cân bằng</div>
+            <div class="session-desc">Vũ khí bắt buộc trước khi học Cơ năng & Máy cơ đơn giản. Học trực tiếp từ bài giảng Vật lý 8 và Vật lý 10 XPS của thầy Vũ Ngọc Anh: Quy tắc hình bình hành, phép chiếu vector lực, cân bằng moment.</div>
+          </div>
+          <div class="video-links">
+            <a class="v-link" href="https://www.youtube.com/watch?v=cBFLWKPH7y4" target="_blank"><span><span class="v-tag vna">VNA</span>Vật Lý 8 - Tổng hợp lực và phân tích lực (Bản Full)</span><span class="v-dur">1:17:51</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=x74-khjrigM" target="_blank"><span><span class="v-tag vna">VNA</span>[2K10 XPS] Quy Tắc Tổng Hợp Lực (Hay Nhất)</span><span class="v-dur">24:29</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=HxhgnLEIacU" target="_blank"><span><span class="v-tag vna">VNA</span>Vật Lý 10 - Quy tắc tổng hợp lực nâng cao</span><span class="v-dur">1:02:30</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=fZTBmVe2MWw" target="_blank"><span><span class="v-tag vna">VNA</span>Điều kiện cân bằng của vật (Moment & Đòn bẩy)</span><span class="v-dur">49:01</span></a>
+          </div>
+        </div>
+
+        <div class="session-box" id="sec-d1s2">
+          <div>
+            <div class="session-top">
+              <span class="session-time">CA CHIỀU (13:30 – 17:30)</span>
+              <label class="session-check"><input type="checkbox" onchange="toggleSession('d1s2', this)"> Hoàn thành</label>
+            </div>
+            <div class="session-name">2. Công & Công Suất (Từ bản chất đến HSG KHTN 9)</div>
+            <div class="session-desc">Hiểu bản chất công cơ học A = F.s.cosα, công phát động, công cản, công suất tức thời & trung bình P = F.v. Cày trọn bộ dạng bài Công - Công suất sách mới.</div>
+          </div>
+          <div class="video-links">
+            <a class="v-link" href="https://www.youtube.com/watch?v=U0Sp652BTfs" target="_blank"><span><span class="v-tag hsg">HSG 9</span>BD HSG KHTN 9 (Sách mới): Chuyên đề Công - Công Suất</span><span class="v-dur">2:00:08</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=wqmQaooh0oE" target="_blank"><span><span class="v-tag hsg">Lý 10</span>Bài 1: Công và Công suất (Bản chất & Các dạng toán)</span><span class="v-dur">1:12:49</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=cgu2C6KTUq8" target="_blank"><span><span class="v-tag hsg">KHTN 9</span>KHTN 9 Vật Lí - Bài toán Công & Công suất</span><span class="v-dur">44:54</span></a>
+          </div>
+        </div>
+
+        <div class="session-box" id="sec-d1s3">
+          <div>
+            <div class="session-top">
+              <span class="session-time">CA TỐI (19:00 – 22:30)</span>
+              <label class="session-check"><input type="checkbox" onchange="toggleSession('d1s3', this)"> Hoàn thành</label>
+            </div>
+            <div class="session-name">3. Tuyệt chiêu "Công của lực biến thiên" & Đồ thị F(x)</div>
+            <div class="session-desc">Đây là câu phân loại 9-10 điểm trong đề HSG 9! Dùng tư duy diện tích hình thang/tam giác dưới đồ thị F-x của thầy VNA để giải: (1) Lực đàn hồi/lực kéo biến thiên bậc nhất, (2) Công nhấn chìm/kéo vật nổi khỏi mặt chất lỏng!</div>
+          </div>
+          <div class="video-links">
+            <a class="v-link" href="https://www.youtube.com/watch?v=JVp9vwlgHCU" target="_blank"><span><span class="v-tag vna">VNA</span>Đỉnh Cao Đồ Thị Lực Đàn Hồi (Tư duy Lực biến thiên)</span><span class="v-dur">1:06:17</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=iNyh6mnOEeU" target="_blank"><span><span class="v-tag vna">VNA</span>[Nâng Cao] Đồ thị lực và năng lượng đặc biệt</span><span class="v-dur">1:13:26</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=KVybYC7dCG4" target="_blank"><span><span class="v-tag vna">VNA</span>Giải toán tỉ lệ - Phương pháp quan trọng trong Vật Lý</span><span class="v-dur">26:00</span></a>
+          </div>
+        </div>
+
+        <div class="session-box" id="sec-d1s4">
+          <div>
+            <div class="session-top">
+              <span class="session-time night">CA ĐÊM (22:45 – 01:15)</span>
+              <label class="session-check"><input type="checkbox" onchange="toggleSession('d1s4', this)"> Hoàn thành</label>
+            </div>
+            <div class="session-name">4. Thực chiến tự giải 15 bài Công & Lực biến thiên</div>
+            <div class="session-desc">Cày đề Giữa Kì 2 Lớp 10 của thầy VNA (chuyên đề Công, Công suất, Hiệu suất máy bơm, mặt phẳng nghiêng) và tự tay trình bày tự luận 5 bài toán kéo vật khỏi mặt nước.</div>
+          </div>
+          <div class="video-links">
+            <a class="v-link" href="https://www.youtube.com/watch?v=Hz7mB5D_R5k" target="_blank"><span><span class="v-tag vna">VNA</span>Chữa Đề Giữa HK2 Lý 10 - Đề Số 1 (Công, Công suất, Cơ năng)</span><span class="v-dur">1:07:35</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=kBnODOadung" target="_blank"><span><span class="v-tag vna">VNA</span>Chữa Đề Giữa HK2 Lý 10 - Đề Số 2</span><span class="v-dur">1:08:19</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NGÀY 2 -->
+    <div class="day-card" data-type="core">
+      <div class="day-header">
+        <div>
+          <div class="day-title">NGÀY 2: MÁY CƠ ĐƠN GIẢN – ĐỘNG NĂNG, THẾ NĂNG & ĐỊNH LUẬT BẢO TOÀN CƠ NĂNG</div>
+          <div class="day-sub">Mục tiêu: Xử đẹp trọn vẹn Chủ đề 3 (Máy cơ đơn giản, Cơ năng, Bảo toàn & Biến thiên cơ năng có ma sát)</div>
+        </div>
+        <span class="badge badge-vna">Trọng tâm Số 1 • 14.5 Giờ</span>
+      </div>
+      <div class="sessions-grid">
+        <div class="session-box" id="sec-d2s1">
+          <div>
+            <div class="session-top">
+              <span class="session-time">CA SÁNG (07:00 – 11:30)</span>
+              <label class="session-check"><input type="checkbox" onchange="toggleSession('d2s1', this)"> Hoàn thành</label>
+            </div>
+            <div class="session-name">1. Hệ Máy cơ đơn giản nâng cao (MP nghiêng, Đòn bẩy, Hệ ròng rọc)</div>
+            <div class="session-desc">Nắm quy tắc vàng: Liên hệ quãng đường s1, s2 của ròng rọc động, điều kiện cân bằng đòn bẩy có kể trọng lượng thanh, hiệu suất H = A_ích / A_tp khi có ma sát.</div>
+          </div>
+          <div class="video-links">
+            <a class="v-link" href="https://www.youtube.com/watch?v=2clTBf-WnU0" target="_blank"><span><span class="v-tag hsg">HSG 9</span>Tuyển tập bài tập Máy cơ đơn giản hay nhất (HSG 8, 9)</span><span class="v-dur">1:17:37</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=Fj2u23EZjfw" target="_blank"><span><span class="v-tag hsg">HSG 9</span>Chuyên đề Các máy cơ đơn giản nâng cao & Chuyên Lý</span><span class="v-dur">45:40</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=xQIIOCm07r0" target="_blank"><span><span class="v-tag hsg">HSG 9</span>Chuyên đề Đòn Bẩy nâng cao</span><span class="v-dur">17:03</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=awF2wkzHGeg" target="_blank"><span><span class="v-tag hsg">HSG 9</span>Chuyên đề Mặt Phẳng Nghiêng nâng cao</span><span class="v-dur">18:15</span></a>
+          </div>
+        </div>
+
+        <div class="session-box" id="sec-d2s2">
+          <div>
+            <div class="session-top">
+              <span class="session-time">CA CHIỀU (13:30 – 17:30)</span>
+              <label class="session-check"><input type="checkbox" onchange="toggleSession('d2s2', this)"> Hoàn thành</label>
+            </div>
+            <div class="session-name">2. Động năng – Thế năng trọng trường – Cơ năng</div>
+            <div class="session-desc">Làm chủ Wđ = ½mv², Wt = mgh (chọn mốc thế năng thông minh), Định lý biến thiên động năng (ΔWđ = A_ngoại lực) giúp giải cực nhanh mọi bài toán có lực cản!</div>
+          </div>
+          <div class="video-links">
+            <a class="v-link" href="https://www.youtube.com/watch?v=uGzBxGegii4" target="_blank"><span><span class="v-tag hsg">HSG 9</span>Vật Lý 9 Nâng Cao - Chuyên đề Động năng, Thế năng, Cơ năng</span><span class="v-dur">31:00</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=gx_8WVo9xi4" target="_blank"><span><span class="v-tag hsg">KHTN 9</span>KHTN 9 Vật Lí - Bài tập Động năng, Thế năng, Cơ năng</span><span class="v-dur">1:30:31</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=0gr99JymKZY" target="_blank"><span><span class="v-tag hsg">Lý 10</span>Động năng và Thế năng (Bản đầy đủ các dạng)</span><span class="v-dur">1:20:55</span></a>
+          </div>
+        </div>
+
+        <div class="session-box" id="sec-d2s3">
+          <div>
+            <div class="session-top">
+              <span class="session-time">CA TỐI (19:00 – 22:30)</span>
+              <label class="session-check"><input type="checkbox" onchange="toggleSession('d2s3', this)"> Hoàn thành</label>
+            </div>
+            <div class="session-name">3. Định luật Bảo toàn cơ năng & Con lắc đơn / Mặt cong</div>
+            <div class="session-desc">Các mô hình kinh điển thi Chuyên & HSG: Vật trượt từ đỉnh dốc xuống mặt phẳng ngang có ma sát, con lắc đơn (v = √[2gl(cosα - cosα0)]), hệ 2 vật nối dây qua ròng rọc dùng bảo toàn cơ năng.</div>
+          </div>
+          <div class="video-links">
+            <a class="v-link" href="https://www.youtube.com/watch?v=NW70ec09CAw" target="_blank"><span><span class="v-tag hsg">Chuyên</span>Phương pháp giải các dạng bài tập Cơ năng & Bảo toàn cơ năng</span><span class="v-dur">1:16:10</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=BclCKfaNoZc" target="_blank"><span><span class="v-tag hsg">Lý 10</span>Bảo toàn cơ năng (Năng lượng) chuyên sâu</span><span class="v-dur">1:11:31</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=3sE5RuhEmTg" target="_blank"><span><span class="v-tag vna">VNA</span>Năng lượng và sự chuyển hóa Động năng - Thế năng</span><span class="v-dur">1:12:20</span></a>
+          </div>
+        </div>
+
+        <div class="session-box" id="sec-d2s4">
+          <div>
+            <div class="session-top">
+              <span class="session-time night">CA ĐÊM (22:45 – 01:15)</span>
+              <label class="session-check"><input type="checkbox" onchange="toggleSession('d2s4', this)"> Hoàn thành</label>
+            </div>
+            <div class="session-name">4. Cày chuỗi Đề Cơ Năng của Thầy VNA (SGK Mới)</div>
+            <div class="session-desc">Thực chiến chuỗi đề Giữa Kì 2 & Cuối Kì 2 Vật Lý 10 của thầy VNA để rèn phản xạ tính nhanh vận tốc, độ cao cực đại, công lực ma sát trong 30 giây.</div>
+          </div>
+          <div class="video-links">
+            <a class="v-link" href="https://www.youtube.com/watch?v=lI1MbzzMKfc" target="_blank"><span><span class="v-tag vna">VNA</span>[Lý 10 SGK Mới] Đề Ôn Tập Giữa HK2 - Đề 2 (Cơ năng)</span><span class="v-dur">47:56</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=G_AVHzNjbS0" target="_blank"><span><span class="v-tag vna">VNA</span>[Lý 10 SGK Mới] Đề Ôn Tập Giữa HK2 - Đề 3</span><span class="v-dur">42:24</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=vbn20m8cOX8" target="_blank"><span><span class="v-tag vna">VNA</span>[Lý 10 SGK Mới] Đề Ôn Tập Giữa HK2 - Đề 4</span><span class="v-dur">41:16</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=7nklCEJrsVQ" target="_blank"><span><span class="v-tag vna">VNA</span>[Lý 10 SGK Mới] Đề Ôn Tập Giữa HK2 - Đề 5</span><span class="v-dur">41:55</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NGÀY 3 -->
+    <div class="day-card" data-type="core">
+      <div class="day-header">
+        <div>
+          <div class="day-title">NGÀY 3: QUANG HÌNH HỌC (PHẦN 1) – KHÚC XẠ ÁNH SÁNG, PHẢN XẠ TOÀN PHẦN & LĂNG KÍNH</div>
+          <div class="day-sub">Mục tiêu: Làm chủ nửa đầu Chủ đề 4 cùng chuỗi bài giảng Quang học cực hay của Thầy Vũ Ngọc Anh (VNA)</div>
+        </div>
+        <span class="badge badge-vna">Trọng tâm Số 1 • 14.5 Giờ</span>
+      </div>
+      <div class="sessions-grid">
+        <div class="session-box" id="sec-d3s1">
+          <div>
+            <div class="session-top">
+              <span class="session-time">CA SÁNG (07:00 – 11:30)</span>
+              <label class="session-check"><input type="checkbox" onchange="toggleSession('d3s1', this)"> Hoàn thành</label>
+            </div>
+            <div class="session-name">1. Khúc xạ ánh sáng Lớp 9 & Nâng cao (Chuỗi 4 Video Thầy VNA)</div>
+            <div class="session-desc">Học trực tiếp chuỗi 3 buổi Khúc xạ ánh sáng Lớp 9 + 1 buổi Khúc xạ nâng cao của thầy Vũ Ngọc Anh: Định luật Snell n1.sini = n2.sinr, bài toán bóng của cọc dưới đáy bể nước, lưỡng chất phẳng (h' = h.n2/n1), bản mặt song song.</div>
+          </div>
+          <div class="video-links">
+            <a class="v-link" href="https://www.youtube.com/watch?v=6VwyPVWh4Yo" target="_blank"><span><span class="v-tag vna">VNA</span>Vật Lý 9 - Chương 3 - Khúc xạ Ánh Sáng (Phần 1)</span><span class="v-dur">25:47</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=zzBWJwfcv-g" target="_blank"><span><span class="v-tag vna">VNA</span>Vật Lý 9 - Chương 3 - Khúc xạ Ánh Sáng (Phần 2)</span><span class="v-dur">29:37</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=RFUdeSFyJSY" target="_blank"><span><span class="v-tag vna">VNA</span>Vật Lý 9 - Chương 3 - Khúc xạ Ánh Sáng (Phần 3)</span><span class="v-dur">32:27</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=fxVflcyHPUI" target="_blank"><span><span class="v-tag vna">VNA</span>Chuyên đề Khúc xạ ánh sáng Nâng cao (Đầy đủ các dạng)</span><span class="v-dur">1:14:41</span></a>
+          </div>
+        </div>
+
+        <div class="session-box" id="sec-d3s2">
+          <div>
+            <div class="session-top">
+              <span class="session-time">CA CHIỀU (13:30 – 17:30)</span>
+              <label class="session-check"><input type="checkbox" onchange="toggleSession('d3s2', this)"> Hoàn thành</label>
+            </div>
+            <div class="session-name">2. Phản xạ toàn phần – Góc giới hạn (Thầy VNA)</div>
+            <div class="session-desc">Điều kiện phản xạ toàn phần (n1 > n2 và i ≥ i_gh với sin i_gh = n2/n1). Bài toán kinh điển thi HSG 9: Nguồn sáng điểm đặt dưới đáy bể nước và tấm gỗ tròn chắn sáng tối thiểu!</div>
+          </div>
+          <div class="video-links">
+            <a class="v-link" href="https://www.youtube.com/watch?v=oPOb4zvJw3U" target="_blank"><span><span class="v-tag vna">VNA</span>Chuyên đề Phản xạ toàn phần - Thầy VNA (Bản Full)</span><span class="v-dur">1:06:08</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=MelzmWLw1rc" target="_blank"><span><span class="v-tag hsg">KHTN 9</span>KHTN 9 Vật Lí - Phản xạ toàn phần & Bài tập</span><span class="v-dur">33:59</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=RwCCg8Kmg_Q" target="_blank"><span><span class="v-tag hsg">Chuyên</span>Ảnh của vật qua Lưỡng chất phẳng (Nhìn cá dưới nước)</span><span class="v-dur">23:58</span></a>
+          </div>
+        </div>
+
+        <div class="session-box" id="sec-d3s3">
+          <div>
+            <div class="session-top">
+              <span class="session-time">CA TỐI (19:00 – 22:30)</span>
+              <label class="session-check"><input type="checkbox" onchange="toggleSession('d3s3', this)"> Hoàn thành</label>
+            </div>
+            <div class="session-name">3. Lăng kính & Gương phẳng nâng cao</div>
+            <div class="session-desc">Làm chủ 4 công thức lăng kính: sini1 = n.sinr1; sini2 = n.sinr2; A = r1 + r2; D = i1 + i2 - A và góc lệch cực tiểu D_min. Bổ sung kỹ năng vẽ đường truyền tia sáng qua hệ 2 gương phẳng (thi Chuyên).</div>
+          </div>
+          <div class="video-links">
+            <a class="v-link" href="https://www.youtube.com/watch?v=g65Ymv_gCd0" target="_blank"><span><span class="v-tag hsg">Chuyên</span>Phương pháp giải các dạng bài tập Lăng Kính</span><span class="v-dur">55:24</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=6I-ovhL5SXU" target="_blank"><span><span class="v-tag hsg">Chuyên</span>Chuyên đề Lăng Kính - Thầy Phạm Quốc Toản</span><span class="v-dur">39:29</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=hryvdb9MluE" target="_blank"><span><span class="v-tag hsg">HSG 9</span>HSG & Chuyên Lý: Vẽ đường đi tia sáng qua Hệ Gương Phẳng</span><span class="v-dur">18:19</span></a>
+          </div>
+        </div>
+
+        <div class="session-box" id="sec-d3s4">
+          <div>
+            <div class="session-top">
+              <span class="session-time night">CA ĐÊM (22:45 – 01:15)</span>
+              <label class="session-check"><input type="checkbox" onchange="toggleSession('d3s4', this)"> Hoàn thành</label>
+            </div>
+            <div class="session-name">4. Thực chiến Bài tập Khúc xạ - Phản xạ toàn phần - Lăng kính</div>
+            <div class="session-desc">Tổng ôn chiết suất và giải bộ câu hỏi vận dụng cao Khúc xạ - Phản xạ toàn phần - Lăng kính.</div>
+          </div>
+          <div class="video-links">
+            <a class="v-link" href="https://www.youtube.com/watch?v=kmZWG0T25rk" target="_blank"><span><span class="v-tag hsg">Chuyên</span>Tổng ôn Khúc xạ & Phản xạ toàn phần nâng cao</span><span class="v-dur">1:18:07</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=a-z0nBrFH5I" target="_blank"><span><span class="v-tag hsg">KHTN 9</span>Ôn tập chiết suất & Sửa bài tập Khúc xạ ánh sáng</span><span class="v-dur">31:33</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NGÀY 4 -->
+    <div class="day-card" data-type="core">
+      <div class="day-header">
+        <div>
+          <div class="day-title">NGÀY 4: QUANG HÌNH HỌC (PHẦN 2) – THẤU KÍNH HỘI TỤ, PHÂN KÌ & HỆ QUANG HỌC ĐỈNH CAO</div>
+          <div class="day-sub">Mục tiêu: Làm chủ toàn bộ các dạng Thấu kính hay và khó (Vẽ trục phụ, dịch chuyển vật-màn, vệt sáng, hệ thấu kính-gương)</div>
+        </div>
+        <span class="badge badge-vna">Trọng tâm Số 1 • 15 Giờ</span>
+      </div>
+      <div class="sessions-grid">
+        <div class="session-box" id="sec-d4s1">
+          <div>
+            <div class="session-top">
+              <span class="session-time">CA SÁNG (07:00 – 11:30)</span>
+              <label class="session-check"><input type="checkbox" onchange="toggleSession('d4s1', this)"> Hoàn thành</label>
+            </div>
+            <div class="session-name">1. Thấu kính Hội tụ & Bài tập Thấu kính Hay và Khó (Thầy VNA)</div>
+            <div class="session-desc">Xem ngay 2 bài giảng cực phẩm của thầy Vũ Ngọc Anh: Nắm trọn bản chất tạo ảnh, chứng minh hình học kết hợp công thức thấu kính 1/f = 1/d + 1/d' và số phóng đại k = -d'/d.</div>
+          </div>
+          <div class="video-links">
+            <a class="v-link" href="https://www.youtube.com/watch?v=XUNfCLJnjws" target="_blank"><span><span class="v-tag vna">VNA</span>Vật Lý 9 - Thấu Kính Hội Tụ (Thầy Vũ Ngọc Anh)</span><span class="v-dur">1:15:03</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=dQV8P_485yA" target="_blank"><span><span class="v-tag vna">VNA</span>Bài tập về Thấu Kính Hay và Khó - Thầy VNA (Siêu phẩm)</span><span class="v-dur">1:01:20</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=XfZDMdQ90O8" target="_blank"><span><span class="v-tag hsg">HSG 9</span>Thấu kính lớp 9 - Bồi dưỡng HSG phần Quang học</span><span class="v-dur">29:30</span></a>
+          </div>
+        </div>
+
+        <div class="session-box" id="sec-d4s2">
+          <div>
+            <div class="session-top">
+              <span class="session-time">CA CHIỀU (13:30 – 17:30)</span>
+              <label class="session-check"><input type="checkbox" onchange="toggleSession('d4s2', this)"> Hoàn thành</label>
+            </div>
+            <div class="session-name">2. Tuyệt chiêu Vẽ Hình bằng Trục Phụ & Khôi phục Quang tâm/Tiêu điểm</div>
+            <div class="session-desc">Dạng bài 100% có trong đề tự luận HSG 9 & Chuyên Lý: Cho tia tới/tia ló bất kỳ hoặc vị trí vật - ảnh, hãy bằng phép vẽ xác định quang tâm O, trục chính, tiêu điểm F, F'.</div>
+          </div>
+          <div class="video-links">
+            <a class="v-link" href="https://www.youtube.com/watch?v=fJrlfj9gwQw" target="_blank"><span><span class="v-tag hsg">HSG 9</span>(P1) Tuyệt chiêu Vẽ hình Thấu kính & Phương pháp Trục phụ</span><span class="v-dur">58:09</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=XhuV2S1PS0I" target="_blank"><span><span class="v-tag hsg">HSG 9</span>(P2) Xác định Quang tâm, Tiêu cự, Dựng ảnh nâng cao</span><span class="v-dur">1:09:02</span></a>
+          </div>
+        </div>
+
+        <div class="session-box" id="sec-d4s3">
+          <div>
+            <div class="session-top">
+              <span class="session-time">CA TỐI (19:00 – 22:30)</span>
+              <label class="session-check"><input type="checkbox" onchange="toggleSession('d4s3', this)"> Hoàn thành</label>
+            </div>
+            <div class="session-name">3. Bài toán Dịch chuyển Vật - Thấu kính - Màn (Nguyên lý Bessel) & Vệt sáng</div>
+            <div class="session-desc">Xử lý 3 dạng toán khó nhất về Thấu kính: (1) Cố định vật và màn cách nhau L ≥ 4f, tìm 2 vị trí thấu kính cho ảnh rõ nét trên màn; (2) Dịch chuyển vật/thấu kính với vận tốc v; (3) Đường kính vệt sáng trên màn.</div>
+          </div>
+          <div class="video-links">
+            <a class="v-link" href="https://www.youtube.com/watch?v=XDjfEadigTM" target="_blank"><span><span class="v-tag hsg">HSG 9</span>(P3) Tư duy Định lượng & Biện luận Hệ Vật - Màn</span><span class="v-dur">1:09:17</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=kBJHUQfVbC4" target="_blank"><span><span class="v-tag hsg">HSG 9</span>(P4) Phương pháp giải Bài toán Dịch chuyển Vật - Ảnh</span><span class="v-dur">1:15:48</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=_G23Jp8fjQ8" target="_blank"><span><span class="v-tag hsg">HSG 9</span>(P6) Bài toán Vận tốc ảnh & Dịch chuyển vuông góc</span><span class="v-dur">35:02</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=XnbrWAL96Zs" target="_blank"><span><span class="v-tag hsg">HSG 9</span>(P7) Tuyệt chiêu giải bài toán Vệt sáng trên màn</span><span class="v-dur">58:42</span></a>
+          </div>
+        </div>
+
+        <div class="session-box" id="sec-d4s4">
+          <div>
+            <div class="session-top">
+              <span class="session-time night">CA ĐÊM (22:45 – 01:15)</span>
+              <label class="session-check"><input type="checkbox" onchange="toggleSession('d4s4', this)"> Hoàn thành</label>
+            </div>
+            <div class="session-name">4. Quang hệ: Hệ 2 Thấu kính, Hệ Thấu kính - Gương phẳng & Mắt (Thầy VNA)</div>
+            <div class="session-desc">Sơ đồ tạo ảnh nối tiếp: AB → A1B1 (qua L1, d1, d'1) → A2B2 (qua L2 hoặc Gương, với d2 = l - d'1). Kết hợp bài giảng Mắt và tật của mắt cực hay của thầy VNA.</div>
+          </div>
+          <div class="video-links">
+            <a class="v-link" href="https://www.youtube.com/watch?v=mHbk1C4AEM8" target="_blank"><span><span class="v-tag hsg">HSG 9</span>Phương pháp giải Bài tập Hệ Thấu Kính (Siêu chi tiết)</span><span class="v-dur">41:04</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=I1JRsAY6hc4" target="_blank"><span><span class="v-tag hsg">HSG 9</span>Ôn thi HSG THCS - Hệ Thấu Kính & Gương Phẳng</span><span class="v-dur">09:30</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=_W-wi9w-c8g" target="_blank"><span><span class="v-tag vna">VNA</span>Bài tập hay và khó về Mắt và tật của Mắt - Thầy VNA</span><span class="v-dur">1:00:45</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NGÀY 5 -->
+    <div class="day-card" data-type="full">
+      <div class="day-header">
+        <div>
+          <div class="day-title">NGÀY 5: CHỦ ĐỀ 2 – ÁP SUẤT RẮN, LỎNG, KHÍ, BÌNH THÔNG NHAU & LỰC ĐẨY ARCHIMEDES</div>
+          <div class="day-sub">Mục tiêu: Làm chủ toàn bộ Thủy tĩnh học (Bắt buộc cho Ảnh 1 + Thi Chuyên + Bài toán Công lực đẩy Archimedes ở Chủ đề 3)</div>
+        </div>
+        <span class="badge badge-chuyen">Chủ đề 2 (Ảnh 1 & Thi Chuyên) • 14 Giờ</span>
+      </div>
+      <div class="sessions-grid">
+        <div class="session-box" id="sec-d5s1">
+          <div>
+            <div class="session-top">
+              <span class="session-time">CA SÁNG (07:00 – 11:30)</span>
+              <label class="session-check"><input type="checkbox" onchange="toggleSession('d5s1', this)"> Hoàn thành</label>
+            </div>
+            <div class="session-name">1. Áp lực – Áp suất chất rắn, chất lỏng, chất khí (Chuỗi bài giảng Thầy VNA)</div>
+            <div class="session-desc">Học trọn bộ chuỗi bài giảng gốc của thầy Vũ Ngọc Anh (VNA) về Áp lực (Vật lý 8), Áp suất chất lỏng p = p0 + d.h, Áp suất khí quyển và kỹ năng xử lý cột chất lỏng.</div>
+          </div>
+          <div class="video-links">
+            <a class="v-link" href="https://www.youtube.com/watch?v=uK_KYJ0-A-M" target="_blank"><span><span class="v-tag vna">VNA</span>Vật lý 8 - Buổi 6: Áp lực & Áp suất chất rắn (Thầy VNA)</span><span class="v-dur">1:33:25</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=Pg-0WK0_gco" target="_blank"><span><span class="v-tag vna">VNA</span>0202 Lý thuyết Áp suất chất lỏng - Thầy Vũ Ngọc Anh</span><span class="v-dur">24:22</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=ysDMA00UDzI" target="_blank"><span><span class="v-tag vna">VNA</span>0202 Lý thuyết Áp suất khí quyển - Thầy Vũ Ngọc Anh</span><span class="v-dur">34:33</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=Qf8eeFchqCM" target="_blank"><span><span class="v-tag vna">VNA</span>Luyện tập Kĩ năng giải bài toán Áp suất chất khí, chất lỏng</span><span class="v-dur">1:08:31</span></a>
+          </div>
+        </div>
+
+        <div class="session-box" id="sec-d5s2">
+          <div>
+            <div class="session-top">
+              <span class="session-time">CA CHIỀU (13:30 – 17:30)</span>
+              <label class="session-check"><input type="checkbox" onchange="toggleSession('d5s2', this)"> Hoàn thành</label>
+            </div>
+            <div class="session-name">2. Bình thông nhau nhiều nhánh & Máy nén thủy lực</div>
+            <div class="session-desc">Nguyên tắc chọn mặt đẳng áp nằm ngang ở phần chất lỏng đồng nhất thấp nhất (pA = pB). Các bài toán đổ thêm chất lỏng không trộn lẫn, có pit-tông nhẹ hoặc có trọng lượng đè lên nhánh.</div>
+          </div>
+          <div class="video-links">
+            <a class="v-link" href="https://www.youtube.com/watch?v=w8pNPplgMAA" target="_blank"><span><span class="v-tag hsg">HSG 9</span>Chuyên đề Áp suất - Bình thông nhau nâng cao (HSG & Chuyên)</span><span class="v-dur">1:16:39</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=plVNWJyHoHM" target="_blank"><span><span class="v-tag hsg">KHTN</span>BD HSG KHTN (Sách mới): Áp suất, Bình thông nhau, Archimedes</span><span class="v-dur">1:23:20</span></a>
+          </div>
+        </div>
+
+        <div class="session-box" id="sec-d5s3">
+          <div>
+            <div class="session-top">
+              <span class="session-time">CA TỐI (19:00 – 22:30)</span>
+              <label class="session-check"><input type="checkbox" onchange="toggleSession('d5s3', this)"> Hoàn thành</label>
+            </div>
+            <div class="session-name">3. Lực đẩy Archimedes nâng cao (Vật nổi, dây căng, băng tan)</div>
+            <div class="session-desc">Làm chủ FA = d.V_chìm: Hệ 2 quả cầu nối dây trong chất lỏng, vật nằm ở mặt phân cách 2 chất lỏng (P = d1.V1 + d2.V2), bài toán cục nước đá có chứa viên chì/gỗ tan trong nước thì mực nước thay đổi thế nào.</div>
+          </div>
+          <div class="video-links">
+            <a class="v-link" href="https://www.youtube.com/watch?v=wyzvoW3Fis4" target="_blank"><span><span class="v-tag hsg">HSG 9</span>Chuyên đề Lực đẩy Archimedes (Đầy đủ các dạng HSG & Chuyên)</span><span class="v-dur">51:53</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=pkMNm7r5p8k" target="_blank"><span><span class="v-tag hsg">HSG 9</span>Bài tập hay về Bình thông nhau & Lực đẩy Archimedes</span><span class="v-dur">22:35</span></a>
+          </div>
+        </div>
+
+        <div class="session-box" id="sec-d5s4">
+          <div>
+            <div class="session-top">
+              <span class="session-time night">CA ĐÊM (22:45 – 01:15)</span>
+              <label class="session-check"><input type="checkbox" onchange="toggleSession('d5s4', this)"> Hoàn thành</label>
+            </div>
+            <div class="session-name">4. Bài toán Giao thoa Đỉnh cao: Archimedes + Công của lực biến thiên</div>
+            <div class="session-desc">Giải dứt điểm dạng toán: Nhấn chìm hoặc kéo từ từ một khối trụ tiết diện s, chiều cao h ra khỏi một bình trụ tiết diện S (có tính đến sự dâng/hạ mực nước Δh = s.x / (S - s))!</div>
+          </div>
+          <div class="video-links">
+            <a class="v-link" href="https://www.youtube.com/watch?v=W8LSChh7kbE" target="_blank"><span><span class="v-tag vna">VNA</span>Lý thuyết & Dạng bài Áp suất nâng cao - Thầy Vũ Ngọc Anh</span><span class="v-dur">2:29:39</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NGÀY 6 -->
+    <div class="day-card" data-type="full">
+      <div class="day-header">
+        <div>
+          <div class="day-title">NGÀY 6: CHỦ ĐỀ 1 – CHUYỂN ĐỘNG CƠ HỌC, BÀI TOÁN NHIỀU VẬT & TÍNH TƯƠNG ĐỐI (CỘNG VẬN TỐC)</div>
+          <div class="day-sub">Mục tiêu: Làm chủ toàn bộ Chủ đề 1 (Tốc độ trung bình, 2 hay nhiều vật chuyển động, Cộng vận tốc & Khoảng cách min/max VNA)</div>
+        </div>
+        <span class="badge badge-chuyen">Chủ đề 1 (Ảnh 1 & Thi Chuyên) • 14 Giờ</span>
+      </div>
+      <div class="sessions-grid">
+        <div class="session-box" id="sec-d6s1">
+          <div>
+            <div class="session-top">
+              <span class="session-time">CA SÁNG (07:00 – 11:30)</span>
+              <label class="session-check"><input type="checkbox" onchange="toggleSession('d6s1', this)"> Hoàn thành</label>
+            </div>
+            <div class="session-name">1. Chuyển động thẳng, Phương trình chuyển động & Tốc độ trung bình (Thầy VNA)</div>
+            <div class="session-desc">Phân biệt rõ độ dịch chuyển và quãng đường, tốc độ trung bình v_tb = Tổng S / Tổng t (trung bình điều hòa khi đi các đoạn đường bằng nhau, trung bình cộng khi đi các khoảng thời gian bằng nhau).</div>
+          </div>
+          <div class="video-links">
+            <a class="v-link" href="https://www.youtube.com/watch?v=eAL9-wGurE0" target="_blank"><span><span class="v-tag vna">VNA</span>[2K10 XPS] Chuyển Động Thẳng & Một Số Khái Niệm (Hay Nhất)</span><span class="v-dur">24:19</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=17-EMFgGmFA" target="_blank"><span><span class="v-tag vna">VNA</span>[2K10 XPS] Độ Dịch Chuyển & Quãng Đường Đi Được</span><span class="v-dur">29:37</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=vEPuSG8nNZk" target="_blank"><span><span class="v-tag vna">VNA</span>Phương trình chuyển động thẳng đều - Thầy Vũ Ngọc Anh</span><span class="v-dur">08:04</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=asFWrsuT7yQ" target="_blank"><span><span class="v-tag hsg">HSG 9</span>Chuyên đề Vận tốc trung bình nâng cao (HSG 8, 9)</span><span class="v-dur">36:12</span></a>
+          </div>
+        </div>
+
+        <div class="session-box" id="sec-d6s2">
+          <div>
+            <div class="session-top">
+              <span class="session-time">CA CHIỀU (13:30 – 17:30)</span>
+              <label class="session-check"><input type="checkbox" onchange="toggleSession('d6s2', this)"> Hoàn thành</label>
+            </div>
+            <div class="session-name">2. Chuyển động của 2 hay nhiều vật cùng phương (Cùng chiều, Ngược chiều, Con thoi)</div>
+            <div class="session-desc">Làm chủ bài toán đuổi kịp, gặp nhau nhiều lần, chuyển động lặp lại (chó chạy con thoi giữa 2 người, xe đưa đón đoàn học sinh làm sao đến đích cùng lúc).</div>
+          </div>
+          <div class="video-links">
+            <a class="v-link" href="https://www.youtube.com/watch?v=m87_DNtmxFs" target="_blank"><span><span class="v-tag hsg">HSG 9</span>HSG Lý 9 & Chuyên Lý: Tổng ôn Chuyển động cơ học (Phần 1)</span><span class="v-dur">2:13:05</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=xsJES1DqA6M" target="_blank"><span><span class="v-tag hsg">HSG 9</span>HSG Lý 9 & Chuyên Lý: Chuyển động cơ học (Phần 2 - Nâng cao)</span><span class="v-dur">1:21:31</span></a>
+          </div>
+        </div>
+
+        <div class="session-box" id="sec-d6s3">
+          <div>
+            <div class="session-top">
+              <span class="session-time">CA TỐI (19:00 – 22:30)</span>
+              <label class="session-check"><input type="checkbox" onchange="toggleSession('d6s3', this)"> Hoàn thành</label>
+            </div>
+            <div class="session-name">3. Tính tương đối của chuyển động – Cộng vận tốc & Khoảng cách Min/Max (Thầy VNA)</div>
+            <div class="session-desc">Tuyệt chiêu gắn hệ quy chiếu lên vật chuyển động (cano - dòng nước - phao trôi; thang cuốn; bài toán tìm khoảng cách ngắn nhất giữa 2 vật chuyển động trên 2 đường thẳng cắt nhau bằng hệ quy chiếu tương đối của thầy VNA!).</div>
+          </div>
+          <div class="video-links">
+            <a class="v-link" href="https://www.youtube.com/watch?v=T76n4yPqhWI" target="_blank"><span><span class="v-tag vna">VNA</span>Siêu Phẩm - Bài Tập Về Khoảng Cách 2 Vật || Thầy VNA</span><span class="v-dur">18:30</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=Q9P1PR43g54" target="_blank"><span><span class="v-tag hsg">Lý 10</span>Bài 4: Tính tương đối của chuyển động - Cộng vận tốc</span><span class="v-dur">1:28:55</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=jwujepmMajA" target="_blank"><span><span class="v-tag hsg">VDC</span>Vận dụng cao: Cộng vận tốc & Khoảng cách cực trị</span><span class="v-dur">1:02:54</span></a>
+          </div>
+        </div>
+
+        <div class="session-box" id="sec-d6s4">
+          <div>
+            <div class="session-top">
+              <span class="session-time night">CA ĐÊM (22:45 – 01:15)</span>
+              <label class="session-check"><input type="checkbox" onchange="toggleSession('d6s4', this)"> Hoàn thành</label>
+            </div>
+            <div class="session-name">4. Thực chiến Đề Động học & Đồ thị chuyển động (Thầy VNA)</div>
+            <div class="session-desc">Luyện kỹ năng đọc đồ thị x-t, v-t của nhiều vật chuyển động cùng lúc – xu hướng ra đề mới nhất của chương trình GDPT 2018!</div>
+          </div>
+          <div class="video-links">
+            <a class="v-link" href="https://www.youtube.com/watch?v=miY8kLHvtbk" target="_blank"><span><span class="v-tag vna">VNA</span>Đề Trúng Tủ Giữa HK1 Lý 10 - Đề Số 1 (Động học & Đồ thị)</span><span class="v-dur">59:26</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=RBjyh4RJzyQ" target="_blank"><span><span class="v-tag vna">VNA</span>Chữa Sách Phong Tỏa Vật Lí 10 - Tập 1 (Thầy VNA)</span><span class="v-dur">51:34</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NGÀY 7 -->
+    <div class="day-card" data-type="core">
+      <div class="day-header">
+        <div>
+          <div class="day-title">NGÀY 7: TỔNG CÔNG KÍCH – LUYỆN ĐỀ THỰC CHIẾN BẤM GIỜ (150 PHÚT/ĐỀ) & RÀ SOÁT BẪY</div>
+          <div class="day-sub">Mục tiêu: Ghép nối hoàn chỉnh 4 Chủ đề vào ফর্ম đề thi HSG KHTN 9 & Thi Chuyên Vật Lý</div>
+        </div>
+        <span class="badge badge-hardcore">Ngày Về Đích • 14.5 Giờ</span>
+      </div>
+      <div class="sessions-grid">
+        <div class="session-box" id="sec-d7s1">
+          <div>
+            <div class="session-top">
+              <span class="session-time">CA SÁNG (07:00 – 11:30)</span>
+              <label class="session-check"><input type="checkbox" onchange="toggleSession('d7s1', this)"> Hoàn thành</label>
+            </div>
+            <div class="session-name">1. Bấm giờ Thi thử Đề Tổng hợp Số 1 (Trọng tâm Năng lượng cơ học & Quang hình)</div>
+            <div class="session-desc">Làm full đề 150 phút trong điều kiện phòng thi thật (không mở tài liệu), sau đó xem video chữa chi tiết từng bước trình bày tự luận.</div>
+          </div>
+          <div class="video-links">
+            <a class="v-link" href="https://www.youtube.com/watch?v=hc9ef_G2ScI" target="_blank"><span><span class="v-tag vna">VNA</span>[Lý 10 SGK mới] Chữa Đề Ôn Tập Cuối HK2 - Đề Số 1</span><span class="v-dur">1:14:39</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=UPNOIsrBdsI" target="_blank"><span><span class="v-tag vna">VNA</span>Ôn tập Kì 2 (Cơ năng, Bảo toàn cơ năng) - Số 1</span><span class="v-dur">59:20</span></a>
+          </div>
+        </div>
+
+        <div class="session-box" id="sec-d7s2">
+          <div>
+            <div class="session-top">
+              <span class="session-time">CA CHIỀU (13:30 – 17:30)</span>
+              <label class="session-check"><input type="checkbox" onchange="toggleSession('d7s2', this)"> Hoàn thành</label>
+            </div>
+            <div class="session-name">2. Bấm giờ Thi thử Đề Chuyên / HSG Tỉnh Số 2 (Đầy đủ Cơ - Quang)</div>
+            <div class="session-desc">Giải đề thi HSG cấp Tỉnh / Chuyên Lý mới nhất (năm học 2025-2026) để rèn kỹ năng phân bổ thời gian: Câu dễ ăn chắc 100% điểm trình bày, câu khó vẽ hình/lập phương trình ăn điểm thành phần.</div>
+          </div>
+          <div class="video-links">
+            <a class="v-link" href="https://www.youtube.com/watch?v=Gc4Ida3yxok" target="_blank"><span><span class="v-tag hsg">Chuyên</span>Sửa Đề Thi HSG/Chuyên Vật Lí 9 (2025-2026)</span><span class="v-dur">1:05:10</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=GjFKD0nY20M" target="_blank"><span><span class="v-tag vna">VNA</span>Chữa Đề KSCL Sở Nam Định (Động học & Lực) - Thầy VNA</span><span class="v-dur">1:03:55</span></a>
+          </div>
+        </div>
+
+        <div class="session-box" id="sec-d7s3">
+          <div>
+            <div class="session-top">
+              <span class="session-time">CA TỐI (19:00 – 22:00)</span>
+              <label class="session-check"><input type="checkbox" onchange="toggleSession('d7s3', this)"> Hoàn thành</label>
+            </div>
+            <div class="session-name">3. Hệ thống hóa "Sổ tay Lỗi sai & Bẫy Chết Người"</div>
+            <div class="session-desc">Rà soát lại toàn bộ các bài đã làm sai trong 6 ngày qua. Tự viết lại ra giấy A4 tất cả công thức của 4 chủ đề mà không nhìn tài liệu (Active Recall).</div>
+          </div>
+          <div class="video-links">
+            <a class="v-link" href="https://www.youtube.com/watch?v=xyrAFon9JAY" target="_blank"><span><span class="v-tag vna">VNA</span>Ôn tập Kì 2 (Cơ năng & Định luật bảo toàn) - Số 2</span><span class="v-dur">44:34</span></a>
+            <a class="v-link" href="https://www.youtube.com/watch?v=RTpO9HXYCcs" target="_blank"><span><span class="v-tag vna">VNA</span>Ôn tập Kì 2 (Cơ năng & Định luật bảo toàn) - Số 3</span><span class="v-dur">1:03:12</span></a>
+          </div>
+        </div>
+
+        <div class="session-box" id="sec-d7s4">
+          <div>
+            <div class="session-top">
+              <span class="session-time night">CA ĐÊM (22:00 – 23:30)</span>
+              <label class="session-check"><input type="checkbox" onchange="toggleSession('d7s4', this)"> Hoàn thành</label>
+            </div>
+            <div class="session-name">4. Khóa sổ tâm lý & Ngủ sớm trước ngày thi</div>
+            <div class="session-desc">Xem lại bảng Cheat Sheet công thức ở Tab 3, chuẩn bị máy tính Casio, thước kẻ, compa (để vẽ đường tròn Snell & trục phụ thấu kính) và đi ngủ trước 23:30 để não đạt trạng thái sắc bén 100%!</div>
+          </div>
+          <div class="video-links">
+            <a class="v-link" href="https://www.youtube.com/watch?v=eTwPREtummo" target="_blank"><span><span class="v-tag vna">VNA</span>[Talkshow] Học Thế Nào Để Đạt 10 Điểm Vật Lí | Thầy VNA</span><span class="v-dur">1:09:49</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: VIDEO LIBRARY -->
+  <div id="tab-videos" class="tab-content">
+    <div class="filter-row">
+      <button class="btn" onclick="filterLib('all')">Tất cả Video (42)</button>
+      <button class="btn btn-accent" onclick="filterLib('vna')">★ Chỉ hiện Video Thầy Vũ Ngọc Anh - VNA (25)</button>
+      <button class="btn btn-outline" onclick="filterLib('cd1')">Chủ đề 1: Chuyển động</button>
+      <button class="btn btn-outline" onclick="filterLib('cd2')">Chủ đề 2: Áp suất - Archimedes - Lực</button>
+      <button class="btn btn-outline" onclick="filterLib('cd3')">Chủ đề 3: Năng lượng cơ học</button>
+      <button class="btn btn-outline" onclick="filterLib('cd4')">Chủ đề 4: Quang hình học</button>
+    </div>
+
+    <table class="lib-table" id="video-table">
+      <thead>
+        <tr>
+          <th>Chủ đề</th>
+          <th>Giảng viên</th>
+          <th>Tên Bài Giảng (Click để mở YouTube)</th>
+          <th>Thời lượng</th>
+          <th>Trọng tâm ứng dụng</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- CD1 -->
+        <tr data-topic="cd1" data-teacher="vna">
+          <td>Chủ đề 1</td>
+          <td><span class="v-tag vna">Thầy VNA</span></td>
+          <td><a href="https://www.youtube.com/watch?v=eAL9-wGurE0" target="_blank">[Vật Lý 10 - 2K10 XPS] Chuyển Động Thẳng & Một Số Khái Niệm (HAY NHẤT)</a></td>
+          <td>24:19</td>
+          <td>Bản chất chuyển động, hệ quy chiếu</td>
+        </tr>
+        <tr data-topic="cd1" data-teacher="vna">
+          <td>Chủ đề 1</td>
+          <td><span class="v-tag vna">Thầy VNA</span></td>
+          <td><a href="https://www.youtube.com/watch?v=17-EMFgGmFA" target="_blank">[Vật Lý 10 - 2K10 XPS] Độ Dịch Chuyển & Quãng Đường Đi Được (HAY NHẤT)</a></td>
+          <td>29:37</td>
+          <td>Tốc độ trung bình vs Vận tốc trung bình</td>
+        </tr>
+        <tr data-topic="cd1" data-teacher="vna">
+          <td>Chủ đề 1</td>
+          <td><span class="v-tag vna">Thầy VNA</span></td>
+          <td><a href="https://www.youtube.com/watch?v=vEPuSG8nNZk" target="_blank">Động học chất điểm - Phương trình chuyển động thẳng đều</a></td>
+          <td>08:04</td>
+          <td>Lập phương trình x = x0 + v(t - t0)</td>
+        </tr>
+        <tr data-topic="cd1" data-teacher="vna">
+          <td>Chủ đề 1</td>
+          <td><span class="v-tag vna">Thầy VNA</span></td>
+          <td><a href="https://www.youtube.com/watch?v=T76n4yPqhWI" target="_blank">Siêu Phẩm - Bài Tập Về Khoảng Cách 2 Vật Chuyển Động || Thầy VNA</a></td>
+          <td>18:30</td>
+          <td>Khoảng cách cực tiểu 2 vật (Thi Chuyên)</td>
+        </tr>
+        <tr data-topic="cd1" data-teacher="vna">
+          <td>Chủ đề 1</td>
+          <td><span class="v-tag vna">Thầy VNA</span></td>
+          <td><a href="https://www.youtube.com/watch?v=miY8kLHvtbk" target="_blank">[Vật Lí 10] Đề Trúng Tủ Giữa Học Kì 1 - Đề Số 1 (Động học & Cộng vận tốc)</a></td>
+          <td>59:26</td>
+          <td>Đồ thị chuyển động, bài toán 2 vật</td>
+        </tr>
+        <tr data-topic="cd1" data-teacher="hsg">
+          <td>Chủ đề 1</td>
+          <td><span class="v-tag hsg">Thầy Đỗ Văn Đoàn</span></td>
+          <td><a href="https://www.youtube.com/watch?v=m87_DNtmxFs" target="_blank">HSG Vật Lý 9 & Chuyên Lý: Tổng ôn Chuyển động cơ học (Phần 1)</a></td>
+          <td>2:13:05</td>
+          <td>Toàn bộ dạng bài 2 hay nhiều vật THCS</td>
+        </tr>
+        <tr data-topic="cd1" data-teacher="hsg">
+          <td>Chủ đề 1</td>
+          <td><span class="v-tag hsg">Thầy Đỗ Văn Đoàn</span></td>
+          <td><a href="https://www.youtube.com/watch?v=xsJES1DqA6M" target="_blank">HSG Vật Lý 9 & Chuyên Lý: Chuyên đề Chuyển động cơ học (Phần 2 - Nâng cao)</a></td>
+          <td>1:21:31</td>
+          <td>Bài toán con thoi, đưa đón người, đồ thị</td>
+        </tr>
+        <tr data-topic="cd1" data-teacher="hsg">
+          <td>Chủ đề 1</td>
+          <td><span class="v-tag hsg">Thầy Vũ Tuấn Anh</span></td>
+          <td><a href="https://www.youtube.com/watch?v=Q9P1PR43g54" target="_blank">Bài 4: Tính tương đối của chuyển động - Cộng vận tốc</a></td>
+          <td>1:28:55</td>
+          <td>Công thức cộng vận tốc v13 = v12 + v23</td>
+        </tr>
+
+        <!-- CD2 -->
+        <tr data-topic="cd2" data-teacher="vna">
+          <td>Chủ đề 2</td>
+          <td><span class="v-tag vna">Thầy VNA</span></td>
+          <td><a href="https://www.youtube.com/watch?v=cBFLWKPH7y4" target="_blank">Vật Lý 8 - Tổng hợp lực và phân tích lực (Bài giảng THCS của Thầy VNA)</a></td>
+          <td>1:17:51</td>
+          <td>Trực tiếp mục "Phân tích, tổng hợp lực"</td>
+        </tr>
+        <tr data-topic="cd2" data-teacher="vna">
+          <td>Chủ đề 2</td>
+          <td><span class="v-tag vna">Thầy VNA</span></td>
+          <td><a href="https://www.youtube.com/watch?v=x74-khjrigM" target="_blank">[Vật Lý 10 - 2K10 XPS] Quy Tắc Tổng Hợp Lực (HAY NHẤT)</a></td>
+          <td>24:29</td>
+          <td>Quy tắc hình bình hành & đa giác lực</td>
+        </tr>
+        <tr data-topic="cd2" data-teacher="vna">
+          <td>Chủ đề 2</td>
+          <td><span class="v-tag vna">Thầy VNA</span></td>
+          <td><a href="https://www.youtube.com/watch?v=HxhgnLEIacU" target="_blank">Vật Lý 10 - Quy tắc tổng hợp lực (Bản Full bài tập)</a></td>
+          <td>1:02:30</td>
+          <td>Phân tích lực trên mặt phẳng nghiêng, dây treo</td>
+        </tr>
+        <tr data-topic="cd2" data-teacher="vna">
+          <td>Chủ đề 2</td>
+          <td><span class="v-tag vna">Thầy VNA</span></td>
+          <td><a href="https://www.youtube.com/watch?v=fZTBmVe2MWw" target="_blank">Vật Lý 10 - Điều kiện cân bằng của vật (Moment lực)</a></td>
+          <td>49:01</td>
+          <td>Nền tảng cân bằng vật rắn & Đòn bẩy</td>
+        </tr>
+        <tr data-topic="cd2" data-teacher="vna">
+          <td>Chủ đề 2</td>
+          <td><span class="v-tag vna">Thầy VNA</span></td>
+          <td><a href="https://www.youtube.com/watch?v=uK_KYJ0-A-M" target="_blank">Vật lý 8 - Buổi 6: Áp lực & Áp suất chất rắn (Thầy VNA)</a></td>
+          <td>1:33:25</td>
+          <td>Áp lực, áp suất chất rắn p = F/S</td>
+        </tr>
+        <tr data-topic="cd2" data-teacher="vna">
+          <td>Chủ đề 2</td>
+          <td><span class="v-tag vna">Thầy VNA</span></td>
+          <td><a href="https://www.youtube.com/watch?v=Pg-0WK0_gco" target="_blank">0202 Lý thuyết Áp suất chất lỏng - Thầy Vũ Ngọc Anh VNA</a></td>
+          <td>24:22</td>
+          <td>Áp suất thủy tĩnh p = p0 + d.h, bình thông nhau</td>
+        </tr>
+        <tr data-topic="cd2" data-teacher="vna">
+          <td>Chủ đề 2</td>
+          <td><span class="v-tag vna">Thầy VNA</span></td>
+          <td><a href="https://www.youtube.com/watch?v=ysDMA00UDzI" target="_blank">0202 Lý thuyết Áp suất khí quyển - Thầy Vũ Ngọc Anh VNA</a></td>
+          <td>34:33</td>
+          <td>Áp suất khí quyển, cột thủy ngân Torricelli</td>
+        </tr>
+        <tr data-topic="cd2" data-teacher="vna">
+          <td>Chủ đề 2</td>
+          <td><span class="v-tag vna">Thầy VNA</span></td>
+          <td><a href="https://www.youtube.com/watch?v=Qf8eeFchqCM" target="_blank">Luyện Tập Kĩ Năng Giải Bài Toán Áp Suất Chất Khí Chất Lỏng | Thầy VNA</a></td>
+          <td>1:08:31</td>
+          <td>Cân bằng áp suất cột chất lỏng nâng cao</td>
+        </tr>
+        <tr data-topic="cd2" data-teacher="hsg">
+          <td>Chủ đề 2</td>
+          <td><span class="v-tag hsg">Thầy Đỗ Văn Đoàn</span></td>
+          <td><a href="https://www.youtube.com/watch?v=w8pNPplgMAA" target="_blank">Bồi dưỡng HSG Vật lý 8, 9 | Chuyên đề Áp suất - Bình thông nhau</a></td>
+          <td>1:16:39</td>
+          <td>Bình thông nhau nhiều chất lỏng, pit-tông</td>
+        </tr>
+        <tr data-topic="cd2" data-teacher="hsg">
+          <td>Chủ đề 2</td>
+          <td><span class="v-tag hsg">Thầy Đỗ Văn Đoàn</span></td>
+          <td><a href="https://www.youtube.com/watch?v=wyzvoW3Fis4" target="_blank">Chuyên đề Lực đẩy Archimedes (Đầy đủ) | Bồi dưỡng HSG 8, 9 & Chuyên Lý</a></td>
+          <td>51:53</td>
+          <td>Lực đẩy Archimedes, sự nổi, băng tan</td>
+        </tr>
+
+        <!-- CD3 -->
+        <tr data-topic="cd3" data-teacher="vna">
+          <td>Chủ đề 3</td>
+          <td><span class="v-tag vna">Thầy VNA</span></td>
+          <td><a href="https://www.youtube.com/watch?v=JVp9vwlgHCU" target="_blank">[LIVE] Đỉnh Cao Đồ Thị Lực Đàn Hồi (Tư duy Lực biến thiên) - Thầy VNA</a></td>
+          <td>1:06:17</td>
+          <td>Giải "Công của lực biến thiên" bằng đồ thị</td>
+        </tr>
+        <tr data-topic="cd3" data-teacher="vna">
+          <td>Chủ đề 3</td>
+          <td><span class="v-tag vna">Thầy VNA</span></td>
+          <td><a href="https://www.youtube.com/watch?v=iNyh6mnOEeU" target="_blank">[Nâng Cao] Buổi 3: Đồ thị lực và năng lượng đặc biệt - Thầy VNA</a></td>
+          <td>1:13:26</td>
+          <td>Đồ thị lực biến thiên & Thế năng - Động năng</td>
+        </tr>
+        <tr data-topic="cd3" data-teacher="vna">
+          <td>Chủ đề 3</td>
+          <td><span class="v-tag vna">Thầy VNA</span></td>
+          <td><a href="https://www.youtube.com/watch?v=Hz7mB5D_R5k" target="_blank">[Vật Lí 10] Chữa Đề Ôn Tập Giữa Học Kì 2 - Đề Số 1 (Công, Công suất, Cơ năng)</a></td>
+          <td>1:07:35</td>
+          <td>Thực chiến Công, Công suất, Bảo toàn cơ năng</td>
+        </tr>
+        <tr data-topic="cd3" data-teacher="vna">
+          <td>Chủ đề 3</td>
+          <td><span class="v-tag vna">Thầy VNA</span></td>
+          <td><a href="https://www.youtube.com/watch?v=lI1MbzzMKfc" target="_blank">[Vật Lí 10 - SGK mới] Chữa Đề Ôn Tập Giữa Học Kì 2 - Đề Số 2 | Thầy VNA</a></td>
+          <td>47:56</td>
+          <td>Động năng, Thế năng, Biến thiên cơ năng</td>
+        </tr>
+        <tr data-topic="cd3" data-teacher="vna">
+          <td>Chủ đề 3</td>
+          <td><span class="v-tag vna">Thầy VNA</span></td>
+          <td><a href="https://www.youtube.com/watch?v=G_AVHzNjbS0" target="_blank">[Vật Lí 10 - SGK mới] Chữa Đề Ôn Tập Giữa Học Kì 2 - Đề Số 3 | Thầy VNA</a></td>
+          <td>42:24</td>
+          <td>Hiệu suất, Công của trọng lực & lực ma sát</td>
+        </tr>
+        <tr data-topic="cd3" data-teacher="vna">
+          <td>Chủ đề 3</td>
+          <td><span class="v-tag vna">Thầy VNA</span></td>
+          <td><a href="https://www.youtube.com/watch?v=vbn20m8cOX8" target="_blank">[Vật Lí 10 - SGK mới] Chữa Đề Ôn Tập Giữa Học Kì 2 - Đề Số 4 | Thầy VNA</a></td>
+          <td>41:16</td>
+          <td>Bài toán con lắc đơn, mặt phẳng nghiêng</td>
+        </tr>
+        <tr data-topic="cd3" data-teacher="vna">
+          <td>Chủ đề 3</td>
+          <td><span class="v-tag vna">Thầy VNA</span></td>
+          <td><a href="https://www.youtube.com/watch?v=hc9ef_G2ScI" target="_blank">[Vật Lí 10 - SGK mới] Chữa Đề Ôn Tập Cuối Học Kì 2 - Đề Số 1 | Thầy VNA</a></td>
+          <td>1:14:39</td>
+          <td>Tổng ôn toàn diện Cơ năng & Định luật bảo toàn</td>
+        </tr>
+        <tr data-topic="cd3" data-teacher="hsg">
+          <td>Chủ đề 3</td>
+          <td><span class="v-tag hsg">Thầy Đỗ Văn Đoàn</span></td>
+          <td><a href="https://www.youtube.com/watch?v=U0Sp652BTfs" target="_blank">Bồi Dưỡng HSG Môn KHTN 9 (Sách Mới) | Chuyên Đề 1: Công - Công Suất</a></td>
+          <td>2:00:08</td>
+          <td>Chuẩn giới hạn KHTN 9 sách mới</td>
+        </tr>
+        <tr data-topic="cd3" data-teacher="hsg">
+          <td>Chủ đề 3</td>
+          <td><span class="v-tag hsg">Thầy Đỗ Văn Đoàn</span></td>
+          <td><a href="https://www.youtube.com/watch?v=2clTBf-WnU0" target="_blank">Máy cơ đơn giản | Tuyển tập các bài tập hay nhất | Bồi dưỡng HSG 8, 9</a></td>
+          <td>1:17:37</td>
+          <td>Hệ ròng rọc động, đòn bẩy, mặt phẳng nghiêng</td>
+        </tr>
+        <tr data-topic="cd3" data-teacher="hsg">
+          <td>Chủ đề 3</td>
+          <td><span class="v-tag hsg">Thầy Đỗ Văn Đoàn</span></td>
+          <td><a href="https://www.youtube.com/watch?v=uGzBxGegii4" target="_blank">Vật Lý 9 Nâng Cao | Chuyên đề Động năng, Thế năng, Cơ năng</a></td>
+          <td>31:00</td>
+          <td>Tự luận Cơ năng lớp 9 nâng cao</td>
+        </tr>
+        <tr data-topic="cd3" data-teacher="hsg">
+          <td>Chủ đề 3</td>
+          <td><span class="v-tag hsg">Bài giảng TV</span></td>
+          <td><a href="https://www.youtube.com/watch?v=NW70ec09CAw" target="_blank">Phương pháp giải các dạng bài tập Cơ năng, Định luật bảo toàn cơ năng</a></td>
+          <td>1:16:10</td>
+          <td>Phân dạng bài tập Bảo toàn cơ năng từ A-Z</td>
+        </tr>
+
+        <!-- CD4 -->
+        <tr data-topic="cd4" data-teacher="vna">
+          <td>Chủ đề 4</td>
+          <td><span class="v-tag vna">Thầy VNA</span></td>
+          <td><a href="https://www.youtube.com/watch?v=6VwyPVWh4Yo" target="_blank">Vật Lý 9 - Chương 3 - Khúc xạ Ánh Sáng (Buổi 1) | Thầy Vũ Ngọc Anh</a></td>
+          <td>25:47</td>
+          <td>Bản chất khúc xạ ánh sáng lớp 9</td>
+        </tr>
+        <tr data-topic="cd4" data-teacher="vna">
+          <td>Chủ đề 4</td>
+          <td><span class="v-tag vna">Thầy VNA</span></td>
+          <td><a href="https://www.youtube.com/watch?v=zzBWJwfcv-g" target="_blank">Vật Lý 9 - Chương 3 - Khúc xạ Ánh Sáng (Buổi 2) | Thầy Vũ Ngọc Anh</a></td>
+          <td>29:37</td>
+          <td>Các dạng toán góc tới, góc khúc xạ</td>
+        </tr>
+        <tr data-topic="cd4" data-teacher="vna">
+          <td>Chủ đề 4</td>
+          <td><span class="v-tag vna">Thầy VNA</span></td>
+          <td><a href="https://www.youtube.com/watch?v=RFUdeSFyJSY" target="_blank">Vật Lý 9 - Chương 3 - Khúc xạ Ánh Sáng (Buổi 3) | Thầy Vũ Ngọc Anh</a></td>
+          <td>32:27</td>
+          <td>Bài tập nâng cao khúc xạ ánh sáng</td>
+        </tr>
+        <tr data-topic="cd4" data-teacher="vna">
+          <td>Chủ đề 4</td>
+          <td><span class="v-tag vna">Thầy VNA</span></td>
+          <td><a href="https://www.youtube.com/watch?v=fxVflcyHPUI" target="_blank">Chuyên đề Khúc xạ ánh sáng Nâng cao (Full) - Thầy VNA</a></td>
+          <td>1:14:41</td>
+          <td>Định luật Snell, lưỡng chất phẳng, bản mặt //</td>
+        </tr>
+        <tr data-topic="cd4" data-teacher="vna">
+          <td>Chủ đề 4</td>
+          <td><span class="v-tag vna">Thầy VNA</span></td>
+          <td><a href="https://www.youtube.com/watch?v=oPOb4zvJw3U" target="_blank">Chuyên đề Phản xạ toàn phần (Full) - Thầy VNA</a></td>
+          <td>1:06:08</td>
+          <td>Góc giới hạn, bài toán đĩa chắn sáng mặt nước</td>
+        </tr>
+        <tr data-topic="cd4" data-teacher="vna">
+          <td>Chủ đề 4</td>
+          <td><span class="v-tag vna">Thầy VNA</span></td>
+          <td><a href="https://www.youtube.com/watch?v=XUNfCLJnjws" target="_blank">Vật Lý 9 - Thấu Kính Hội Tụ (Bản Full) | Thầy Vũ Ngọc Anh</a></td>
+          <td>1:15:03</td>
+          <td>Dựng ảnh, chứng minh hình học thấu kính lớp 9</td>
+        </tr>
+        <tr data-topic="cd4" data-teacher="vna">
+          <td>Chủ đề 4</td>
+          <td><span class="v-tag vna">Thầy VNA</span></td>
+          <td><a href="https://www.youtube.com/watch?v=dQV8P_485yA" target="_blank">Bài tập về Thấu Kính Hay và Khó - Thầy VNA (Siêu phẩm ôn Chuyên)</a></td>
+          <td>1:01:20</td>
+          <td>Dịch chuyển vật - ảnh, cực trị thấu kính</td>
+        </tr>
+        <tr data-topic="cd4" data-teacher="vna">
+          <td>Chủ đề 4</td>
+          <td><span class="v-tag vna">Thầy VNA</span></td>
+          <td><a href="https://www.youtube.com/watch?v=_W-wi9w-c8g" target="_blank">Bài tập hay và khó về Mắt và tật của Mắt - Phần 1 - Thầy VNA</a></td>
+          <td>1:00:45</td>
+          <td>Đeo kính cận/viễn, khoảng nhìn rõ</td>
+        </tr>
+        <tr data-topic="cd4" data-teacher="hsg">
+          <td>Chủ đề 4</td>
+          <td><span class="v-tag hsg">Thầy Đỗ Văn Đoàn</span></td>
+          <td><a href="https://www.youtube.com/watch?v=fJrlfj9gwQw" target="_blank">HSG Lý 9 & Chuyên Lý (P1): Tuyệt chiêu Vẽ Hình Thấu Kính & Trục Phụ</a></td>
+          <td>58:09</td>
+          <td>Vẽ tia ló bất kỳ bằng trục phụ + tiêu diện</td>
+        </tr>
+        <tr data-topic="cd4" data-teacher="hsg">
+          <td>Chủ đề 4</td>
+          <td><span class="v-tag hsg">Thầy Đỗ Văn Đoàn</span></td>
+          <td><a href="https://www.youtube.com/watch?v=XhuV2S1PS0I" target="_blank">HSG Lý 9 & Chuyên Lý (P2): Xác định Quang tâm, Tiêu cự, Dựng ảnh</a></td>
+          <td>1:09:02</td>
+          <td>Bài toán hộp đen quang học</td>
+        </tr>
+        <tr data-topic="cd4" data-teacher="hsg">
+          <td>Chủ đề 4</td>
+          <td><span class="v-tag hsg">Thầy Đỗ Văn Đoàn</span></td>
+          <td><a href="https://www.youtube.com/watch?v=kBJHUQfVbC4" target="_blank">HSG Lý 9 & Chuyên Lý (P4): Bài toán Dịch chuyển Vật - Ảnh</a></td>
+          <td>1:15:48</td>
+          <td>Công thức dịch chuyển Δd và Δd'</td>
+        </tr>
+        <tr data-topic="cd4" data-teacher="hsg">
+          <td>Chủ đề 4</td>
+          <td><span class="v-tag hsg">Thầy Đỗ Văn Đoàn</span></td>
+          <td><a href="https://www.youtube.com/watch?v=XnbrWAL96Zs" target="_blank">HSG Lý 9 & Chuyên Lý (P7): Giải bài toán Vệt sáng trên màn</a></td>
+          <td>58:42</td>
+          <td>Tam giác đồng dạng tính đường kính vệt sáng</td>
+        </tr>
+        <tr data-topic="cd4" data-teacher="hsg">
+          <td>Chủ đề 4</td>
+          <td><span class="v-tag hsg">Thầy Đỗ Văn Đoàn</span></td>
+          <td><a href="https://www.youtube.com/watch?v=mHbk1C4AEM8" target="_blank">Phương pháp giải Bài tập Hệ Thấu Kính | Vật Lý 9 Nâng Cao & HSG</a></td>
+          <td>41:04</td>
+          <td>Hệ 2 thấu kính đồng trục</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- TAB 3: CHEAT SHEET -->
+  <div id="tab-formulas" class="tab-content">
+    <div class="formula-grid">
+      <div class="formula-card">
+        <h3>⚡ CHỦ ĐỀ 3: NĂNG LƯỢNG CƠ HỌC (TRỌNG TÂM SỐ 1)</h3>
+        <div class="formula-item">
+          <strong>1. Công & Công suất tức thời / trung bình:</strong>
+          <code>A = F · s · cos(α)  |  P = A / t = F · v</code>
+          Lưu ý: Nếu vật chuyển động đều trên mặt phẳng nghiêng góc α có hệ số ma sát μ thì lực kéo song song mặt nghiêng: <em>F = P·sinα + μ·P·cosα</em>.
+        </div>
+        <div class="formula-item">
+          <strong>2. Tuyệt chiêu "Công của lực biến thiên" (Phương pháp Đồ thị VNA):</strong>
+          <code>A = ½ · (F_đầu + F_cuối) · s = S_(diện tích dưới đồ thị F-x)</code>
+          • <strong>Bài toán nhấn chìm vật hình trụ (cao h, tiết diện s, trọng lượng P) từ mặt thoáng đến khi ngập hoàn toàn (bình rộng S >> s):</strong><br>
+          - Khi vừa chạm nước (x = 0): FA1 = 0 ⇒ F_nhấn1 = 0 (nếu P &lt; FA_max, xét riêng giai đoạn).<br>
+          - Khi kéo từ từ vật ngập hoàn toàn (FA_đầu = d·s·h) lên đến khi mặt dưới vừa chạm mặt nước (FA_cuối = 0): Lực kéo tăng bậc nhất từ <em>F1 = P - d·s·h</em> đến <em>F2 = P</em> ⇒ <code>A = ½ · (F1 + F2) · h = (P - ½·d·s·h) · h</code><br>
+          - <strong>Bẫy đề Chuyên (Bình hẹp tiết diện S đáng kể so với s):</strong> Khi rút vật lên một đoạn x0, mực nước hạ xuống <em>Δh = (s / S)·h</em>, do đó quãng đường thực sự vật đi được đến khi rời mặt nước chỉ là: <code>s_thực = h · (S - s) / S</code>
+        </div>
+        <div class="formula-item">
+          <strong>3. Máy cơ đơn giản & Hệ ròng rọc:</strong>
+          <code>H = A_ích / A_toàn_phần = (P · h) / (F · s)</code>
+          • Hệ <em>n</em> ròng rọc động mắc nối tiếp (dây cuốn từ mỗi ròng rọc động lên trần): Lợi <code>2^n</code> lần về lực, thiệt <code>2^n</code> lần về đường đi.<br>
+          • Pa-lăng gồm <em>n</em> ròng rọc động cùng treo 1 vật: Lợi <code>2n</code> lần về lực.
+        </div>
+        <div class="formula-item">
+          <strong>4. Cơ năng, Bảo toàn & Biến thiên cơ năng:</strong>
+          <code>W = W_đ + W_t = ½·m·v² + m·g·z</code>
+          • Khi chỉ có trọng lực / lực đàn hồi: <code>W_1 = W_2</code> (Con lắc đơn: <code>v = √[2·g·l·(cosα - cosα0)]</code>).<br>
+          • Khi có lực ma sát / lực cản: <code>W_2 - W_1 = A_(ngoại lực không thế) = - F_ms · s</code>.
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <h3>🔭 CHỦ ĐỀ 4: QUANG HÌNH HỌC (TRỌNG TÂM SỐ 1)</h3>
+        <div class="formula-item">
+          <strong>1. Định luật Khúc xạ & Phản xạ toàn phần:</strong>
+          <code>n1 · sin(i) = n2 · sin(r)  |  sin(i_gh) = n2 / n1 (với n1 &gt; n2)</code>
+          • <strong>Lưỡng chất phẳng (góc nhìn nhỏ i &lt; 10°):</strong> Ảnh ảo S' nằm trên cùng pháp tuyến với S và thỏa mãn: <code>d' / d = n2 / n1</code> (Nhìn từ không khí vào nước n = 4/3 thì thấy đáy bể nông hơn: <em>h' = 3/4 · h</em>).<br>
+          • <strong>Bán kính đĩa tròn chắn sáng mặt nước trên điểm sáng S ở độ sâu h:</strong> <code>R_min = h · tan(i_gh) = h / √(n² - 1)</code>.
+        </div>
+        <div class="formula-item">
+          <strong>2. Công thức Lăng kính (Góc chiết quang A, chiết suất n):</strong>
+          <code>sin(i1) = n·sin(r1) ; sin(i2) = n·sin(r2) ; A = r1 + r2 ; D = i1 + i2 - A</code>
+          • Góc lệch cực tiểu <em>D_min</em> xảy ra khi đường truyền đối xứng (i1 = i2 và r1 = r2 = A/2): <code>sin[(D_min + A)/2] = n · sin(A/2)</code>.
+        </div>
+        <div class="formula-item">
+          <strong>3. Hệ công thức Vàng của Thấu kính mỏng:</strong>
+          <code>1/f = 1/d + 1/d'  ⇔  d' = (d·f)/(d - f)  |  k = - d'/d = f / (f - d)</code>
+          (Quy ước dấu: TKHT f &gt; 0, TKPK f &lt; 0; Ảnh thật d' &gt; 0, k &lt; 0; Ảnh ảo d' &lt; 0, k &gt; 0).<br>
+          • <strong>Khoảng cách vật – ảnh thật qua TKHT:</strong> <code>L = d + d' ≥ 4f</code> (Dấu "=" xảy ra khi d = d' = 2f).<br>
+          • <strong>Phương pháp Bessel (Vật và màn cố định cách nhau L &gt; 4f):</strong> Có 2 vị trí đặt TKHT cách nhau một đoạn <em>l = d1 - d2</em> cho ảnh rõ nét trên màn. Khi đó: <code>f = (L² - l²) / (4L)</code> và <code>k1 · k2 = 1</code> hay <code>A'B' = √(A1B1 · A2B2)</code>.<br>
+          • <strong>Vệt sáng tròn trên màn đặt cách TK đoạn L (chiếu chùm sáng song song đường kính D_tk):</strong><br>
+          - Với TKHT: <code>d_vệt / D_tk = |L - f| / f</code>.<br>
+          - Với TKPK (tiêu cự |f|): <code>d_vệt / D_tk = (L + |f|) / |f|</code>.
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <h3>💧 CHỦ ĐỀ 2: ÁP SUẤT, ARCHIMEDES & HỢP LỰC</h3>
+        <div class="formula-item">
+          <strong>1. Tổng hợp 2 lực đồng quy F1, F2 hợp góc α (Thầy VNA):</strong>
+          <code>F² = F1² + F2² + 2·F1·F2·cos(α)  |  |F1 - F2| ≤ F ≤ F1 + F2</code>
+        </div>
+        <div class="formula-item">
+          <strong>2. Bình thông nhau & Máy nén thủy lực:</strong>
+          <code>p_A = p_B (trên cùng mặt đẳng áp nằm ngang trong cùng 1 chất lỏng)</code>
+          • Máy nén thủy lực có độ chênh lệch mực chất lỏng Δh giữa 2 nhánh: <code>F1 / S1 = F2 / S2 ± d · Δh</code>.
+        </div>
+        <div class="formula-item">
+          <strong>3. Tuyệt chiêu bài toán "Băng tan" (Nước đá nổi trong nước):</strong>
+          • Nếu cục nước đá <strong>nguyên chất</strong> hoặc chứa vật <strong>nổi</strong> (như mẩu gỗ, bọt khí) tan hết trong cốc nước: <strong>Mực nước KHÔNG ĐỔI (Δh = 0)</strong>.<br>
+          • Nếu cục nước đá chứa viên bi <strong>chìm</strong> (như sắt, chì có d_vật &gt; d_nước) tan hết: Viên bi chìm xuống đáy chỉ chiếm thể tích V_bi &lt; P_bi / d_nước ⇒ <strong>Mực nước HẠ XUỐNG</strong>!
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <h3>🚀 CHỦ ĐỀ 1: CHUYỂN ĐỘNG CƠ HỌC & CỘNG VẬN TỐC</h3>
+        <div class="formula-item">
+          <strong>1. Tốc độ trung bình kinh điển:</strong>
+          • Đi <em>n</em> đoạn đường bằng nhau với vận tốc v1, v2,..., vn: <code>1/v_tb = (1/n)·(1/v1 + 1/v2 + ... + 1/vn)</code> (Với 2 nửa quãng đường: <code>v_tb = 2·v1·v2 / (v1 + v2)</code>).<br>
+          • Đi <em>n</em> khoảng thời gian bằng nhau: <code>v_tb = (v1 + v2 + ... + vn) / n</code>.
+        </div>
+        <div class="formula-item">
+          <strong>2. Tính tương đối & Hệ quy chiếu gắn với dòng nước:</strong>
+          <code>v_xuôi = v_thuyền + v_nước  |  v_ngược = v_thuyền - v_nước</code>
+          • <strong>Mẹo Vàng (Cano làm rơi phao):</strong> Chọn hệ quy chiếu gắn với dòng nước (phao đứng yên đối với nước!). Cano đi xa phao trong thời gian <em>t1</em> thì khi quay lại cũng mất đúng thời gian <em>t2 = t1</em> để gặp lại phao (bất kể nước chảy nhanh hay chậm!). Khi đó vận tốc nước: <code>v_nước = S_phao_trôi / (2 · t1)</code>.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 4: PDF REPOSITORY -->
+  <div id="tab-pdfs" class="tab-content">
+    <div class="strategy-box">
+      <h3>📄 KHO ĐỀ PDF & ĐÁP ÁN CHI TIẾT ĐÃ CRAWL TỪ HỆ THỐNG MAPSTUDY (THẦY VNA)</h3>
+      <p style="font-size:13.5px; color:#e2e8f0;">Toàn bộ file PDF đề thi, lời giải chi tiết và video chữa tương ứng của Thầy Vũ Ngọc Anh cho phần Cơ học (Động học, Tổng hợp lực, Công, Công suất, Cơ năng, Bảo toàn cơ năng):</p>
+    </div>
+    <table class="lib-table">
+      <thead>
+        <tr>
+          <th>Tên Tài Liệu / Đề Thi</th>
+          <th>Chuyên đề bao phủ</th>
+          <th>Link Đề PDF</th>
+          <th>Link Giải Chi Tiết PDF</th>
+          <th>Link Video Chữa VNA</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Đề Trúng Tủ Giữa HK1 Lý 10 - Đề 01</td>
+          <td>Chuyển động thẳng, Tốc độ trung bình, Đồ thị, Cộng vận tốc</td>
+          <td><a href="https://drive.google.com/file/d/147ulUAW7HApk0r-Jl3gWJChwzXWlxeT-/view" target="_blank">Tải Đề PDF</a></td>
+          <td><a href="https://drive.google.com/file/d/1g9Vwm2s9Hdf84NHYfYj1KTxCTdOaVO4I/view" target="_blank">Tải Giải PDF</a></td>
+          <td><a href="https://www.youtube.com/watch?v=miY8kLHvtbk" target="_blank">Xem Video</a></td>
+        </tr>
+        <tr>
+          <td>Đề Trúng Tủ Giữa HK1 Lý 10 - Đề 02</td>
+          <td>Chuyển động của 2 vật, Cộng vận tốc, Đồ thị độ dịch chuyển</td>
+          <td><a href="https://drive.google.com/file/d/1x5WA7qQQ9-qE3dtJWYNg_Q4CCUDWmHgp/view" target="_blank">Tải Đề PDF</a></td>
+          <td><a href="https://drive.google.com/file/d/19yvgRg3CxPT0eO0cCyinfMv0WBmZYLbT/view" target="_blank">Tải Giải PDF</a></td>
+          <td><a href="https://www.youtube.com/watch?v=NXi1vyKnZCg" target="_blank">Xem Video</a></td>
+        </tr>
+        <tr>
+          <td>Đề Trúng Tủ Cuối HK1 Lý 10 - Đề 01</td>
+          <td>Tổng hợp & Phân tích lực, Cân bằng lực, Lực ma sát, Lực đẩy</td>
+          <td><a href="https://drive.google.com/file/d/1S9k_q3GaryTDM1kqEDvLoSf5VwatJRVG/view" target="_blank">Tải Đề PDF</a></td>
+          <td><a href="https://drive.google.com/file/d/1uswJIVne_TV_bB3obWJNT0KCKELNXW2z/view" target="_blank">Tải Giải PDF</a></td>
+          <td><a href="https://youtube.com/live/eVxQ-oQ7RiU" target="_blank">Xem Video</a></td>
+        </tr>
+        <tr>
+          <td>Đề Trúng Tủ Cuối HK1 Lý 10 - Đề 02</td>
+          <td>Tổng hợp lực, Phân tích lực trên mặt phẳng nghiêng</td>
+          <td><a href="https://drive.google.com/file/d/1oUrScHkqu4HFJmIR3IgNq6X7KzXJIixk/view" target="_blank">Tải Đề PDF</a></td>
+          <td><a href="https://drive.google.com/file/d/1U8uNoHrZKPfufPgpEv4Tx7URmldjPxoS/view" target="_blank">Tải Giải PDF</a></td>
+          <td><a href="https://youtu.be/9YHDRBikBTc" target="_blank">Xem Video</a></td>
+        </tr>
+        <tr>
+          <td>Đề Ôn Tập Giữa HK2 Lý 10 - Đề 01</td>
+          <td>Moment lực, Công, Công suất, Động năng, Thế năng, Cơ năng</td>
+          <td><a href="https://drive.google.com/file/d/1FdImthij4eDQlavAA0w6tVkXAddYAS71/view" target="_blank">Tải Đề PDF</a></td>
+          <td><span>Chữa chi tiết trên Live</span></td>
+          <td><a href="https://www.youtube.com/watch?v=GRzzK5U3cbM" target="_blank">Xem Video</a></td>
+        </tr>
+        <tr>
+          <td>Đề Ôn Tập Giữa HK2 Lý 10 - Đề 02</td>
+          <td>Công, Công suất, Hiệu suất, Định luật bảo toàn cơ năng</td>
+          <td><a href="https://drive.google.com/file/d/1nHfELEZfSdmjhHlNL0m45P1_AfVBeGm6/view" target="_blank">Tải Đề PDF</a></td>
+          <td><a href="https://drive.google.com/file/d/1mAnlABpdThZPD5LuIOjtSrqK4AfL_2sx/view" target="_blank">Tải Giải PDF</a></td>
+          <td><a href="https://www.youtube.com/watch?v=lI1MbzzMKfc" target="_blank">Xem Video</a></td>
+        </tr>
+        <tr>
+          <td>Đề Ôn Tập Giữa HK2 Lý 10 - Đề 03</td>
+          <td>Bảo toàn cơ năng, Công của lực biến thiên & lực cản</td>
+          <td><a href="https://drive.google.com/file/d/1N9B6l-FSJTyT5sujfWQZfjJtvyqeTD60/view" target="_blank">Tải Đề PDF</a></td>
+          <td><a href="https://drive.google.com/file/d/1UN1wvBstXgUlrNQqbIJUfv84xmSreYYH/view" target="_blank">Tải Giải PDF</a></td>
+          <td><a href="https://youtu.be/G_AVHzNjbS0" target="_blank">Xem Video</a></td>
+        </tr>
+        <tr>
+          <td>Đề Ôn Tập Giữa HK2 Lý 10 - Đề 04</td>
+          <td>Cơ năng, Hiệu suất động cơ, Mặt phẳng nghiêng</td>
+          <td><a href="https://drive.google.com/file/d/1JdD9dapwdPDHaibCFgw3wSiZXWXOrzEX/view" target="_blank">Tải Đề PDF</a></td>
+          <td><span>Chữa chi tiết trên Live</span></td>
+          <td><a href="https://www.youtube.com/watch?v=vbn20m8cOX8" target="_blank">Xem Video</a></td>
+        </tr>
+        <tr>
+          <td>Đề Ôn Tập Giữa HK2 Lý 10 - Đề 05</td>
+          <td>Tổng hợp Năng lượng cơ học nâng cao</td>
+          <td><a href="https://drive.google.com/file/d/1VE6omFrWfOeo5z9Eq-9N-3i5Luww03LP/view" target="_blank">Tải Đề PDF</a></td>
+          <td><span>Chữa chi tiết trên Live</span></td>
+          <td><a href="https://www.youtube.com/watch?v=7nklCEJrsVQ" target="_blank">Xem Video</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  // Tab Switching
+  function switchTab(tabId, btn) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  // Progress Tracking
+  const TOTAL_SESSIONS = 28;
+  let completed = {};
+
+  function loadProgress() {
+    try {
+      const saved = localStorage.getItem('vna_physics9_progress');
+      if (saved) completed = JSON.parse(saved);
+    } catch (e) {}
+    Object.keys(completed).forEach(id => {
+      if (completed[id]) {
+        const box = document.getElementById('sec-' + id);
+        if (box) {
+          box.classList.add('done');
+          const cb = box.querySelector('input[type="checkbox"]');
+          if (cb) cb.checked = true;
+        }
+      }
+    });
+    updateProgressBar();
+  }
+
+  function toggleSession(id, cb) {
+    completed[id] = cb.checked;
+    const box = document.getElementById('sec-' + id);
+    if (box) {
+      if (cb.checked) box.classList.add('done');
+      else box.classList.remove('done');
+    }
+    try {
+      localStorage.setItem('vna_physics9_progress', JSON.stringify(completed));
+    } catch (e) {}
+    updateProgressBar();
+  }
+
+  function updateProgressBar() {
+    const count = Object.values(completed).filter(Boolean).length;
+    const pct = Math.round((count / TOTAL_SESSIONS) * 100);
+    document.getElementById('prog-text').textContent = `${count} / ${TOTAL_SESSIONS} Ca (${pct}%)`;
+    document.getElementById('prog-fill').style.width = pct + '%';
+  }
+
+  function resetProgress() {
+    completed = {};
+    try { localStorage.removeItem('vna_physics9_progress'); } catch (e) {}
+    document.querySelectorAll('.session-box').forEach(box => {
+      box.classList.remove('done');
+      const cb = box.querySelector('input[type="checkbox"]');
+      if (cb) cb.checked = false;
+    });
+    updateProgressBar();
+  }
+
+  // Filter Days
+  function filterDays(mode) {
+    document.querySelectorAll('.day-card').forEach(card => {
+      if (mode === 'all') card.style.display = 'block';
+      else if (mode === 'core') {
+        card.style.display = card.getAttribute('data-type') === 'core' ? 'block' : 'none';
+      }
+    });
+  }
+
+  // Filter Video Library
+  function filterLib(filter) {
+    document.querySelectorAll('#video-table tbody tr').forEach(row => {
+      if (filter === 'all') {
+        row.style.display = '';
+      } else if (filter === 'vna') {
+        row.style.display = row.getAttribute('data-teacher') === 'vna' ? '' : 'none';
+      } else {
+        row.style.display = row.getAttribute('data-topic') === filter ? '' : 'none';
+      }
+    });
+  }
+
+  // Pomodoro Timer
+  let pomoSeconds = 50 * 60;
+  let pomoDefault = 50;
+  let pomoTimer = null;
+
+  function renderPomo() {
+    const m = String(Math.floor(pomoSeconds / 60)).padStart(2, '0');
+    const s = String(pomoSeconds % 60).padStart(2, '0');
+    document.getElementById('pomo-display').textContent = `${m}:${s}`;
+  }
+
+  function togglePomo() {
+    const btn = document.getElementById('pomo-btn');
+    if (pomoTimer) {
+      clearInterval(pomoTimer);
+      pomoTimer = null;
+      btn.textContent = 'Tiếp tục';
+    } else {
+      btn.textContent = 'Tạm dừng';
+      pomoTimer = setInterval(() => {
+        if (pomoSeconds > 0) {
+          pomoSeconds--;
+          renderPomo();
+        } else {
+          clearInterval(pomoTimer);
+          pomoTimer = null;
+          btn.textContent = 'Bắt đầu';
+          alert('Đã hết phiên tập trung! Hãy đứng dậy vươn vai, uống nước 10 phút trước khi cày tiếp nhé!');
+        }
+      }, 1000);
+    }
+  }
+
+  function resetPomo(mins) {
+    if (pomoTimer) {
+      clearInterval(pomoTimer);
+      pomoTimer = null;
+    }
+    pomoDefault = mins;
+    pomoSeconds = mins * 60;
+    document.getElementById('pomo-btn').textContent = 'Bắt đầu';
+    renderPomo();
+  }
+
+  loadProgress();
+</script>
+</body>
+</html>

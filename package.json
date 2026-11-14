@@ -23,6 +23,7 @@
   "scripts": {
     "build": "python3 src/build.py --dist",
     "cf:build": "python3 src/build.py --dist",
+    "prepare": "python3 src/build.py --dist",
     "check": "node tools/check.js",
     "test": "python3 src/build.py --dist && node tools/check.js && node tests/csp.js && node tests/functions.js && node tests/worker.js && node tests/smoke.js && node tests/interaction.js && node tests/newfeat.js && node tests/v112.js",
     "serve": "python3 -m http.server 8124 --directory dist",

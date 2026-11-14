@@ -10,12 +10,14 @@
 //   npm run deploy          # = python3 src/build.py --dist && npx wrangler deploy
 //
 // Build trên Cloudflare (Workers Builds → Settings → Build):
-//   Build command   npm run cf:build        (KHÔNG phải `npm run build` —
-//                                            trình cài đặt không nhận tên này,
-//                                            và `dist/` bị .gitignore nên nếu
-//                                            không build thì deploy không có gì)
 //   Deploy command  npx wrangler deploy
 //   Root directory  /
+//   Build command   để trống, hoặc `npm run cf:build`
+//
+// `dist/` bị .gitignore, nên nếu không build trước thì deploy không có gì để
+// đẩy lên. Vì thế package.json có hook `prepare` — npm tự chạy nó SAU MỌI lần
+// cài đặt, và Workers Builds luôn cài đặt. Nhờ vậy dist/ luôn tồn tại dù ô
+// Build command trên dashboard có để trống hay ghi sai.
 //
 // Những điểm cần biết:
 //   · KHÔNG có `main` → đây là Worker chỉ có tài nguyên tĩnh, không có script.

@@ -32,6 +32,20 @@ function nodeAt(root, path) {
 }
 function parentAt(root, path) { return nodeAt(root, path.slice(0, -1)); }
 
+/* Moving or deleting a node by index assumes the path still points at a group
+   with that many children. It does not: every click calls refresh(), which
+   re-renders the tree, but a handler already attached to the old button still
+   holds the old path — and after one move that path can point at a leaf.
+   `par.children` was then undefined and the click threw. Resolve through this
+   instead of reaching into `.children` directly. */
+function childSlotOf(root, path) {
+  const par = parentAt(root, path);
+  const i = path[path.length - 1];
+  if (!par || !Array.isArray(par.children)) return null;
+  if (!(i >= 0 && i < par.children.length)) return null;
+  return { par: par, i: i };
+}
+
 /* ---------- compute ---------- */
 function reqOf(n) {
   if (!n) return 0;
@@ -261,29 +275,30 @@ function renderBuild() {
     $$('#buildTree [data-del]').forEach(b => b.onclick = () => {
       const path = b.dataset.del === '' ? [] : b.dataset.del.split('.').map(Number);
       if (!path.length) return;
-      const par = parentAt(cfg.root, path);
-      par.children.splice(path[path.length - 1], 1);
-      if (!par.children.length) {
-        // keep the structure valid
-        const pp = path.slice(0, -1);
-        if (!pp.length) { par.children.push({ id: uid(), type: 'R', v: 10 }); }
+      const slot = childSlotOf(cfg.root, path);
+      if (!slot) return;
+      slot.par.children.splice(slot.i, 1);
+      if (!slot.par.children.length) {
+        /* a group with no children is not a circuit; keep one resistor so the
+           solver always has something to read */
+        slot.par.children.push({ id: uid(), type: 'R', v: 10 });
       }
       refresh();
     });
     $$('#buildTree [data-up]').forEach(b => b.onclick = () => {
       const path = b.dataset.up.split('.').map(Number);
-      const i = path[path.length - 1];
-      if (i <= 0) return;
-      const par = parentAt(cfg.root, path);
-      [par.children[i - 1], par.children[i]] = [par.children[i], par.children[i - 1]];
+      const slot = childSlotOf(cfg.root, path);
+      if (!slot || slot.i <= 0) return;
+      const kids = slot.par.children;
+      [kids[slot.i - 1], kids[slot.i]] = [kids[slot.i], kids[slot.i - 1]];
       refresh();
     });
     $$('#buildTree [data-dn]').forEach(b => b.onclick = () => {
       const path = b.dataset.dn.split('.').map(Number);
-      const i = path[path.length - 1];
-      const par = parentAt(cfg.root, path);
-      if (i >= par.children.length - 1) return;
-      [par.children[i + 1], par.children[i]] = [par.children[i], par.children[i + 1]];
+      const slot = childSlotOf(cfg.root, path);
+      if (!slot || slot.i >= slot.par.children.length - 1) return;
+      const kids = slot.par.children;
+      [kids[slot.i + 1], kids[slot.i]] = [kids[slot.i], kids[slot.i + 1]];
       refresh();
     });
   };

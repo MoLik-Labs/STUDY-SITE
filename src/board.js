@@ -509,6 +509,22 @@ function cirDefaultRoot() {
     cirLeaf('R', 12, 'R2')
   ]);
 }
+/* Validate a saved circuit tree before anyone draws or solves it.
+   State comes from localStorage, which any interrupted write, old version, or
+   hand edit can leave malformed — a group with `kids: null` was enough to make
+   #/build throw on open and stay blank. A tree that cannot be repaired is
+   replaced, not patched: a wrong circuit is worse than a default one. */
+function cirValidNode(n, depth) {
+  if (!n || typeof n !== 'object') return false;
+  if (depth > 24) return false;
+  if (n.t === 'e') {
+    return typeof n.k === 'string' && !!CIR_KIND[n.k];
+  }
+  if (n.t !== 's' && n.t !== 'p') return false;
+  if (!Array.isArray(n.kids) || !n.kids.length) return false;
+  return n.kids.every(k => cirValidNode(k, depth + 1));
+}
+
 function cirModel() {
   if (!state.cir || !state.cir.root) state.cir = { U: 12, r: 0, root: cirDefaultRoot() };
   const c = state.cir;
@@ -516,6 +532,7 @@ function cirModel() {
   if (!isFinite(+c.r)) c.r = 0;
   if (!c.gen) c.gen = { kind: 'battery', n: 2, f: 50 };
   if (!CIR_GEN[c.gen.kind]) c.gen.kind = 'battery';
+  if (!cirValidNode(c.root, 0)) c.root = cirDefaultRoot();
   return c;
 }
 let cirSel = null;
@@ -893,17 +910,32 @@ function cirBind() {
 function cirTidy(silent) {
   const c = cirModel();
   /* 1 · dọn cây: gộp nhóm cùng phép, bỏ nhóm rỗng, bọc nhánh một phần tử */
+  /* Collapse a group that holds exactly one child.
+     The first version was `while (n.kids.length === 1) n = n.kids[0]`, which
+     after one step assigns a LEAF to n — leaves have no `kids`, so the next
+     iteration read `.length` off undefined and threw. Reachable in two clicks:
+     "Xoá hết" leaves a series with one resistor, then "Tự căn lại" crashes.
+     Re-check the type before touching kids at all. */
   const clean = n => {
-    if (n.t === 'e') return n;
+    if (!n || n.t === 'e') return n;
     n.kids = (n.kids || []).map(clean).filter(Boolean);
     const merged = [];
-    n.kids.forEach(k => { if (k.t === n.t) merged.push(...k.kids); else merged.push(k); });
+    n.kids.forEach(k => {
+      if (!k) return;
+      /* splice a same-type child's children in place, but only if it has any:
+         an empty group merged into its parent would still be a group with
+         nothing in it, which is the case that produced empty branches. */
+      if (k.t === n.t && Array.isArray(k.kids) && k.kids.length) merged.push(...k.kids);
+      else merged.push(k);
+    });
     n.kids = merged;
-    while (n.kids.length === 1 && n.t !== 'e') n = n.kids[0];
+    while (n.t !== 'e' && Array.isArray(n.kids) && n.kids.length === 1) n = n.kids[0];
     return n;
   };
-  c.root = clean(c.root);
-  if (!c.root || c.root.t === 'e') c.root = c.root || cirLeaf('R', 10, 'R1');
+  c.root = clean(c.root) || cirLeaf('R', 10, 'R1');
+  if (!c.root || (c.root.t !== 'e' && !(c.root.kids && c.root.kids.length))) {
+    c.root = cirLeaf('R', 10, 'R1');
+  }
   /* 2 · đánh số lại tên cho liền mạch: R1, R2… Đ1… A1… */
   const counters = {};
   cirWalk(c.root, n => {

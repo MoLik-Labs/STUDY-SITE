@@ -1056,7 +1056,11 @@ function renderQA(q0){
 ========================================================= */
 let libFilter={scope:'all',teacher:'all',q:''};
 function renderLibrary(){
-  const q=libFilter.q;
+  /* The search box wrote to this variable, so it has to be mutable. It was
+     `const`, and every keystroke threw "Assignment to constant variable" — the
+     library search was dead, with no visible error beyond the box not
+     filtering. Keep it in libFilter so the text survives a re-render. */
+  let q=libFilter.q;
   const counts={};
   Object.values(LIB).forEach(v=>counts[v.topic]=(counts[v.topic]||0)+1);
   $('#main').innerHTML=`
@@ -1120,14 +1124,14 @@ function renderLibrary(){
     $$('.chip[data-scope]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.scope===libFilter.scope));
     draw();
   });
-  $('#libq').oninput=e=>{q=e.target.value;draw();};
+  $('#libq').oninput=e=>{q=e.target.value;libFilter.q=q;draw();};
 }
 
 /* =========================================================
    RENDER — NOTES
 ========================================================= */
 function renderNotes(q0){
-  const q=q0||'';
+  let q=q0||'';
   $('#main').innerHTML=`
     <section class="wrap wide">
       <div class="page-head">

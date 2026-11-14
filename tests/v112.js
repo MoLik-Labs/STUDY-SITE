@@ -565,6 +565,165 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
   ok('state trắng không ném ngoại lệ', errsSeen.length === errBase, (errsSeen.length - errBase) + ' lỗi');
   ev("state.ans={};state.watched={};save();");
 
+
+  /* =========================================================
+     11. VẬT LÍ ĐỨNG ĐẦU
+     ========================================================= */
+  ok('Vật lí có nút riêng trên thanh trên',
+    !!w.document.querySelector('.topbar a.tb-phys[href="#/physics"]'));
+  ok('nút Vật lí hiện tiến độ thật',
+    /\d+\/\d+/.test((w.document.querySelector('.tb-phys span') || {}).textContent || ''));
+  ok('ngăn kéo mở bằng khối Vật lí',
+    !!w.document.querySelector('#rail .rail-phys .rp-main[href="#/physics"]'));
+  ok('mục Vật lí trong ngăn kéo có thanh tiến độ',
+    !!w.document.querySelector('#rail .rail-phys .rp-bar'));
+  w.location.hash = '#/'; await wait(220);
+  const physCard = w.document.querySelector('#main a.hero-phys[href="#/physics"]');
+  ok('trang chủ đặt thẻ Vật lí TRƯỚC thẻ tự học', !!physCard &&
+    physCard.compareDocumentPosition(w.document.querySelector('#main a.hero-study')) & 4);
+  ok('thẻ Vật lí trên trang chủ có thanh tiến độ', !!physCard.querySelector('.hp-bar'));
+
+  /* =========================================================
+     12. TUỲ BIẾN — trang từng bị bỏ quên
+     ---------------------------------------------------------
+     It had six sections with no index, secondary text below AA, and no way
+     to change how a lesson reads. Every switch below must actually reach the
+     document, not just localStorage.
+     ========================================================= */
+  w.location.hash = '#/__blank__'; await wait(15);
+  w.location.hash = '#/settings'; await wait(240);
+  const setPage = w.document.querySelector('#main');
+  ok('#/settings có mục lục', setPage.querySelectorAll('[data-snav]').length >= 6,
+    setPage.querySelectorAll('[data-snav]').length + ' mục');
+  ok('#/settings: mọi mục lục trỏ tới mục có thật',
+    [...setPage.querySelectorAll('[data-snav]')].every(a => !!setPage.querySelector('#set-' + a.dataset.snav)));
+  ok('#/settings: mọi section đều có id',
+    [...setPage.querySelectorAll('.set-sec')].every(x => x.id));
+
+  const meas = setPage.querySelector('[data-measure]');
+  meas.value = '84';
+  meas.dispatchEvent(new w.Event('change'));
+  await wait(120);
+  ok('độ dài dòng áp vào tài liệu', w.document.documentElement.style.getPropertyValue('--measure') === '84ch',
+    w.document.documentElement.style.getPropertyValue('--measure'));
+  ok('độ dài dòng được lưu', ev('prefs().measure') === 84);
+
+  const lineBtn = setPage.querySelector('[data-line="1.8"]');
+  lineBtn.click(); await wait(100);
+  ok('giãn dòng áp vào tài liệu', w.document.documentElement.style.getPropertyValue('--lh') === '1.8');
+  ok('giãn dòng ảnh hưởng bài đọc thật',
+    /--lh:\s*1\.8/.test(w.document.documentElement.getAttribute('style') || '') ||
+    w.getComputedStyle(w.document.documentElement).getPropertyValue('--lh').trim() === '1.8');
+
+  const ulBtn = setPage.querySelector('[data-underline="on"]');
+  ulBtn.click(); await wait(100);
+  ok('gạch chân liên kết bật được', w.document.documentElement.getAttribute('data-underline') === 'on');
+
+  const startBtn = setPage.querySelector('[data-start="#/study"]');
+  startBtn.click(); await wait(100);
+  ok('trang mở đầu được lưu', ev('prefs().start') === '#/study');
+  ok('nút thương hiệu đi theo trang mở đầu',
+    ev("prefs().start") === '#/study');
+  ev("setPref('start','#/physics')");
+
+  /* deep link tới một mục */
+  w.location.hash = '#/settings?s=pomo'; await wait(240);
+  ok('đường dẫn sâu tới một mục hoạt động',
+    (w.document.querySelector('[data-snav].on') || { dataset: {} }).dataset.snav === 'pomo');
+
+  /* =========================================================
+     13. Ý ĐỊNH THỰC HIỆN — "nếu … thì …"
+     ========================================================= */
+  ev("state.study.ifthen={list:[],asked:false};save();");
+  w.location.hash = '#/__blank__'; await wait(15);
+  w.location.hash = '#/study'; await wait(260);
+  ok('#/study hỏi cam kết khi chưa có', !!w.document.querySelector('#main .ift-ask'));
+
+  w.document.querySelector('#iftCue').value = 'sau khi tan học';
+  w.document.querySelector('#iftAct').value = 'ôn 10 thẻ';
+  w.document.querySelector('#iftSave').click();
+  await wait(300);
+  ok('lưu cam kết ghi vào state', ev('studyState().ifthen.list.length') === 1,
+    ev('JSON.stringify(studyState().ifthen.list)'));
+  ok('lưu cam kết KHÔNG ném lỗi (biến cục bộ từng che save())',
+    errsSeen.length === errBase, (errsSeen.length - errBase) + ' lỗi');
+  ok('cam kết hiện lại ngay trên trang', w.document.querySelectorAll('#main .ift-line').length === 1);
+
+  /* chỉ tối đa hai — nhiều hơn thì không còn là kích hoạt */
+  ev("(function(){var it=studyState().ifthen;it.list.push({cue:'a',act:'b'},{cue:'c',act:'d'},{cue:'e',act:'f'});save();})()");
+  ok('cam kết bị giới hạn ở 2', ev('syIfThen().list.length') === 2, ev('syIfThen().list.length'));
+
+  /* dữ liệu hỏng không được làm trắng trang */
+  ev("state.study.ifthen={list:[null,1,{},{cue:'x'}],asked:false};save();");
+  w.location.hash = '#/__blank__'; await wait(15);
+  w.location.hash = '#/study'; await wait(220);
+  ok('#/study sống sót khi cam kết hỏng', w.document.querySelector('#main').innerHTML.length > 3000);
+  ok('cam kết hỏng bị loại bỏ', ev('syIfThen().list.length') === 0, ev('JSON.stringify(syIfThen().list)'));
+
+  w.location.hash = '#/'; await wait(220);
+  ev("state.study.ifthen={list:[{cue:'tối nay',act:'học 25 phút'}],asked:true};save();");
+  w.location.hash = '#/__blank__'; await wait(15);
+  w.location.hash = '#/'; await wait(220);
+  ok('trang chủ nhắc lại cam kết', w.document.querySelectorAll('#main .ift-line').length === 1);
+
+  /* =========================================================
+     14. ĐIỀU HƯỚNG NHẤT QUÁN
+     ========================================================= */
+  const probeRoutes = ['#/cards', '#/practice', '#/plan', '#/weekly', '#/focus', '#/grades',
+    '#/timetable', '#/calendar', '#/library', '#/notes', '#/papers', '#/exam', '#/lab', '#/sim',
+    '#/settings', '#/stats', '#/progress', '#/subjects', '#/files', '#/share', '#/game'];
+  let noH1 = [], noExit = [], noBack = [];
+  for (const r of probeRoutes) {
+    w.location.hash = '#/__blank__'; await wait(10);
+    w.location.hash = r; await wait(110);
+    const m = w.document.querySelector('#main');
+    if (!m.querySelector('h1')) noH1.push(r);
+    if (m.querySelectorAll('.ns-card').length < 2) noExit.push(r);
+    if (!m.querySelector('.pg-back')) noBack.push(r);
+  }
+  ok('mọi trang đều có h1', noH1.length === 0, noH1.join(', '));
+  ok('mọi trang đều có lối đi tiếp', noExit.length === 0, noExit.join(', '));
+  ok('mọi trang con đều có nút lùi', noBack.length === 0, noBack.join(', '));
+  w.location.hash = '#/'; await wait(180);
+  ok('trang chủ không có nút lùi', !w.document.querySelector('#main .pg-back'));
+
+  /* "Đang học dở" phải trỏ đúng ca vừa rời, không phải ca trống đầu tiên */
+  ev("state.done={};state.last={d:5,s:2};save();");
+  w.location.hash = '#/__blank__'; await wait(15);
+  w.location.hash = '#/'; await wait(200);
+  const cont = w.document.querySelector('#main .continue');
+  ok('Học tiếp trỏ về ca vừa rời', cont && cont.getAttribute('href') === '#/lesson/5/2',
+    cont ? cont.getAttribute('href') : 'none');
+  ok('nhãn nói rõ là đang học dở', /Đang học dở/.test(cont.textContent));
+  ev("state.last=null;save();");
+
+  /* =========================================================
+     15. LOGO = BIỂU TƯỢNG TAB
+     ========================================================= */
+  ok('favicon là chính dấu cáo, không phải chữ số',
+    /shape-rendering='crispEdges'/.test(w.document.querySelector('link[rel=icon]').getAttribute('href')));
+  const markRows = [...w.document.querySelectorAll('.px-mark')][0].querySelectorAll(':scope > span').length;
+  ok('mark là lưới 16 dòng', markRows === 16, markRows);
+  /* Compare CELL BY CELL. Comparing the joined className string is wrong:
+     'c1' is two characters, so reversing the string interleaves '1c'. That
+     bug made a correct mark look asymmetric. */
+  const symRows = ev(`(function(){
+    var m=document.querySelector('.px-mark');
+    return [...m.querySelectorAll(':scope > span')].map(r=>{
+      var c=[...r.children].map(x=>x.className.replace(/^c/,'')||'.');
+      return c.join('')===c.slice().reverse().join('');
+    });
+  })()`);
+  ok('mark đối xứng trái–phải', symRows.every(Boolean), symRows.filter(x => !x).length + ' dòng lệch');
+  ok('hai mắt đối xứng qua trục giữa', ev(`(function(){
+    var m=document.querySelector('.px-mark');
+    var rows=[...m.querySelectorAll(':scope > span')];
+    return rows.every(r=>{
+      var c=[...r.children].map(x=>x.className);
+      return c.join('')===c.slice().reverse().join('');
+    });
+  })()`));
+
   const pass = results.filter(r => r.pass).length;
   results.filter(r => !r.pass).forEach(r => console.log('  ✗ ' + r.n + (r.note ? ' — ' + r.note : '')));
   console.log(`\n${pass}/${results.length} bước đạt` + (pass === results.length ? '  ✓' : ''));

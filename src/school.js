@@ -997,6 +997,10 @@ async function renderFiles() {
   window.__filesCache = files.map(f => ({ id: f.id, name: f.name, size: f.size }));
   if (typeof PAL_INDEX_CACHE !== 'undefined') PAL_INDEX_CACHE = null;
   if (typeof window !== 'undefined') window.EXPL_INDEX = null;
+  /* Trang này dựng nội dung SAU khi đọc IndexedDB, nên khi routeNext() chạy
+     thì #main còn trống và dải "Đi tiếp" không được thêm. Gọi lại sau khi
+     đã vẽ xong — hàm tự bỏ qua nếu đã có. */
+  const _afterPaint = () => { if (typeof routeNext === 'function') routeNext(); };
   const S = (schoolState().soft = schoolState().soft || {});
 
   const thumb = {};
@@ -1103,4 +1107,6 @@ async function renderFiles() {
       renderFiles();
     }, { danger: true, okText: 'Xoá tệp' });
   });
+  /* dải "Đi tiếp" thêm sau khi nội dung bất đồng bộ đã vẽ xong */
+  _afterPaint();
 }

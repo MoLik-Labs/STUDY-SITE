@@ -179,6 +179,121 @@ function syScopeName(g, s) {
   return sub.name;
 }
 
+/* =========================================================
+   Ý ĐỊNH THỰC HIỆN — "nếu … thì …"
+   ---------------------------------------------------------
+   Việc duy nhất trong tâm lí học hành vi có bằng chứng mạnh, lặp lại được,
+   và rẻ cho người học là *implementation intention* (Gollwitzer): viết ra
+   "nếu <tình huống> thì tôi <hành động>". Meta-analysis của Gollwitzer &
+   Sheeran (2006, ~94 nghiên cứu) cho hiệu ứng trung bình d ≈ 0.65 — lớn hơn
+   hầu hết can thiệp "động viên" thường thấy trong app học tập.
+
+   Vì sao nó hoạt động, và vì sao chỗ đặt nó quan trọng:
+     · Nó chuyển ý định từ "mục tiêu" sang "kích hoạt": não gắn hành động với
+       một dấu hiệu cụ thể, nên không cần quyết định lại lúc mệt.
+     · Nó phải hỏi lúc người dùng ĐANG định làm, không phải lúc đăng ký.
+       Hỏi ở trang Học hôm nay là đúng chỗ; hỏi trong lúc onboarding thì chỉ
+       tạo ra một câu vô nghĩa được điền cho xong.
+
+   Thiết kế có chủ đích:
+     · ba ô, không phải một ô văn xuôi — văn xuôi tự do tạo ra "học nhiều hơn"
+       và không gắn được với dấu hiệu nào;
+     · một câu, hiện lại trên trang chủ và trang Học — chính việc NHÌN LẠI là
+       phần có tác dụng, nên không được chôn trong cài đặt;
+     · tối đa hai câu: nhiều hơn thì không còn là một kích hoạt nữa;
+     · xoá được, và không bao giờ hỏi lại nếu đã trả lời.
+   ========================================================= */
+function syIfThen() {
+  const S = studyState();
+  if (!S.ifthen || typeof S.ifthen !== 'object') S.ifthen = { list: [], asked: false };
+  if (!Array.isArray(S.ifthen.list)) S.ifthen.list = [];
+  /* cap enforced on READ, not only in the form: the list is user-writable
+     through localStorage and JSON import, and 20 commitments would stop being
+     a trigger and start being a wall of text. */
+  S.ifthen.list = S.ifthen.list
+    .filter(x => x && typeof x === 'object' && x.cue && x.act)
+    .slice(-2);
+  return S.ifthen;
+}
+
+/* Dấu hiệu gợi ý lấy từ nhịp thật của người dùng, không phải ví dụ chung. */
+function syCueSuggestions() {
+  const out = [];
+  const h = new Date().getHours();
+  out.push(h < 12 ? 'sau khi tan học buổi sáng' : h < 18 ? 'sau khi tan học buổi chiều' : 'sau bữa tối');
+  out.push('sau khi đặt cặp sách xuống');
+  out.push('lúc ' + (h < 12 ? '20' : '21') + ' giờ tối');
+  return out;
+}
+function syActionSuggestions() {
+  const due = (typeof syDue === 'function') ? syDue().length : 0;
+  const out = [];
+  out.push(due ? ('ôn ' + due + ' thẻ đang đến hạn') : 'ôn 10 thẻ ghi nhớ');
+  out.push('làm 5 câu luyện đề');
+  out.push('học 25 phút đồng hồ tập trung');
+  return out;
+}
+
+function syIfThenHtml() {
+  const it = syIfThen();
+  if (!it.list.length) return '';
+  return `<div class="sy-ifthen" role="note">
+    <span class="kicker">Cam kết của bạn</span>
+    ${it.list.map((x, i) => `<p class="ift-line"><span>Nếu</span> <b>${esc(x.cue)}</b> <span>thì tôi</span> <b>${esc(x.act)}</b>
+      <button class="ift-x" data-ift="${i}" aria-label="Xoá cam kết này">×</button></p>`).join('')}
+    <a class="ift-more" href="#/study?ifthen=1">Sửa cam kết →</a>
+  </div>`;
+}
+
+/* Thanh hỏi — chỉ hiện khi chưa có cam kết nào và người dùng chưa bỏ qua. */
+function syIfThenAskHtml() {
+  const it = syIfThen();
+  if (it.list.length >= 2 || it.asked) return '';
+  const cues = syCueSuggestions(), acts = syActionSuggestions();
+  return `<div class="ift-ask">
+    <div class="ift-ask-l">
+      <span class="kicker">Một câu, hiệu quả hơn cả kế hoạch</span>
+      <b>Viết ra lúc bạn sẽ học — rồi web nhắc lại đúng lúc đó.</b>
+      <p>Nghiên cứu về “ý định thực hiện” cho thấy người viết “nếu … thì …” làm đúng
+        kế hoạch nhiều hơn hẳn người chỉ đặt mục tiêu. Chọn nhanh hai ô dưới đây, mất 5 giây.</p>
+    </div>
+    <div class="ift-form">
+      <label>Nếu
+        <input id="iftCue" list="iftCueList" placeholder="sau khi tan học buổi chiều" maxlength="60">
+        <datalist id="iftCueList">${cues.map(c => `<option value="${esc(c)}">`).join('')}</datalist>
+      </label>
+      <label>thì tôi
+        <input id="iftAct" list="iftActList" placeholder="ôn 10 thẻ ghi nhớ" maxlength="60">
+        <datalist id="iftActList">${acts.map(a => `<option value="${esc(a)}">`).join('')}</datalist>
+      </label>
+      <div class="ift-btns">
+        <button class="btn sm" id="iftSave">Lưu cam kết</button>
+        <button class="btn ghost sm" id="iftSkip">Để sau</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function syBindIfThen() {
+  const it = syIfThen();
+  /* NOT `const save` — that shadows the global save() and the click handler
+     then throws inside itself, after mutating state but before re-rendering. */
+  const okBtn = $('#iftSave');
+  if (okBtn) okBtn.onclick = () => {
+    const cue = ($('#iftCue').value || '').trim();
+    const act = ($('#iftAct').value || '').trim();
+    if (!cue || !act) { toast('Điền cả hai ô: khi nào và làm gì'); return; }
+    it.list.push({ cue: cue.slice(0, 60), act: act.slice(0, 60), at: Date.now() });
+    if (it.list.length > 2) it.list = it.list.slice(-2);
+    save(); renderStudy(); toast('Đã ghi cam kết — sẽ nhắc lại ở trang chủ');
+  };
+  const skip = $('#iftSkip');
+  if (skip) skip.onclick = () => { it.asked = true; save(); renderStudy(); };
+  $$('[data-ift]').forEach(b => b.onclick = () => {
+    it.list.splice(+b.dataset.ift, 1); save(); renderStudy();
+  });
+}
+
 function renderStudy() {
   const S = studyState();
   const today = syToday();
@@ -241,6 +356,9 @@ function renderStudy() {
         </div>
       </div>
     </div>
+
+    ${syIfThenAskHtml()}
+    ${syIfThenHtml()}
 
     <div class="sy-do">
       <div class="sy-do-h">
@@ -385,6 +503,8 @@ function renderStudy() {
   if (im) im.onchange = async e => { const f = e.target.files[0]; if (f) await syImportAll(f); };
   const qc = $('#syQuickCard');
   if (qc) qc.onclick = () => uiCardForm();
+  syBindIfThen();
+  if (typeof syncScope === 'function') syncScope();
 }
 
 /* =========================================================

@@ -24,30 +24,36 @@ const BRAND = {
 /* Left half of the 16x16 mark. Mirrored at render time.
    Legend: o = fox, d = deep shadow, k = ink (eyes, nose), w = cream muzzle */
 const BRAND_MARK_HALF = [
-  /* v5. Everything here was chosen after looking at it rendered, which is
-     the only way to judge a 16px mark:
-       · ears cut steeply inward — an upright triangle reads as a cat;
-       · the skull dips between the ears, then flares to cheek tufts;
-       · eyes 2x2 and horizontal — a 1px slit reads as a mask, not a face;
-       · the white cheek band sits on the OUTER edge and never encloses,
-         because an enclosed white blob read as a cat's muzzle;
-       · nothing at the exact bottom centre — the apex is the nose. */
-  '..o.....',
-  '..oo....',
-  '.odo....',
-  '.oodo...',
-  '.ooodo..',
+  /* v6. Three earlier versions were rendered at 16, 24, 32 and 48 px and
+     looked at side by side; this one survived all four.
+       · ears sweep outward from index 0 (the outer edge) up to a 1px tip —
+         an upright triangle reads as a cat, this reads as a fox;
+       · the skull dips in the middle, so the silhouette is a W, not a dome;
+       · eyes are 2x2, inboard (cols 3-4), i.e. under the ear inner edge —
+         centred eyes make the animal stare, outboard eyes look like a mask;
+       · cheek flare on row 11 gives the face its fox width;
+       · cream starts as a narrow chin at row 12 and widens to a band at 14:
+         a small muzzle, not a mouth. A wide cream band read as a slash.
+       · the nose is ink at the centre bottom and overlaps the cream — that
+         is what makes the two halves read as one face.
+     Only the left 8 columns are stored; the right side is mirrored, so the
+     mark can never come out asymmetric by accident. */
+  'o.......',
+  'oo......',
+  'odo.....',
+  'oodo....',
+  'ooodo...',
   'oooooo..',
-  'ooooooo.',
   'oooooooo',
-  '.oookkoo',
-  '.oookkoo',
-  '..wwoooo',
-  '...wwooo',
-  '....wwoo',
-  '.....wwo',
-  '......wo',
-  '.......k',
+  'oooooooo',
+  'oookkooo',
+  'oookkooo',
+  'oooooooo',
+  '.ooooooo',
+  '..wooooo',
+  '...wwwoo',
+  '....wwkk',
+  '......kk',
 ];
 
 const BRAND_MARK_CLASS = { o: 'c1', d: 'c2', k: 'c3', w: 'c4' };

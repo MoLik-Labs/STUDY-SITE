@@ -31,57 +31,67 @@ const ok = (n, c, note) => results.push({ n, pass: !!c, note: note === undefined
   };
 
   const mod = await import(pathToFileURL(path.join(ROOT, 'dist/_worker.mjs')).href);
-  ok('module export workerFetch', typeof mod.workerFetch === 'function');
   ok('module export default (router)', mod.default && typeof mod.default.fetch === 'function');
-  ok('phiên bản đã được nhúng lúc build', !fs.readFileSync(path.join(ROOT,'dist/_worker.mjs'),'utf8').includes('__VERSION__'));
+  ok('KHÔNG còn export workerFetch', mod.workerFetch === undefined);
+  const workerSrc = fs.readFileSync(path.join(ROOT, 'dist/_worker.mjs'), 'utf8');
+  ok('phiên bản đã nhúng lúc build', !workerSrc.includes('__VERSION__'));
+  ok('build-id đã nhúng lúc build', !workerSrc.includes('__BUILD_ID__'));
+  ok('mốc thời gian đã nhúng lúc build', !workerSrc.includes('__BUILT_AT__'));
+  /* Endpoint này từng fetch nội bộ /index.html rồi regex — xem __version
+     là kiểm tra "bản deploy có mới không" mà lại phụ thuộc mạng. */
+  ok('Worker không đọc index.html để lấy phiên bản',
+    !/fetch\([^)]*index\.html/.test(workerSrc));
 
-  const env = { CF_WORKERS_CI_COMMIT_SHA: 'abc123def456', CF_WORKERS_CI_BRANCH: 'main' };
-  /* workerFetch(request, env) — trả Request thật, không phải object bọc */
   const mk = (init, headers) => new Request('https://example.workers.dev/__version',
     Object.assign({ headers: new Headers(headers || {}) }, init));
-  const E = env;
+
+  /* ASSETS giả: chỉ cần cho đường 404, /__version không được chạm tới */
+  const env = {
+    ASSETS: { fetch: async req => {
+      const p = new URL(req.url).pathname;
+      if (p === '/404.html') return new Response('<html>nf</html>', { status: 200, headers: { 'Content-Type': 'text/html' } });
+      return new Response('nf', { status: 404 });
+    } },
+  };
 
   /* --- GET --- */
-  const res = await mod.workerFetch(mk(), E);
+  const res = await mod.default.fetch(mk(), env);
   ok('GET trả 200', res.status === 200, res.status);
   ok('Content-Type JSON', (res.headers.get('content-type') || '').includes('application/json'));
-  ok('không cache', res.headers.get('cache-control') === 'no-store');
 
   const body = await res.json();
   const metaVer = (html.match(/<meta name="app-version" content="([^"]+)"/) || [, ''])[1];
   const metaBuild = (html.match(/<meta name="build-id" content="([^"]+)"/) || [, ''])[1];
   ok('version khớp index.html', body.version === metaVer, body.version + ' vs ' + metaVer);
   ok('build khớp build-id', body.build === metaBuild, body.build + ' vs ' + metaBuild);
-  ok('có commit sha', body.commit === 'abc123def456');
   ok('có nhãn runtime', body.runtime === 'cloudflare', body.runtime);
-  ok('có mốc thời gian ISO', /^\d{4}-\d\d-\d\dT/.test(body.at || ''));
+  /* builtAt được phép là epoch: bản dựng cố tình KHÔNG nhúng giờ thực, nếu
+     không thì hai lần build cùng một commit ra hai tệp khác nhau và CI không
+     thể khẳng định bản commit khớp với src/. */
+  ok('có mốc thời gian ISO của BẢN DỰNG', /^\d{4}-\d\d-\d\dT/.test(body.builtAt || ''), body.builtAt);
+  ok('builtAt không đổi giữa hai lần build (tất định)', body.builtAt === '1970-01-01T00:00:00Z', body.builtAt);
+  ok('không còn trường `at` đổi theo từng lần gọi', body.at === undefined);
 
   /* --- ETag / 304 --- */
   const etag = res.headers.get('etag');
   ok('có ETag', !!etag, etag);
-  /* --- workerFetch: đường dẫn khác phải trả null để Worker xử lý tiếp --- */
-  const other = await mod.workerFetch(new Request('https://x.workers.dev/khac'), E);
-  ok('đường dẫn khác → null', other === null);
-
-  const res304 = await mod.workerFetch(mk({}, { 'If-None-Match': etag }), E);
+  const res304 = await mod.default.fetch(mk({}, { 'If-None-Match': etag }), env);
   ok('If-None-Match trùng → 304', res304.status === 304, res304.status);
   ok('304 không có body', (await res304.text()) === '');
 
-  const res200 = await mod.workerFetch(mk({}, { 'If-None-Match': 'W/"khac"' }), E);
+  const res200 = await mod.default.fetch(mk({}, { 'If-None-Match': 'W/"khac"' }), env);
   ok('ETag lạ → 200', res200.status === 200);
 
   /* --- method khác --- */
-  const post = await mod.workerFetch(mk({ method: 'POST' }), E);
+  const post = await mod.default.fetch(mk({ method: 'POST' }), env);
   ok('POST → 405', post.status === 405, post.status);
-  const head = await mod.workerFetch(mk({ method: 'HEAD' }), E);
+  const head = await mod.default.fetch(mk({ method: 'HEAD' }), env);
   ok('HEAD được phép', head.status === 200, head.status);
+  ok('HEAD không có body', (await head.res ? '' : await head.text()) === '');
 
-  /* --- index.html không đọc được thì vẫn trả lời --- */
-  globalThis.fetch = async () => { throw new Error('boom'); };
-  const resErr = await mod.workerFetch(mk(), E);
-  ok('lỗi đọc index.html vẫn trả 200', resErr.status === 200, resErr.status);
-  const bodyErr = await resErr.json();
-  ok('lỗi vẫn có trường version', typeof bodyErr.version === 'string', bodyErr.version);
+  /* --- không có ASSETS (chạy ngoài Cloudflare) vẫn trả 404 đúng --- */
+  const noEnv = await mod.default.fetch(new Request('https://x.workers.dev/khong-co'), {});
+  ok('không có ASSETS vẫn trả 404', noEnv.status === 404, noEnv.status);
 
   const pass = results.filter(r => r.pass).length;
   results.filter(r => !r.pass).forEach(r => console.log('  ✗ ' + r.n + (r.note ? ' — ' + r.note : '')));

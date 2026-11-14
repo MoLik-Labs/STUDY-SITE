@@ -1,7 +1,60 @@
 # Changelog
 
 Định dạng theo [Keep a Changelog](https://keepachangelog.com/vi/1.1.0/), phiên bản theo [SemVer](https://semver.org/lang/vi/).
-Mọi thay đổi lớn đều có kiểm thử: `npm test` (check tĩnh + CSP + Pages Function + 83 bước jsdom).
+Mọi thay đổi lớn đều có kiểm thử: `npm test` (check tĩnh + CSP + Worker + mô phỏng Workers + 83 bước jsdom).
+
+## [11.1.0] — 2026-11-14
+
+**Chuyển sang Cloudflare Workers Static Assets** sau khi so sánh có bằng chứng với Pages, Vercel,
+Netlify và GitHub Pages. Không phải đổi một dòng nào trong `src/` về mặt giao diện.
+
+### Vì sao đổi
+- Cloudflare tự viết trong *Workers Best Practices*: "If you are starting a new project, use
+  Workers instead of Pages. Pages continues to work, but new features and optimizations are
+  focused on Workers." Pages **không** bị khai tử — nhưng Workers là nơi mọi thứ mới diễn ra.
+- Workers Static Assets vẫn đọc `_headers` và `_redirects` y như Pages, nên chi phí chuyển đổi
+  gần bằng không, còn đường dài thì mở ra D1/KV/R2/**cron** (Pages không có cron).
+- Với `run_worker_first` không bật, **mọi request tĩnh vẫn miễn phí và không bị đếm** vào hạn
+  mức 100.000/ngày — nên trang này thực tế không bao giờ chạm hạn mức.
+
+### Thay đổi
+- `wrangler.toml` → **`wrangler.jsonc`**: `main`, `assets.directory`, `assets.binding = ASSETS`,
+  `not_found_handling = "404-page"`, `html_handling = "auto-trailing-slash"`, `workers_dev`,
+  `preview_urls`, và khối `routes` ghi sẵn để gắn tên miền riêng.
+- **Worker một tệp** sinh từ `src/worker.template.js` → `dist/_worker.mjs`: `GET /__version`
+  (JSON, `ETag`, `304`, `405`, chịu lỗi khi không đọc được `index.html`) + trả `404.html` thật.
+  Bỏ cấu trúc `functions/` của Pages; Pages vẫn dùng lại được nếu cần (§6 trong tài liệu).
+- **`dist/404.html`**: trang 404 riêng, nhẹ (2 KB), có lối về các tuyến chính, `noindex`.
+- **`.assetsignore`**: loại `_worker.mjs` (và `.nojekyll`) khỏi assets — **nếu không, mã Worker
+  bị phục vụ công khai ở `/_worker.mjs`**. Lỗi này chỉ lộ ra khi chạy `wrangler dev` thật.
+- **`_redirects` trỏ `/` thay vì `/index.html`**: đích cũ sinh thêm một vòng `307` mỗi lần vào
+  `/study`. Thêm cả dạng có dấu `/` cuối. Đã kiểm: giờ trả `200` thẳng.
+- **`src/worker.template.js`**: gọi `env.ASSETS` với `redirect: 'follow'` — thiếu cờ này thì
+  `/404.html` bị `307` sang `/404` và người dùng nhận plain text thay vì trang 404.
+- **`sw.js`**: precache `./` thay vì `./index.html` (Cloudflare `307` đường `/index.html`), và
+  thêm `./404.html` để mất mạng vẫn thấy trang 404 tử tế. Duyệt từng tệp thay vì `addAll()`
+  để một tệp lỗi không làm hỏng cả lô.
+- `npm run deploy` = `wrangler deploy`; thêm `npm run preview` (chạy workerd ở máy).
+- `_headers`/`_redirects` bỏ nhãn "Pages" trong chú thích; giữ nguyên toàn bộ giá trị.
+
+### Kiểm thử
+- **`tests/worker.js` (mới, 32 bước)** — mô phỏng đúng thứ tự phục vụ của Workers: tài nguyên
+  tĩnh miễn phí, `_redirects`, 404, và **không lộ mã nguồn**. Đây là lưới an toàn cho cả ba lỗi
+  ở trên.
+- `tests/functions.js` chuyển sang `dist/_worker.mjs`, thêm 6 bước kiểm `wrangler.jsonc` khớp
+  `dist/` (main tồn tại, `assets.directory`, `binding`, `run_worker_first` không bật).
+- `tests/csp.js` thêm kiểm `404.html`, `.assetsignore`, `_worker.mjs` → **28 bước**.
+- CI thêm bước chạy `tests/worker.js`.
+
+### Kiểm chứng
+- `wrangler deploy --dry-run`: **8 tệp** vào assets, Worker **2,7 KB** (gzip 1,15 KB).
+- `wrangler dev --local` rồi gọi thật 11 loại request: `/`, `/study`, `/about/` → `200`;
+  `/index.html` → `307`; `/__version` → `200` JSON + `304` khi khớp `If-None-Match` + `405` khi
+  `POST`; `/nope` → `404` + HTML của ta; `/_worker.mjs`, `/_headers`, `/src/app.js`,
+  `/package.json`, `/wrangler.jsonc` → `404`.
+- `npm test`: **163 bước** xanh.
+
+---
 
 ## [11.0.0] — 2026-11-14
 

@@ -1,7 +1,7 @@
 # Bàn giao kỹ thuật — Học mọi thứ · v10.0
 
 Tài liệu này là “bộ nhớ” của dự án: đọc hết là có thể sửa, mở rộng và kiểm thử mà không cần hỏi lại.
-Cập nhật lần cuối: **2026-11-14** · phiên bản **11.0.0** · build ~985 KB thô / ~215 KB Brotli
+Cập nhật lần cuối: **2026-11-14** · phiên bản **11.1.0** · build ~985 KB thô / ~216 KB Brotli
 
 ---
 
@@ -59,10 +59,13 @@ npm test                             # build + check + 51 + 32 bước jsdom
 | Việc | Vì sao |
 |---|---|
 | Băm **SHA-256 mọi khối `<script>` / `<style>`** và nhúng vào `<meta http-equiv="Content-Security-Policy">` | CSP nghiêm mà không cần `'unsafe-inline'` |
-| Sinh `_headers` | header bảo mật + chiến lược cache cho Cloudflare Pages |
-| Sinh `_redirects` | mọi đường dẫn con trả `index.html` (router dùng hash) |
+| Sinh `_headers` | header bảo mật + chiến lược cache (Workers và Pages đều đọc) |
+| Sinh `_redirects` | mọi đường dẫn con trả `/` với mã `200` (router dùng hash) |
 | Chép `src/sw.template.js` → `dist/sw.js`, thay `__VERSION__` | mỗi deploy là một cache mới |
-| Tính `build_id` (băm 12 ký tự của HTML) → `<meta name="build-id">` | Pages Function dùng làm ETag cho `/__version` |
+| Sinh `dist/_worker.mjs` từ `src/worker.template.js`, nhúng `__VERSION__` | Worker: `GET /__version` + trả `404.html`; `.assetsignore` loại nó khỏi assets |
+| Sinh `dist/404.html` | trang 404 riêng cho `not_found_handling = "404-page"` |
+| Sinh `dist/.assetsignore` | chặn `_worker.mjs` và `.nojekyll` bị phục vụ công khai |
+| Tính `build_id` (băm 12 ký tự của HTML) → `<meta name="build-id">` | Worker dùng làm ETag cho `/__version` |
 
 **Quy tắc vàng:** không sửa `index.html` bằng tay. Hash CSP tính từ nội dung, sửa tay là CSP
 lệch → **trang trắng**. `npm test` sẽ bắt lỗi này ở `tests/csp.js`.

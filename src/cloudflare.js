@@ -1,7 +1,7 @@
 /* =========================================================
    CLOUDFLARE — service worker, trạng thái mạng, cập nhật
    Trang này không cần máy chủ để học, nhưng khi chạy trên
-   Cloudflare Pages thì nên:
+   Cloudflare (Workers Static Assets hoặc Pages) thì nên:
      · cài service worker để mở lại là dùng, kể cả khi mất mạng
      · báo cho người dùng biết khi đang offline
      · báo khi có bản mới đã deploy (ETag đổi → SW phát hiện)

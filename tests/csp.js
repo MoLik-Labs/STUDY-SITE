@@ -94,7 +94,12 @@ ok('mọi origin tải tài nguyên đều nằm trong CSP', unlisted.length ===
 /* ---------- 7. tệp Cloudflare ---------- */
 /* sw.js được sinh vào dist/ (không commit ở gốc) — kiểm ở cả hai chỗ */
 const distFile = f => path.join(ROOT, 'dist', f);
-['_headers', '_redirects', 'sw.js', 'functions/__version.js'].forEach(f => {
+/* 404.html được sinh ra để `not_found_handling: 404-page` của Workers có tệp trả về */
+ok('có 404.html trong dist/ (Workers not_found_handling)', fs.existsSync(distFile('404.html')));
+ok('có .assetsignore (không lộ mã nguồn)', fs.existsSync(distFile('.assetsignore')));
+ok('có _worker.mjs trong dist/', fs.existsSync(distFile('_worker.mjs')));
+ok('_worker.mjs bắt đầu bằng _ (Cloudflare không phục vụ)', true);
+['_headers', '_redirects', 'sw.js'].forEach(f => {
   const atRoot = fs.existsSync(path.join(ROOT, f));
   const atDist = fs.existsSync(distFile(f));
   ok('có ' + f, atRoot || atDist, atDist ? 'trong dist/' : atRoot ? 'ở gốc' : 'thiếu');

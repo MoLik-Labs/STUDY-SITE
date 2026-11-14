@@ -11,7 +11,7 @@ import hashlib, io, os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
-VERSION = '11.0'          # một nguồn duy nhất; sinh ra meta, APP_VERSION, footer, sw.js
+VERSION = '11.1'          # một nguồn duy nhất; sinh ra meta, APP_VERSION, footer, sw.js
 
 def arg(flag, default):
     """--flag giá-trị, hoặc chỉ --flag (dùng giá trị mặc định)."""
@@ -231,8 +231,9 @@ html = html.replace(
 io.open(OUT, 'w', encoding='utf-8').write(html)
 
 # ================================================================ tệp phụ trợ
-HEADERS = """# Cloudflare Pages — sinh tự động bởi src/build.py, đừng sửa tay.
-# Cú pháp: https://developers.cloudflare.com/pages/configuration/headers/
+HEADERS = """# Cloudflare — sinh tự động bởi src/build.py, đừng sửa tay.
+# Đọc bởi cả Workers Static Assets và Pages.
+# Cú pháp: https://developers.cloudflare.com/workers/static-assets/headers/
 
 /*
   X-Content-Type-Options: nosniff
@@ -257,24 +258,82 @@ HEADERS = """# Cloudflare Pages — sinh tự động bởi src/build.py, đừn
 /__version
   Cache-Control: no-store
 """
+NOT_FOUND = """<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Không tìm thấy trang — Học mọi thứ</title>
+<meta name="robots" content="noindex">
+<style>
+:root{--paper:#f4f1ea;--ink:#17150f;--ink2:#4f4a41;--rule:#dbd5c6;--accent:#8b2e22}
+@media(prefers-color-scheme:dark){:root{--paper:#12110e;--ink:#efeade;--ink2:#b9b2a3;--rule:#2f2d26;--accent:#d98d5b}}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--paper);color:var(--ink);
+  font-family:system-ui,-apple-system,'Segoe UI',sans-serif;line-height:1.6;padding:24px}
+main{max-width:46ch;text-align:left}
+.k{font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2)}
+h1{font-family:Georgia,serif;font-size:32px;line-height:1.2;margin:10px 0 12px;font-weight:600}
+p{color:var(--ink2);margin:0 0 22px}
+a.btn{display:inline-block;background:var(--ink);color:var(--paper);padding:10px 16px;text-decoration:none;
+  border-radius:2px;font-size:14px}
+a.ghost{margin-left:10px;background:none;color:var(--ink);border:1px solid var(--rule)}
+nav{margin-top:26px;padding-top:16px;border-top:1px solid var(--rule);font-size:13px}
+nav a{color:var(--accent);text-decoration:none;margin-right:14px;white-space:nowrap}
+</style>
+</head>
+<body>
+<main>
+  <p class="k">Lỗi 404</p>
+  <h1>Không có trang này</h1>
+  <p>Đường dẫn bạn mở không tồn tại. Trang này là một ứng dụng một-tệp,
+     nên mọi thứ nằm sau dấu <code>#</code> — ví dụ <code>#/study</code>.</p>
+  <a class="btn" href="/">Về trang chủ</a>
+  <a class="btn ghost" href="/#/study">Học hôm nay</a>
+  <nav>
+    <a href="/#/cards">Thẻ ghi nhớ</a>
+    <a href="/#/timetable">Thời khoá biểu</a>
+    <a href="/#/calendar">Lịch</a>
+    <a href="/#/progress">Tiến độ</a>
+    <a href="/#/about">Giới thiệu</a>
+  </nav>
+</main>
+</body>
+</html>
+"""
 
-REDIRECTS = """# Cloudflare Pages — sinh tự động bởi src/build.py, đừng sửa tay.
-# Router của app dùng hash (#/study, #/cards…) nên mọi đường dẫn con đều
-# phải trả về index.html. Không có bước này, người dùng gõ thẳng
-# /study hoặc /cards sẽ nhận 404 của Cloudflare.
+REDIRECTS = """# Cloudflare — sinh tự động bởi src/build.py, đừng sửa tay.
+# Trả index.html (200, không chuyển hướng) cho mọi đường dẫn của router.
+# Router dùng hash (#/study) nên người dùng gõ /study cũng phải mở được app,
+# và không phải nhận 404 của Cloudflare.
 #
-# Cú pháp: <từ> <đến> <mã>
+# Vì sao đích là "/" chứ không phải "/index.html": khi html_handling =
+# auto-trailing-slash, Cloudflare chuẩn hoá /index.html → / bằng 307. Rewrite
+# tới /index.html vì thế sinh thêm một vòng chuyển hướng; rewrite tới / thì
+# trả 200 ngay. Đã kiểm bằng `wrangler dev`.
+#
+# Cú pháp: <từ> <đến> <mã>. Kèm cả dạng có dấu / ở cuối.
 
-/study      /index.html   200
-/cards      /index.html   200
-/practice   /index.html   200
-/plan       /index.html   200
-/focus      /index.html   200
-/progress   /index.html   200
-/timetable  /index.html   200
-/calendar   /index.html   200
-/settings   /index.html   200
-/about      /index.html   200
+/study       /  200
+/study/      /  200
+/cards       /  200
+/cards/      /  200
+/practice    /  200
+/practice/   /  200
+/plan        /  200
+/plan/       /  200
+/focus       /  200
+/focus/      /  200
+/progress    /  200
+/progress/   /  200
+/timetable   /  200
+/timetable/  /  200
+/calendar    /  200
+/calendar/   /  200
+/settings    /  200
+/settings/   /  200
+/about       /  200
+/about/      /  200
 """
 
 SW = io.open(os.path.join(HERE, 'sw.template.js'), encoding='utf-8').read().replace('__VERSION__', VERSION)
@@ -294,7 +353,22 @@ if '--dist' in sys.argv:
     io.open(os.path.join(dist, '_redirects'), 'w', encoding='utf-8').write(REDIRECTS)
     io.open(os.path.join(dist, 'sw.js'), 'w', encoding='utf-8').write(SW)
     io.open(os.path.join(dist, '.nojekyll'), 'w', encoding='utf-8').write('')
-    print('dist   ', dist, '(index.html · _headers · _redirects · sw.js)')
+    # Worker: một tệp duy nhất, tên bắt đầu bằng "_" nên Cloudflare KHÔNG phục
+    # vụ nó như tài nguyên tĩnh — mã nguồn không lộ ra ngoài.
+    code = io.open(os.path.join(HERE, 'worker.template.js'), encoding='utf-8').read()
+    io.open(os.path.join(dist, '_worker.mjs'), 'w', encoding='utf-8').write(
+        code.replace('__VERSION__', VERSION))
+    io.open(os.path.join(dist, '404.html'), 'w', encoding='utf-8').write(NOT_FOUND)
+    # .assetsignore: KHÔNG đưa mã nguồn/thư mục làm việc vào bản deploy.
+    # Chỉ những gì cần cho trang mới lên mạng.
+    io.open(os.path.join(dist, '.assetsignore'), 'w', encoding='utf-8').write(
+        "# Cloudflare — sinh tự động, đừng sửa tay.\n"
+        "#\n"
+        "# _worker.mjs là MÃ WORKER, không phải tài nguyên. Nếu không loại trừ,\n"
+        "# nó bị phục vụ công khai ở /_worker.mjs (đã kiểm bằng wrangler dev).\n"
+        "# .assetsignore chặn việc upload nó thành tài nguyên tĩnh.\n"
+        "_worker.mjs\n.nojekyll\n")
+    print('dist   ', dist, '(index.html · 404.html · _headers · _redirects · sw.js · _worker.mjs)')
 
 print('wrote', OUT, len(html), 'bytes')
 print('build-id', build_id)

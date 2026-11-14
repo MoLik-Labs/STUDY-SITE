@@ -22,9 +22,6 @@ z_*.png
 # liên kết tạm để chạy test
 node_modules
 
-# đầu ra deploy (sinh tự động)
-dist/
-
 # cloudflare
 dev.vars
 .wrangler/

@@ -2,11 +2,11 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-T3t9GpP3XnRts+uwbiGz0akmb1fKbRI1yccDJbwe+Ek=' 'sha256-fALrYnrybyE+saRuVp+aEdvZu6ZKe5V2TzZtWxVxF9U=' 'sha256-hVlZl4DmsgwBdjrs6goQ5ATdQahsssaUyrCSIMR+NYM=' 'sha256-o4+ilVf54vKylvXBYs/XTkoPBV88qaD1yL3cebXq2aE=' 'sha256-awqTcrsKt0d6y7vkstVWLSfJxKiXtgFedc6OrXZUgGM=' 'sha256-93rNzuLhyLwwcdRMAW4VtAWhADIaPE6dnpO2U/ucV3s='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' 'sha256-HJ29zyc3lmVyY2jIl3F9Gh7PQs1R9FqawBTW0LvtHFg=' https://fonts.googleapis.com; style-src-attr 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://i.ytimg.com https://*.ytimg.com blob:; media-src 'self' blob: https:; frame-src https://www.youtube-nocookie.com https://www.youtube.com; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'; upgrade-insecure-requests">
-<meta name="build-id" content="f914fab7df05">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-T3t9GpP3XnRts+uwbiGz0akmb1fKbRI1yccDJbwe+Ek=' 'sha256-fALrYnrybyE+saRuVp+aEdvZu6ZKe5V2TzZtWxVxF9U=' 'sha256-hVlZl4DmsgwBdjrs6goQ5ATdQahsssaUyrCSIMR+NYM=' 'sha256-UTQRkhRSntgRz9hCraez3ns8MfzFBe1wYAOnljbm1Q0=' 'sha256-lFx75/lKuUjhjvM83ZF7W7HAMrD4eMh6OxSqMlCyAVM=' 'sha256-wK8yByPVNIfnHbpi+dmHWXXhHTm6BZUyB7CIptplLjU='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' 'sha256-HJ29zyc3lmVyY2jIl3F9Gh7PQs1R9FqawBTW0LvtHFg=' https://fonts.googleapis.com; style-src-attr 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://i.ytimg.com https://*.ytimg.com blob:; media-src 'self' blob: https:; frame-src https://www.youtube-nocookie.com https://www.youtube.com; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'; upgrade-insecure-requests">
+<meta name="build-id" content="a6f60fed131f">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Học mọi thứ — Vật lí 9 · lớp 1–12 · @nggkhaiz</title>
-<meta name="app-version" content="11.0">
+<meta name="app-version" content="11.1">
 <meta name="description" content="Một trang để học mọi thứ: lộ trình Vật lí 9, trường học lớp 1–12, thẻ ghi nhớ cách quãng, luyện đề tự tạo, kế hoạch học, thời khoá biểu và lịch học. Tác giả @nggkhaiz — github.com/Ngg.Khaiz.">
 <meta name="theme-color" content="#f4f1ea" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#12110e" media="(prefers-color-scheme: dark)">
@@ -2654,7 +2654,7 @@ html[data-theme="pixelnight"] .rs-main:hover{background:var(--card)}
       <em>·</em>
       <a href="#/about">giới thiệu</a>
       <em>·</em>
-      <span class="foot-v" title="phiên bản">v11.0</span>
+      <span class="foot-v" title="phiên bản">v11.1</span>
     </span>
   </div>
 </footer>
@@ -4591,7 +4591,7 @@ if(P.accent)document.documentElement.style.setProperty('--accent',P.accent);
 
 <!-- ===== ỨNG DỤNG ===== -->
 <script>/* phiên bản — sinh từ src/build.py */
-const APP_VERSION = '11.0';
+const APP_VERSION = '11.1';
 /* =========================================================
    KHO LƯU BỀN — không phụ thuộc cache
    4 tầng:
@@ -13808,7 +13808,7 @@ function renderAbout() {
   </section>`;
   document.title = 'Giới thiệu · ' + OWNER.tag;
 
-  /* Kiểm tra bản mới qua Cloudflare Pages Function /__version.
+  /* Kiểm tra bản mới qua endpoint Cloudflare Worker /__version.
      Không có mạng hoặc mở bằng file:// thì im lặng, không làm phiền. */
   const btn = $('#abVer'), env = $('#abEnv');
   if (btn) btn.onclick = async () => {
@@ -15733,7 +15733,7 @@ function bindStage() {
 <script>/* =========================================================
    CLOUDFLARE — service worker, trạng thái mạng, cập nhật
    Trang này không cần máy chủ để học, nhưng khi chạy trên
-   Cloudflare Pages thì nên:
+   Cloudflare (Workers Static Assets hoặc Pages) thì nên:
      · cài service worker để mở lại là dùng, kể cả khi mất mạng
      · báo cho người dùng biết khi đang offline
      · báo khi có bản mới đã deploy (ETag đổi → SW phát hiện)

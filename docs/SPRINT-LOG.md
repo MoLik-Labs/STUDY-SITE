@@ -1,4 +1,4 @@
-# Nhật ký phát triển — Sprint 3 → 10
+# Nhật ký phát triển — Sprint 3 → 11
 
 > Tài liệu này giữ nguyên văn phong ghi chép theo từng sprint. Trong repo, tệp chạy tên là **`index.html`**
 > (bản gốc trong lúc phát triển có tên `vat_li_9_lop_hoc.html`); mọi con số dung lượng ở các sprint đầu là mốc lịch sử.

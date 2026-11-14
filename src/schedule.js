@@ -592,7 +592,7 @@ function renderAbout() {
   </section>`;
   document.title = 'Giới thiệu · ' + OWNER.tag;
 
-  /* Kiểm tra bản mới qua Cloudflare Pages Function /__version.
+  /* Kiểm tra bản mới qua endpoint Cloudflare Worker /__version.
      Không có mạng hoặc mở bằng file:// thì im lặng, không làm phiền. */
   const btn = $('#abVer'), env = $('#abEnv');
   if (btn) btn.onclick = async () => {

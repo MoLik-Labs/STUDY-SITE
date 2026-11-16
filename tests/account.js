@@ -106,6 +106,15 @@ function makeServer() {
       if (m === 'POST') { srv.profile = body; return reply(201); }
     }
     if (u.pathname === '/rest/v1/rpc/delete_my_account') { srv.rows = {}; return reply(204); }
+    if (m === 'DELETE' && /^\/rest\/v1\/(user_state|lesson_progress|answers|notes|review_cards|layouts)$/.test(u.pathname)) {
+      if (srv.failDelete === u.pathname) return reply(500, { msg: 'lỗi giả lập' });
+      srv.deleted = (srv.deleted || []).concat(u.pathname);
+      if (u.pathname === '/rest/v1/user_state') srv.rows = {};
+      return reply(204);
+    }
+    if (m === 'PATCH' && u.pathname === '/rest/v1/profiles') {
+      srv.profilePatch = body; if (srv.profile) Object.assign(srv.profile, body); return reply(204);
+    }
     return reply(404, { msg: 'không có tuyến ' + u.pathname });
   };
   return srv;
@@ -306,6 +315,53 @@ const session = (extra) => JSON.stringify(Object.assign({
     const pulls = srv.calls.filter(c => c.startsWith('GET /rest/v1/user_state'));
     ok('kéo gia tăng: có lọc theo updated_at', pulls.length > 0 && pulls.every(c => c.includes('updated_at=gt.')), pulls.join(' | '));
     ok('kéo gia tăng: không có thay đổi nên không chờ tải lại', !r.storage['vnl9.remote']);
+    r.dom.window.close();
+  }
+
+
+  /* ---------- 10. xoá dữ liệu trên máy chủ: giữ tài khoản, lỗi thì không xoá gì ---------- */
+  {
+    const srv = makeServer();
+    srv.put('done', { a: true });
+    srv.profile = { display_name: 'Lan', grade: 9 };
+    const r = await open(cloudHtmlReady, {
+      'vnl9.v2': stateWith({ done: { a: true } }), 'vnl9.session': session(),
+      'vnl9.sync': JSON.stringify({ done: hashOf({ a: true }) }),
+    }, srv, { wait: 1900 });
+    await r.win.eval('Account.wipeCloud()');
+    /* đọc NGAY sau khi await, trước mọi lịch đẩy: luồng thật xoá dữ liệu máy trong cùng tick */
+    const afterWipe = { sync: r.storage && r.win.localStorage.getItem('vnl9.sync'), pulled: r.win.localStorage.getItem('vnl9.pulled'), remote: r.win.localStorage.getItem('vnl9.remote') };
+    const tables = ['user_state', 'lesson_progress', 'answers', 'notes', 'review_cards', 'layouts'];
+    ok('xoá cloud: xoá đủ 6 bảng dữ liệu', tables.every(t => (srv.deleted || []).includes('/rest/v1/' + t)), JSON.stringify(srv.deleted));
+    ok('xoá cloud: hồ sơ được đặt rỗng, KHÔNG xoá tài khoản', srv.profilePatch && srv.profilePatch.display_name === null && !srv.calls.some(c => c.includes('delete_my_account')));
+    ok('xoá cloud: còn đăng nhập sau khi xoá', r.win.eval('Account.signedIn()'));
+    ok('xoá cloud: mốc đồng bộ về rỗng, không còn mốc kéo về', afterWipe.sync === '{}' && afterWipe.pulled === null && afterWipe.remote === null, JSON.stringify(afterWipe));
+    r.dom.window.close();
+
+    const srv2 = makeServer();
+    srv2.failDelete = '/rest/v1/notes';
+    const r2 = await open(cloudHtmlReady, {
+      'vnl9.v2': stateWith({ done: { a: true } }), 'vnl9.session': session(),
+    }, srv2, { wait: 1900 });
+    let threw = false;
+    try { await r2.win.eval('Account.wipeCloud()'); } catch (e) { threw = true; }
+    ok('xoá cloud lỗi: ném lỗi để giao diện giữ dữ liệu trên máy', threw);
+    r2.dom.window.close();
+  }
+
+  /* ---------- 11. trang quyền riêng tư ---------- */
+  {
+    const srv = makeServer();
+    const r = await open(cloudHtmlReady, {
+      'vnl9.v2': stateWith({}), 'vnl9.session': session(),
+    }, srv, { wait: 1200 });
+    r.win.location.hash = '#/privacy';
+    await sleep(400);
+    const doc = r.dom.window.document;
+    ok('trang #/privacy: có tiêu đề', !!doc.querySelector('#privTitle'));
+    ok('trang #/privacy: nói đúng trạng thái đăng nhập', /đang đăng nhập/.test(doc.querySelector('.ab-lead') ? doc.querySelector('.ab-lead').textContent : ''));
+    ok('trang #/privacy: nêu Supabase và cách xoá', /Supabase/.test(doc.body.textContent) && /Xoá toàn bộ dữ liệu/.test(doc.body.textContent));
+    ok('trang #/privacy: không có ô nhập hay form nào', !doc.querySelector('#main form, #main input'));
     r.dom.window.close();
   }
 

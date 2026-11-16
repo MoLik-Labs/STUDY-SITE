@@ -246,8 +246,9 @@ function renderSettings() {
         <div id="histBox" class="hist-box"></div>
         <div class="danger">
           <span class="kicker">Vùng nguy hiểm</span>
-          <p>Xoá mọi thứ đã lưu: tiến độ, câu sai, ghi chú, tuỳ biến. Không hoàn tác được — trừ khi bạn đã tải tệp .json.</p>
+          <p>Xoá mọi thứ đã lưu: tiến độ, câu sai, ghi chú, tuỳ biến. Nếu bạn đã đăng nhập, dữ liệu trên máy chủ cũng bị xoá (tài khoản vẫn giữ). Không hoàn tác được — trừ khi bạn đã tải tệp .json.</p>
           <button class="btn ghost sm" id="setWipe">Xoá toàn bộ dữ liệu</button>
+          <a class="btn ghost sm" href="#/privacy">Quyền riêng tư</a>
         </div>
       </section>
       <section class="set-sec" id="set-acct">
@@ -370,7 +371,7 @@ function renderSettings() {
       <div style="padding:22px 24px">
         <span class="kicker">Xác nhận</span>
         <h3 style="font-family:var(--serif);font-size:20px;margin:8px 0 6px">Gõ <b>XOA</b> để xoá hết</h3>
-        <p style="font-size:12.5px;color:var(--ink-2)">Toàn bộ tiến độ, câu sai, ghi chú, tuỳ biến sẽ mất ở cả 4 tầng lưu.</p>
+        <p style="font-size:12.5px;color:var(--ink-2)">Toàn bộ tiến độ, câu sai, ghi chú, tuỳ biến sẽ mất ở cả 4 tầng lưu trên máy này${typeof Account !== 'undefined' && Account.signedIn() ? ' và trên máy chủ (tài khoản vẫn giữ)' : ''}.</p>
         <input id="wipeIn" style="width:100%;border:1px solid var(--rule);background:var(--card);padding:8px 10px;margin:12px 0;font:inherit">
         <div style="display:flex;gap:8px;justify-content:flex-end">
           <button class="btn ghost sm" id="wipeNo">Thôi</button>
@@ -382,7 +383,19 @@ function renderSettings() {
     inp.oninput = () => { yes.disabled = inp.value.trim().toUpperCase() !== 'XOA'; };
     const close = () => box.remove();
     $('#wipeNo', box).onclick = close;
-    yes.onclick = () => { AppStore.clearAll(); state = loadState(); applyPrefs(); close(); render(); toast('Đã xoá toàn bộ dữ liệu'); };
+    yes.onclick = async () => {
+      yes.disabled = true;
+      /* Máy chủ trước: nếu không xoá được ở đó thì giữ nguyên dữ liệu trên máy. */
+      if (typeof Account !== 'undefined' && Account.signedIn()) {
+        try { await Account.wipeCloud(); }
+        catch (e) {
+          yes.disabled = inp.value.trim().toUpperCase() !== 'XOA';
+          toast('Chưa xoá được dữ liệu trên máy chủ. Dữ liệu trên máy vẫn còn, thử lại sau.');
+          return;
+        }
+      }
+      AppStore.clearAll(); state = loadState(); applyPrefs(); close(); render(); toast('Đã xoá toàn bộ dữ liệu');
+    };
   };
 
   function fillHist() {

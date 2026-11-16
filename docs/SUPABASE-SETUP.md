@@ -20,7 +20,11 @@ Schema đã được tạo bằng migration `init_user_state_and_profiles` và
 - `user_state(user_id, key, value jsonb, updated_at)`, khoá chính `(user_id, key)`
 
 Hàm `public.delete_my_account()` cho phép người dùng tự xoá tài khoản. Chỉ role
-`authenticated` được gọi.
+`authenticated` được gọi. Định nghĩa nằm trong migration `20261116150100_delete_my_account_fn`.
+
+Migration `20261116150000_normalized_study_tables` thêm các bảng theo nghiệp vụ, đều có RLS
+và `on delete cascade` tới `auth.users`: `lesson_progress`, `answers`, `notes`,
+`review_cards`, `layouts`, và cột `profiles.class_name`. Xoá tài khoản xoá tất cả.
 
 ## 2. Biến môi trường khi build
 

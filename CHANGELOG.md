@@ -7,6 +7,21 @@ Mọi thay đổi lớn đều có kiểm thử: `npm test` (check tĩnh + CSP +
 
 Vòng debug sau Phase 1 (sẽ gộp vào bản phát hành kế tiếp, chưa bump phiên bản).
 
+### Thêm
+
+- **Trang Quyền riêng tư** (`#/privacy`, `src/privacy.js`): nói rõ dữ liệu nào được lưu,
+  ai nhận được (Supabase khi đăng nhập, Google khi chọn Google, YouTube khi mở video),
+  và cách xoá. Liên kết ở chân trang và trong Cài đặt.
+- **Xoá dữ liệu trên máy chủ** (`Account.wipeCloud`): nút "Xoá toàn bộ dữ liệu" khi đã
+  đăng nhập xoá cả dữ liệu trên Supabase (6 bảng, hồ sơ đặt rỗng), giữ tài khoản.
+  Nếu xoá trên máy chủ lỗi thì dữ liệu trên máy được giữ nguyên.
+- Migration `20261116150100_delete_my_account_fn`: đưa định nghĩa `delete_my_account`
+  vào repo (nội dung đã chạy trên project), siết quyền thực thi cho `authenticated`.
+
+### Sửa
+
+- Đẩy đồng bộ đang chạy dở không còn ghi lại mốc cũ sau khi xoá dữ liệu đám mây.
+
 ### Lỗi đã sửa
 
 - **Nhật ký IndexedDB không bao giờ được cắt** (`src/store.js`): `idbClear` không

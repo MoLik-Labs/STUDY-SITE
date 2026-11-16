@@ -171,6 +171,8 @@ MODULES = [
 
     ('PHÒNG THÍ NGHIỆM TƯƠNG TÁC', 'lab', [('lab', SRC('lab.js'))]),
 
+    ('QUYỀN RIÊNG TƯ — trang dữ liệu, ai thấy, cách xoá', 'privacy', [('privacy', SRC('privacy.js'))]),
+
     ('CLOUDFLARE — service worker & trạng thái mạng', 'cloudflare', [('cf', cf)]),
 ]
 

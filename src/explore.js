@@ -85,6 +85,7 @@ const EXPLORE_GROUPS = [
       { href: '#/game', vi: 'Đấu trường', en: 'Study game', need: 'Học bằng trò chơi khi không muốn đọc', kw: 'game dau truong tro choi' },
       { href: '#/settings', vi: 'Tuỳ biến', en: 'Settings', need: 'Cỡ chữ, sáng/tối, pomodoro, ngôn ngữ', kw: 'tuy bien cai dat sang toi co chu' },
       { href: '#/about', vi: 'Giới thiệu', en: 'About', need: 'Dự án này là gì, dữ liệu lưu ở đâu', kw: 'gioi thieu ve du an' },
+      { href: '#/privacy', vi: 'Quyền riêng tư', en: 'Privacy', need: 'Dữ liệu nào được lưu, ai nhận được, cách xoá', kw: 'quyen rieng tu du lieu xoa privacy' },
     ],
   },
 ];

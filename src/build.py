@@ -60,7 +60,7 @@ names = ['TOPICS', 'WHO', 'LIB', 'PLAN', 'EXT', 'MORE', 'PHASES', 'NOTES']
 data = '\n\n'.join(block(n) for n in names)
 data += '\n\n' + SRC('papers.js')
 
-css = SRC('app.css')
+css = SRC('fonts.css') + SRC('app.css')  # phông chữ tự host: không gọi Google
 qa = SRC('qa.js') + '\n\n' + SRC('content2.js') + '\n\n' + SRC('content3.js') + '\n\n' + SRC('content4.js')
 cf = SRC('cloudflare.js')     # đăng ký service worker + trạng thái mạng
 PREFS_JS = """/* áp màu trước khi vẽ để không nháy trắng */
@@ -91,6 +91,28 @@ ver_js = "/* phiên bản — sinh từ src/build.py */\nconst APP_VERSION = '" 
 # Everything here is a classic script sharing one global scope, which is why
 # a name must be declared exactly once — check.js enforces that.
 # ================================================================
+# ----------------------------------------------------------------
+# Cấu hình đám mây — đọc từ biến môi trường lúc build, KHÔNG nằm trong mã.
+#   SUPABASE_URL                 https://<ref>.supabase.co
+#   SUPABASE_PUBLISHABLE_KEY     sb_publishable_… (hoặc anon JWT cũ)
+# Thiếu cả hai → bản build chỉ có chế độ khách (không gọi mạng). Từ chối
+# ngay nếu khoá trông như secret: khoá bí mật KHÔNG được vào trình duyệt.
+# ----------------------------------------------------------------
+import json as _json, re as _re
+SB_URL = os.environ.get('SUPABASE_URL', '').strip().rstrip('/')
+SB_KEY = os.environ.get('SUPABASE_PUBLISHABLE_KEY', '').strip()
+if SB_URL or SB_KEY:
+    if not _re.fullmatch(r'https://[a-z0-9]{20}\.supabase\.co', SB_URL):
+        raise SystemExit('SUPABASE_URL phải dạng https://<ref>.supabase.co')
+    if SB_KEY.startswith('sb_secret_') or 'service_role' in SB_KEY:
+        raise SystemExit('SUPABASE_PUBLISHABLE_KEY là khoá BÍ MẬT — dừng ngay, không đưa vào trình duyệt')
+    if not (_re.fullmatch(r'sb_publishable_[A-Za-z0-9_-]{10,}', SB_KEY)
+            or _re.fullmatch(r'eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+', SB_KEY)):
+        raise SystemExit('SUPABASE_PUBLISHABLE_KEY không đúng định dạng khoá công khai')
+CLOUD_JS = 'const SB_CONFIG = Object.freeze(' + _json.dumps(
+    {'url': SB_URL, 'key': SB_KEY}, ensure_ascii=True) + ');'
+CLOUD_ORIGIN = SB_URL  # rỗng khi không bật đám mây
+
 MODULES = [
     ('DỮ LIỆU LỘ TRÌNH', 'data',
      [('dữ liệu', data)]),
@@ -108,6 +130,8 @@ MODULES = [
       ('thương hiệu', SRC('brand.js')),
       ('lưu trữ', SRC('store.js')),
       ('song ngữ', SRC('i18n.js')),
+      ('cấu hình đám mây', CLOUD_JS),
+      ('tài khoản & đồng bộ', SRC('account.js')),
       ('khung ứng dụng', SRC('app.js')),
       ('tiện ích', SRC('tools.js')),
       ('máy tính', SRC('engine.js'))]),
@@ -235,10 +259,7 @@ html = f"""<!doctype html>
 <meta property="og:description" content="Lộ trình Vật lí 9 · luyện thi chuyên Lý · trường học lớp 1–12 · thời khoá biểu · lịch · thẻ ghi nhớ · phòng thí nghiệm. Chạy offline, dữ liệu trong máy bạn.">
 <meta property="og:locale" content="vi_VN">
 {MAIN_HTML_FAVICON}
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="dns-prefetch" href="https://i.ytimg.com">
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600&family=JetBrains+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>{css}</style>
 </head>
 <body>
@@ -289,14 +310,14 @@ build_id = hashlib.sha256(html.encode('utf-8')).hexdigest()[:12]
 csp = '; '.join([
     "default-src 'self'",
     "script-src 'self' " + script_hashes,
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "style-src-elem 'self' " + style_hash + ' https://fonts.googleapis.com',
+    "style-src 'self' 'unsafe-inline'",
+    "style-src-elem 'self' " + style_hash,
     "style-src-attr 'unsafe-inline'",
-    "font-src 'self' https://fonts.gstatic.com",
+    "font-src 'self'",
     "img-src 'self' data: https://i.ytimg.com https://*.ytimg.com blob:",
     "media-src 'self' blob: https:",
     "frame-src https://www.youtube-nocookie.com https://www.youtube.com",
-    "connect-src 'self'",
+    "connect-src 'self'" + (' ' + CLOUD_ORIGIN if CLOUD_ORIGIN else ''),
     "worker-src 'self'",
     "manifest-src 'self'",
     "object-src 'none'",
@@ -306,12 +327,15 @@ csp = '; '.join([
     "upgrade-insecure-requests",
 ])
 
-# Chèn meta CSP + BUILD_ID vào head (sau <meta charset> để trình duyệt thấy ngay)
+# Chèn meta CSP + BUILD_ID vào head (sau <meta charset> để trình duyệt thấy ngay).
+# Meta KHÔNG hỗ trợ frame-ancestors (trình duyệt bỏ qua và in cảnh báo console),
+# nên directive đó chỉ đi qua header ở dưới; meta giữ phần còn lại.
+meta_csp = '; '.join(d for d in csp.split('; ') if not d.startswith('frame-ancestors'))
 html = html.replace(
     '<meta name="viewport"',
     '<meta http-equiv="Content-Security-Policy" content="%s">\n'
     '<meta name="build-id" content="%s">\n'
-    '<meta name="viewport"' % (csp.replace('"', '&quot;'), build_id), 1)
+    '<meta name="viewport"' % (meta_csp.replace('"', '&quot;'), build_id), 1)
 
 io.open(OUT, 'w', encoding='utf-8').write(html)
 
@@ -476,6 +500,8 @@ if '--dist' in sys.argv:
     io.open(os.path.join(dist, '_routes.json'), 'w', encoding='utf-8').write(ROUTES_JSON)
     io.open(os.path.join(dist, 'sw.js'), 'w', encoding='utf-8').write(SW)
     io.open(os.path.join(dist, '.nojekyll'), 'w', encoding='utf-8').write('')
+    shutil.copytree(os.path.join(HERE, 'fonts'), os.path.join(dist, 'fonts'),
+                    ignore=shutil.ignore_patterns('LICENSE-*'))
     # Worker: một tệp duy nhất, tên bắt đầu bằng "_" nên Cloudflare KHÔNG phục
     # vụ nó như tài nguyên tĩnh — mã nguồn không lộ ra ngoài.
     code = io.open(os.path.join(HERE, 'worker.template.js'), encoding='utf-8').read()

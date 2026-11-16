@@ -3,6 +3,44 @@
 Định dạng theo [Keep a Changelog](https://keepachangelog.com/vi/1.1.0/), phiên bản theo [SemVer](https://semver.org/lang/vi/).
 Mọi thay đổi lớn đều có kiểm thử: `npm test` (check tĩnh + CSP + Worker + mô phỏng Workers + 1848 bước jsdom).
 
+## [Unreleased]
+
+Vòng debug sau Phase 1 (sẽ gộp vào bản phát hành kế tiếp, chưa bump phiên bản).
+
+### Lỗi đã sửa
+
+- **Nhật ký IndexedDB không bao giờ được cắt** (`src/store.js`): `idbClear` không
+  trả Promise nên `idbClear('journal').then(...)` ném `TypeError` mỗi lần nhật ký
+  vượt 20 mục, trang `#/study` báo lỗi JS. Giờ `idbClear` trả Promise resolve khi
+  giao dịch xong. Kiểm chứng: `tests/journal.js` (thất bại trên mã cũ, đạt trên mã mới).
+- **Ghi trong lúc đang đẩy lên tài khoản bị mất** (`src/account.js`): nếu có
+  thay đổi mới khi một lượt đẩy đang chạy, lượt đó bỏ qua và thay đổi chỉ được
+  gửi sau lần ghi tiếp theo. Giờ đánh dấu và chạy lại ngay khi xong.
+  Kiểm chứng: `tests/account.js` bước 8.
+- **Kéo đồng bộ tải toàn bộ dữ liệu mỗi 2 phút**: giờ chỉ lấy dòng có
+  `updated_at` sau mốc đã thấy, lùi 60 giây để không bỏ sót giao dịch commit lệch thứ tự.
+- **Thay đổi từ máy khác bị giấu**: thông báo "Tải lại để áp dụng" giờ hiện
+  thành banner toàn trang thay vì chỉ trong mục Cài đặt.
+- **Trang nhảy khi tải (CLS 1.0–2.0 → 0.002)** (`src/app.css`): thanh trên
+  `#top` rỗng lúc đầu nên toàn bộ trang bị đẩy xuống 54 px khi JS điền nội dung,
+  và footer nằm trong khung hình rồi bị đẩy đi xa. Giờ thanh trên giữ chỗ 58 px
+  ngay từ đầu.
+- **Thứ tự tiêu đề sai** (`src/engine.js`): h1 → h3 bỏ qua h2 trong khối "Hôm nay".
+- **Cảnh báo console `frame-ancestors`**: directive này chỉ đi qua HTTP header
+  (`dist/_headers`), không còn đặt trong `<meta>` nơi trình duyệt bỏ qua.
+
+### Thay đổi
+
+- **Đo Lighthouse (máy chủ có nén gzip như Cloudflare)**: mobile hiệu năng 93,
+  desktop 97, accessibility 98, SEO 100, best-practices 96–100. Chưa đạt: chữ cỡ
+  dưới 12 px (122 khai báo 10–11 px trong `app.css`) — để vòng thiết kế lại.
+- **Phông chữ tự host** (`src/fonts/`, `src/fonts.css`): bỏ Google Fonts. App
+  chạy offline đúng nghĩa, không gửi IP tới bên thứ ba, CSP bỏ `fonts.googleapis.com`
+  và `fonts.gstatic.com`. Phông: Be Vietnam Pro, Lora, JetBrains Mono (SIL OFL 1.1, xem `src/fonts/LICENSE-*.txt`).
+- **Công cụ kiểm thử trình duyệt** (`tools/browser/`, `tools/skills/`): cài Chromium
+  headless và audit 39 tuyến ở 1440/390 px. Skill `webapp-testing` và
+  `frontend-design` từ anthropics/skills được lưu trong `tools/skills/anthropic/`.
+
 ## [11.9.0] — 2026-11-14
 
 Vòng "MODE DEEPER": rà soát toàn bộ codebase, sửa mọi lỗi tìm được và tối ưu

@@ -107,7 +107,7 @@ function todayStrip() {
     </div>
     <div class="today-txt">
       <span class="kicker">Hôm nay · mục tiêu ${t.goal} câu</span>
-      <h3>${t.n === 0 ? 'Chưa làm câu nào hôm nay' : `${t.n} câu, đúng ${t.ok} · ${Math.round(t.ok / t.n * 100)}%`}</h3>
+      <h2>${t.n === 0 ? 'Chưa làm câu nào hôm nay' : `${t.n} câu, đúng ${t.ok} · ${Math.round(t.ok / t.n * 100)}%`}</h2>
       <p>${t.due ? `<b>${t.due}</b> câu đến hạn ôn cách quãng.` : 'Không còn câu nào đến hạn — làm đề mới để mở rộng.'}
         ${weak ? ` Chủ đề yếu nhất: <b>${weak.name}</b>${weak.acc !== null ? ` (${Math.round(weak.acc * 100)}%)` : ''}.` : ''}</p>
     </div>

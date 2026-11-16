@@ -60,7 +60,9 @@ ok("không có 'unsafe-eval'", !csp.includes("'unsafe-eval'"));
 ok("script-src không dùng host lạ", !/script-src[^;]*https?:\/\//.test(csp));
 ok("object-src 'none'", directive('object-src') === "'none'");
 ok("base-uri 'none'", directive('base-uri') === "'none'");
-ok("frame-ancestors giới hạn", /frame-ancestors (?!\*)/.test(csp));
+/* frame-ancestors chỉ có hiệu lực qua HTTP header; meta bị bỏ qua và gây cảnh báo console */
+ok("frame-ancestors không nằm trong meta (tránh cảnh báo console)", !/frame-ancestors/.test(csp));
+ok("frame-ancestors giới hạn trong header", /frame-ancestors 'self'/.test(fs.readFileSync(path.join(ROOT, 'dist', '_headers'), 'utf8')));
 
 /* ---------- 5. không có on*="" trong HTML ---------- */
 const inlineHandlers = [...html.matchAll(/\son[a-z]+\s*=\s*["']/g)].map(x => x[0].trim());

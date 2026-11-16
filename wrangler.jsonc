@@ -56,6 +56,11 @@
   "workers_dev": true,
   "preview_urls": true,
 
+  // Workers Builds chạy `npx wrangler preview` trên nhánh không phải production.
+  // Lệnh này bắt buộc có khối `previews` (có thể rỗng); tài nguyên, tương thích,
+  // và placement vẫn khai báo ở cấp trên cùng, không cần lặp lại ở đây.
+  "previews": {},
+
   // Gắn tên miền riêng ngay trong tệp này để `wrangler deploy` tự tạo DNS +
   // chứng chỉ TLS, và tự giữ nguyên qua mỗi lần deploy.
   // Bỏ comment và sửa thành tên miền của bạn. Yêu cầu: tên miền đã được thêm

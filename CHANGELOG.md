@@ -20,6 +20,8 @@ Vòng debug sau Phase 1 (sẽ gộp vào bản phát hành kế tiếp, chưa bu
 
 ### Sửa
 
+- Workers Builds báo lỗi trên nhánh không phải production: `wrangler preview` đòi khối
+  `previews` trong `wrangler.jsonc`. Đã thêm khối rỗng.
 - Đẩy đồng bộ đang chạy dở không còn ghi lại mốc cũ sau khi xoá dữ liệu đám mây.
 
 ### Lỗi đã sửa

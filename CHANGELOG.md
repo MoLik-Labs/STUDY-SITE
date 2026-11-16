@@ -21,11 +21,19 @@ Vòng debug sau Phase 1 (sẽ gộp vào bản phát hành kế tiếp, chưa bu
   `updated_at` sau mốc đã thấy, lùi 60 giây để không bỏ sót giao dịch commit lệch thứ tự.
 - **Thay đổi từ máy khác bị giấu**: thông báo "Tải lại để áp dụng" giờ hiện
   thành banner toàn trang thay vì chỉ trong mục Cài đặt.
+- **Trang nhảy khi tải (CLS 1.0–2.0 → 0.002)** (`src/app.css`): thanh trên
+  `#top` rỗng lúc đầu nên toàn bộ trang bị đẩy xuống 54 px khi JS điền nội dung,
+  và footer nằm trong khung hình rồi bị đẩy đi xa. Giờ thanh trên giữ chỗ 58 px
+  ngay từ đầu.
+- **Thứ tự tiêu đề sai** (`src/engine.js`): h1 → h3 bỏ qua h2 trong khối "Hôm nay".
 - **Cảnh báo console `frame-ancestors`**: directive này chỉ đi qua HTTP header
   (`dist/_headers`), không còn đặt trong `<meta>` nơi trình duyệt bỏ qua.
 
 ### Thay đổi
 
+- **Đo Lighthouse (máy chủ có nén gzip như Cloudflare)**: mobile hiệu năng 93,
+  desktop 97, accessibility 98, SEO 100, best-practices 96–100. Chưa đạt: chữ cỡ
+  dưới 12 px (122 khai báo 10–11 px trong `app.css`) — để vòng thiết kế lại.
 - **Phông chữ tự host** (`src/fonts/`, `src/fonts.css`): bỏ Google Fonts. App
   chạy offline đúng nghĩa, không gửi IP tới bên thứ ba, CSP bỏ `fonts.googleapis.com`
   và `fonts.gstatic.com`. Phông: Be Vietnam Pro, Lora, JetBrains Mono (SIL OFL 1.1, xem `src/fonts/LICENSE-*.txt`).

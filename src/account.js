@@ -21,6 +21,8 @@ const Account = (() => {
   const BASE_KEY = 'vnl9.sync';     /* {khoá: hash bản đã đồng bộ} */
   const REMOTE_KEY = 'vnl9.remote'; /* thay đổi từ máy khác, chờ tải lại */
   const TIME_KEY = 'vnl9.synced';
+  const PULL_KEY = 'vnl9.pulled';   /* mốc updated_at đã kéo về (ISO) */
+  const PULL_SLACK = 60000;         /* lùi 60 giây: hai giao dịch commit lệch thứ tự không bị bỏ sót */
   const SKIP = ['prefs', 'pane', 'last', 'seenWelcome']; /* trạng thái riêng từng máy */
   const BATCH = 25;
   const PUSH_DELAY = 1500;
@@ -34,7 +36,7 @@ const Account = (() => {
   /* Ghi lại hàm gốc TRƯỚC khi bọc: đây là đường ghi không đồng bộ. */
   const rawWrite = AppStore.write;
 
-  let session = null, timer = 0, running = false, refreshing = null;
+  let session = null, timer = 0, running = false, again = false, refreshing = null;
   let lastError = '', syncState = 'idle', host = null, lastSig = '';
 
   /* ---------- lưu trữ nhỏ ---------- */
@@ -72,7 +74,7 @@ const Account = (() => {
   function setSession(s) { session = s; put(SESSION_KEY, s); }
   function clearSession() {
     session = null;
-    [SESSION_KEY, BASE_KEY, REMOTE_KEY, TIME_KEY, PKCE_KEY].forEach(del);
+    [SESSION_KEY, BASE_KEY, REMOTE_KEY, TIME_KEY, PKCE_KEY, PULL_KEY].forEach(del);
   }
 
   /* ---------- HTTP tới Supabase (không có SDK, không có CDN) ---------- */
@@ -186,7 +188,8 @@ const Account = (() => {
   /* Lần đầu trên máy này: lấy dữ liệu từ đám mây, nhưng sao lưu bản trên máy trước. */
   async function prepareFirstSync() {
     const st = localState();
-    const rows = await call('/rest/v1/user_state?select=key,value&user_id=eq.' + session.user.id);
+    del(PULL_KEY);
+    const rows = await call('/rest/v1/user_state?select=key,value,updated_at&user_id=eq.' + session.user.id);
     if (!rows || !rows.length) { put(BASE_KEY, {}); return; } /* đám mây trống: đẩy hết lên sau */
     const remote = {};
     rows.forEach(r => { if (SAFE_KEYS.includes(r.key)) remote[r.key] = r.value; });
@@ -223,7 +226,9 @@ const Account = (() => {
   function setSync(s) { syncState = s; emit(); }
 
   async function push() {
-    if (!session || running || get(REMOTE_KEY)) return;
+    if (!session) return;
+    if (running) { again = true; return; } /* ghi mới trong lúc đang đẩy: chạy lại ngay khi xong */
+    if (get(REMOTE_KEY)) return;           /* đang chờ tải lại: không đẩy bản cũ đè lên cloud */
     running = true;
     setSync('syncing');
     try {
@@ -246,16 +251,27 @@ const Account = (() => {
     } catch (e) {
       lastError = 'Chưa đồng bộ được. Dữ liệu vẫn an toàn trên máy này và sẽ thử lại.';
       setSync('error');
-    } finally { running = false; }
+    } finally {
+      running = false;
+      if (again) { again = false; schedule(); }
+    }
   }
 
   async function pull() {
     if (!session || running || get(REMOTE_KEY)) return;
     running = true;
     try {
-      const rows = await call('/rest/v1/user_state?select=key,value&user_id=eq.' + session.user.id);
+      const mark = get(PULL_KEY);
+      const since = mark ? '&updated_at=gt.' + encodeURIComponent(new Date(Date.parse(mark) - PULL_SLACK).toISOString()) : '';
+      const rows = await call('/rest/v1/user_state?select=key,value,updated_at&user_id=eq.' + session.user.id + since);
       const remote = {};
-      (rows || []).forEach(r => { if (SAFE_KEYS.includes(r.key) && !SKIP.includes(r.key)) remote[r.key] = r.value; });
+      let newest = mark ? Date.parse(mark) : 0;
+      (rows || []).forEach(r => {
+        const t = Date.parse(r.updated_at || '');
+        if (t > newest) newest = t;
+        if (SAFE_KEYS.includes(r.key) && !SKIP.includes(r.key)) remote[r.key] = r.value;
+      });
+      if (newest) put(PULL_KEY, new Date(newest).toISOString());
       const st = localState();
       const base = get(BASE_KEY) || {};
       const diff = {};
@@ -269,7 +285,23 @@ const Account = (() => {
       lastError = '';
     } catch (e) {
       lastError = 'Không kiểm tra được thay đổi từ tài khoản lúc này.';
-    } finally { running = false; emit(); }
+    } finally { running = false; emit(); banner(); }
+  }
+
+  /* Banner toàn trang khi có thay đổi từ máy khác: không để người dùng học
+     hàng giờ trên một bản cũ mà không biết. Bấm để tải lại và áp dụng. */
+  function banner() {
+    let b = document.getElementById('acctBanner');
+    const want = !!get(REMOTE_KEY) && !!session;
+    if (!want) { if (b) b.remove(); return; }
+    if (b) return;
+    b = document.createElement('div');
+    b.id = 'acctBanner';
+    b.className = 'acct-banner';
+    b.setAttribute('role', 'status');
+    b.innerHTML = '<span>Có thay đổi từ thiết bị khác.</span><button class="btn sm" type="button">Tải lại để áp dụng</button>';
+    b.querySelector('button').addEventListener('click', () => location.reload());
+    document.body.appendChild(b);
   }
 
   function schedule() {
@@ -283,6 +315,7 @@ const Account = (() => {
     clearSession();
     lastError = '';
     setSync('idle');
+    banner();
   }
 
   async function deleteAccount() {
@@ -456,6 +489,7 @@ const Account = (() => {
   if (enabled()) {
     takeCallback();
     if (session) setTimeout(pull, 1500);
+    document.addEventListener('DOMContentLoaded', banner);
     document.addEventListener('visibilitychange', () => { if (!document.hidden) pull(); });
     setInterval(() => { if (!document.hidden) pull(); }, PULL_EVERY);
   }

@@ -64,8 +64,10 @@ ok('bản thường: không nhúng URL Supabase', !plain.includes('supabase.co')
 /* ---------- máy chủ Supabase giả ---------- */
 function makeServer() {
   const srv = {
-    rows: {}, calls: [], bodies: [], profile: null,
+    rows: {}, calls: [], bodies: [], profile: null, delay: 0,
     user: { id: 'u1', email: 'hoc.sinh@example.com' },
+    /* đặt dữ liệu đám mây như thể đã được ghi lúc `at` (mặc định: bây giờ) */
+    put(key, value, at) { srv.rows[key] = { value, at: at || new Date().toISOString() }; },
   };
   srv.handle = async (url, o) => {
     o = o || {};
@@ -84,8 +86,20 @@ function makeServer() {
     const auth = (o.headers && o.headers.Authorization) || '';
     if (u.pathname.startsWith('/rest/') && !/^Bearer A[12]$/.test(auth)) return reply(401, { msg: 'JWT' });
     if (u.pathname === '/rest/v1/user_state') {
-      if (m === 'GET') return reply(200, Object.keys(srv.rows).map(k => ({ key: k, value: srv.rows[k] })));
-      if (m === 'POST') { srv.bodies.push(body.map(r => r.key)); body.forEach(r => { srv.rows[r.key] = r.value; }); return reply(201); }
+      if (m === 'GET') {
+        const gt = u.searchParams.get('updated_at');
+        const min = gt ? Date.parse(gt.replace(/^gt\./, '')) : -Infinity;
+        return reply(200, Object.keys(srv.rows)
+          .filter(k => Date.parse(srv.rows[k].at) > min)
+          .map(k => ({ key: k, value: srv.rows[k].value, updated_at: srv.rows[k].at })));
+      }
+      if (m === 'POST') {
+        if (srv.delay) await new Promise(r => setTimeout(r, srv.delay));
+        srv.bodies.push(body.map(r => r.key));
+        const now = new Date().toISOString();
+        body.forEach(r => { srv.rows[r.key] = { value: r.value, at: now }; });
+        return reply(201);
+      }
     }
     if (u.pathname === '/rest/v1/profiles') {
       if (m === 'GET') return reply(200, srv.profile ? [srv.profile] : []);
@@ -174,7 +188,8 @@ const session = (extra) => JSON.stringify(Object.assign({
     const r = await open(cloudHtmlReady, {
       'vnl9.v2': stateWith(local), 'vnl9.session': session(), 'vnl9.sync': JSON.stringify(base),
     }, srv, { wait: 200 });
-    srv.rows = { done: { a: true }, ans: { q1: 1 } };
+    srv.put('done', { a: true }, '2000-01-01T00:00:00Z');
+    srv.put('ans', { q1: 1 }, '2000-01-01T00:00:00Z');
     await sleep(1800);
     srv.calls.length = 0;
     srv.bodies.length = 0;
@@ -182,8 +197,9 @@ const session = (extra) => JSON.stringify(Object.assign({
     await sleep(2200);
     ok('chỉ đẩy đúng 1 lần upsert', srv.bodies.length === 1, JSON.stringify(srv.bodies));
     ok('chỉ khoá đã đổi (note) nằm trong lần đẩy', JSON.stringify(srv.bodies[0]) === '["note"]', JSON.stringify(srv.bodies));
-    ok('khoá đã đổi (note) được lưu lên máy chủ', srv.rows.note && srv.rows.note.n1 === 'mới');
+    ok('khoá đã đổi (note) được lưu lên máy chủ', srv.rows.note && srv.rows.note.value.n1 === 'mới');
     ok('prefs không bao giờ được đồng bộ', srv.rows.prefs === undefined);
+    ok('mốc kéo về được ghi lại sau lần đồng bộ', !!r.win.localStorage.getItem('vnl9.pulled'));
     r.dom.window.close();
   }
 
@@ -192,12 +208,13 @@ const session = (extra) => JSON.stringify(Object.assign({
     const srv = makeServer();
     const local = { done: { a: true } };
     const base = { done: hashOf(local.done) };
-    srv.rows = { done: { a: true, b: true } };
+    srv.put('done', { a: true, b: true });
     const r = await open(cloudHtmlReady, {
       'vnl9.v2': stateWith(local), 'vnl9.session': session(), 'vnl9.sync': JSON.stringify(base),
     }, srv, { wait: 2300 });
     const pend = r.storage['vnl9.remote'] ? JSON.parse(r.storage['vnl9.remote']) : null;
     ok('phát hiện thay đổi từ máy khác', !!(pend && pend.keys && pend.keys.done));
+    ok('banner toàn trang hiện khi có thay đổi chờ', !!r.dom.window.document.getElementById('acctBanner'));
     ok('app đang chạy: KHÔNG ghi đè state cục bộ', JSON.parse(r.storage['vnl9.v2']).done.a === true && !JSON.parse(r.storage['vnl9.v2']).done.b);
     ok('khi chờ tải lại: không đẩy gì lên', !srv.calls.some(c => c.startsWith('POST /rest/v1/user_state')), srv.calls.join(' | '));
     r.dom.window.close();
@@ -214,7 +231,7 @@ const session = (extra) => JSON.stringify(Object.assign({
   {
     const srv = makeServer();
     const base = { done: hashOf({ a: true }) };
-    srv.rows = { done: { a: true, b: true } };
+    srv.put('done', { a: true, b: true });
     const r = await open(cloudHtmlReady, {
       'vnl9.v2': stateWith({ done: { a: true, c: true } }),
       'vnl9.session': session(), 'vnl9.sync': JSON.stringify(base),
@@ -255,6 +272,40 @@ const session = (extra) => JSON.stringify(Object.assign({
     ok('đăng xuất: xoá phiên', r.win.localStorage.getItem('vnl9.session') === null);
     ok('đăng xuất: xoá trạng thái đồng bộ', r.win.localStorage.getItem('vnl9.sync') === null);
     ok('đăng xuất: giữ dữ liệu trên máy', JSON.parse(r.win.localStorage.getItem('vnl9.v2')).done.a === true);
+    r.dom.window.close();
+  }
+
+
+  /* ---------- 8. ghi trong lúc đang đẩy: lượt đẩy lại phải chạy ---------- */
+  {
+    const srv = makeServer();
+    srv.delay = 700;
+    const r = await open(cloudHtmlReady, {
+      'vnl9.v2': stateWith({ note: {} }), 'vnl9.session': session(), 'vnl9.sync': JSON.stringify({}),
+    }, srv, { wait: 1900 });
+    srv.bodies.length = 0;
+    r.win.eval("AppStore.write(Object.assign(AppStore.readSync().data, { note: { a: 1 } }))");
+    await sleep(1700); /* lượt đầu bắt đầu, đang chờ 700 ms */
+    r.win.eval("AppStore.write(Object.assign(AppStore.readSync().data, { note: { a: 2 } }))");
+    await sleep(3500);
+    const sentNote = srv.bodies.filter(b => b.includes('note')).length;
+    ok('ghi trong lúc đẩy: được đẩy lại (không mất)', sentNote >= 2 && srv.rows.note.value.a === 2,
+      'số lần gửi note=' + sentNote + ', cloud=' + JSON.stringify(srv.rows.note && srv.rows.note.value));
+    r.dom.window.close();
+  }
+
+  /* ---------- 9. kéo gia tăng: chỉ hỏi các dòng đổi sau mốc ---------- */
+  {
+    const srv = makeServer();
+    srv.put('done', { a: true }, '2000-01-01T00:00:00Z');
+    const r = await open(cloudHtmlReady, {
+      'vnl9.v2': stateWith({ done: { a: true } }), 'vnl9.session': session(),
+      'vnl9.sync': JSON.stringify({ done: hashOf({ a: true }) }),
+      'vnl9.pulled': JSON.stringify('2000-01-01T00:00:00Z'),
+    }, srv, { wait: 1900 });
+    const pulls = srv.calls.filter(c => c.startsWith('GET /rest/v1/user_state'));
+    ok('kéo gia tăng: có lọc theo updated_at', pulls.length > 0 && pulls.every(c => c.includes('updated_at=gt.')), pulls.join(' | '));
+    ok('kéo gia tăng: không có thay đổi nên không chờ tải lại', !r.storage['vnl9.remote']);
     r.dom.window.close();
   }
 

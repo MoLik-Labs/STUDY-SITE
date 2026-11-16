@@ -148,11 +148,19 @@ const AppStore = (() => {
       } catch (e) { res([]); }
     }));
   }
+  /* Trả về Promise, resolve khi giao dịch xong. Trước đây hàm này không trả
+     gì, nên `idbClear('journal').then(...)` ở dưới ném TypeError mỗi lần nhật
+     ký vượt 20 mục: nhật ký không bao giờ được cắt và IndexedDB phình mãi. */
   function idbClear(store) {
-    openDB().then(d => {
-      if (!d) return;
-      try { d.transaction(store, 'readwrite').objectStore(store).clear(); } catch (e) {}
-    });
+    return openDB().then(d => new Promise(res => {
+      if (!d) return res();
+      try {
+        const tx = d.transaction(store, 'readwrite');
+        tx.objectStore(store).clear();
+        tx.oncomplete = () => res();
+        tx.onerror = tx.onabort = () => res();
+      } catch (e) { res(); }
+    }));
   }
 
   /* ---------- ghi ---------- */

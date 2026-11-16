@@ -91,6 +91,28 @@ ver_js = "/* phiên bản — sinh từ src/build.py */\nconst APP_VERSION = '" 
 # Everything here is a classic script sharing one global scope, which is why
 # a name must be declared exactly once — check.js enforces that.
 # ================================================================
+# ----------------------------------------------------------------
+# Cấu hình đám mây — đọc từ biến môi trường lúc build, KHÔNG nằm trong mã.
+#   SUPABASE_URL                 https://<ref>.supabase.co
+#   SUPABASE_PUBLISHABLE_KEY     sb_publishable_… (hoặc anon JWT cũ)
+# Thiếu cả hai → bản build chỉ có chế độ khách (không gọi mạng). Từ chối
+# ngay nếu khoá trông như secret: khoá bí mật KHÔNG được vào trình duyệt.
+# ----------------------------------------------------------------
+import json as _json, re as _re
+SB_URL = os.environ.get('SUPABASE_URL', '').strip().rstrip('/')
+SB_KEY = os.environ.get('SUPABASE_PUBLISHABLE_KEY', '').strip()
+if SB_URL or SB_KEY:
+    if not _re.fullmatch(r'https://[a-z0-9]{20}\.supabase\.co', SB_URL):
+        raise SystemExit('SUPABASE_URL phải dạng https://<ref>.supabase.co')
+    if SB_KEY.startswith('sb_secret_') or 'service_role' in SB_KEY:
+        raise SystemExit('SUPABASE_PUBLISHABLE_KEY là khoá BÍ MẬT — dừng ngay, không đưa vào trình duyệt')
+    if not (_re.fullmatch(r'sb_publishable_[A-Za-z0-9_-]{10,}', SB_KEY)
+            or _re.fullmatch(r'eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+', SB_KEY)):
+        raise SystemExit('SUPABASE_PUBLISHABLE_KEY không đúng định dạng khoá công khai')
+CLOUD_JS = 'const SB_CONFIG = Object.freeze(' + _json.dumps(
+    {'url': SB_URL, 'key': SB_KEY}, ensure_ascii=True) + ');'
+CLOUD_ORIGIN = SB_URL  # rỗng khi không bật đám mây
+
 MODULES = [
     ('DỮ LIỆU LỘ TRÌNH', 'data',
      [('dữ liệu', data)]),
@@ -108,6 +130,8 @@ MODULES = [
       ('thương hiệu', SRC('brand.js')),
       ('lưu trữ', SRC('store.js')),
       ('song ngữ', SRC('i18n.js')),
+      ('cấu hình đám mây', CLOUD_JS),
+      ('tài khoản & đồng bộ', SRC('account.js')),
       ('khung ứng dụng', SRC('app.js')),
       ('tiện ích', SRC('tools.js')),
       ('máy tính', SRC('engine.js'))]),
@@ -296,7 +320,7 @@ csp = '; '.join([
     "img-src 'self' data: https://i.ytimg.com https://*.ytimg.com blob:",
     "media-src 'self' blob: https:",
     "frame-src https://www.youtube-nocookie.com https://www.youtube.com",
-    "connect-src 'self'",
+    "connect-src 'self'" + (' ' + CLOUD_ORIGIN if CLOUD_ORIGIN else ''),
     "worker-src 'self'",
     "manifest-src 'self'",
     "object-src 'none'",

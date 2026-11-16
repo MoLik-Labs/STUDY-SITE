@@ -3503,3 +3503,17 @@ body{line-height:var(--lh)}
   letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
 .ift-more:hover{color:var(--accent)}
 @media(max-width:760px){.ift-ask{grid-template-columns:minmax(0,1fr);gap:14px}}
+
+
+/* ---------- tài khoản & đồng bộ (src/account.js) ---------- */
+.acct-lead { font-size: 1.05rem; margin: 0 0 .4rem; }
+.acct-form { display: flex; flex-wrap: wrap; gap: .6rem; align-items: flex-end; margin: .8rem 0; }
+.acct-field { display: flex; flex-direction: column; gap: .3rem; font-size: .9rem; min-width: min(100%, 16rem); }
+.acct-field input, .acct-field select {
+  font: inherit; min-height: 44px; padding: .5rem .6rem;
+  color: var(--ink); background: var(--card); border: 1px solid var(--rule);
+}
+.acct-row { display: flex; flex-wrap: wrap; gap: .6rem; margin: .6rem 0; }
+.acct-pending { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; margin: .6rem 0; padding: .6rem .8rem; border: 1px dashed var(--rule); }
+.acct-danger { display: flex; flex-wrap: wrap; gap: .8rem; align-items: center; justify-content: space-between; margin-top: 1.2rem; }
+.acct-msg { min-height: 1.3em; margin: .5rem 0 0; }

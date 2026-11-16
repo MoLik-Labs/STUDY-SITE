@@ -80,7 +80,7 @@ function renderSettings() {
     ['00', 'Ngôn ngữ', 'lang'], ['01', 'Giao diện', 'ui'],
     ['02', 'Đọc', 'read'], ['02b', 'Mục tiêu & trợ năng', 'more'],
     ['03', 'Bắt đầu', 'start'], ['04', 'Pomodoro', 'pomo'],
-    ['05', 'Dữ liệu của bạn', 'data'],
+    ['05', 'Dữ liệu của bạn', 'data'], ['06', 'Tài khoản & đồng bộ', 'acct'],
   ];
   $('#main').innerHTML = `<section class="wrap wide">
     ${pageHead('Tuỳ biến', 'Chỉnh web theo mắt và nhịp học của bạn',
@@ -250,9 +250,15 @@ function renderSettings() {
           <button class="btn ghost sm" id="setWipe">Xoá toàn bộ dữ liệu</button>
         </div>
       </section>
+      <section class="set-sec" id="set-acct">
+        <div class="set-h"><span class="kicker">06 · Tài khoản & đồng bộ</span><span class="muted">tuỳ chọn</span></div>
+        <div id="acctRoot" class="acct" aria-live="polite"></div>
+      </section>
       </div>
     </div>
   </section>`;
+
+  if (typeof Account !== 'undefined') Account.mount($('#acctRoot'));
 
   /* --- chọn giao diện --- */
   $$('[data-theme-pick]').forEach(b => b.onclick = () => {

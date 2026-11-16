@@ -7,8 +7,9 @@ Cập nhật lần cuối: **2026-11-14** · phiên bản **11.2.0** · build ~1
 
 ## 1. Triết lý
 
-1. **Một tệp, chạy được ngay.** `index.html` chứa toàn bộ CSS/JS/dữ liệu. Không API AI, không CDN bắt buộc,
-   không đăng nhập. Mở bằng trình duyệt là dùng; copy sang máy khác vẫn chạy.
+1. **Một tệp, chạy được ngay.** `index.html` chứa toàn bộ CSS/JS/dữ liệu. Không API AI, không CDN bắt buộc.
+   Không đăng nhập là mặc định. Tài khoản Supabase là tuỳ chọn (xem `docs/SUPABASE-SETUP.md`), và bản build
+   không có biến môi trường thì chỉ có chế độ khách. Mở bằng trình duyệt là dùng; copy sang máy khác vẫn chạy.
 2. **Không có “trang trí rỗng”.** Mỗi khối trên giao diện phải gắn với dữ liệu thật của người học.
 3. **Dữ liệu thuộc về người học.** Lưu trong `localStorage` + IndexedDB, xuất được ra `.json`, in được ra giấy.
 4. **Tiếng Việt trong giao diện, tiếng Anh trong mã.** Tên biến/hàm tiếng Anh, chữ hiển thị tiếng Việt có dấu.

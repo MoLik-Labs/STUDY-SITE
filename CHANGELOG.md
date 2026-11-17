@@ -9,6 +9,13 @@ Vòng debug sau Phase 1 (sẽ gộp vào bản phát hành kế tiếp, chưa bu
 
 ### Thêm
 
+- **Khung site mới** (`site/`, chưa thay bản chính): lịch tuần, việc cần làm, tạo môn tự tạo,
+  và 8 môn năm 2 (đường dẫn `/<slug>/`). Mỗi tài liệu có cờ `verified` và hiển thị trạng thái
+  kiểm tra trong app. Dữ liệu lưu trên máy; bản hỏng được sao lưu sang `sf.plan.v2.bak`.
+- **Bản Vật lí tách riêng tại `/physic/`** (`python3 src/build.py --physics-only`): cùng mã
+  vật lí của bản chính, không kéo theo module trường học, lịch, trò chơi, nhạc. Các đường dẫn
+  ngoài phạm vi chuyển về `#/physics`. Hồ sơ (`SUBJECTS`, `schoolState`) tách sang `src/profile.js`.
+  Chưa có service worker cho bản này nên chưa hoạt động offline.
 - **Trang Quyền riêng tư** (`#/privacy`, `src/privacy.js`): nói rõ dữ liệu nào được lưu,
   ai nhận được (Supabase khi đăng nhập, Google khi chọn Google, YouTube khi mở video),
   và cách xoá. Liên kết ở chân trang và trong Cài đặt.

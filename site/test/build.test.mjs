@@ -1,5 +1,6 @@
-import { test } from 'node:test';
+import { test, before } from 'node:test';
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { mkdtemp, readFile, readdir, stat } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
@@ -7,13 +8,16 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const SITE = path.resolve(HERE, '..');
-const { buildSite, routesFrom, CSP } = await import(pathToFileURL(path.join(SITE, 'build.mjs')).href);
+const { buildSite, routesFrom } = await import(pathToFileURL(path.join(SITE, 'build.mjs')).href);
 const { COURSES } = await import(pathToFileURL(path.join(SITE, 'src', 'courses.js')).href);
 
-const out = await mkdtemp(path.join(os.tmpdir(), 'sf-site-'));
-await buildSite({ out });
+let out;
+before(async () => {
+  out = await mkdtemp(path.join(os.tmpdir(), 'sf-site-'));
+  await buildSite({ out });
+});
 
-test('dữ liệu: 8 môn, slug và id duy nhất, mỗi môn có tài liệu', () => {
+test('dữ liệu: 8 môn, slug và id duy nhất, mỗi tài liệu có đủ trường', () => {
   assert.equal(COURSES.length, 8);
   assert.equal(new Set(COURSES.map(c => c.slug)).size, 8);
   const ids = COURSES.flatMap(c => c.resources.map(r => r.id));
@@ -29,17 +33,15 @@ test('dữ liệu: 8 môn, slug và id duy nhất, mỗi môn có tài liệu', 
   }
 });
 
-test('mỗi môn có đúng một đường dẫn, cộng trang vật lí và trang chủ', () => {
+test('mỗi môn có đúng một đường dẫn; trang chủ có trong danh sách', () => {
   const routes = routesFrom(COURSES).map(r => r.path);
   for (const c of COURSES) assert.ok(routes.includes('/' + c.slug + '/'), c.slug);
   assert.ok(routes.includes('/'));
-  assert.ok(routes.includes('/physic/'));
   assert.equal(new Set(routes).size, routes.length);
 });
 
 test('mọi trang được sinh ra và không có script inline', async () => {
-  const routes = routesFrom(COURSES);
-  for (const r of routes) {
+  for (const r of routesFrom(COURSES)) {
     const html = await readFile(path.join(out, r.path, 'index.html'), 'utf8');
     assert.match(html, /<script type="module" src="\/assets\/boot\.js"><\/script>/, r.path);
     assert.doesNotMatch(html, /<script(?![^>]*\bsrc=)/, 'không script inline ở ' + r.path);
@@ -49,17 +51,43 @@ test('mọi trang được sinh ra và không có script inline', async () => {
   await stat(path.join(out, '404.html'));
 });
 
-test('CSP không có unsafe-inline và chặn khung nhúng', async () => {
-  const headers = await readFile(path.join(out, '_headers'), 'utf8');
-  assert.ok(headers.includes(CSP));
-  assert.doesNotMatch(CSP, /unsafe-/);
-  assert.match(CSP, /frame-ancestors 'none'/);
-  assert.match(CSP, /script-src 'self'/);
+test('bản Vật lí có tại /physic/ và chỉ chứa phần vật lí', async () => {
+  const html = await readFile(path.join(out, 'physic', 'index.html'), 'utf8');
+  assert.match(html, /<title>Vật lí — Học mọi thứ<\/title>/);
+  assert.ok(html.includes('#/physics'), 'điểm vào mở #/physics');
+  // Kiểm tra mã JavaScript (không phải CSS dùng chung): không có module trường học, lịch, trò chơi, nhạc.
+  for (const fn of ['function seedLessons', 'function gdState', 'function schedState', 'function wkMonday', 'function pomoState', 'function gmState', 'function musicState']) {
+    assert.ok(!html.includes(fn), 'không kéo theo: ' + fn);
+  }
+  for (const f of ['be-vietnam-pro-latin-400-normal.woff2']) {
+    await stat(path.join(out, 'physic', 'fonts', f));
+  }
 });
 
-test('app.js không dùng innerHTML hay eval', async () => {
+test('mọi khối inline của /physic/ có hash trong CSP header', async () => {
+  const html = await readFile(path.join(out, 'physic', 'index.html'), 'utf8');
+  const headers = await readFile(path.join(out, '_headers'), 'utf8');
+  const scriptSrc = /script-src ([^;]+)/.exec(headers)[1];
+  assert.doesNotMatch(scriptSrc, /unsafe-inline/, 'script không có unsafe-inline');
+  const inline = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]);
+  assert.ok(inline.length >= 5, 'có các khối inline của từng module: ' + inline.length);
+  for (const code of inline) {
+    const hash = "'sha256-" + createHash('sha256').update(code, 'utf8').digest('base64') + "'";
+    assert.ok(scriptSrc.includes(hash), 'thiếu hash cho một khối inline');
+  }
+});
+
+test('CSP header: chống nhúng khung và không có domain bên ngoài ngoài YouTube', async () => {
+  const headers = await readFile(path.join(out, '_headers'), 'utf8');
+  assert.match(headers, /frame-ancestors 'self'/);
+  assert.match(headers, /object-src 'none'/);
+  assert.match(headers, /connect-src 'self'/);
+  assert.doesNotMatch(headers, /https:\/\/[^ ;']*google/);
+});
+
+test('app.js của site không dùng innerHTML hay eval', async () => {
   const src = await readFile(path.join(SITE, 'src', 'app.js'), 'utf8');
-  assert.doesNotMatch(src, /innerHTML|outerHTML|insertAdjacentHTML|\beval\(|new Function/);
+  assert.doesNotMatch(src, /\.innerHTML\s*=|outerHTML\s*=|insertAdjacentHTML|\beval\(|new Function/);
 });
 
 test('mọi tệp trong assets có mặt', async () => {

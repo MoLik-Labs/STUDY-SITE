@@ -13,6 +13,11 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 VERSION = '11.9'          # một nguồn duy nhất; sinh ra meta, APP_VERSION, footer, sw.js
 
+# --physics-only: dựng riêng phần Vật lí để đặt tại /physic/ của site.
+# Chỉ giữ các module vật lí và lõi cần thiết; không có lịch, trường học, nhạc.
+PHYSICS_ONLY = '--physics-only' in sys.argv
+PHYSICS_KEEP = {'data', 'content', 'prefs', 'core', 'explore', 'physics'}
+
 def arg(flag, default):
     """--flag giá-trị, hoặc chỉ --flag (dùng giá trị mặc định)."""
     if flag not in sys.argv:
@@ -129,6 +134,7 @@ MODULES = [
      [('phiên bản', ver_js),
       ('thương hiệu', SRC('brand.js')),
       ('lưu trữ', SRC('store.js')),
+      ('hồ sơ', SRC('profile.js')),
       ('song ngữ', SRC('i18n.js')),
       ('cấu hình đám mây', CLOUD_JS),
       ('tài khoản & đồng bộ', SRC('account.js')),
@@ -175,6 +181,29 @@ MODULES = [
 
     ('CLOUDFLARE — service worker & trạng thái mạng', 'cloudflare', [('cf', cf)]),
 ]
+
+if PHYSICS_ONLY:
+    # Điểm vào của bản Vật lí: mở thẳng #/physics khi chưa có hash. replaceState
+    # để không sinh hashchange. Chạy trước mọi module để router thấy hash đúng.
+    # Chỉ các route của Vật lí được mở; mọi route khác (trường học, lịch, cài
+    # đặt...) đưa về #/physics. Trình nghe được gắn trước app.js nên chặn được
+    # cả việc app vẽ trang cũ. Lần đầu dùng replaceState (không sinh sự kiện).
+    ENTRY_JS = r"""(function(){
+var OK=/^#\/(physics|solve|build|builder|sim|calc|flash|qa|discover|papers|exam|review|stats|library|notes|read|lesson)(\/|\?|$)/;
+if(!OK.test(location.hash||'')){history.replaceState(null,'',location.pathname+'#/physics');}
+window.addEventListener('hashchange',function(e){
+  if(!OK.test(location.hash||'')){e.stopImmediatePropagation();location.hash='#/physics';}
+},true);
+})();"""
+    MODULES = [('ĐIỂM VÀO VẬT LÍ', 'core', [('điểm vào', ENTRY_JS)])] + [
+        m for m in MODULES if m[1] in PHYSICS_KEEP]
+    PAGE_TITLE = 'Vật lí — Học mọi thứ'
+    FOOT_LEAD = ('<b>Vật lí</b> — chạy hoàn toàn trong trình duyệt, '
+                 'dữ liệu nằm trong máy bạn.')
+else:
+    PAGE_TITLE = 'Study Focus Fox — Vật lí 9 · lớp 1–12 · học offline'
+    FOOT_LEAD = ('<b>Học mọi thứ</b> — Vật lí 9 · lớp 1–12 · chạy hoàn toàn '
+                 'trong trình duyệt, dữ liệu nằm trong máy bạn.')
 
 # Each module becomes its own <script>. Labels are kept short and stable: they
 # are what a stack trace shows, so they have to stay meaningful for years.
@@ -249,7 +278,7 @@ html = f"""<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Study Focus Fox — Vật lí 9 · lớp 1–12 · học offline</title>
+<title>{PAGE_TITLE}</title>
 <meta name="app-version" content="{VERSION}">
 <meta name="description" content="Một trang để học mọi thứ: lộ trình Vật lí 9, trường học lớp 1–12, thẻ ghi nhớ cách quãng, luyện đề tự tạo, kế hoạch học, thời khoá biểu và lịch học. Study Focus Fox · @its.fox_.">
 <meta name="theme-color" content="#f4f1ea" media="(prefers-color-scheme: light)">
@@ -276,7 +305,7 @@ html = f"""<!doctype html>
 </div>
 <footer class="foot">
   <div class="wrap wide foot-in">
-    <span><b>Học mọi thứ</b> — Vật lí 9 · lớp 1–12 · chạy hoàn toàn trong trình duyệt, dữ liệu nằm trong máy bạn.</span>
+    <span>{FOOT_LEAD}</span>
     <span>Thẻ ghi nhớ · luyện đề · kế hoạch · thời khoá biểu · lịch học · phòng thí nghiệm — xuất được ra tệp, dùng offline.</span>
     <span class="foot-own">
       <a href="https://github.com/MoLik-Labs/STUDY-SITE" target="_blank" rel="noopener">@its.fox_</a>
@@ -339,7 +368,11 @@ html = html.replace(
     '<meta name="build-id" content="%s">\n'
     '<meta name="viewport"' % (meta_csp.replace('"', '&quot;'), build_id), 1)
 
+os.makedirs(os.path.dirname(OUT), exist_ok=True)
 io.open(OUT, 'w', encoding='utf-8').write(html)
+if PHYSICS_ONLY and arg('--csp-out', None):
+    # Site ghép cần đúng chuỗi CSP của bản này (có hash của các khối inline).
+    io.open(arg('--csp-out', None), 'w', encoding='utf-8').write(csp)
 
 # ================================================================ tệp phụ trợ
 HEADERS = """# Cloudflare — sinh tự động bởi src/build.py, đừng sửa tay.

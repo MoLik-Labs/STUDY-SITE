@@ -18,7 +18,7 @@
    ========================================================= */
 
 const VERSION = '11.9';
-const BUILD = 'aa1c9e3cb045';
+const BUILD = '7235060692b9';
 const BUILT_AT = '1970-01-01T00:00:00Z';
 
 /* JSON trả về được dựng sẵn: cùng nội dung cho mọi người, trừ `at`.

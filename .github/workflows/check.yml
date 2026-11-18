@@ -20,28 +20,15 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Dựng lại bản chạy từ src/
-        run: python3 src/build.py --dist
+      # `npm ci` chạy hook prepare → dựng lại dist/ từ site/ và src/ (Vật lí).
+      - name: Cài đặt và dựng dist/
+        run: npm ci --no-audit --no-fund
 
-      - name: Bản build phải khớp với bản đã commit
-        run: git diff --exit-code -- index.html dist/
+      - name: Bản dist/ phải khớp với bản đã commit
+        run: git diff --exit-code -- dist/
 
-      - name: Kiểm tra tĩnh (cú pháp, mã chết, hộp thoại gốc, router)
-        run: node tools/check.js
+      - name: Kiểm thử (dữ liệu, logic, giao diện, build, Worker, CSP, sw.js)
+        run: npm test
 
-      - name: Cloudflare — CSP, _headers, _redirects, service worker
-        run: node tests/csp.js
-
-      - name: Kiểm thử trong DOM (mọi tuyến + tương tác)
-        run: |
-          npm install --no-save --no-audit --no-fund jsdom
-          node tests/smoke.js
-          node tests/interaction.js
-          node tests/newfeat.js
-          node tests/v112.js
-
-      - name: Cloudflare — Worker /__version (ETag, 304, 405, 404)
-        run: node tests/functions.js
-
-      - name: Cloudflare — mô phỏng thứ tự phục vụ của Workers
-        run: node tests/worker.js
+      - name: Cloudflare — cấu hình Worker hợp lệ (dry-run, không deploy)
+        run: npx --yes wrangler@4 deploy --dry-run --outdir /tmp/wrangler-dry

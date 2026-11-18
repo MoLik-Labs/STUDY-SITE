@@ -1,6 +1,6 @@
 {
   "name": "study-focus-fox",
-  "version": "11.9.0",
+  "version": "12.0.0",
   "private": true,
   "description": "Web tự học mọi thứ: Vật lí 9 & luyện thi chuyên Lý, trường học lớp 1-12, thời khoá biểu, kế hoạch, lịch, phòng thí nghiệm — tất cả trong một tệp HTML chạy offline.",
   "keywords": [
@@ -21,14 +21,13 @@
   "author": "Study Focus Fox <@its.fox_> (https://github.com/MoLik-Labs/STUDY-SITE)",
   "license": "MIT",
   "scripts": {
-    "build": "python3 src/build.py --dist",
-    "cf:build": "python3 src/build.py --dist",
-    "prepare": "python3 src/build.py --dist",
-    "check": "node tools/check.js",
-    "test": "python3 src/build.py --dist && node tools/check.js && node tests/csp.js && node tests/functions.js && node tests/worker.js && node tests/smoke.js && node tests/interaction.js && node tests/newfeat.js && node tests/v112.js && node tests/resilience.js && node tests/account.js && node tests/journal.js && node --test site/test/*.test.mjs",
-    "serve": "python3 -m http.server 8124 --directory dist",
-    "deploy": "python3 src/build.py --dist && npx wrangler deploy",
-    "preview": "python3 src/build.py --dist && npx wrangler dev"
+    "build": "node site/build.mjs",
+    "prepare": "node site/build.mjs",
+    "check": "node --test site/test/*.test.mjs",
+    "test": "node site/build.mjs --out /tmp/sf-test-dist && node --test site/test/*.test.mjs",
+    "serve": "node site/test/serve.mjs --port 8124",
+    "deploy": "node site/build.mjs && npx wrangler deploy",
+    "preview": "node site/build.mjs && npx wrangler dev"
   },
   "engines": {
     "node": ">=18"

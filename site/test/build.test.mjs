@@ -92,5 +92,6 @@ test('app.js của site không dùng innerHTML hay eval', async () => {
 
 test('mọi tệp trong assets có mặt', async () => {
   const files = (await readdir(path.join(out, 'assets'))).sort();
-  assert.deepEqual(files, ['app.js', 'boot.js', 'cloud.js', 'config.js', 'courses.js', 'logic.js', 'store.js', 'styles.css']);
+  // config.js KHÔNG phải tệp tĩnh: Worker phục vụ lúc chạy từ biến môi trường.
+  assert.deepEqual(files, ['app.js', 'boot.js', 'cloud.js', 'courses.js', 'logic.js', 'store.js', 'styles.css']);
 });

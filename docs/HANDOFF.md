@@ -1,6 +1,15 @@
 # Bàn giao kỹ thuật — Học mọi thứ · v10.0
 
 Tài liệu này là “bộ nhớ” của dự án: đọc hết là có thể sửa, mở rộng và kiểm thử mà không cần hỏi lại.
+
+> **Trạng thái hiện tại (2026-11-16, nhánh `arena/d12df461-study-site`, PR #9).**
+> Dự án đang chuyển sang hai phần, chưa xong:
+> - **Bản chính (`src/` → `dist/`)** vẫn là app một tệp cũ, phục vụ production. Các phần dưới đây mô tả bản này.
+> - **Khung mới (`site/`)**: lịch tuần, việc cần làm, môn tự tạo, và 8 môn năm 2 (`/<slug>/`). Dữ liệu lưu trên máy, bản hỏng được sao lưu sang `sf.plan.v2.bak`. Build bằng `node site/build.mjs` ra `site-dist/`, test bằng `node --test site/test/*.test.mjs`.
+> - **Vật lí (`/physic/`)**: dựng từ chính các module vật lí của bản chính bằng `python3 src/build.py --physics-only`. Điểm vào `#/physics`, route ngoài phạm vi chuyển về đây. Chưa có service worker nên chưa chạy offline. CSS dùng chung (~240 KB) chưa được tách.
+> - **Chưa làm:** đổi production sang khung mới (đang chờ quyết định), cá nhân hoá (hồ sơ, trang chủ thích ứng, bố cục), đăng nhập và đồng bộ Supabase trong khung mới, trang quyền riêng tư và xoá dữ liệu trong khung mới, đánh giá thiết kế theo taste-skill, đo lại Lighthouse, kiểm chứng các URL tài liệu chưa mở (xem `docs/COURSE-RESOURCES.md`).
+> - **Hồ sơ học sinh:** `SUBJECTS` và `schoolState` nằm ở `src/profile.js` (lõi dùng chung).
+> - **Supabase:** schema bảng riêng có RLS ở `supabase/migrations/`. Mục nào làm gì xem `docs/SUPABASE-SETUP.md`.
 Cập nhật lần cuối: **2026-11-14** · phiên bản **11.2.0** · build ~1.029 KB thô / ~230 KB Brotli
 
 ---

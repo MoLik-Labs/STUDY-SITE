@@ -33,3 +33,4 @@ node_modules
 # cloudflare
 dev.vars
 .wrangler/
+site-dist/

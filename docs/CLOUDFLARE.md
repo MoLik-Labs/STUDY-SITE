@@ -1,3 +1,8 @@
+> **Cập nhật 12.0.0.** `dist/` do `site/build.mjs` dựng (không còn `src/build.py --dist`).
+> Biến `SUPABASE_*` đọc lúc chạy trong Worker (`/assets/config.js`), xem `docs/SUPABASE-SETUP.md` §2.
+> `run_worker_first` chỉ gồm `/__version` và `/assets/config.js`. Mục băm CSP bên dưới mô tả
+> bản Vật lí (`/physic/`), vì site dùng chung CSP đó với `connect-src` mở tới `*.supabase.co`.
+
 # Triển khai: chọn nền tảng nào, cấu hình ra sao
 
 Tài liệu này trả lời hai câu hỏi: **nền tảng nào tối ưu nhất cho dự án này**, và
@@ -84,7 +89,7 @@ chỉ là một dòng cấu hình.
 
 | Ô | Giá trị |
 |---|---|
-| Build command | `python3 src/build.py --dist` |
+| Build command | để trống (dist/ đã commit; `prepare` tự dựng) |
 | Deploy command | `npx wrangler deploy` |
 | Root directory | `/` (mặc định) |
 
@@ -95,7 +100,7 @@ chỉ là một dòng cấu hình.
 ### 4.2 Deploy từ máy
 
 ```bash
-npm run deploy      # = python3 src/build.py --dist && npx wrangler deploy
+npm run deploy      # = node site/build.mjs && npx wrangler deploy
 npm run preview     # chạy thử bằng workerd ở máy, không cần tài khoản
 ```
 
@@ -157,7 +162,7 @@ Trường hợp đó, cấu hình Pages:
 | Ô | Giá trị |
 |---|---|
 | Framework preset | `None` |
-| Build command | `python3 src/build.py --dist` |
+| Build command | để trống (dist/ đã commit; `prepare` tự dựng) |
 | Build output directory | `dist` |
 
 Nếu chọn Pages: đổi `_redirects` đích `/` → `/index.html` (Pages không chuẩn hoá
@@ -315,7 +320,7 @@ Tổng: **205 bước** kiểm (28 + 20 + 6 + 32 + 54 + 32 + 33), cộng 4 nhóm
 | Gõ `/study` ra 404 | thiếu `_redirects`, hoặc Worker chạy trước tài nguyên tĩnh | kiểm `dist/_redirects`; **không** đặt `run_worker_first = true` |
 | Deploy xong vẫn thấy bản cũ | service worker cache | phiên bản tăng là cache mới; hoặc DevTools → Application → Service Workers → Unregister |
 | `/__version` 404 | `main` trong `wrangler.jsonc` sai, hoặc chưa build | `npm run build` rồi deploy; kiểm `dist/_worker.mjs` tồn tại, và `npm run preview` để thử tại máy |
-| `wrangler deploy` báo không thấy `main` | build chưa chạy | `npm run deploy` (tự build trước) |
+| `wrangler deploy` báo không thấy `main` | dist/ chưa dựng | `npm run build` rồi deploy |
 | Build fail `python3: command not found` | preset framework đè | đặt Framework preset = `None` |
 | Sửa CSS xong không thấy đổi | quên build | `npm run build` trước khi deploy |
 | Tên miền riêng không gắn được | nameserver chưa về Cloudflare | xem §6 — hoặc chuyển DNS, hoặc dùng Pages |

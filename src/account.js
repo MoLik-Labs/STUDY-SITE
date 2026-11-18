@@ -36,7 +36,7 @@ const Account = (() => {
   /* Ghi lại hàm gốc TRƯỚC khi bọc: đây là đường ghi không đồng bộ. */
   const rawWrite = AppStore.write;
 
-  let session = null, timer = 0, running = false, again = false, refreshing = null;
+  let session = null, timer = 0, running = false, again = false, refreshing = null, wiping = false;
   let lastError = '', syncState = 'idle', host = null, lastSig = '';
 
   /* ---------- lưu trữ nhỏ ---------- */
@@ -226,7 +226,7 @@ const Account = (() => {
   function setSync(s) { syncState = s; emit(); }
 
   async function push() {
-    if (!session) return;
+    if (!session || wiping) return;
     if (running) { again = true; return; } /* ghi mới trong lúc đang đẩy: chạy lại ngay khi xong */
     if (get(REMOTE_KEY)) return;           /* đang chờ tải lại: không đẩy bản cũ đè lên cloud */
     running = true;
@@ -258,7 +258,7 @@ const Account = (() => {
   }
 
   async function pull() {
-    if (!session || running || get(REMOTE_KEY)) return;
+    if (!session || running || wiping || get(REMOTE_KEY)) return;
     running = true;
     try {
       const mark = get(PULL_KEY);
@@ -322,6 +322,31 @@ const Account = (() => {
     await call('/rest/v1/rpc/delete_my_account', { method: 'POST', body: {} });
     clearSession();
     setSync('idle');
+  }
+
+  /* Xoá dữ liệu học trên máy chủ, GIỮ tài khoản đăng nhập và hồ sơ (đặt rỗng).
+     Chặn đồng bộ trong lúc xoá để không đẩy lại dữ liệu cũ. Nếu một bước lỗi,
+     hàm ném lỗi và người gọi không xoá dữ liệu trên máy: người dùng thử lại. */
+  const CLOUD_TABLES = ['user_state', 'lesson_progress', 'answers', 'notes', 'review_cards', 'layouts'];
+  async function wipeCloud() {
+    if (!session) return;
+    wiping = true;
+    try {
+      clearTimeout(timer);
+      /* đợi lần đẩy đang chạy kết thúc, nếu không nó sẽ ghi lại mốc cũ sau khi xoá */
+      for (let i = 0; running && i < 400; i++) await new Promise(r => setTimeout(r, 25));
+      const uid = session.user.id;
+      for (const t of CLOUD_TABLES) {
+        await call('/rest/v1/' + t + '?user_id=eq.' + uid, { method: 'DELETE', prefer: 'return=minimal' });
+      }
+      await call('/rest/v1/profiles?id=eq.' + uid, {
+        method: 'PATCH', prefer: 'return=minimal',
+        body: { display_name: null, grade: null, class_name: null },
+      });
+      /* đám mây giờ rỗng: mốc đồng bộ cũng rỗng, không còn gì để kéo về */
+      put(BASE_KEY, {}); del(PULL_KEY); del(REMOTE_KEY);
+      put(TIME_KEY, Date.now());
+    } finally { wiping = false; }
   }
 
   async function loadProfile() {
@@ -494,5 +519,10 @@ const Account = (() => {
     setInterval(() => { if (!document.hidden) pull(); }, PULL_EVERY);
   }
 
-  return { mount, snapshot, enabled: () => enabled() };
+  return {
+    mount, snapshot,
+    enabled: () => enabled(),
+    signedIn: () => !!session,
+    wipeCloud,
+  };
 })();

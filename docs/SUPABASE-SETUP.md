@@ -20,25 +20,33 @@ Schema đã được tạo bằng migration `init_user_state_and_profiles` và
 - `user_state(user_id, key, value jsonb, updated_at)`, khoá chính `(user_id, key)`
 
 Hàm `public.delete_my_account()` cho phép người dùng tự xoá tài khoản. Chỉ role
-`authenticated` được gọi.
+`authenticated` được gọi. Định nghĩa nằm trong migration `20261116150100_delete_my_account_fn`.
 
-## 2. Biến môi trường khi build
+Migration `20261116150000_normalized_study_tables` thêm các bảng theo nghiệp vụ, đều có RLS
+và `on delete cascade` tới `auth.users`: `lesson_progress`, `answers`, `notes`,
+`review_cards`, `layouts`, và cột `profiles.class_name`. Xoá tài khoản xoá tất cả.
 
-Build đọc hai biến và **từ chối** nếu khoá trông như khoá bí mật.
+## 2. Biến môi trường trên Cloudflare Worker
+
+Cấu hình đọc lúc **chạy**, trong Worker (không cần build lại):
+
+Workers & Pages → `foxfocus` → Settings → Variables and Secrets:
 
 ```
-SUPABASE_URL=https://ljsmiazfmmdxoprjggke.supabase.co
-SUPABASE_PUBLISHABLE_KEY=sb_publishable_...   # khoá CÔNG KHAI, lấy ở Project Settings → API Keys
+SUPABASE_URL=https://<ref>.supabase.co
+SUPABASE_PUBLISHABLE_KEY=sb_publishable_...   # khoá CÔNG KHAI (Project Settings → API Keys)
 ```
 
-- Chạy local: `SUPABASE_URL=... SUPABASE_PUBLISHABLE_KEY=... npm run build`
-- Cloudflare Workers Builds: thêm hai biến trong **Settings → Build → Variables and secrets**
-  (dùng loại *Variable*, không dùng *Secret*, vì khoá công khai vẫn sẽ nằm trong bản build).
-- **Tuyệt đối không** đặt `service_role` hoặc `sb_secret_…` ở bất kỳ đâu trong repo,
-  trong biến build hoặc trong trình duyệt. Chúng bỏ qua RLS.
-
-Không đặt biến nào → bản build chỉ có chế độ khách. CI vẫn dựng bản đó và so với
-bản đã commit, nên `dist/` và `index.html` trong repo luôn là bản không có cấu hình đám mây.
+- Dùng loại **Text** (không Secret). Khoá công khai vẫn được gửi xuống trình duyệt.
+- Worker chỉ chấp nhận `https://<ref>.supabase.co` (ref 20 ký tự) và khoá `sb_publishable_…`
+  hoặc JWT anon. **Khoá bí mật (`sb_secret_…`, `service_role`) bị từ chối**, không bao giờ
+  được phục vụ, kể cả khi đặt nhầm.
+- Thiếu một trong hai biến → app chạy chế độ khách, không lỗi.
+- Đổi biến → có hiệu lực ở lần tải `/assets/config.js` kế tiếp (không cache).
+- Chạy thử cục bộ: `SUPABASE_URL=... SUPABASE_PUBLISHABLE_KEY=... npm run serve`.
+- Thêm vào Supabase → Authentication → URL Configuration: Site URL là tên miền production,
+  và Redirect URL `https://<tên-miền>/tai-khoan/`. Bật provider Google và cấu hình SMTP
+  để giới hạn email không còn ở mức 2/giờ.
 
 ## 3. Cấu hình Authentication (Dashboard → Authentication)
 

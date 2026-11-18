@@ -3,43 +3,45 @@
 Định dạng theo [Keep a Changelog](https://keepachangelog.com/vi/1.1.0/), phiên bản theo [SemVer](https://semver.org/lang/vi/).
 Mọi thay đổi lớn đều có kiểm thử: `npm test` (check tĩnh + CSP + Worker + mô phỏng Workers + 1848 bước jsdom).
 
-## [Unreleased]
+## [12.0.0] — 2026-11-18
 
-Vòng debug sau Phase 1 (sẽ gộp vào bản phát hành kế tiếp, chưa bump phiên bản).
+Bản viết lại. Site không còn là một file HTML lớn: mỗi môn là một trang riêng, và bản Vật lí
+nằm tại `/physic/`. Các tính năng ngoài việc học (trường học 1–12, lịch, sổ điểm, thẻ ghi nhớ,
+trò chơi, nhạc, mô phỏng) đã bị bỏ khỏi bản deploy; mã của chúng còn trong `src/` làm nguồn
+cho Vật lí, và sẽ được dọn khi tách hẳn.
 
-### Lỗi đã sửa
+### Thêm
 
-- **Nhật ký IndexedDB không bao giờ được cắt** (`src/store.js`): `idbClear` không
-  trả Promise nên `idbClear('journal').then(...)` ném `TypeError` mỗi lần nhật ký
-  vượt 20 mục, trang `#/study` báo lỗi JS. Giờ `idbClear` trả Promise resolve khi
-  giao dịch xong. Kiểm chứng: `tests/journal.js` (thất bại trên mã cũ, đạt trên mã mới).
-- **Ghi trong lúc đang đẩy lên tài khoản bị mất** (`src/account.js`): nếu có
-  thay đổi mới khi một lượt đẩy đang chạy, lượt đó bỏ qua và thay đổi chỉ được
-  gửi sau lần ghi tiếp theo. Giờ đánh dấu và chạy lại ngay khi xong.
-  Kiểm chứng: `tests/account.js` bước 8.
-- **Kéo đồng bộ tải toàn bộ dữ liệu mỗi 2 phút**: giờ chỉ lấy dòng có
-  `updated_at` sau mốc đã thấy, lùi 60 giây để không bỏ sót giao dịch commit lệch thứ tự.
-- **Thay đổi từ máy khác bị giấu**: thông báo "Tải lại để áp dụng" giờ hiện
-  thành banner toàn trang thay vì chỉ trong mục Cài đặt.
-- **Trang nhảy khi tải (CLS 1.0–2.0 → 0.002)** (`src/app.css`): thanh trên
-  `#top` rỗng lúc đầu nên toàn bộ trang bị đẩy xuống 54 px khi JS điền nội dung,
-  và footer nằm trong khung hình rồi bị đẩy đi xa. Giờ thanh trên giữ chỗ 58 px
-  ngay từ đầu.
-- **Thứ tự tiêu đề sai** (`src/engine.js`): h1 → h3 bỏ qua h2 trong khối "Hôm nay".
-- **Cảnh báo console `frame-ancestors`**: directive này chỉ đi qua HTTP header
-  (`dist/_headers`), không còn đặt trong `<meta>` nơi trình duyệt bỏ qua.
+- **Site mới** (`site/`): lịch tuần, việc cần làm, gợi ý \"Hôm nay\" (việc quá hạn/đến hạn và môn
+  tiến độ thấp nhất), môn tự tạo, và 8 môn năm 2 (`/<slug>/`). Mỗi tài liệu có cờ `verified`.
+- **Đăng nhập** bằng email (liên kết OTP) và Google qua Supabase Auth, gọi bằng `fetch`.
+  Chế độ khách vẫn đầy đủ; không đăng nhập thì không có lời gọi mạng nào.
+- **Đồng bộ kế hoạch** qua bảng `planner_states` (RLS, một hàng mỗi người dùng). Bên có mốc
+  cập nhật mới hơn thắng. Dữ liệu của tài khoản khác trên cùng máy không bao giờ bị đẩy đi;
+  bản local bị kéo đè được sao lưu sang `sf.plan.v2.sync-bak`.
+- **Hồ sơ học sinh** (tên hiển thị, lớp) trong bảng `profiles`.
+- **Trang Tài khoản** (`/tai-khoan/`) và **Quyền riêng tư** (`/quyen-rieng-tu/`). Xoá dữ liệu
+  học giữ tài khoản; xoá tài khoản gọi `delete_my_account`. Cả hai đều hai bước xác nhận.
+- **Offline**: service worker (`sw.js`) precache mọi trang và tệp tĩnh theo mã build.
+- **Cấu hình bằng biến môi trường Worker**: `SUPABASE_URL` và `SUPABASE_PUBLISHABLE_KEY` được
+  đọc lúc chạy (`/assets/config.js`). Khoá bí mật và `service_role` bị từ chối.
+- Migration `20261116150200_planner_states`.
+- Kiểm thử: `node --test site/test/*.test.mjs` (60 bước: dữ liệu, logic, giao diện jsdom,
+  build, Worker, CSP). Kiểm thử trình duyệt: `tools/browser/account_flow.py` (62 bước ở 390 và
+  1440) và `tools/browser/site_checks.py` (offline, Vật lí).
 
 ### Thay đổi
 
-- **Đo Lighthouse (máy chủ có nén gzip như Cloudflare)**: mobile hiệu năng 93,
-  desktop 97, accessibility 98, SEO 100, best-practices 96–100. Chưa đạt: chữ cỡ
-  dưới 12 px (122 khai báo 10–11 px trong `app.css`) — để vòng thiết kế lại.
-- **Phông chữ tự host** (`src/fonts/`, `src/fonts.css`): bỏ Google Fonts. App
-  chạy offline đúng nghĩa, không gửi IP tới bên thứ ba, CSP bỏ `fonts.googleapis.com`
-  và `fonts.gstatic.com`. Phông: Be Vietnam Pro, Lora, JetBrains Mono (SIL OFL 1.1, xem `src/fonts/LICENSE-*.txt`).
-- **Công cụ kiểm thử trình duyệt** (`tools/browser/`, `tools/skills/`): cài Chromium
-  headless và audit 39 tuyến ở 1440/390 px. Skill `webapp-testing` và
-  `frontend-design` từ anthropics/skills được lưu trong `tools/skills/anthropic/`.
+- `dist/` do `site/build.mjs` dựng. CSP = CSP băm của bản Vật lí, với `connect-src` mở tới
+  `https://*.supabase.co`.
+- `wrangler.jsonc`: `run_worker_first` chỉ cho `/__version` và `/assets/config.js`.
+- CI dựng lại `dist/` và so khớp với bản commit; chạy `npm test` và dry-run Wrangler.
+- Bản Vật lí dùng chung mã với app cũ trong `src/` (qua `src/build.py --physics-only`).
+
+### Gỡ bỏ
+
+- Bản một-tệp `index.html` ở gốc, `_headers`/`_redirects` cũ, và bộ kiểm thử của app cũ
+  (`tests/`, `tools/check.js`).
 
 ## [11.9.0] — 2026-11-14
 

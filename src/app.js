@@ -1665,6 +1665,7 @@ function render(){
   if(p[0]==='timetable') return routeOut(renderTimetable());
   if(p[0]==='calendar') return routeOut(renderCalendar());
   if(p[0]==='about') return routeOut(renderAbout());
+  if(p[0]==='privacy') return routeOut(renderPrivacy());
   if(p[0]==='lab') return routeOut(renderLab());
   if(p[0]==='sheet') return routeOut(renderSheet());
   if(p[0]==='settings') return routeOut(renderSettings());

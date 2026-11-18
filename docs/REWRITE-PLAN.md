@@ -13,13 +13,12 @@ Trạng thái: **giai đoạn 1 xong (backend), giai đoạn 2–5 chưa bắt �
 | Backend | Bảng riêng theo nghiệp vụ, mỗi bảng có RLS. Không dùng key-value nữa |
 | Dữ liệu cũ | Bảng `user_state` và `profiles` chưa có dòng dữ liệu nào và chưa có tài khoản auth nào, nên không cần chuyển dữ liệu |
 | Migration `allow_null_state_value` | Giữ |
-| Xoá dữ liệu | "Xoá toàn bộ dữ liệu" xoá cả trên máy lẫn trên Supabase |
-| Supabase | Project `study-focus-fox`, ref `ljsmiazfmmdxoprjggke`, region `ap-southeast-1` |
+| Xoá dữ liệu | "Xoá toàn bộ dữ liệu" xoá cả trên máy lẫn trên đám mây (Firestore) |
+| Backend | Firebase (Auth + Firestore). Xem `docs/FIREBASE-SETUP.md`. Supabase đã gỡ hoàn toàn |
 
 ## Giai đoạn 1 — Backend (xong)
 
-- Migration `normalized_study_tables` đã áp dụng lên Supabase, và bản SQL nằm ở
-  `supabase/migrations/20261116150000_normalized_study_tables.sql`.
+- Bản Supabase cũ (migration SQL) đã bị xoá khỏi repo sau khi chuyển sang Firebase; lịch sử nằm trong git.
 - Bảng mới: `lesson_progress`, `answers`, `notes`, `review_cards`, `layouts`. Thêm cột `class_name` vào `profiles`.
 - Cả 7 bảng `public` đều bật RLS. Mỗi bảng mới có 4 chính sách (select/insert/update/delete) cho `authenticated`, với điều kiện `auth.uid() = user_id`.
 - `anon` bị thu hồi mọi quyền trên các bảng mới.
@@ -40,7 +39,7 @@ Mỗi khu vực được viết lại và có test riêng. Trang cũ chuyển h�
 ## Giai đoạn 4 — Đồng bộ mới và xoá dữ liệu
 
 - `src/account.js` đổi từ `user_state` sang các bảng mới. Có xoá `user_state` sau khi client mới chạy ổn.
-- Xoá toàn bộ dữ liệu: xoá cục bộ và xoá các hàng trên Supabase.
+- Xoá toàn bộ dữ liệu: xoá cục bộ và xoá dữ liệu trên Firestore.
 
 ## Giai đoạn 5 — Kiểm định cuối
 

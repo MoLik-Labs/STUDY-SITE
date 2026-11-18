@@ -1,141 +1,236 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createCloud, decideSync, parseAuthFragment, SESSION_KEY } from '../src/cloud.js';
+import { createCloud, decideSync, friendlyError, HINT_KEY, LINK_KEY, PENDING_KEY } from '../src/cloud.js';
 
-const UID = '6f1c2a3e-1111-4222-8333-444455556666';
-const CFG = { url: 'https://proj.supabase.co', key: 'sb_publishable_test' };
+const UID = 'AbC123_uid-000000000000000001';
+const CFG = { apiKey: 'AIzaTEST0123456789012345678901234567', authDomain: 'proj.firebaseapp.com', projectId: 'proj', appId: '1:2:web:abc' };
+const REDIRECT = 'https://site.test/tai-khoan/';
+const NOW = Date.parse('2026-11-18T10:00:00Z');
 
-function memStorage() {
-  const m = new Map();
+function memStorage(init = {}) {
+  const m = new Map(Object.entries(init));
   return {
     getItem: k => (m.has(k) ? m.get(k) : null),
     setItem: (k, v) => m.set(k, String(v)),
     removeItem: k => m.delete(k),
+    dump: () => Object.fromEntries(m),
   };
 }
 
-function fakeFetch(routes) {
+// SDK giả: ghi lại lời gọi, trả về dữ liệu theo kịch bản.
+function fakeSdk(over = {}) {
   const calls = [];
-  const fn = async (url, opts = {}) => {
-    calls.push({ url, method: opts.method, headers: opts.headers, body: opts.body });
-    const key = opts.method + ' ' + url.replace(CFG.url, '');
-    const hit = Object.keys(routes).find(k => key.startsWith(k));
-    if (!hit) return new Response('{"msg":"no route ' + key + '"}', { status: 404 });
-    const r = routes[hit];
-    const status = r.status || 200;
-    return new Response(r.body === undefined ? '' : JSON.stringify(r.body), { status });
+  const docs = {};
+  const rec = name => (...args) => { calls.push([name, ...args]); return over[name] ? over[name](...args) : Promise.resolve(); };
+  const sdk = {
+    calls,
+    docs,
+    onUser: rec('onUser'),
+    authReady: over.authReady || (() => Promise.resolve(null)),
+    isEmailLink: href => !!href && href.includes('oobCode='),
+    completeEmailLink: over.completeEmailLink || (async (email) => ({ uid: UID, email })),
+    sendEmailLink: rec('sendEmailLink'),
+    startGoogle: rec('startGoogle'),
+    finishRedirect: over.finishRedirect || (async () => null),
+    signOut: rec('signOut'),
+    lastSignInMs: () => (over.lastSignInMs !== undefined ? over.lastSignInMs : NOW),
+    deleteAuthUser: rec('deleteAuthUser'),
+    getDoc: over.getDoc || (async path => (path in docs ? docs[path] : null)),
+    setDoc: over.setDoc || (async (path, data, opts) => { calls.push(['setDoc', path, data, opts]); docs[path] = { ...(opts && opts.merge ? docs[path] : {}), ...data }; }),
+    deleteDoc: async path => { calls.push(['deleteDoc', path]); delete docs[path]; },
+    deleteCollection: async path => { calls.push(['deleteCollection', path]); },
   };
-  fn.calls = calls;
-  return fn;
+  return sdk;
 }
 
-test('parseAuthFragment đọc token, lỗi và bỏ qua hash rỗng', () => {
-  assert.equal(parseAuthFragment(''), null);
-  assert.equal(parseAuthFragment('#foo=1'), null);
-  const ok = parseAuthFragment('#access_token=AAA&refresh_token=RRR&expires_in=3600&token_type=bearer');
-  assert.deepEqual(ok, { access_token: 'AAA', refresh_token: 'RRR', expires_in: 3600 });
-  const err = parseAuthFragment('#error=access_denied&error_description=Email+link+is+invalid');
-  assert.deepEqual(err, { error: 'Email link is invalid' });
-});
+const make = (opts = {}) => {
+  const storage = opts.storage || memStorage();
+  const sdk = opts.sdk || fakeSdk(opts.over);
+  const cloud = createCloud({ config: opts.config === undefined ? CFG : opts.config, sdk, storage, now: () => NOW, redirectTo: REDIRECT, timeoutMs: opts.timeoutMs || 500 });
+  return { cloud, sdk, storage };
+};
 
 test('decideSync: bên mới hơn thắng, thiếu mốc thì xử lý an toàn', () => {
   assert.equal(decideSync('2026-11-18T10:00:00Z', '2026-11-18T09:00:00Z'), 'push');
   assert.equal(decideSync('2026-11-18T09:00:00Z', '2026-11-18T10:00:00Z'), 'pull');
   assert.equal(decideSync('2026-11-18T09:00:00Z', '2026-11-18T09:00:00Z'), 'none');
-  assert.equal(decideSync(null, '2026-11-18T09:00:00Z'), 'pull');
-  assert.equal(decideSync('2026-11-18T09:00:00Z', null), 'push');
-  assert.equal(decideSync(null, null), 'none');
+  assert.equal(decideSync('2026-11-18T09:00:00Z', ''), 'push');
+  assert.equal(decideSync('', '2026-11-18T09:00:00Z'), 'pull');
+  assert.equal(decideSync('', ''), 'none');
 });
 
-test('không có cấu hình thì enabled=false và gọi mạng báo lỗi rõ', async () => {
-  const c = createCloud({ config: null, storage: memStorage(), fetchImpl: fakeFetch({}) });
-  assert.equal(c.enabled, false);
-  assert.equal(c.signedIn(), false);
-  await assert.rejects(c.pullPlan(UID), /chưa được bật/);
+test('friendlyError: mã Firebase đổi sang tiếng Việt, mã lạ có câu chung', () => {
+  assert.match(friendlyError('auth/too-many-requests'), /Gửi quá nhiều/);
+  assert.match(friendlyError('auth/unauthorized-domain'), /Authorized domains/);
+  assert.match(friendlyError('permission-denied'), /quy tắc Firestore/);
+  assert.equal(friendlyError('auth/hoang-gi-do'), 'Có lỗi khi kết nối. Thử lại sau.');
+  assert.ok(!/auth\//.test(friendlyError('auth/hoang-gi-do')), 'không hiện mã kỹ thuật');
 });
 
-test('handleCallback lưu phiên và xoá được thông tin đăng nhập', async () => {
-  const storage = memStorage();
-  const f = fakeFetch({ 'GET /auth/v1/user': { body: { id: UID, email: 'a@b.co' } } });
-  const c = createCloud({ config: CFG, storage, fetchImpl: f, now: () => 1000 });
-  const r = await c.handleCallback('#access_token=AAA&refresh_token=RRR&expires_in=3600');
-  assert.equal(r.ok, true);
-  assert.equal(c.userId(), UID);
-  assert.equal(c.email(), 'a@b.co');
-  assert.equal(f.calls[0].headers.Authorization, 'Bearer AAA');
-  await c.signOut();
-  assert.equal(c.signedIn(), false);
-  assert.equal(storage.getItem(SESSION_KEY), null);
+test('không có cấu hình thì enabled=false và init không gọi SDK', async () => {
+  const { cloud, sdk } = make({ config: null });
+  assert.equal(cloud.enabled, false);
+  assert.equal(await cloud.init(''), null);
+  assert.equal(sdk.calls.length, 0);
+  await assert.rejects(cloud.sendEmailLink('a@b.co'), /chưa được bật/);
 });
 
-test('handleCallback báo lỗi khi Supabase trả error và không lưu phiên', async () => {
-  const storage = memStorage();
-  const c = createCloud({ config: CFG, storage, fetchImpl: fakeFetch({}) });
-  const r = await c.handleCallback('#error=access_denied&error_description=Expired');
-  assert.equal(r.ok, false);
-  assert.equal(c.signedIn(), false);
+test('init: đã có phiên thì ghi gợi ý đăng nhập; hết phiên thì xoá gợi ý', async () => {
+  const signed = make({ over: { authReady: async () => ({ uid: UID, email: 'a@b.co' }) } });
+  await signed.cloud.init('');
+  assert.equal(signed.cloud.signedIn(), true);
+  assert.equal(signed.cloud.userId(), UID);
+  assert.deepEqual(JSON.parse(signed.storage.getItem(HINT_KEY)), { uid: UID, email: 'a@b.co' });
+
+  const gone = make({ storage: memStorage({ [HINT_KEY]: '{"uid":"x"}' }) });
+  await gone.cloud.init('');
+  assert.equal(gone.cloud.signedIn(), false);
+  assert.equal(gone.storage.getItem(HINT_KEY), null);
 });
 
-test('pullPlan và pushPlan dùng đúng RLS: chỉ lọc theo uid đã kiểm tra định dạng', async () => {
-  const storage = memStorage();
-  storage.setItem(SESSION_KEY, JSON.stringify({ access_token: 'AAA', refresh_token: 'R', expires_at: 10 ** 13, user_id: UID, email: '' }));
-  const f = fakeFetch({
-    'GET /rest/v1/planner_states': { body: [{ state: { v: 2 }, updated_at: '2026-11-18T00:00:00Z' }] },
-    'POST /rest/v1/planner_states': { status: 201 },
+test('liên kết email trên cùng máy: dùng email đã lưu và xoá dấu', async () => {
+  const link = 'https://site.test/tai-khoan/?mode=signIn&oobCode=abc';
+  const { cloud, storage } = make({ storage: memStorage({ [LINK_KEY]: 'a@b.co' }) });
+  const notice = await cloud.init(link);
+  assert.equal(notice.ok, true);
+  assert.match(notice.text, /a@b\.co/);
+  assert.equal(cloud.signedIn(), true);
+  assert.equal(storage.getItem(LINK_KEY), null);
+});
+
+test('liên kết email trên máy khác: hỏi lại email rồi hoàn tất', async () => {
+  const link = 'https://site.test/tai-khoan/?mode=signIn&oobCode=xyz';
+  const { cloud } = make();
+  const notice = await cloud.init(link);
+  assert.equal(notice.needEmail, true);
+  assert.equal(cloud.needsEmail(), true);
+  const done = await cloud.finishEmailLink('user@x.vn');
+  assert.equal(done.ok, true);
+  assert.equal(cloud.email(), 'user@x.vn');
+  assert.equal(cloud.needsEmail(), false);
+});
+
+test('liên kết hết hạn hoặc đã dùng: báo lỗi rõ, không đăng nhập', async () => {
+  const { cloud } = make({ storage: memStorage({ [LINK_KEY]: 'a@b.co' }), over: {
+    completeEmailLink: async () => { throw Object.assign(new Error('x'), { code: 'auth/expired-action-code' }); },
+  } });
+  const notice = await cloud.init('https://site.test/?oobCode=old');
+  assert.equal(notice.ok, false);
+  assert.match(notice.text, /hết hạn/);
+  assert.equal(cloud.signedIn(), false);
+});
+
+test('sendEmailLink: gửi tới redirect về /tai-khoan/ và nhớ email; email rỗng bị từ chối trước khi gọi mạng', async () => {
+  const { cloud, sdk, storage } = make();
+  await assert.rejects(cloud.sendEmailLink('  '), /Hãy nhập email/);
+  assert.equal(sdk.calls.length, 0);
+  await cloud.sendEmailLink(' a@b.co ');
+  assert.deepEqual(sdk.calls.find(c => c[0] === 'sendEmailLink'), ['sendEmailLink', 'a@b.co', REDIRECT]);
+  assert.equal(storage.getItem(LINK_KEY), 'a@b.co');
+});
+
+test('Google: đánh dấu chờ chuyển hướng; quay lại thì nhận kết quả và xoá dấu', async () => {
+  const { cloud, sdk, storage } = make();
+  await cloud.signInWithGoogle();
+  assert.equal(storage.getItem(PENDING_KEY), 'google');
+  assert.equal(sdk.calls.find(c => c[0] === 'startGoogle')[1], REDIRECT);
+
+  const back = make({ storage: memStorage({ [PENDING_KEY]: 'google' }), over: { finishRedirect: async () => ({ uid: UID, email: 'g@gmail.com' }) } });
+  const notice = await back.cloud.init('');
+  assert.equal(notice.ok, true);
+  assert.match(notice.text, /g@gmail\.com/);
+  assert.equal(back.storage.getItem(PENDING_KEY), null);
+});
+
+test('Google: lỗi khi chuyển hướng thì xoá dấu và báo lỗi', async () => {
+  const { cloud, storage } = make({ over: { startGoogle: async () => { throw Object.assign(new Error('x'), { code: 'auth/unauthorized-domain' }); } } });
+  await assert.rejects(cloud.signInWithGoogle(), /Authorized domains/);
+  assert.equal(storage.getItem(PENDING_KEY), null);
+});
+
+test('pullPlan / pushPlan: đường dẫn theo uid, state là JSON, kiểm định dạng uid trước', async () => {
+  const { cloud, sdk } = make();
+  await assert.rejects(cloud.pullPlan('../../etc'), /không hợp lệ/);
+  await assert.rejects(cloud.pushPlan('a/b', {}), /không hợp lệ/);
+  assert.equal(sdk.calls.length, 0, 'uid sai không gọi mạng');
+
+  assert.equal(await cloud.pullPlan(UID), null, 'chưa có dữ liệu thì null');
+  await cloud.pushPlan(UID, { tasks: [1], updated: 'x' });
+  const saved = sdk.docs['planners/' + UID];
+  assert.equal(typeof saved.state, 'string');
+  assert.deepEqual(JSON.parse(saved.state), { tasks: [1], updated: 'x' });
+  const back = await cloud.pullPlan(UID);
+  assert.deepEqual(back.state, { tasks: [1], updated: 'x' });
+  assert.equal(back.updated_at, saved.updatedAt);
+});
+
+test('pushPlan: từ chối kế hoạch quá lớn (giới hạn tài liệu Firestore)', async () => {
+  const { cloud, sdk } = make();
+  await assert.rejects(cloud.pushPlan(UID, { big: 'x'.repeat(950000) }), /quá lớn/);
+  assert.equal(sdk.calls.length, 0);
+});
+
+test('pullPlan: dữ liệu hỏng trên đám mây báo lỗi, không ghi đè', async () => {
+  const { cloud, sdk } = make({ over: {} });
+  sdk.docs['planners/' + UID] = { state: '{hong', updatedAt: 'x' };
+  await assert.rejects(cloud.pullPlan(UID), /bị hỏng/);
+});
+
+test('hồ sơ: lưu gộp (merge) và cắt độ dài; đọc lại đúng tên trường', async () => {
+  const { cloud, sdk } = make();
+  await cloud.saveProfile(UID, { displayName: 'x'.repeat(100), className: ' 11A2 ' });
+  const call = sdk.calls.find(c => c[0] === 'setDoc' && c[1] === 'users/' + UID);
+  assert.equal(call[2].displayName.length, 60);
+  assert.equal(call[3].merge, true, 'gộp để không xoá trường của app khác');
+  assert.deepEqual(await cloud.getProfile(UID), { displayName: 'x'.repeat(60), className: ' 11A2 ' });
+});
+
+test('signOut: xoá phiên, gợi ý và dấu liên kết dù mạng lỗi', async () => {
+  const { cloud, storage } = make({
+    storage: memStorage({ [HINT_KEY]: '{"uid":"x"}', [LINK_KEY]: 'a@b.co' }),
+    over: { signOut: async () => { throw new Error('mạng'); } },
+    authReady: undefined,
   });
-  const c = createCloud({ config: CFG, storage, fetchImpl: f, now: () => 0 });
-  const row = await c.pullPlan(UID);
-  assert.equal(row.updated_at, '2026-11-18T00:00:00Z');
-  await c.pushPlan(UID, { v: 2, updated: '2026-11-18T01:00:00Z' });
-  const post = f.calls.find(x => x.method === 'POST');
-  assert.match(post.url, /on_conflict=user_id/);
-  assert.equal(JSON.parse(post.body).user_id, UID);
-  assert.equal(post.headers.Prefer, 'resolution=merge-duplicates,return=minimal');
+  await assert.rejects(cloud.signOut(), /mạng|Có lỗi/);
+  assert.equal(storage.getItem(HINT_KEY), null);
+  assert.equal(storage.getItem(LINK_KEY), null);
 });
 
-test('uid sai định dạng bị từ chối trước khi gọi mạng (chống injection vào URL)', async () => {
-  const storage = memStorage();
-  storage.setItem(SESSION_KEY, JSON.stringify({ access_token: 'AAA', refresh_token: 'R', expires_at: 10 ** 13, user_id: UID, email: '' }));
-  const f = fakeFetch({});
-  const c = createCloud({ config: CFG, storage, fetchImpl: f, now: () => 0 });
-  await assert.rejects(c.pullPlan('x&user_id=neq.0'), /không hợp lệ/);
-  await assert.rejects(c.deletePlan('../rpc'), /không hợp lệ/);
-  assert.equal(f.calls.length, 0);
+test('deletePlan: xoá planners và toàn bộ users/{uid}/keys', async () => {
+  const { cloud, sdk } = make();
+  await cloud.deletePlan(UID);
+  assert.deepEqual(sdk.calls.filter(c => c[0] !== 'onUser').map(c => c.slice(0, 2)), [
+    ['deleteDoc', 'planners/' + UID],
+    ['deleteCollection', 'users/' + UID + '/keys'],
+  ]);
 });
 
-test('token hết hạn được làm mới bằng refresh token', async () => {
-  const storage = memStorage();
-  storage.setItem(SESSION_KEY, JSON.stringify({ access_token: 'OLD', refresh_token: 'R1', expires_at: 0, user_id: UID, email: '' }));
-  const f = fakeFetch({
-    'POST /auth/v1/token': { body: { access_token: 'NEW', refresh_token: 'R2', expires_in: 3600 } },
-    'GET /rest/v1/profiles': { body: [] },
-  });
-  const c = createCloud({ config: CFG, storage, fetchImpl: f, now: () => 1_000_000 });
-  await c.getProfile(UID);
-  assert.equal(f.calls[1].headers.Authorization, 'Bearer NEW');
-  assert.equal(JSON.parse(storage.getItem(SESSION_KEY)).refresh_token, 'R2');
+test('deleteAccount: xoá dữ liệu trước, rồi xoá tài khoản, theo đúng thứ tự', async () => {
+  const { cloud, sdk, storage } = make({ storage: memStorage({ [HINT_KEY]: '{"uid":"x"}' }) });
+  // đăng nhập để có user
+  sdk.authReady = async () => ({ uid: UID, email: 'a@b.co', lastSignInMs: NOW });
+  await cloud.init('');
+  await cloud.deleteAccount();
+  const order = sdk.calls.map(c => c[0]).filter(n => ['deleteDoc', 'deleteCollection', 'deleteAuthUser'].includes(n));
+  assert.deepEqual(order, ['deleteDoc', 'deleteCollection', 'deleteDoc', 'deleteAuthUser']);
+  assert.equal(cloud.signedIn(), false);
+  assert.equal(storage.getItem(HINT_KEY), null);
 });
 
-test('refresh thất bại thì xoá phiên và báo người dùng đăng nhập lại', async () => {
-  const storage = memStorage();
-  storage.setItem(SESSION_KEY, JSON.stringify({ access_token: 'OLD', refresh_token: 'R1', expires_at: 0, user_id: UID, email: '' }));
-  const f = fakeFetch({ 'POST /auth/v1/token': { status: 400, body: { msg: 'bad' } } });
-  const c = createCloud({ config: CFG, storage, fetchImpl: f, now: () => 1_000_000 });
-  await assert.rejects(c.getProfile(UID), /đăng nhập lại/);
-  assert.equal(c.signedIn(), false);
+test('deleteAccount: đăng nhập quá lâu thì từ chối TRƯỚC khi xoá gì', async () => {
+  const { cloud, sdk } = make({ over: { authReady: async () => ({ uid: UID, email: 'a@b.co' }) }, lastSignInMs: NOW - 60 * 60 * 1000 });
+  sdk.lastSignInMs = () => NOW - 60 * 60 * 1000;
+  await cloud.init('');
+  await assert.rejects(cloud.deleteAccount(), /đăng nhập lại/);
+  assert.equal(sdk.calls.filter(c => c[0].startsWith('delete')).length, 0, 'không xoá dữ liệu khi chưa xác thực lại');
 });
 
-test('deleteAccount gọi RPC delete_my_account rồi xoá phiên', async () => {
-  const storage = memStorage();
-  storage.setItem(SESSION_KEY, JSON.stringify({ access_token: 'AAA', refresh_token: 'R', expires_at: 10 ** 13, user_id: UID, email: '' }));
-  const f = fakeFetch({ 'POST /rest/v1/rpc/delete_my_account': { status: 200 } });
-  const c = createCloud({ config: CFG, storage, fetchImpl: f, now: () => 0 });
-  await c.deleteAccount();
-  assert.match(f.calls[0].url, /rpc\/delete_my_account$/);
-  assert.equal(c.signedIn(), false);
+test('deleteAccount: không có người dùng thì báo chưa đăng nhập', async () => {
+  const { cloud } = make();
+  await assert.rejects(cloud.deleteAccount(), /Chưa đăng nhập/);
 });
 
-test('googleUrl chứa redirect_to đã mã hoá', () => {
-  const c = createCloud({ config: CFG, storage: memStorage(), redirectTo: 'https://x.test/tai-khoan/' });
-  assert.equal(c.googleUrl(), 'https://proj.supabase.co/auth/v1/authorize?provider=google&redirect_to=https%3A%2F%2Fx.test%2Ftai-khoan%2F');
+test('mạng treo: thao tác quá thời gian chờ báo lỗi, không treo giao diện', async () => {
+  const { cloud } = make({ timeoutMs: 20, over: { getDoc: () => new Promise(() => {}) } });
+  await assert.rejects(cloud.getProfile(UID), /Quá thời gian chờ/);
 });

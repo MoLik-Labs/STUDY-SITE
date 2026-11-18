@@ -2,6 +2,7 @@
 // Nếu dữ liệu đọc được nhưng hỏng, bản gốc được sao lưu sang khoá .bak trước khi
 // trạng thái mới được ghi đè, để không mất dữ liệu âm thầm.
 import { emptyState, normalizeState } from './logic.js';
+import { TIMER_KEY } from './timer.js';
 
 export const KEY = 'sf.plan.v2';
 const BACKUP = KEY + '.bak';
@@ -72,5 +73,6 @@ export function clearStorage(storage) {
     storage.removeItem(BACKUP);
     storage.removeItem(SYNC_BACKUP);
     storage.removeItem(OWNER);
+    storage.removeItem(TIMER_KEY);
   } catch { /* không xoá được thì trạng thái trong bộ nhớ vẫn đúng */ }
 }

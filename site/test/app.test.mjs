@@ -177,3 +177,64 @@ test('trang chủ: việc quá hạn được đếm riêng', () => {
   t.submit(form);
   assert.match(t.$('section.today').textContent, /1 việc quá hạn/);
 });
+
+test('bấm giờ: hiện 25:00, bắt đầu thì lưu trạng thái đang chạy và đổi nút thành Tạm dừng', () => {
+  const { $, $$, storage, app } = setup();
+  try {
+    assert.equal($('.timer-clock').textContent, '25:00');
+    $$('.timer button').find(b => b.textContent === 'Bắt đầu').click();
+    const saved = JSON.parse(storage.getItem('sf.timer.v1'));
+    assert.equal(saved.running, true);
+    assert.ok(saved.endAt > 0);
+    assert.ok($$('.timer button').some(b => b.textContent === 'Tạm dừng'));
+  } finally {
+    app.dispose();
+  }
+});
+
+test('bấm giờ: bộ 50/10 đổi đồng hồ và đánh dấu đã chọn', () => {
+  const { $, $$, app } = setup();
+  try {
+    $$('.timer-presets button').find(b => b.textContent === '50/10').click();
+    assert.equal($('.timer-clock').textContent, '50:00');
+    assert.equal($$('.timer-presets button').find(b => b.textContent === '50/10').getAttribute('aria-pressed'), 'true');
+  } finally {
+    app.dispose();
+  }
+});
+
+test('bấm giờ: chuyển sang tab Bấm giờ, ghi vòng; nút Vòng chỉ bật khi đang chạy', () => {
+  const { $$, storage, app } = setup();
+  try {
+    const lapBtn = () => $$('#timer-sw button').find(b => b.textContent === 'Vòng');
+    $$('.timer-tabs .tab').find(b => b.textContent === 'Bấm giờ').click();
+    assert.equal(lapBtn().disabled, true);
+    $$('#timer-sw button').find(b => b.textContent === 'Bắt đầu').click();
+    assert.equal(lapBtn().disabled, false);
+    lapBtn().click();
+    assert.equal($$('.laps li').length, 1);
+    assert.equal(JSON.parse(storage.getItem('sf.timer.v1')).sw.laps.length, 1);
+  } finally {
+    app.dispose();
+  }
+});
+
+test('bấm giờ: trạng thái đã lưu được khôi phục khi tải lại trang', () => {
+  const stored = JSON.stringify({ v: 1, preset: 2, phase: 'focus', running: false, left: 9 * 60000, sessions: 2, day: '2026-11-16' });
+  const { $ } = setup({ storageInit: { 'sf.timer.v1': stored } });
+  assert.equal($('.timer-clock').textContent, '09:00');
+});
+
+test('bấm giờ: đọc JSON hỏng không làm vỡ trang chủ', () => {
+  const { $ } = setup({ storageInit: { 'sf.timer.v1': '{hong' } });
+  assert.equal($('.timer-clock').textContent, '25:00');
+  assert.ok($('.today'), 'khối Hôm nay vẫn hiển thị');
+});
+
+test('xoá dữ liệu học cũng xoá trạng thái bấm giờ', async () => {
+  const { storage } = setup({ storageInit: { 'sf.timer.v1': JSON.stringify({ sessions: 4 }) } });
+  // clearStorage dùng chung với nút xoá dữ liệu trên trang tài khoản
+  const { clearStorage } = await import(pathToFileURL(path.join(SRC, 'store.js')).href);
+  clearStorage(storage);
+  assert.equal(storage.getItem('sf.timer.v1'), null);
+});

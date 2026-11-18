@@ -77,12 +77,15 @@ test('mọi khối inline của /physic/ có hash trong CSP header', async () =>
   }
 });
 
-test('CSP header: chống nhúng khung và không có domain bên ngoài ngoài YouTube', async () => {
+test('CSP header: chống nhúng khung; ngoài YouTube và Firebase/Google không có domain nào khác', async () => {
   const headers = await readFile(path.join(out, '_headers'), 'utf8');
   assert.match(headers, /frame-ancestors 'self'/);
   assert.match(headers, /object-src 'none'/);
   assert.match(headers, /connect-src 'self'/);
-  assert.doesNotMatch(headers, /https:\/\/[^ ;']*google/);
+  const allowed = /^https:\/\/([a-z0-9.-]*\.)?(googleapis\.com|firebaseapp\.com|apis\.google\.com|youtube\.com|youtube-nocookie\.com|ytimg\.com)$|^https:\/\/\*\.(firebaseapp\.com|ytimg\.com)$/;
+  const hosts = [...headers.matchAll(/https:\/\/[^ ;']+/g)].map(m => m[0]);
+  const bad = hosts.filter(h => !allowed.test(h));
+  assert.deepEqual(bad, [], 'mọi máy chủ ngoài đều phải là Google/Firebase/YouTube');
 });
 
 test('app.js của site không dùng innerHTML hay eval', async () => {
@@ -93,5 +96,12 @@ test('app.js của site không dùng innerHTML hay eval', async () => {
 test('mọi tệp trong assets có mặt', async () => {
   const files = (await readdir(path.join(out, 'assets'))).sort();
   // config.js KHÔNG phải tệp tĩnh: Worker phục vụ lúc chạy từ biến môi trường.
-  assert.deepEqual(files, ['app.js', 'boot.js', 'cloud.js', 'courses.js', 'logic.js', 'store.js', 'styles.css']);
+  assert.ok(files.includes('boot.js'), 'điểm vào boot.js');
+  assert.ok(files.includes('styles.css'), 'styles.css');
+  assert.ok(files.some(f => /^chunk-[A-Z0-9]+\.js$/.test(f)), 'chunk tải lười (Firebase, bấm giờ)');
+  assert.ok(!files.includes('config.js'), 'config.js không có trong dist');
+  // Khách không tải Firebase: boot.js không chứa mã SDK (SDK chỉ nằm trong chunk).
+  const boot = await readFile(path.join(out, 'assets', 'boot.js'), 'utf8');
+  assert.ok(!boot.includes('identitytoolkit'), 'boot.js không kéo SDK Firebase');
+  assert.match(boot, /import\("\.\/config\.js"\)/, 'config.js vẫn tải lúc chạy');
 });

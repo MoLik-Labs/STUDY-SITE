@@ -4,8 +4,10 @@
 // Workers Builds: Build command để trống, Deploy command `npx wrangler deploy`.
 //
 // Biến môi trường (Settings → Variables and Secrets trên Workers, KHÔNG để trong repo):
-//   SUPABASE_URL                 https://<ref>.supabase.co          (tuỳ chọn)
-//   SUPABASE_PUBLISHABLE_KEY     sb_publishable_…                   (tuỳ chọn)
+//   FIREBASE_API_KEY             AIza…  (khoá web công khai)         (tuỳ chọn: bật đăng nhập)
+//   FIREBASE_PROJECT_ID          <project-id>                        (tuỳ chọn)
+//   FIREBASE_APP_ID              1:…:web:…                          (tuỳ chọn)
+//   FIREBASE_AUTH_DOMAIN        <project-id>.firebaseapp.com       (tuỳ chọn)
 // Thiếu một trong hai thì app chạy ở chế độ khách, không lỗi.
 // Khoá bí mật (sb_secret_, service_role) bị Worker từ chối, không bao giờ phục vụ.
 {

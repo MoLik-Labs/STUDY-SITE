@@ -1,7 +1,7 @@
 > **Cập nhật 12.0.0.** `dist/` do `site/build.mjs` dựng (không còn `src/build.py --dist`).
-> Biến `SUPABASE_*` đọc lúc chạy trong Worker (`/assets/config.js`), xem `docs/SUPABASE-SETUP.md` §2.
+> Biến `FIREBASE_*` đọc lúc chạy trong Worker (`/assets/config.js`), xem `docs/FIREBASE-SETUP.md` mục 7.
 > `run_worker_first` chỉ gồm `/__version` và `/assets/config.js`. Mục băm CSP bên dưới mô tả
-> bản Vật lí (`/physic/`), vì site dùng chung CSP đó với `connect-src` mở tới `*.supabase.co`.
+> bản Vật lí (`/physic/`), vì site dùng chung CSP đó với `connect-src` mở tới các host Firebase/Google.
 
 # Triển khai: chọn nền tảng nào, cấu hình ra sao
 

@@ -1,8 +1,8 @@
 // Service worker của site: để dùng offline. Sinh tự động bởi site/build.mjs.
 // Bản cache gắn với mã build, nên mỗi lần deploy là một bộ cache mới; bộ cũ bị xoá khi kích hoạt.
-const BUILD = '0e6f24a9c545';
+const BUILD = 'b33cada67f43';
 const CACHE = 'sf-' + BUILD;
-const PRECACHE = ["/","/404.html","/physic/","/physic/index.html","/tai-khoan/","/quyen-rieng-tu/","/tieng-anh-chuyen-nganh-doc/","/tieng-anh-chuyen-nganh-nghe/","/tieng-trung-doc-viet/","/tieng-trung-noi/","/tieng-trung-nghe/","/kinh-te-luong/","/nguyen-li-ke-toan/","/quan-he-kinh-te-quoc-te/","/assets/app.js","/assets/boot.js","/assets/cloud.js","/assets/logic.js","/assets/store.js","/assets/courses.js","/assets/styles.css"];
+const PRECACHE = ["/","/404.html","/physic/","/physic/index.html","/tai-khoan/","/quyen-rieng-tu/","/tieng-anh-chuyen-nganh-doc/","/tieng-anh-chuyen-nganh-nghe/","/tieng-trung-doc-viet/","/tieng-trung-noi/","/tieng-trung-nghe/","/kinh-te-luong/","/nguyen-li-ke-toan/","/quan-he-kinh-te-quoc-te/","/assets/boot.js","/assets/chunk-L2MIFBGR.js","/assets/chunk-XMSWGT64.js","/assets/firebase-sdk.js","/assets/styles.css"];
 
 self.addEventListener('install', event => {
   event.waitUntil(
@@ -26,7 +26,7 @@ self.addEventListener('fetch', event => {
   const req = event.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
-  if (!sameOrigin(url)) return; // đám mây Supabase không bao giờ đi qua cache
+  if (!sameOrigin(url)) return; // đám mây Firebase không bao giờ đi qua cache
 
   // Trang điều hướng: mạng trước để nhận bản mới; mất mạng thì dùng bản đã cache.
   if (req.mode === 'navigate') {

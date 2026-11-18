@@ -3,6 +3,15 @@
 Định dạng theo [Keep a Changelog](https://keepachangelog.com/vi/1.1.0/), phiên bản theo [SemVer](https://semver.org/lang/vi/).
 Mọi thay đổi lớn đều có kiểm thử: `npm test` (check tĩnh + CSP + Worker + mô phỏng Workers + 1848 bước jsdom).
 
+## [Chưa phát hành]
+
+- **Chuyển backend từ Supabase sang Firebase** (Auth + Firestore). Đăng nhập bằng email (liên kết) và Google;
+  chế độ khách vẫn chạy đầy đủ. Quy tắc bảo mật ở `firestore.rules`. Hướng dẫn A–Z: `docs/FIREBASE-SETUP.md`.
+- Cấu hình bằng biến `FIREBASE_*` trên Worker, đọc lúc chạy (`/assets/config.js`).
+- Lỗi tải Firebase không còn làm trắng trang: rơi về chế độ khách và báo một dòng.
+- Bộ hẹn giờ Pomodoro và bấm giờ (`site/src/timer*.js`): đếm bằng mốc thời gian nên đóng và mở lại trang vẫn đúng; phiên học lưu theo ngày.
+- Gỡ Supabase: xoá `supabase/migrations/` và `docs/SUPABASE-SETUP.md`.
+
 ## [12.0.0] — 2026-11-18
 
 Bản viết lại. Site không còn là một file HTML lớn: mỗi môn là một trang riêng, và bản Vật lí

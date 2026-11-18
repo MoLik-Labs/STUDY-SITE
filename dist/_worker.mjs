@@ -1,11 +1,11 @@
 // Worker của site — sinh tự động bởi site/build.mjs (đừng sửa tay bản trong dist/).
 // Chỉ hai đường dẫn chạy mã này (xem run_worker_first trong wrangler.jsonc):
 //   /__version          JSON phiên bản, có ETag và 304.
-//   /assets/config.js   cấu hình đám mây đọc từ biến môi trường lúc CHẠY, không lúc build.
+//   /assets/config.js   cấu hình Firebase đọc từ biến môi trường lúc CHẠY, không lúc build.
 // Mọi tệp tĩnh khác do Cloudflare phục vụ trước, không tốn lượt gọi Worker.
 
 const VERSION = '12.0.0';
-const BUILD = '0e6f24a9c545';
+const BUILD = 'b33cada67f43';
 const BUILT_AT = '1970-01-01T00:00:00Z';
 
 const SECURITY = {
@@ -13,31 +13,27 @@ const SECURITY = {
   'Cross-Origin-Resource-Policy': 'same-origin',
 };
 
-// Khoá công khai: sb_publishable_… hoặc JWT anon cũ (role = anon). Mọi khoá khác bị từ chối.
-const PUBLISHABLE = /^sb_publishable_[A-Za-z0-9_-]{10,}$/;
-const URL_OK = /^https:\/\/[a-z0-9]{20}\.supabase\.co$/;
+// Cấu hình Firebase web là khoá CÔNG KHAI (không phải bí mật). Bảo vệ dữ liệu nằm ở firestore.rules.
+// Mọi giá trị đều được kiểm định dạng; giá trị lạ bị bỏ, không bao giờ đưa vào trang.
+const API_KEY = /^AIza[0-9A-Za-z_-]{35}$/;
+const PROJECT_ID = /^[a-z0-9][a-z0-9-]{4,28}[a-z0-9]$/;
+const APP_ID = /^\d+:\d+:web:[0-9a-f]+$/;
+const AUTH_DOMAIN = /^[a-z0-9-]+(\.[a-z0-9-]+)+$/;
+// Khoá dịch vụ (service account) có private_key. Không bao giờ được đặt vào biến này.
+const SECRET_HINT = /private_key|BEGIN [A-Z ]*PRIVATE KEY|"type"\s*:\s*"service_account"/;
 
-function anonJwt(key) {
-  const parts = key.split('.');
-  if (parts.length !== 3) return false;
-  try {
-    const b64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
-    const payload = JSON.parse(atob(b64.padEnd(b64.length + (4 - (b64.length % 4)) % 4, '=')));
-    return payload.role === 'anon';
-  } catch {
-    return false;
-  }
-}
-
-// Trả về { url, key } hoặc null. Không bao giờ đưa khoá bí mật vào trình duyệt.
+// Trả về { apiKey, authDomain, projectId, appId } hoặc null. Thiếu hoặc sai một trường thì null (chế độ khách).
 export function cloudFromEnv(env) {
-  const url = String((env && env.SUPABASE_URL) || '').trim().replace(/\/+$/, '');
-  const key = String((env && env.SUPABASE_PUBLISHABLE_KEY) || '').trim();
-  if (!url || !key) return null;
-  if (!URL_OK.test(url)) return null;
-  if (key.startsWith('sb_secret_') || key.includes('service_role')) return null;
-  if (!(PUBLISHABLE.test(key) || anonJwt(key))) return null;
-  return { url, key };
+  const read = k => String((env && env[k]) || '').trim();
+  const values = ['FIREBASE_API_KEY', 'FIREBASE_AUTH_DOMAIN', 'FIREBASE_PROJECT_ID', 'FIREBASE_APP_ID'].map(read);
+  if (values.some(v => SECRET_HINT.test(v))) return null;
+  const apiKey = read('FIREBASE_API_KEY');
+  const projectId = read('FIREBASE_PROJECT_ID');
+  const appId = read('FIREBASE_APP_ID');
+  const authDomain = read('FIREBASE_AUTH_DOMAIN') || (projectId + '.firebaseapp.com');
+  if (!API_KEY.test(apiKey) || !PROJECT_ID.test(projectId) || !APP_ID.test(appId)) return null;
+  if (!AUTH_DOMAIN.test(authDomain)) return null;
+  return { apiKey, authDomain, projectId, appId };
 }
 
 export function configJs(env) {

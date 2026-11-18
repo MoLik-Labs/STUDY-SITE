@@ -33,6 +33,10 @@
     "node": ">=18"
   },
   "devDependencies": {
+    "esbuild": "0.28.2",
     "jsdom": "^25.0.1"
+  },
+  "dependencies": {
+    "firebase": "13.4.0"
   }
 }

@@ -2,8 +2,8 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-4/MmPVf0Mr3TyED0Mh1LdOAWgphUND7BIXbI89UowzE=' 'sha256-bG06IHf8q1JxTaRB+a0o1jIY3+RlI51d5FLPEcKmUow=' 'sha256-CVgmugMy9TWKCz0mYkLD7pECAcciabLcLfhp88vbBaU=' 'sha256-3tSK5oOt7ZtKE2JWKIdqprAOQe4ZOGVIQ+7XgzbaagE=' 'sha256-u4aKhuQh66gOJxb00+hjDBHGa5UvLiuyA0P+4YLWYYQ=' 'sha256-9NY09AQ6qbJ7knzGyIB9B5WpFI/h2McqCUeTYPox2vU=' 'sha256-5S5eUaonxJbMpPzJY1/gaRSMS+BNMpPg1Vt8BbSxbdU='; style-src 'self' 'unsafe-inline'; style-src-elem 'self' 'sha256-xXVJlLofPNeaujXTGKlDUvBsBMFLPC5/zfv0XiFeozk='; style-src-attr 'unsafe-inline'; font-src 'self'; img-src 'self' data: https://i.ytimg.com https://*.ytimg.com blob:; media-src 'self' blob: https:; frame-src https://www.youtube-nocookie.com https://www.youtube.com; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests">
-<meta name="build-id" content="d541674153af">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-4/MmPVf0Mr3TyED0Mh1LdOAWgphUND7BIXbI89UowzE=' 'sha256-bG06IHf8q1JxTaRB+a0o1jIY3+RlI51d5FLPEcKmUow=' 'sha256-CVgmugMy9TWKCz0mYkLD7pECAcciabLcLfhp88vbBaU=' 'sha256-3tSK5oOt7ZtKE2JWKIdqprAOQe4ZOGVIQ+7XgzbaagE=' 'sha256-sOd0y4SOPXrpawQP+aOf40rzyxeyxGOkz0h0cVXa3zU=' 'sha256-9NY09AQ6qbJ7knzGyIB9B5WpFI/h2McqCUeTYPox2vU=' 'sha256-5S5eUaonxJbMpPzJY1/gaRSMS+BNMpPg1Vt8BbSxbdU='; style-src 'self' 'unsafe-inline'; style-src-elem 'self' 'sha256-xXVJlLofPNeaujXTGKlDUvBsBMFLPC5/zfv0XiFeozk='; style-src-attr 'unsafe-inline'; font-src 'self'; img-src 'self' data: https://i.ytimg.com https://*.ytimg.com blob:; media-src 'self' blob: https:; frame-src https://www.youtube-nocookie.com https://www.youtube.com; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests">
+<meta name="build-id" content="af77b6ddfd53">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Vật lí — Học mọi thứ</title>
 <meta name="app-version" content="12.0">
@@ -6249,49 +6249,53 @@ function setLang(lang) {
 const tl = key => t(key);
 
 
-/* ---- cấu hình đám mây ---- */
-const SB_CONFIG = Object.freeze({"url": "", "key": ""});
-
 /* ---- tài khoản & đồng bộ ---- */
 /* =========================================================
    TÀI KHOẢN & ĐỒNG BỘ — tuỳ chọn, không bắt buộc
    ---------------------------------------------------------
-   · Chế độ khách (mặc định) vẫn chạy hoàn toàn trên máy, như trước.
-   · Đăng nhập bằng liên kết qua email hoặc Google, theo luồng PKCE.
-     Trình duyệt chỉ giữ publishable key; bảo vệ dữ liệu bằng RLS trên
-     Supabase. Không có secret key nào trong mã nguồn hay bản build.
-   · Đồng bộ theo TỪNG KHOÁ dữ liệu cấp cao nhất (done, ans, note…): mỗi khoá
-     là một dòng trong bảng user_state. Vnl9.sync lưu hash của bản đã đồng
-     bộ, để chỉ gửi đúng phần đã đổi.
-   · Không bao giờ ghi đè dữ liệu của app đang chạy trong bộ nhớ. Thay đổi từ
-     thiết bị khác được giữ trong vnl9.remote và áp dụng khi tải lại trang,
-     TRƯỚC khi app đọc kho lưu. Trong lúc đó việc đẩy lên bị tạm dừng.
-   · Xung đột: khoá nào đang có sửa đổi chưa đồng bộ trên máy này thì giữ
-     bản trên máy. Khi đăng nhập lần đầu, bản trên máy được sao lưu vào
-     lịch sử (IndexedDB) trước khi lấy dữ liệu tài khoản.
+   · Chế độ khách (mặc định) chạy hoàn toàn trên máy và không tải thêm gì.
+   · Đăng nhập bằng liên kết qua email hoặc Google, qua Firebase Auth.
+     Firebase chỉ được tải khi cần: có phiên trước đó, đang quay về từ liên kết,
+     hoặc mở mục Tài khoản trong Cài đặt.
+   · Dữ liệu nằm ở users/{uid}/keys/{khoá}, mỗi khoá một tài liệu. Chỉ gửi phần đã đổi.
+     Quy tắc bảo mật nằm ở firestore.rules. Trình duyệt chỉ giữ khoá web công khai.
+   · Không bao giờ ghi đè dữ liệu của app đang chạy trong bộ nhớ. Thay đổi từ thiết bị
+     khác được giữ trong vnl9.remote và áp dụng khi tải lại trang, TRƯỚC khi app đọc kho lưu.
+   · Xung đột: khoá nào đang có sửa đổi chưa đồng bộ trên máy này thì giữ bản trên máy.
+     Khi đăng nhập lần đầu, bản trên máy được sao lưu vào lịch sử trước khi lấy dữ liệu tài khoản.
    ========================================================= */
 const Account = (() => {
-  const SESSION_KEY = 'vnl9.session';
-  const PKCE_KEY = 'vnl9.pkce';
-  const BASE_KEY = 'vnl9.sync';     /* {khoá: hash bản đã đồng bộ} */
-  const REMOTE_KEY = 'vnl9.remote'; /* thay đổi từ máy khác, chờ tải lại */
+  const SESSION_KEY = 'vnl9.session'; /* {user:{id,email}}: không có token, Firebase giữ phiên */
+  const PENDING_KEY = 'vnl9.pending'; /* 'google' khi đang chờ quay về từ Google */
+  const EMAIL_KEY = 'vnl9.email';     /* email đã nhận liên kết, để hoàn tất trên cùng trình duyệt */
+  const BASE_KEY = 'vnl9.sync';       /* {khoá: hash bản đã đồng bộ} */
+  const REMOTE_KEY = 'vnl9.remote';   /* thay đổi từ máy khác, chờ tải lại */
   const TIME_KEY = 'vnl9.synced';
-  const PULL_KEY = 'vnl9.pulled';   /* mốc updated_at đã kéo về (ISO) */
-  const PULL_SLACK = 60000;         /* lùi 60 giây: hai giao dịch commit lệch thứ tự không bị bỏ sót */
+  const PULL_KEY = 'vnl9.pulled';     /* mốc updatedAt đã kéo về (ISO) */
+  const PULL_SLACK = 60000;           /* lùi 60 giây: hai lần ghi lệch thứ tự không bị bỏ sót */
   const SKIP = ['prefs', 'pane', 'last', 'seenWelcome']; /* trạng thái riêng từng máy */
-  const BATCH = 25;
+  const BATCH = 400;                  /* Firestore: một lô tối đa 500 thao tác */
   const PUSH_DELAY = 1500;
   const PULL_EVERY = 120000;
-  const ERR_KEY = 'vnl9.acct_err';  /* lỗi cần hiện sau khi tải lại trang */
+  const ERR_KEY = 'vnl9.acct_err';    /* lỗi cần hiện sau khi tải lại trang */
   const MSG_EXPIRED = 'Liên kết đăng nhập không hợp lệ hoặc đã hết hạn. Hãy gửi lại liên kết.';
+  const MSG_SAME_BROWSER = 'Hãy mở liên kết trên cùng trình duyệt đã dùng để nhận email.';
+  const MSG_RECENT = 'Vì bảo mật, hãy đăng xuất, đăng nhập lại rồi xoá tài khoản ngay.';
+  const CFG_URL = '/assets/config.js';   /* Worker phục vụ lúc chạy từ biến môi trường */
+  const SDK_URL = '/assets/firebase-sdk.js';
 
-  const cfg = () => (typeof SB_CONFIG !== 'undefined' ? SB_CONFIG : { url: '', key: '' });
-  const enabled = () => !!(cfg().url && cfg().key);
+  let cloudCfg = null;
+  const cfgReady = import(CFG_URL).then(m => { cloudCfg = m.CLOUD || null; return cloudCfg; }, () => null);
+  const enabled = () => !!(cloudCfg && cloudCfg.apiKey);
+  let sdkPromise = null, sdkNow = null;
+  const sdkOf = () => sdkPromise || (sdkPromise = import(SDK_URL).then(m => (sdkNow = m.createSdk(cloudCfg))));
+  /* Mã lỗi Firebase → câu tiếng Việt. Chỉ gọi sau khi SDK đã tải nên sdkNow có sẵn. */
+  const friendly = e => (sdkNow ? sdkNow.friendly(e && e.code) : 'Có lỗi khi kết nối. Thử lại sau.');
 
   /* Ghi lại hàm gốc TRƯỚC khi bọc: đây là đường ghi không đồng bộ. */
   const rawWrite = AppStore.write;
 
-  let session = null, timer = 0, running = false, again = false, refreshing = null, wiping = false;
+  let session = null, timer = 0, running = false, again = false, wiping = false;
   let lastError = '', syncState = 'idle', host = null, lastSig = '';
 
   /* ---------- lưu trữ nhỏ ---------- */
@@ -6314,138 +6318,118 @@ const Account = (() => {
   const syncKeys = st => Object.keys(st).filter(k => SAFE_KEYS.includes(k) && !SKIP.includes(k));
 
   /* ---------- phiên đăng nhập ---------- */
-  function normalize(j) {
-    return {
-      access_token: j.access_token,
-      refresh_token: j.refresh_token,
-      expires_at: j.expires_at || Math.floor(Date.now() / 1000) + (j.expires_in || 3600),
-      user: { id: j.user.id, email: j.user.email || '' },
-    };
-  }
   function loadSession() {
     const s = get(SESSION_KEY);
-    session = s && s.access_token && s.user && s.user.id ? s : null;
+    session = s && s.user && /^[A-Za-z0-9_-]{1,128}$/.test(String(s.user.id || '')) ? s : null;
   }
-  function setSession(s) { session = s; put(SESSION_KEY, s); }
+  function setSession(u) {
+    session = { user: { id: u.uid, email: u.email || '' } };
+    put(SESSION_KEY, session);
+  }
   function clearSession() {
     session = null;
-    [SESSION_KEY, BASE_KEY, REMOTE_KEY, TIME_KEY, PKCE_KEY, PULL_KEY].forEach(del);
-  }
-
-  /* ---------- HTTP tới Supabase (không có SDK, không có CDN) ---------- */
-  async function http(path, o) {
-    o = o || {};
-    const headers = { apikey: cfg().key, 'Content-Type': 'application/json' };
-    if (o.prefer) headers.Prefer = o.prefer;
-    headers.Authorization = 'Bearer ' + (o.auth === false || !session ? cfg().key : session.access_token);
-    const res = await fetch(cfg().url + path, {
-      method: o.method || 'GET',
-      headers,
-      body: o.body === undefined ? undefined : JSON.stringify(o.body),
-      cache: 'no-store',
-      credentials: 'omit',
-      referrerPolicy: 'no-referrer',
-    });
-    const text = await res.text();
-    let data = null;
-    try { data = text ? JSON.parse(text) : null; } catch (e) { data = null; }
-    if (!res.ok) {
-      const err = new Error((data && (data.msg || data.error_description || data.message || data.error)) || ('HTTP ' + res.status));
-      err.status = res.status;
-      throw err;
-    }
-    return data;
-  }
-
-  function refresh() {
-    if (!session) return Promise.reject(new Error('chưa đăng nhập'));
-    if (!refreshing) {
-      refreshing = (async () => {
-        try {
-          const j = await http('/auth/v1/token?grant_type=refresh_token', {
-            method: 'POST', auth: false, body: { refresh_token: session.refresh_token },
-          });
-          setSession(normalize(j));
-        } catch (e) {
-          if (e.status === 400 || e.status === 401 || e.status === 403) clearSession();
-          throw e;
-        } finally { refreshing = null; }
-      })();
-    }
-    return refreshing;
-  }
-
-  /* Gọi có xác thực: làm mới token trước khi hết hạn, thử lại đúng một lần nếu 401. */
-  async function call(path, o) {
-    if (session && session.expires_at * 1000 - Date.now() < 60000) await refresh();
-    try { return await http(path, o); }
-    catch (e) {
-      if (e.status === 401 && session) { await refresh(); return http(path, o); }
-      throw e;
-    }
-  }
-
-  /* ---------- PKCE ---------- */
-  const b64u = buf => btoa(String.fromCharCode(...new Uint8Array(buf)))
-    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-  async function newChallenge() {
-    const verifier = b64u(crypto.getRandomValues(new Uint8Array(32)));
-    const challenge = b64u(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier)));
-    put(PKCE_KEY, { v: verifier, at: Date.now() });
-    return challenge;
+    [SESSION_KEY, BASE_KEY, REMOTE_KEY, TIME_KEY, PULL_KEY, PENDING_KEY, EMAIL_KEY].forEach(del);
   }
   const backUrl = () => location.origin + location.pathname;
+  const uidOf = () => (session && session.user ? session.user.id : '');
 
+  /* ---------- Firebase (qua firebase-sdk.js, tải lười) ---------- */
   async function sendLink(email) {
-    const challenge = await newChallenge();
-    await http('/auth/v1/otp?redirect_to=' + encodeURIComponent(backUrl()), {
-      method: 'POST', auth: false,
-      body: { email: email, create_user: true, code_challenge: challenge, code_challenge_method: 's256' },
-    });
+    const sdk = await sdkOf();
+    try {
+      await sdk.sendEmailLink(email, backUrl());
+    } catch (e) {
+      throw new Error(friendly(e));
+    }
+    put(EMAIL_KEY, email);
   }
 
   async function signInGoogle() {
-    const challenge = await newChallenge();
-    location.assign(cfg().url + '/auth/v1/authorize?provider=google'
-      + '&redirect_to=' + encodeURIComponent(backUrl())
-      + '&code_challenge=' + challenge + '&code_challenge_method=s256');
+    put(PENDING_KEY, 'google');
+    const sdk = await sdkOf();
+    try {
+      await sdk.startGoogle(backUrl());
+    } catch (e) {
+      del(PENDING_KEY);
+      throw new Error(friendly(e));
+    }
   }
 
-  /* Quay về từ liên kết email hoặc Google: đổi ?code= lấy phiên. */
+  /* Quay về từ liên kết email hoặc Google: nhận phiên rồi tải lại trang sạch. */
   async function takeCallback() {
-    const q = new URLSearchParams(location.search);
-    const code = q.get('code');
-    const failed = q.get('error') || q.get('error_code');
-    if (!code && !failed) return;
+    const href = location.href;
+    const pending = get(PENDING_KEY) === 'google';
+    const sdk = await sdkOf();
+    const isLink = sdk.isEmailLink(href);
+    if (!isLink && !pending) return;
+    del(PENDING_KEY);
     history.replaceState(null, '', location.pathname + '#/settings?s=acct');
-    const fail = () => {
-      put(ERR_KEY, MSG_EXPIRED);
+    const fail = msg => {
+      put(ERR_KEY, msg);
       location.replace(backUrl() + '#/settings?s=acct');
     };
-    if (failed) return fail();
-    const pk = get(PKCE_KEY);
-    del(PKCE_KEY);
-    if (!pk || !pk.v || Date.now() - pk.at > 3600000) return fail();
     try {
-      const j = await http('/auth/v1/token?grant_type=pkce', {
-        method: 'POST', auth: false, body: { auth_code: code, code_verifier: pk.v },
-      });
-      setSession(normalize(j));
+      let user = null;
+      if (isLink) {
+        const email = get(EMAIL_KEY);
+        if (!email) return fail(MSG_SAME_BROWSER);
+        user = await sdk.completeEmailLink(email, href);
+      } else {
+        user = await sdk.finishRedirect();
+        if (!user) return;
+      }
+      setSession(user);
+      del(EMAIL_KEY);
       await prepareFirstSync();
       /* Tải lại có chủ đích: áp dụng dữ liệu tài khoản TRƯỚC khi app đọc kho lưu. */
       location.replace(backUrl() + '#/settings?s=acct');
     } catch (e) {
       clearSession();
-      fail();
+      fail(MSG_EXPIRED);
     }
+  }
+
+  async function signOut() {
+    try { const sdk = await sdkOf(); await sdk.signOut(); } catch (e) { /* phiên có thể đã hết */ }
+    clearSession();
+    lastError = '';
+    setSync('idle');
+    banner();
+  }
+
+  /* Xoá toàn bộ dữ liệu của tài khoản (cả Vật lí lẫn kế hoạch học), rồi xoá tài khoản.
+     Firebase chỉ cho xoá tài khoản khi vừa đăng nhập; kiểm tra trước để không xoá dở dang. */
+  async function deleteAccount() {
+    const sdk = await sdkOf();
+    if (Date.now() - sdk.lastSignInMs() > 4 * 60 * 1000) throw new Error(MSG_RECENT);
+    const uid = uidOf();
+    try {
+      await sdk.deleteDoc('planners/' + uid);
+      await sdk.deleteCollection('users/' + uid + '/keys');
+      await sdk.deleteDoc('users/' + uid);
+      await sdk.deleteAuthUser();
+    } catch (e) {
+      throw new Error(friendly(e));
+    }
+    clearSession();
+    setSync('idle');
+  }
+
+  /* ---------- dữ liệu ---------- */
+  const parseVal = s => { try { return JSON.parse(s); } catch (e) { return null; } };
+
+  async function listKeys(uid, since) {
+    const sdk = await sdkOf();
+    const docs = await sdk.listDocs('users/' + uid + '/keys', since || '');
+    return docs.map(d => ({ key: d.id, value: parseVal(d.data.value), updated_at: d.data.updatedAt || '' }));
   }
 
   /* Lần đầu trên máy này: lấy dữ liệu từ đám mây, nhưng sao lưu bản trên máy trước. */
   async function prepareFirstSync() {
     const st = localState();
     del(PULL_KEY);
-    const rows = await call('/rest/v1/user_state?select=key,value,updated_at&user_id=eq.' + session.user.id);
-    if (!rows || !rows.length) { put(BASE_KEY, {}); return; } /* đám mây trống: đẩy hết lên sau */
+    const rows = await listKeys(uidOf());
+    if (!rows.length) { put(BASE_KEY, {}); return; } /* đám mây trống: đẩy hết lên sau */
     const remote = {};
     rows.forEach(r => { if (SAFE_KEYS.includes(r.key)) remote[r.key] = r.value; });
     put(REMOTE_KEY, { keys: remote, force: true, at: Date.now() });
@@ -6483,20 +6467,22 @@ const Account = (() => {
   async function push() {
     if (!session || wiping) return;
     if (running) { again = true; return; } /* ghi mới trong lúc đang đẩy: chạy lại ngay khi xong */
-    if (get(REMOTE_KEY)) return;           /* đang chờ tải lại: không đẩy bản cũ đè lên cloud */
+    if (get(REMOTE_KEY)) return;           /* đang chờ tải lại: không đẩy bản cũ đè lên đám mây */
     running = true;
     setSync('syncing');
     try {
+      const sdk = await sdkOf();
+      const uid = uidOf();
       const st = localState();
       const base = get(BASE_KEY) || {};
       const changed = syncKeys(st).filter(k => base[k] !== hashOf(st[k]));
       for (let i = 0; i < changed.length; i += BATCH) {
         const slice = changed.slice(i, i + BATCH);
-        await call('/rest/v1/user_state?on_conflict=user_id,key', {
-          method: 'POST',
-          prefer: 'resolution=merge-duplicates,return=minimal',
-          body: slice.map(k => ({ user_id: session.user.id, key: k, value: st[k] === undefined ? null : st[k] })),
-        });
+        const at = new Date().toISOString();
+        await sdk.setDocs(slice.map(k => ({
+          path: 'users/' + uid + '/keys/' + k,
+          data: { value: JSON.stringify(st[k] === undefined ? null : st[k]), updatedAt: at },
+        })));
         slice.forEach(k => { base[k] = hashOf(st[k]); });
         put(BASE_KEY, base);
       }
@@ -6517,11 +6503,11 @@ const Account = (() => {
     running = true;
     try {
       const mark = get(PULL_KEY);
-      const since = mark ? '&updated_at=gt.' + encodeURIComponent(new Date(Date.parse(mark) - PULL_SLACK).toISOString()) : '';
-      const rows = await call('/rest/v1/user_state?select=key,value,updated_at&user_id=eq.' + session.user.id + since);
+      const since = mark ? new Date(Date.parse(mark) - PULL_SLACK).toISOString() : '';
+      const rows = await listKeys(uidOf(), since);
       const remote = {};
       let newest = mark ? Date.parse(mark) : 0;
-      (rows || []).forEach(r => {
+      rows.forEach(r => {
         const t = Date.parse(r.updated_at || '');
         if (t > newest) newest = t;
         if (SAFE_KEYS.includes(r.key) && !SKIP.includes(r.key)) remote[r.key] = r.value;
@@ -6565,24 +6551,9 @@ const Account = (() => {
     timer = setTimeout(() => { push(); }, PUSH_DELAY);
   }
 
-  async function signOut() {
-    try { if (session) await http('/auth/v1/logout', { method: 'POST' }); } catch (e) {}
-    clearSession();
-    lastError = '';
-    setSync('idle');
-    banner();
-  }
-
-  async function deleteAccount() {
-    await call('/rest/v1/rpc/delete_my_account', { method: 'POST', body: {} });
-    clearSession();
-    setSync('idle');
-  }
-
-  /* Xoá dữ liệu học trên máy chủ, GIỮ tài khoản đăng nhập và hồ sơ (đặt rỗng).
-     Chặn đồng bộ trong lúc xoá để không đẩy lại dữ liệu cũ. Nếu một bước lỗi,
-     hàm ném lỗi và người gọi không xoá dữ liệu trên máy: người dùng thử lại. */
-  const CLOUD_TABLES = ['user_state', 'lesson_progress', 'answers', 'notes', 'review_cards', 'layouts'];
+  /* Xoá dữ liệu học của Vật lí trên đám mây, GIỮ tài khoản và hồ sơ (đặt rỗng).
+     Chặn đồng bộ trong lúc xoá để không đẩy lại dữ liệu cũ. Nếu một bước lỗi thì ném lỗi,
+     và người gọi không xoá dữ liệu trên máy: người dùng thử lại. */
   async function wipeCloud() {
     if (!session) return;
     wiping = true;
@@ -6590,31 +6561,34 @@ const Account = (() => {
       clearTimeout(timer);
       /* đợi lần đẩy đang chạy kết thúc, nếu không nó sẽ ghi lại mốc cũ sau khi xoá */
       for (let i = 0; running && i < 400; i++) await new Promise(r => setTimeout(r, 25));
-      const uid = session.user.id;
-      for (const t of CLOUD_TABLES) {
-        await call('/rest/v1/' + t + '?user_id=eq.' + uid, { method: 'DELETE', prefer: 'return=minimal' });
-      }
-      await call('/rest/v1/profiles?id=eq.' + uid, {
-        method: 'PATCH', prefer: 'return=minimal',
-        body: { display_name: null, grade: null, class_name: null },
-      });
+      const sdk = await sdkOf();
+      const uid = uidOf();
+      await sdk.deleteCollection('users/' + uid + '/keys');
+      await sdk.setDoc('users/' + uid, { displayName: '', grade: '' }, { merge: true });
       /* đám mây giờ rỗng: mốc đồng bộ cũng rỗng, không còn gì để kéo về */
-      put(BASE_KEY, {}); del(PULL_KEY); del(REMOTE_KEY);
+      put(BASE_KEY, {});
+      del(PULL_KEY);
+      del(REMOTE_KEY);
       put(TIME_KEY, Date.now());
     } finally { wiping = false; }
   }
 
   async function loadProfile() {
-    const r = await call('/rest/v1/profiles?select=display_name,grade&id=eq.' + session.user.id);
-    return (r && r[0]) || {};
+    const sdk = await sdkOf();
+    const d = await sdk.getDoc('users/' + uidOf());
+    return {
+      display_name: (d && d.displayName) || null,
+      grade: d && d.grade ? Number(d.grade) || null : null,
+    };
   }
 
   async function saveProfile(name, grade) {
-    await call('/rest/v1/profiles?on_conflict=id', {
-      method: 'POST',
-      prefer: 'resolution=merge-duplicates,return=minimal',
-      body: { id: session.user.id, display_name: name || null, grade: grade ? Number(grade) : null },
-    });
+    const sdk = await sdkOf();
+    await sdk.setDoc('users/' + uidOf(), {
+      displayName: String(name || '').slice(0, 60),
+      grade: grade ? String(grade).slice(0, 40) : '',
+      updatedAt: new Date().toISOString(),
+    }, { merge: true });
   }
 
   /* ---------- giao diện ---------- */
@@ -6696,12 +6670,12 @@ const Account = (() => {
           uiConfirm('Xoá tài khoản', 'Xoá tài khoản và toàn bộ dữ liệu trên máy chủ? Dữ liệu trên máy này vẫn còn.',
             async () => {
               try { await deleteAccount(); render(true); }
-              catch (e) { say('Không xoá được tài khoản lúc này. Thử lại sau.'); }
+              catch (e) { say(e && e.message ? e.message : 'Không xoá được tài khoản lúc này. Thử lại sau.'); }
             }, { danger: true, okText: 'Xoá tài khoản' });
           return;
         }
       } catch (e) {
-        say(e && e.status === 429 ? 'Bạn gửi quá nhiều yêu cầu. Thử lại sau ít phút.' : 'Có lỗi, thử lại sau.');
+        say(e && e.message ? e.message : 'Có lỗi, thử lại sau.');
       }
       if (what === 'out') render(true);
     });
@@ -6721,7 +6695,7 @@ const Account = (() => {
           say('Đã lưu hồ sơ.');
         }
       } catch (e) {
-        say(e && e.status === 429 ? 'Đã gửi nhiều liên kết. Đợi khoảng một giờ rồi thử lại.' : 'Không gửi được. Kiểm tra email rồi thử lại.');
+        say(e && e.message ? e.message : 'Không gửi được. Kiểm tra kết nối rồi thử lại.');
       }
     });
   }
@@ -6755,6 +6729,7 @@ const Account = (() => {
     del(ERR_KEY);
   }
 
+
   /* ---------- khởi động ---------- */
   /* Bọc đường ghi: mỗi lần app lưu thì lên lịch đẩy (chỉ khi đã đăng nhập). */
   AppStore.write = function (state, opts) {
@@ -6766,13 +6741,32 @@ const Account = (() => {
   loadSession();
   applyPending();
   if (get(ERR_KEY) && !location.hash.startsWith('#/settings')) del(ERR_KEY);
-  if (enabled()) {
-    takeCallback();
-    if (session) setTimeout(pull, 1500);
+
+  /* Khách không có gì để đồng bộ: không tải Firebase, không gọi mạng. */
+  const cloudWanted = () => new URLSearchParams(location.search).has('oobCode')
+    || !!get(PENDING_KEY) || !!session || location.hash.startsWith('#/settings');
+  cfgReady.then(() => {
+    if (!enabled()) return;
     document.addEventListener('DOMContentLoaded', banner);
     document.addEventListener('visibilitychange', () => { if (!document.hidden) pull(); });
     setInterval(() => { if (!document.hidden) pull(); }, PULL_EVERY);
-  }
+    if (!cloudWanted()) return;
+    (async () => {
+      try {
+        await takeCallback();
+        if (session) {
+          const sdk = await sdkOf();
+          const u = await sdk.authReady();
+          if (u) setSession(u); else clearSession();
+          if (session) setTimeout(pull, 1500);
+        }
+      } catch (e) {
+        clearSession();
+      }
+      emit();
+      banner();
+    })();
+  });
 
   return {
     mount, snapshot,

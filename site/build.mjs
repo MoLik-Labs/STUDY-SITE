@@ -1,21 +1,24 @@
 // Dựng dist/ — thư mục duy nhất mà Cloudflare Workers deploy.
 // Chạy: node site/build.mjs [--out thư-mục]      (mặc định: dist/)
 //
-// Gồm: khung site (lịch tuần, 8 môn, tài khoản, quyền riêng tư), bản Vật lí tại /physic/
-// (do src/build.py --physics-only sinh), _headers với CSP băm, sw.js, _worker.mjs, 404.html.
-// Cấu hình Supabase KHÔNG nằm trong dist/: Worker đọc biến môi trường lúc chạy.
+// Gồm: khung site (lịch tuần, 8 môn, bấm giờ, tài khoản, quyền riêng tư) được esbuild gom thành
+// app shell + các chunk tải lười (Firebase chỉ tải khi cần), bản Vật lí tại /physic/ (do src/build.py
+// --physics-only sinh), _headers với CSP băm, sw.js, _worker.mjs, 404.html.
+// Cấu hình Firebase KHÔNG nằm trong dist/: Worker đọc biến môi trường lúc chạy (xem /assets/config.js).
 import { cp, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { build as esbuild } from 'esbuild';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..');
 const SRC = path.join(HERE, 'src');
 const DEFAULT_OUT = path.resolve(ROOT, 'dist');
-const SITE_FILES = ['app.js', 'boot.js', 'cloud.js', 'logic.js', 'store.js', 'courses.js', 'styles.css'];
+// config.js không có trong mã nguồn: Worker phục vụ /assets/config.js từ biến môi trường.
+const SITE_EXTERNAL = ['./config.js'];
 
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
@@ -53,13 +56,50 @@ export async function buildPhysics(out) {
   return csp;
 }
 
-// CSP của site = CSP của bản Vật lí, với connect-src mở tới *.supabase.co.
-// Lý do: URL dự án Supabase là biến môi trường của Worker, không biết lúc build.
-// Chỉ các máy chủ Supabase được mở; script vẫn bị giới hạn 'self' và băm.
+// Máy chủ Firebase mà trình duyệt cần gọi. Cố định trong CSP vì _headers là tệp tĩnh.
+// Đăng nhập Google và liên kết email đi qua <project>.firebaseapp.com (authDomain mặc định).
+// Nếu bạn dùng authDomain riêng, thêm tên miền đó vào frame-src và connect-src (xem docs/FIREBASE-SETUP.md).
+const FIREBASE_CONNECT = [
+  'https://identitytoolkit.googleapis.com',
+  'https://securetoken.googleapis.com',
+  'https://firestore.googleapis.com',
+  'https://www.googleapis.com',
+  'https://*.firebaseapp.com',
+];
+const FIREBASE_SCRIPT = ['https://apis.google.com'];
+const FIREBASE_FRAME = ['https://*.firebaseapp.com'];
+
+// CSP của site = CSP của bản Vật lí, với các máy chủ Firebase được mở thêm.
+// Script vẫn bị giới hạn 'self' + băm; không có 'unsafe-inline' hay 'unsafe-eval'.
 export function siteCsp(physicsCsp) {
-  const next = physicsCsp.replace(/connect-src 'self'[^;]*/, "connect-src 'self' https://*.supabase.co");
+  let next = physicsCsp.replace(/connect-src 'self'[^;]*/, "connect-src 'self' " + FIREBASE_CONNECT.join(' '));
   if (next === physicsCsp) throw new Error('CSP bản Vật lí không có connect-src \'self\' để thay');
-  return next;
+  const before = next;
+  next = next.replace(/script-src 'self'/, "script-src 'self' " + FIREBASE_SCRIPT.join(' '));
+  if (next === before) throw new Error('CSP bản Vật lí không có script-src \'self\' để thay');
+  // Không thêm frame-src thứ hai (trình duyệt bỏ qua directive trùng): gộp vào frame-src đã có.
+  if (/frame-src /.test(next)) return next.replace(/frame-src /, 'frame-src ' + FIREBASE_FRAME.join(' ') + ' ');
+  return next + '; frame-src ' + FIREBASE_FRAME.join(' ');
+}
+
+// Gom JS của site: boot.js (trang) và firebase-sdk.js (Firebase, tải lười) là hai entry; phần dùng chung thành chunk.
+export async function bundleSite(out) {
+  await esbuild({
+    // firebase-sdk.js là entry riêng: bản Vật lí (src/account.js) tải nó bằng import() từ /assets/.
+    entryPoints: [path.join(SRC, 'boot.js'), path.join(SRC, 'firebase-sdk.js')],
+    outdir: path.join(out, 'assets'),
+    bundle: true,
+    format: 'esm',
+    splitting: true,
+    minify: true,
+    target: ['es2020'],
+    entryNames: '[name]',
+    chunkNames: 'chunk-[hash]',
+    external: SITE_EXTERNAL,
+    legalComments: 'none',
+    sourcemap: false,
+    logLevel: 'warning',
+  });
 }
 
 function headersFile(csp) {
@@ -108,9 +148,8 @@ export async function buildSite({ out = DEFAULT_OUT } = {}) {
 
   await rm(out, { recursive: true, force: true });
   await mkdir(path.join(out, 'assets'), { recursive: true });
-  for (const f of SITE_FILES) {
-    await cp(path.join(SRC, f), path.join(out, 'assets', f));
-  }
+  await cp(path.join(SRC, 'styles.css'), path.join(out, 'assets', 'styles.css'));
+  await bundleSite(out);
 
   for (const route of routes) {
     const dir = path.join(out, route.path);
@@ -139,9 +178,9 @@ export async function buildSite({ out = DEFAULT_OUT } = {}) {
     .replace('__BUILT_AT__', builtAt);
   await writeFile(path.join(out, '_worker.mjs'), worker);
 
-  // Danh sách precache: mọi trang, bản Vật lí và tệp tĩnh của site.
-  const precache = ['/', '/404.html', '/physic/', '/physic/index.html', ...routes.map(r => r.path),
-    ...SITE_FILES.map(f => '/assets/' + f)];
+  // Danh sách precache: mọi trang, bản Vật lí và mọi tệp trong assets/ (gồm chunk Firebase).
+  const assetFiles = (await readdir(path.join(out, 'assets'))).filter(f => /\.(js|css)$/.test(f)).map(f => '/assets/' + f);
+  const precache = ['/', '/404.html', '/physic/', '/physic/index.html', ...routes.map(r => r.path), ...assetFiles];
   const sw = (await readFile(path.join(SRC, 'sw.template.js'), 'utf8'))
     .replace('__BUILD_ID__', build)
     .replace('__PRECACHE__', JSON.stringify([...new Set(precache)]));
@@ -150,7 +189,7 @@ export async function buildSite({ out = DEFAULT_OUT } = {}) {
   await writeFile(path.join(out, '.assetsignore'),
     '# Cloudflare — sinh tự động. _worker.mjs là mã Worker, không phải tài nguyên tĩnh.\n_worker.mjs\n.nojekyll\n');
 
-  return { out, routes: routes.map(r => r.path), csp, build, version };
+  return { out, routes: routes.map(r => r.path), csp, build, version, assets: assetFiles };
 }
 
 if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) {

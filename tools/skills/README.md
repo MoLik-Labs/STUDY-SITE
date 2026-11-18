@@ -53,5 +53,5 @@ Với app học tập này, áp dụng có chọn lọc:
 - Không có skill nào trong anthropics/skills chuyên về bảo mật. Phần bảo mật được kiểm bằng `tests/csp.js`, `tests/worker.js` và `tests/account.js` trong repo.
 
 ## Quy ước
-- Skill không chứa bí mật. Khoá Supabase chỉ đi qua biến môi trường lúc build.
+- Skill không chứa bí mật. Khoá Firebase (khoá web công khai) chỉ đi qua biến môi trường của Worker.
 - Không sửa `LICENSE.txt`.

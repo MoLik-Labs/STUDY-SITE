@@ -154,3 +154,26 @@ test('môn tự tạo không tồn tại hiển thị thông báo', () => {
   const t = setup({ hash: '#/c/khongco' });
   assert.match(t.root.textContent, /Không tìm thấy môn này/);
 });
+
+test('trang chủ: khối Hôm nay hiện việc đến hạn và môn nên học tiếp', () => {
+  const t = setup();
+  const form = t.$('form.add-task');
+  form.elements.title.value = 'Đọc chương 1';
+  form.elements.date.value = '2026-11-16';
+  t.submit(form);
+  const today = t.$('section.today');
+  assert.ok(today, 'có khối Hôm nay');
+  assert.match(today.textContent, /1 việc đến hạn hôm nay/);
+  const focus = today.querySelector('a.focus');
+  assert.ok(focus, 'có gợi ý học tiếp');
+  assert.equal(focus.getAttribute('href'), '/tieng-anh-chuyen-nganh-doc/', 'mọi môn 0% → môn đầu tiên');
+});
+
+test('trang chủ: việc quá hạn được đếm riêng', () => {
+  const t = setup();
+  const form = t.$('form.add-task');
+  form.elements.title.value = 'Việc cũ';
+  form.elements.date.value = '2026-11-10';
+  t.submit(form);
+  assert.match(t.$('section.today').textContent, /1 việc quá hạn/);
+});

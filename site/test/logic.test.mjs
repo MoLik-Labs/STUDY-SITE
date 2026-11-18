@@ -98,3 +98,50 @@ test('normalizeState với đầu vào không phải object trả về trạng t
     assert.deepEqual(L.normalizeState(raw), L.emptyState());
   }
 });
+
+import { COURSES } from '../src/courses.js';
+
+test('suggestToday: việc quá hạn và đến hạn hôm nay, bỏ việc đã xong', () => {
+  let s = L.emptyState();
+  s = L.addTask(s, { title: 'cũ', course: '', date: '2026-11-10' }, 'a');
+  s = L.addTask(s, { title: 'hôm nay', course: '', date: '2026-11-16' }, 'b');
+  s = L.addTask(s, { title: 'mai', course: '', date: '2026-11-17' }, 'c');
+  s = L.addTask(s, { title: 'đã xong', course: '', date: '2026-11-12' }, 'd');
+  s = L.toggleTask(s, 'd');
+  const g = L.suggestToday(s, COURSES, '2026-11-16');
+  assert.deepEqual(g.overdue.map(t => t.id), ['a']);
+  assert.deepEqual(g.dueToday.map(t => t.id), ['b']);
+});
+
+test('suggestToday: môn tiến độ thấp nhất trước; cùng mức thì theo thứ tự môn', () => {
+  // Mọi môn đều đã xong trừ kinh-te-luong (1/3): chỉ còn môn đó.
+  let s = L.emptyState();
+  for (const c of COURSES) if (c.slug !== 'kinh-te-luong') for (const r of c.resources) s = L.setResourceDone(s, c.slug, r.id, true);
+  const kt = COURSES.find(c => c.slug === 'kinh-te-luong');
+  s = L.setResourceDone(s, 'kinh-te-luong', kt.resources[0].id, true);
+  const g = L.suggestToday(s, COURSES, '2026-11-16');
+  assert.equal(g.focus.key, 'kinh-te-luong');
+  assert.equal(g.focus.next, kt.resources[1].title, 'tài liệu chưa học đầu tiên của môn đó');
+  assert.equal(g.remaining, 1);
+
+  // Không làm gì cả: mọi môn đều 0%, ưu tiên theo thứ tự trong courses.js.
+  const fresh = L.suggestToday(L.emptyState(), COURSES, '2026-11-16');
+  assert.equal(fresh.focus.key, COURSES[0].slug);
+  assert.equal(fresh.focus.percent, 0);
+});
+
+test('suggestToday: khi đã học hết mọi tài liệu thì không có gợi ý', () => {
+  let s = L.emptyState();
+  for (const c of COURSES) for (const r of c.resources) s = L.setResourceDone(s, c.slug, r.id, true);
+  const g = L.suggestToday(s, COURSES, '2026-11-16');
+  assert.equal(g.focus, null);
+  assert.equal(g.remaining, 0);
+});
+
+test('suggestToday: môn tự tạo tham gia gợi ý và trỏ về trang môn đó', () => {
+  let s = L.addCustom(L.emptyState(), { name: 'Tiếng Hàn', color: 'plum' }, 'cc');
+  s = L.addItem(s, 'cc', { title: 'Bài 1', url: '' }, 'ii');
+  const g = L.suggestToday(s, [], '2026-11-16');
+  assert.equal(g.focus.href, '#/c/cc');
+  assert.equal(g.focus.next, 'Bài 1');
+});

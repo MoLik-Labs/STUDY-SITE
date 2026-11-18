@@ -205,3 +205,31 @@ export function toggleItem(state, courseId, itemId) {
 export function removeItem(state, courseId, itemId) {
   return mapCustom(state, courseId, c => ({ ...c, items: c.items.filter(i => i.id !== itemId) }));
 }
+
+// Gợi ý học hôm nay, chỉ dựa trên dữ liệu đã có:
+//   · việc quá hạn và việc đến hạn hôm nay (chưa xong)
+//   · môn có tiến độ thấp nhất còn tài liệu chưa học → tài liệu tiếp theo
+// courses: danh sách môn có sẵn (courses.js). Hàm thuần: không đọc giờ hệ thống.
+export function suggestToday(state, courses, todayIso) {
+  const open = state.tasks.filter(t => !t.done);
+  const overdue = open.filter(t => t.date < todayIso).sort((a, b) => (a.date < b.date ? -1 : 1));
+  const dueToday = open.filter(t => t.date === todayIso);
+
+  const candidates = [];
+  courses.forEach((c, order) => {
+    const ids = c.resources.map(r => r.id);
+    const pr = progressOf(ids, state.progress[c.slug]);
+    if (pr.done >= pr.total) return;
+    const next = c.resources.find(r => state.progress[c.slug]?.[r.id] !== true);
+    candidates.push({ key: c.slug, name: c.name, percent: pr.percent, order, href: '/' + c.slug + '/', next: next ? next.title : '' });
+  });
+  for (const c of state.custom) {
+    const pr = progressOf(c.items.map(i => i.id), Object.fromEntries(c.items.filter(i => i.done).map(i => [i.id, true])));
+    if (pr.total === 0 || pr.done >= pr.total) continue;
+    const next = c.items.find(i => !i.done);
+    candidates.push({ key: c.id, name: c.name, percent: pr.percent, order: courses.length + state.custom.indexOf(c), href: '#/c/' + c.id, next: next.title });
+  }
+  candidates.sort((a, b) => a.percent - b.percent || a.order - b.order);
+
+  return { overdue, dueToday, focus: candidates[0] || null, remaining: candidates.length };
+}

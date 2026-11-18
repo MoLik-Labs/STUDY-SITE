@@ -176,8 +176,26 @@ export function mountApp(root, { storage, page, win = globalThis, now = () => ne
       create);
   }
 
+  // Gợi ý học hôm nay: việc đến hạn trước, rồi môn có tiến độ thấp nhất.
+  function todayPanel() {
+    const g = L.suggestToday(state, COURSES, L.isoOf(now()));
+    const facts = [];
+    if (g.overdue.length) facts.push(h('li', { class: 'warn' }, `${g.overdue.length} việc quá hạn`));
+    if (g.dueToday.length) facts.push(h('li', {}, `${g.dueToday.length} việc đến hạn hôm nay`));
+    const focus = g.focus
+      ? h('a', { class: 'focus', href: g.focus.href },
+        h('span', { class: 'focus-k' }, 'Nên học tiếp'),
+        h('span', { class: 'focus-t' }, g.focus.next || g.focus.name),
+        h('span', { class: 'meta' }, `${g.focus.name} · ${g.focus.percent}%`))
+      : h('p', { class: 'focus-done' }, 'Đã học hết các tài liệu có sẵn. Thêm môn hoặc mục mới để tiếp tục.');
+    return h('section', { class: 'today', 'aria-label': 'Hôm nay' },
+      h('h2', {}, 'Hôm nay'),
+      facts.length ? h('ul', { class: 'today-list' }, facts) : h('p', { class: 'meta' }, 'Không có việc đến hạn.'),
+      focus);
+  }
+
   function plannerView() {
-    return h('div', { class: 'planner' }, alertBox(), h('div', { class: 'planner-grid' }, weekView(), sidebar()));
+    return h('div', { class: 'planner' }, alertBox(), todayPanel(), h('div', { class: 'planner-grid' }, weekView(), sidebar()));
   }
 
   // ---------- Trang môn có sẵn ----------

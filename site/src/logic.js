@@ -71,8 +71,9 @@ export function newId(prefix) {
   return prefix + Date.now().toString(36) + rand;
 }
 
+// updated: thời điểm ghi cuối (ISO). Dùng để quyết định bên nào mới hơn khi đồng bộ.
 export function emptyState() {
-  return { v: 2, tasks: [], custom: [], progress: {}, notes: {} };
+  return { v: 2, updated: null, tasks: [], custom: [], progress: {}, notes: {} };
 }
 
 function safeMap(obj, fn) {
@@ -89,6 +90,7 @@ function safeMap(obj, fn) {
 export function normalizeState(raw) {
   const state = emptyState();
   if (!raw || typeof raw !== 'object') return state;
+  if (typeof raw.updated === 'string' && Number.isFinite(Date.parse(raw.updated))) state.updated = raw.updated;
 
   if (Array.isArray(raw.tasks)) {
     state.tasks = raw.tasks

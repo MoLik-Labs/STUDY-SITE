@@ -2,7 +2,8 @@
 // Toàn bộ DOM được dựng bằng h() với textContent, nên dữ liệu người dùng không bao giờ được hiểu là HTML.
 import { COURSES, COURSE_BY_SLUG } from './courses.js';
 import * as L from './logic.js';
-import { loadState, saveState } from './store.js';
+import { backupForSync, clearStorage, getOwner, loadState, saveState, setOwner } from './store.js';
+import { decideSync } from './cloud.js';
 
 const WEEKDAYS = ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ nhật'];
 const COLOR_NAMES = {
@@ -14,7 +15,7 @@ function fmtDay(date) {
   return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}`;
 }
 
-export function mountApp(root, { storage, page, win = globalThis, now = () => new Date() }) {
+export function mountApp(root, { storage, page, win = globalThis, now = () => new Date(), cloud = null, notice = null }) {
   const doc = root.ownerDocument;
 
   function h(tag, props, ...kids) {
@@ -44,10 +45,16 @@ export function mountApp(root, { storage, page, win = globalThis, now = () => ne
   let saveOk = loaded.available;
   let anchor = now();
   let armedDelete = null;
+  let accountMsg = notice; // { ok, text } từ lần đăng nhập vừa quay lại hoặc thao tác gần nhất
+  let syncInfo = { status: 'idle', at: null, error: '' };
+  let uploadTimer = 0;
+  let profile = null;      // { display_name, class_name } khi đã tải
+  let profileFor = null;   // uid của hồ sơ đã tải, để không tải lại
 
   function persist(next) {
-    state = next;
+    state = { ...next, updated: new Date().toISOString() };
     saveOk = saveState(storage, state);
+    if (cloud && cloud.signedIn()) scheduleUpload();
   }
   function commit(next) {
     persist(next);
@@ -298,6 +305,149 @@ export function mountApp(root, { storage, page, win = globalThis, now = () => ne
     return h('section', { class: 'empty-page' }, h('h1', {}, 'Không tìm thấy trang'), h('p', {}, h('a', { href: '/' }, '← Lịch tuần')));
   }
 
+  // ---------- Tài khoản và quyền riêng tư ----------
+
+  function syncLine() {
+    if (!cloud || !cloud.signedIn()) return '';
+    if (syncInfo.status === 'busy') return 'Đang đồng bộ…';
+    if (syncInfo.status === 'error') return 'Chưa đồng bộ được: ' + syncInfo.error + ' Dữ liệu vẫn được giữ trên máy.';
+    if (syncInfo.status === 'ok' && syncInfo.at) {
+      const t = syncInfo.at;
+      return 'Đã đồng bộ lúc ' + String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0') + '.';
+    }
+    return 'Sẽ đồng bộ khi có thay đổi.';
+  }
+
+  function msgBox() {
+    if (!accountMsg) return null;
+    return h('p', { class: accountMsg.ok ? 'msg ok' : 'msg err', role: 'status' }, accountMsg.text);
+  }
+
+  function guestForm() {
+    const email = h('input', { type: 'email', name: 'email', required: true, autocomplete: 'email', placeholder: 'ban@example.com', 'aria-label': 'Email' });
+    return h('div', { class: 'auth-card' },
+      h('h2', {}, 'Đăng nhập để đồng bộ'),
+      h('p', { class: 'fine' }, 'Đăng nhập để dùng kế hoạch trên nhiều thiết bị. Không đăng nhập vẫn dùng đầy đủ, dữ liệu chỉ nằm trên máy này.'),
+      h('form', {
+        class: 'stack-form',
+        onsubmit: async e => {
+          e.preventDefault();
+          const value = email.value.trim();
+          accountMsg = { ok: true, text: 'Đang gửi liên kết…' };
+          render();
+          try {
+            await cloud.sendMagicLink(value);
+            accountMsg = { ok: true, text: 'Đã gửi liên kết đăng nhập tới ' + value + '. Mở liên kết trong email trên cùng trình duyệt này.' };
+          } catch (err) {
+            accountMsg = { ok: false, text: err.message };
+          }
+          render();
+        },
+      },
+        h('label', {}, 'Email', email),
+        h('button', { type: 'submit' }, 'Gửi liên kết đăng nhập')),
+      h('div', { class: 'or' }, 'hoặc'),
+      h('button', { type: 'button', class: 'ghost wide', onclick: () => { win.location.href = cloud.googleUrl(); } }, 'Tiếp tục với Google'));
+  }
+
+  function profileForm() {
+    const name = h('input', { type: 'text', name: 'display_name', maxlength: 60, value: profile ? profile.display_name || '' : '', 'aria-label': 'Tên hiển thị' });
+    const cls = h('input', { type: 'text', name: 'class_name', maxlength: 40, value: profile ? profile.class_name || '' : '', 'aria-label': 'Lớp', placeholder: 'Ví dụ: 11A2' });
+    return h('form', {
+      class: 'stack-form profile-card',
+      onsubmit: async e => {
+        e.preventDefault();
+        try {
+          await cloud.saveProfile(cloud.userId(), { display_name: name.value.trim(), class_name: cls.value.trim() });
+          profile = { display_name: name.value.trim(), class_name: cls.value.trim() };
+          accountMsg = { ok: true, text: 'Đã lưu hồ sơ.' };
+        } catch (err) {
+          accountMsg = { ok: false, text: err.message };
+        }
+        render();
+      },
+    },
+      h('h3', {}, 'Hồ sơ'),
+      h('label', {}, 'Tên hiển thị', name),
+      h('label', {}, 'Lớp', cls),
+      h('button', { type: 'submit' }, 'Lưu hồ sơ'));
+  }
+
+  function twoStep(id, label, armedLabel, run) {
+    return h('button', {
+      type: 'button', class: 'danger',
+      onclick: async () => {
+        if (armedDelete !== id) { armedDelete = id; render(); return; }
+        armedDelete = null;
+        try {
+          await run();
+        } catch (err) {
+          accountMsg = { ok: false, text: err.message };
+        }
+        render();
+      },
+    }, armedDelete === id ? armedLabel : label);
+  }
+
+  function accountView() {
+    if (!cloud || !cloud.enabled) {
+      return h('article', { class: 'account' },
+        h('header', { class: 'course-head' }, h('h1', {}, 'Tài khoản')),
+        h('p', { class: 'lead' }, 'Đám mây chưa được bật trên bản này. Bạn vẫn dùng đầy đủ ở chế độ khách, dữ liệu nằm trên máy này.'),
+        h('p', { class: 'fine' }, 'Quản trị viên cần cấu hình SUPABASE_URL và SUPABASE_PUBLISHABLE_KEY khi build.'));
+    }
+    if (!cloud.signedIn()) {
+      return h('article', { class: 'account' },
+        h('header', { class: 'course-head' }, h('h1', {}, 'Tài khoản')),
+        msgBox(), guestForm());
+    }
+    return h('article', { class: 'account' },
+      h('header', { class: 'course-head' }, h('h1', {}, 'Tài khoản'), h('p', { class: 'lead' }, cloud.email())),
+      msgBox(),
+      h('p', { class: 'sync', role: 'status' }, syncLine()),
+      profileForm(),
+      h('section', { class: 'acct-actions', 'aria-labelledby': 'acct-actions-title' },
+        h('h2', { id: 'acct-actions-title' }, 'Dữ liệu và tài khoản'),
+        h('div', { class: 'action-row' },
+          h('button', {
+            type: 'button', class: 'ghost',
+            onclick: async () => {
+              try { await cloud.signOut(); accountMsg = { ok: true, text: 'Đã đăng xuất. Dữ liệu trên máy này vẫn còn.' }; }
+              catch (err) { accountMsg = { ok: false, text: err.message }; }
+              profile = null; profileFor = null;
+              render();
+            },
+          }, 'Đăng xuất'),
+          twoStep('wipe', 'Xoá dữ liệu học', 'Bấm lần nữa để xoá', async () => {
+            await wipeData();
+            accountMsg = { ok: true, text: 'Đã xoá dữ liệu học trên máy và trên đám mây. Tài khoản vẫn còn.' };
+          })),
+        h('p', { class: 'fine' }, 'Xoá dữ liệu học giữ nguyên tài khoản. Xoá tài khoản thì xoá cả tài khoản và mọi dữ liệu liên quan.'),
+        h('div', { class: 'action-row' },
+          twoStep('account', 'Xoá tài khoản', 'Bấm lần nữa để xoá vĩnh viễn', async () => {
+            await cloud.deleteAccount();
+            clearTimeout(uploadTimer);
+            clearStorage(storage);
+            state = L.emptyState();
+            saveOk = saveState(storage, state);
+            profile = null; profileFor = null;
+            accountMsg = { ok: true, text: 'Đã xoá tài khoản và dữ liệu. Bạn vẫn có thể dùng ứng dụng ở chế độ khách.' };
+          }))));
+  }
+
+  function privacyView() {
+    const item = (title, text) => h('section', { class: 'priv' }, h('h2', {}, title), h('p', {}, text));
+    return h('article', { class: 'privacy' },
+      h('header', { class: 'course-head' }, h('h1', {}, 'Quyền riêng tư'),
+        h('p', { class: 'lead' }, 'Trang này nói rõ dữ liệu nào được lưu, lưu ở đâu, và cách xoá.')),
+      item('Chế độ khách', 'Mọi thứ bạn nhập (việc cần làm, môn tự tạo, tiến độ, ghi chú) chỉ nằm trong trình duyệt trên máy này. Không gửi đi đâu.'),
+      item('Khi đăng nhập', 'Chúng tôi lưu email để đăng nhập và gửi liên kết. Tên hiển thị và lớp là tuỳ chọn. Kế hoạch học được lưu thành một bản trên Supabase, chỉ tài khoản của bạn đọc và ghi được.'),
+      item('Đăng nhập bằng Google', 'Google xác thực bạn. Chúng tôi chỉ nhận email và tên hiển thị do Google cung cấp.'),
+      item('Nhà cung cấp', 'Cloudflare phục vụ trang. Supabase lưu tài khoản và dữ liệu đã đồng bộ. Không có quảng cáo, không có theo dõi bên thứ ba trong khung này.'),
+      item('Xoá dữ liệu', 'Trong Tài khoản, "Xoá dữ liệu học" xoá trên máy và trên đám mây, giữ tài khoản. "Xoá tài khoản" xoá cả tài khoản và mọi dữ liệu liên quan.'),
+      item('Đăng xuất', 'Đăng xuất không xoá dữ liệu trên máy. Dữ liệu trên đám mây vẫn được giữ cho lần đăng nhập sau. Nếu đăng nhập bằng tài khoản khác trên cùng máy, dữ liệu của tài khoản trước không được đẩy lên tài khoản mới; bản đó vẫn nằm trong bộ nhớ trình duyệt đến khi bạn xoá dữ liệu học.'));
+  }
+
   function render() {
     const kind = page.split(':')[0];
     const slug = page.split(':')[1];
@@ -309,12 +459,99 @@ export function mountApp(root, { storage, page, win = globalThis, now = () => ne
       body = courseView(COURSE_BY_SLUG[slug]);
     } else if (kind === 'physics') {
       body = physicsView();
+    } else if (kind === 'account') {
+      body = accountView();
+      loadProfile();
+    } else if (kind === 'privacy') {
+      body = privacyView();
     } else {
       body = notFound();
     }
     root.replaceChildren(body);
   }
 
+  // ---------- Đồng bộ với đám mây ----------
+
+  function setSync(status, error = '') {
+    syncInfo = { status, at: status === 'ok' ? new Date() : syncInfo.at, error };
+    if (page === 'account') render();
+  }
+
+  function scheduleUpload() {
+    clearTimeout(uploadTimer);
+    uploadTimer = setTimeout(uploadNow, 1000);
+  }
+
+  async function uploadNow() {
+    if (!cloud || !cloud.signedIn()) return;
+    // Dữ liệu còn của tài khoản trước: để syncNow tách ra trước, không đẩy đi.
+    const owner = getOwner(storage);
+    if (owner && owner !== cloud.userId()) return syncNow();
+    setSync('busy');
+    try {
+      await cloud.pushPlan(cloud.userId(), state);
+      setOwner(storage, cloud.userId());
+      setSync('ok');
+    } catch (e) {
+      setSync('error', e.message);
+    }
+  }
+
+  // Mở trang hoặc vừa đăng nhập: so mốc thời gian rồi kéo hoặc đẩy.
+  // Dữ liệu local thuộc tài khoản khác (đã đăng xuất, đăng nhập tài khoản mới) không được đẩy đi.
+  async function syncNow() {
+    if (!cloud || !cloud.signedIn()) return;
+    setSync('busy');
+    try {
+      const uid = cloud.userId();
+      const owner = getOwner(storage);
+      if (owner && owner !== uid) {
+        backupForSync(storage, state);
+        state = L.emptyState();
+        saveOk = saveState(storage, state);
+      }
+      const remote = await cloud.pullPlan(uid);
+      const action = decideSync(state.updated, remote && remote.updated_at);
+      if (action === 'pull') applyRemote(remote);
+      else if (action === 'push') await cloud.pushPlan(uid, state);
+      setOwner(storage, uid);
+      setSync('ok');
+    } catch (e) {
+      setSync('error', e.message);
+    }
+  }
+
+  function applyRemote(remote) {
+    const hasLocal = state.tasks.length || state.custom.length || Object.keys(state.progress).length || Object.keys(state.notes).length;
+    if (hasLocal) backupForSync(storage, state);
+    state = { ...L.normalizeState(remote.state), updated: remote.updated_at };
+    saveOk = saveState(storage, state);
+    render();
+  }
+
+  // Xoá dữ liệu học trên máy và trên đám mây; giữ tài khoản.
+  async function wipeData() {
+    if (cloud && cloud.signedIn()) await cloud.deletePlan(cloud.userId());
+    clearTimeout(uploadTimer);
+    clearStorage(storage);
+    state = L.emptyState();
+    saveOk = saveState(storage, state);
+  }
+
+  async function loadProfile() {
+    if (!cloud || !cloud.signedIn()) return;
+    const uid = cloud.userId();
+    if (profileFor === uid) return;
+    profileFor = uid;
+    try {
+      profile = await cloud.getProfile(uid);
+    } catch (e) {
+      profile = { display_name: '', class_name: '', error: e.message };
+    }
+    render();
+  }
+
   render();
-  return { render, getState: () => state };
+  if (cloud && cloud.signedIn()) syncNow();
+  return { render, getState: () => state, syncNow };
 }

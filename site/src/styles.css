@@ -156,3 +156,27 @@ label { display: grid; gap: .3rem; font-size: .9rem; color: var(--ink-2); }
   .res-meta { justify-items: start; text-align: left; }
   .top nav a:nth-child(2) { display: none; }
 }
+
+/* Tài khoản, quyền riêng tư, chân trang */
+.foot { max-width: 1240px; margin: 0 auto; padding: 1.5rem clamp(1rem, 4vw, 2.5rem) 2.5rem; border-top: 1px solid var(--line); font-size: .9rem; color: var(--muted); }
+.foot a { color: var(--ink-2); }
+.foot a:hover { color: var(--accent); }
+.account, .privacy { display: grid; gap: 1.5rem; max-width: 640px; }
+.msg { margin: 0; padding: .7rem .9rem; border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface); }
+.msg.ok { border-color: var(--ok); color: var(--ok); }
+.msg.err { border-color: var(--danger); color: var(--danger); }
+.sync { margin: 0; color: var(--muted); font-size: .95rem; }
+.fine { font-size: .9rem; color: var(--muted); max-width: 60ch; margin: 0; }
+.auth-card { display: grid; gap: 1rem; padding: clamp(1rem, 3vw, 1.5rem); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.auth-card h2 { margin: 0; font-family: var(--serif); font-size: 1.35rem; }
+.auth-card label { display: grid; gap: .35rem; font-size: .92rem; color: var(--ink-2); }
+.auth-card input { width: 100%; }
+.or { text-align: center; color: var(--muted); font-size: .85rem; position: relative; }
+.wide { width: 100%; }
+.acct-actions { display: grid; gap: .9rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
+.acct-actions h2 { margin: 0; font-family: var(--serif); font-size: 1.25rem; }
+.action-row { display: flex; flex-wrap: wrap; gap: .6rem; }
+.profile-card { display: grid; gap: .9rem; padding: clamp(1rem, 3vw, 1.5rem); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.priv { display: grid; gap: .35rem; padding-bottom: 1.1rem; border-bottom: 1px solid var(--line); }
+.priv h2 { margin: 0; font-size: 1rem; }
+.priv p { margin: 0; color: var(--ink-2); max-width: 62ch; }

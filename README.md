@@ -20,7 +20,7 @@ Chế độ khách dùng đầy đủ, không cần tài khoản. Dữ liệu kh
 ```bash
 npm ci                 # cài đặt; hook prepare dựng dist/
 npm run build          # node site/build.mjs → dist/
-npm run serve          # máy chủ thử tại :8124 (đọc biến SUPABASE_* từ môi trường)
+npm run serve          # máy chủ thử tại :8124 (đọc biến FIREBASE_* từ môi trường)
 npm test               # build tạm + kiểm thử site (node:test + jsdom)
 npm run deploy         # build + npx wrangler deploy
 ```
@@ -32,10 +32,10 @@ Kiểm thử trình duyệt (cần Chromium và Playwright): `tools/browser/acco
 
 Biến môi trường trên Worker (không đặt trong repo):
 
-- `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`: bật đăng nhập và đồng bộ. Thiếu thì chế độ khách.
-- Khoá bí mật (`sb_secret_…`, `service_role`) bị Worker từ chối.
+- `FIREBASE_API_KEY`, `FIREBASE_PROJECT_ID`, `FIREBASE_APP_ID` (tuỳ chọn `FIREBASE_AUTH_DOMAIN`): bật đăng nhập và đồng bộ. Thiếu thì chế độ khách.
+- Không đặt khoá bí mật của Firebase (service account, Admin SDK) vào Worker. App chỉ dùng khoá web công khai; dữ liệu được bảo vệ bởi `firestore.rules`.
 
-Chi tiết: `docs/SUPABASE-SETUP.md`, `docs/CLOUDFLARE.md`.
+Chi tiết: `docs/FIREBASE-SETUP.md`, `docs/CLOUDFLARE.md`.
 
 ## Cấu trúc
 
@@ -47,9 +47,9 @@ site/              khung site mới (nguồn của mọi trang ngoài Vật lí)
   test/            node:test (logic, giao diện, build, Worker) và máy chủ thử
 src/               mã nguồn Vật lí (build.py --physics-only) và module dùng chung
 dist/              đầu ra đã commit (CI kiểm tra khớp với nguồn)
-supabase/          migration (bảng nghiệp vụ có RLS, delete_my_account)
+firestore.rules     quy tắc bảo mật Firestore (lớp bảo vệ dữ liệu thật)
 tools/browser/     kiểm thử trình duyệt
-docs/              tài liệu (HANDOFF, CLOUDFLARE, SUPABASE-SETUP, COURSE-RESOURCES, REWRITE-PLAN)
+docs/              tài liệu (HANDOFF, CLOUDFLARE, FIREBASE-SETUP, COURSE-RESOURCES, REWRITE-PLAN)
 ```
 
 ## Ghi chú

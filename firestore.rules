@@ -1,0 +1,54 @@
+// Quy tắc bảo mật Firestore — đây là lớp bảo vệ dữ liệu thật sự (khoá web Firebase là công khai).
+// Nguyên tắc: chỉ tài khoản đã đăng nhập (không ẩn danh) mới đọc/ghi được tài liệu có uid của chính họ.
+// Triển khai: firebase deploy --only firestore:rules   (xem docs/FIREBASE-SETUP.md)
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedInAs(uid) {
+      return request.auth != null
+        && request.auth.uid == uid
+        && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+
+    function text(value, max) {
+      return value is string && value.size() <= max;
+    }
+
+    // Kế hoạch học của site (lịch tuần, môn tự tạo, tiến độ). state là chuỗi JSON.
+    match /planners/{uid} {
+      allow read, delete: if signedInAs(uid);
+      allow create, update: if signedInAs(uid)
+        && request.resource.data.keys().hasOnly(['state', 'updatedAt'])
+        && text(request.resource.data.state, 900000)
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    // Hồ sơ: tên hiển thị, lớp (site); khối lớp và tên hiển thị cũ (Vật lí).
+    match /users/{uid} {
+      allow read, delete: if signedInAs(uid);
+      allow create, update: if signedInAs(uid)
+        && request.resource.data.keys().hasOnly(['displayName', 'className', 'grade', 'updatedAt'])
+        && (!('displayName' in request.resource.data) || text(request.resource.data.displayName, 60))
+        && (!('className' in request.resource.data) || text(request.resource.data.className, 40))
+        && (!('grade' in request.resource.data) || text(request.resource.data.grade, 40))
+        && (!('updatedAt' in request.resource.data) || text(request.resource.data.updatedAt, 40));
+
+      // Dữ liệu Vật lí theo từng khoá (mỗi khoá một tài liệu, chỉ gửi phần đã đổi).
+      match /keys/{key} {
+        allow read, delete: if signedInAs(uid);
+        allow create, update: if signedInAs(uid)
+          && key.matches('^[A-Za-z0-9_-]{1,40}$')
+          && request.resource.data.keys().hasOnly(['value', 'updatedAt'])
+          && text(request.resource.data.value, 900000)
+          && request.resource.data.updatedAt == request.time;
+      }
+    }
+
+    // Mọi đường dẫn khác: từ chối (Firestore mặc định cũng từ chối; viết rõ để dễ kiểm tra).
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -12,8 +12,7 @@
 
 ## Việc còn mở
 
-1. **Cấu hình Supabase** (người dùng, dashboard): Site URL production, redirect
-   `https://<tên-miền>/tai-khoan/`, provider Google, SMTP, và biến `SUPABASE_*` trên Worker.
+1. **Cấu hình Firebase** (người dùng, console): xem `docs/FIREBASE-SETUP.md`. Gồm authorized domains, bật Email link và Google, triển khai `firestore.rules`, và biến `FIREBASE_*` trên Worker.
    Trước đó đăng nhập không hoạt động, nhưng chế độ khách vẫn chạy.
 2. **Kiểm thử RLS với người dùng thật** (chưa làm; mọi kiểm thử đám mây dùng mock).
 3. **Khoá đã lộ trong output công cụ** trong quá trình làm việc: xoay vòng service_role

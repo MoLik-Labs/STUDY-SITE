@@ -28,7 +28,7 @@ function renderPrivacy() {
 
       <h2 style="font-size:20px;margin-top:22px">Ai nhận được dữ liệu</h2>
       <ul class="priv-list">
-        <li><b>Supabase</b> (máy chủ tại Singapore): chỉ khi bạn đăng nhập. Chỉ bạn đọc được dữ liệu của mình, nhờ chính sách bảo mật theo hàng.</li>
+        <li><b>Google Firebase</b> (Firestore và Auth): chỉ khi bạn đăng nhập. Quy tắc bảo mật chỉ cho tài khoản của bạn đọc và ghi dữ liệu của mình.</li>
         <li><b>Google</b>: chỉ khi bạn chọn đăng nhập bằng Google.</li>
         <li><b>YouTube</b>: chỉ khi bạn mở một video bài giảng. Video dùng miền youtube-nocookie.com.</li>
         <li>Không có quảng cáo, không có công cụ phân tích hay theo dõi nào.</li>

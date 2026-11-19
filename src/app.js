@@ -1657,6 +1657,7 @@ function render(){
   if(p[0]==='progress') return routeOut(renderProgress());
   if(p[0]==='game') return routeOut(renderGame());
   if(p[0]==='physics') return routeOut(renderPhysics());
+  if(p[0]==='account') return routeOut(renderAccountPage());
   if(p[0]==='special') return routeOut(renderSpecial());
   if(p[0]==='share'&&p[1]==='lesson'&&p[2]&&p[3]) return routeOut(renderShareLesson(p[2],p[3]));
   if(p[0]==='share') return routeOut(renderShare());

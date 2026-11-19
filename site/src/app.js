@@ -2,8 +2,9 @@
 // Toàn bộ DOM được dựng bằng h() với textContent, nên dữ liệu người dùng không bao giờ được hiểu là HTML.
 import { COURSES, COURSE_BY_SLUG } from './courses.js';
 import * as L from './logic.js';
-import { backupForSync, clearStorage, getOwner, loadState, saveState, setOwner } from './store.js';
+import { backupForSync, clearStorage, getBase, getOwner, loadState, saveState, setBase, setOwner } from './store.js';
 import { decideSync } from './cloud.js';
+import { createTimer } from './timer.js';
 
 const WEEKDAYS = ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ nhật'];
 const COLOR_NAMES = {
@@ -13,6 +14,32 @@ const CUSTOM_HASH = /^#\/c\/([A-Za-z0-9_-]{1,80})$/;
 
 function fmtDay(date) {
   return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}`;
+}
+
+// Khối trang chủ: thứ tự và cỡ (wide = cả hàng, half = nửa hàng trên màn hình rộng).
+const HOME_BLOCKS = {
+  today: { label: 'Hôm nay', size: 'half' },
+  timer: { label: 'Hẹn giờ', size: 'half' },
+  week: { label: 'Lịch tuần', size: 'wide' },
+  courses: { label: 'Môn của tôi', size: 'wide' },
+};
+const HOME_KEY = 'sf.home.v1';
+const HOME_DEFAULT = Object.keys(HOME_BLOCKS);
+
+function homeLayout(storage) {
+  let order = HOME_DEFAULT.slice();
+  try {
+    const raw = storage ? JSON.parse(storage.getItem(HOME_KEY) || 'null') : null;
+    if (Array.isArray(raw) && raw.length === HOME_DEFAULT.length && HOME_DEFAULT.every(id => raw.includes(id))) order = raw;
+  } catch { /* bố cục hỏng: dùng mặc định */ }
+  const put = next => {
+    try { storage?.setItem(HOME_KEY, JSON.stringify(next)); } catch { /* không lưu được thì vẫn chạy trong phiên này */ }
+  };
+  return {
+    get order() { return order; },
+    save(next) { order = next.slice(); put(order); },
+    reset() { order = HOME_DEFAULT.slice(); put(order); },
+  };
 }
 
 export function mountApp(root, { storage, page, win = globalThis, now = () => new Date(), cloud = null, notice = null }) {
@@ -41,6 +68,7 @@ export function mountApp(root, { storage, page, win = globalThis, now = () => ne
   }
 
   const loaded = loadState(storage);
+  const timer = createTimer({ h, storage, win });
   let state = loaded.state;
   let saveOk = loaded.available;
   let anchor = now();
@@ -48,8 +76,11 @@ export function mountApp(root, { storage, page, win = globalThis, now = () => ne
   let accountMsg = notice; // { ok, text } từ lần đăng nhập vừa quay lại hoặc thao tác gần nhất
   let syncInfo = { status: 'idle', at: null, error: '' };
   let uploadTimer = 0;
-  let profile = null;      // { display_name, class_name } khi đã tải
+  let profile = null;      // { displayName, className } khi đã tải
   let profileFor = null;   // uid của hồ sơ đã tải, để không tải lại
+  let firstPaint = true;   // khối trang chủ chỉ xuất hiện (animation) ở lần dựng đầu tiên
+  let arranging = false;   // chế độ sắp xếp bố cục trang chủ
+  const home = homeLayout(storage);
 
   function persist(next) {
     state = { ...next, updated: new Date().toISOString() };
@@ -201,8 +232,40 @@ export function mountApp(root, { storage, page, win = globalThis, now = () => ne
       focus);
   }
 
+  // ---------- Bố cục trang chủ: người dùng tự sắp xếp các khối (lưu trên máy) ----------
+  function moveBlock(id, dir) {
+    const order = home.order.slice();
+    const i = order.indexOf(id);
+    const j = i + dir;
+    if (i < 0 || j < 0 || j >= order.length) return;
+    [order[i], order[j]] = [order[j], order[i]];
+    home.save(order);
+    render();
+    // Giữ tiêu điểm trên đúng nút vừa bấm, dù khối đã được dựng lại.
+    const pick = root.querySelector(`[data-block="${id}"] .move button:${dir < 0 ? 'first' : 'last'}-child`);
+    const any = root.querySelector(`[data-block="${id}"] .move button:not([disabled])`);
+    (pick && !pick.disabled ? pick : any)?.focus();
+  }
+
+  function homeBlock(id, body, idx) {
+    const info = HOME_BLOCKS[id];
+    const last = home.order.length - 1;
+    const moves = arranging ? h('div', { class: 'move' },
+      h('button', { type: 'button', class: 'ghost sm', disabled: idx === 0, 'aria-label': `Đưa khối ${info.label} lên trên`, onclick: () => moveBlock(id, -1) }, '↑ Lên'),
+      h('button', { type: 'button', class: 'ghost sm', disabled: idx === last, 'aria-label': `Đưa khối ${info.label} xuống dưới`, onclick: () => moveBlock(id, 1) }, '↓ Xuống')) : null;
+    return h('div', { class: 'block', 'data-block': id, 'data-size': info.size, 'data-arranging': arranging ? 'true' : null }, moves, body);
+  }
+
   function plannerView() {
-    return h('div', { class: 'planner' }, alertBox(), todayPanel(), h('div', { class: 'planner-grid' }, weekView(), sidebar()));
+    const parts = { today: todayPanel(), timer: timer.element(), week: weekView(), courses: sidebar() };
+    return h('div', { class: 'planner' }, alertBox(),
+      h('div', { class: 'home-tools' },
+        h('p', { class: 'meta' }, arranging ? 'Dùng nút Lên và Xuống để đổi thứ tự các khối.' : null),
+        h('div', { class: 'home-actions' },
+          arranging ? h('button', { type: 'button', class: 'ghost sm', onclick: () => { home.reset(); render(); } }, 'Đặt lại bố cục') : null,
+          h('button', { type: 'button', class: 'ghost sm', 'aria-pressed': arranging ? 'true' : 'false',
+            onclick: () => { arranging = !arranging; render(); } }, arranging ? 'Xong' : 'Sắp xếp trang'))),
+      h('div', { class: 'home' }, home.order.map((id, i) => homeBlock(id, parts[id], i))));
   }
 
   // ---------- Trang môn có sẵn ----------
@@ -324,6 +387,23 @@ export function mountApp(root, { storage, page, win = globalThis, now = () => ne
   }
 
   function guestForm() {
+    // Mở liên kết trên máy khác (không còn email đã nhập): hỏi lại email để xác nhận.
+    if (cloud.needsEmail()) {
+      const confirm = h('input', { type: 'email', name: 'email', required: true, autocomplete: 'email', placeholder: 'ban@example.com', 'aria-label': 'Email đã dùng để nhận liên kết' });
+      return h('div', { class: 'auth-card' },
+        h('h2', {}, 'Xác nhận email'),
+        h('p', { class: 'fine' }, 'Liên kết này được mở trên trình duyệt khác. Nhập đúng email đã nhận liên kết để hoàn tất đăng nhập.'),
+        h('form', {
+          class: 'stack-form',
+          onsubmit: async e => {
+            e.preventDefault();
+            accountMsg = await cloud.finishEmailLink(confirm.value.trim());
+            render();
+          },
+        },
+          h('label', {}, 'Email', confirm),
+          h('button', { type: 'submit' }, 'Hoàn tất đăng nhập')));
+    }
     const email = h('input', { type: 'email', name: 'email', required: true, autocomplete: 'email', placeholder: 'ban@example.com', 'aria-label': 'Email' });
     return h('div', { class: 'auth-card' },
       h('h2', {}, 'Đăng nhập để đồng bộ'),
@@ -336,7 +416,7 @@ export function mountApp(root, { storage, page, win = globalThis, now = () => ne
           accountMsg = { ok: true, text: 'Đang gửi liên kết…' };
           render();
           try {
-            await cloud.sendMagicLink(value);
+            await cloud.sendEmailLink(value);
             accountMsg = { ok: true, text: 'Đã gửi liên kết đăng nhập tới ' + value + '. Mở liên kết trong email trên cùng trình duyệt này.' };
           } catch (err) {
             accountMsg = { ok: false, text: err.message };
@@ -347,19 +427,25 @@ export function mountApp(root, { storage, page, win = globalThis, now = () => ne
         h('label', {}, 'Email', email),
         h('button', { type: 'submit' }, 'Gửi liên kết đăng nhập')),
       h('div', { class: 'or' }, 'hoặc'),
-      h('button', { type: 'button', class: 'ghost wide', onclick: () => { win.location.href = cloud.googleUrl(); } }, 'Tiếp tục với Google'));
+      h('button', {
+        type: 'button', class: 'ghost wide',
+        onclick: async () => {
+          try { await cloud.signInWithGoogle(); }
+          catch (err) { accountMsg = { ok: false, text: err.message }; render(); }
+        },
+      }, 'Tiếp tục với Google'));
   }
 
   function profileForm() {
-    const name = h('input', { type: 'text', name: 'display_name', maxlength: 60, value: profile ? profile.display_name || '' : '', 'aria-label': 'Tên hiển thị' });
-    const cls = h('input', { type: 'text', name: 'class_name', maxlength: 40, value: profile ? profile.class_name || '' : '', 'aria-label': 'Lớp', placeholder: 'Ví dụ: 11A2' });
+    const name = h('input', { type: 'text', name: 'displayName', maxlength: 60, value: profile ? profile.displayName || '' : '', 'aria-label': 'Tên hiển thị' });
+    const cls = h('input', { type: 'text', name: 'className', maxlength: 40, value: profile ? profile.className || '' : '', 'aria-label': 'Lớp', placeholder: 'Ví dụ: 11A2' });
     return h('form', {
       class: 'stack-form profile-card',
       onsubmit: async e => {
         e.preventDefault();
         try {
-          await cloud.saveProfile(cloud.userId(), { display_name: name.value.trim(), class_name: cls.value.trim() });
-          profile = { display_name: name.value.trim(), class_name: cls.value.trim() };
+          await cloud.saveProfile(cloud.userId(), { displayName: name.value.trim(), className: cls.value.trim() });
+          profile = { displayName: name.value.trim(), className: cls.value.trim() };
           accountMsg = { ok: true, text: 'Đã lưu hồ sơ.' };
         } catch (err) {
           accountMsg = { ok: false, text: err.message };
@@ -394,7 +480,7 @@ export function mountApp(root, { storage, page, win = globalThis, now = () => ne
       return h('article', { class: 'account' },
         h('header', { class: 'course-head' }, h('h1', {}, 'Tài khoản')),
         h('p', { class: 'lead' }, 'Đám mây chưa được bật trên bản này. Bạn vẫn dùng đầy đủ ở chế độ khách, dữ liệu nằm trên máy này.'),
-        h('p', { class: 'fine' }, 'Quản trị viên cần cấu hình SUPABASE_URL và SUPABASE_PUBLISHABLE_KEY khi build.'));
+        h('p', { class: 'fine' }, 'Quản trị viên cần cấu hình các biến FIREBASE_API_KEY, FIREBASE_AUTH_DOMAIN, FIREBASE_PROJECT_ID, FIREBASE_APP_ID trên Cloudflare Workers. Xem docs/FIREBASE-SETUP.md.'));
     }
     if (!cloud.signedIn()) {
       return h('article', { class: 'account' },
@@ -441,16 +527,19 @@ export function mountApp(root, { storage, page, win = globalThis, now = () => ne
       h('header', { class: 'course-head' }, h('h1', {}, 'Quyền riêng tư'),
         h('p', { class: 'lead' }, 'Trang này nói rõ dữ liệu nào được lưu, lưu ở đâu, và cách xoá.')),
       item('Chế độ khách', 'Mọi thứ bạn nhập (việc cần làm, môn tự tạo, tiến độ, ghi chú) chỉ nằm trong trình duyệt trên máy này. Không gửi đi đâu.'),
-      item('Khi đăng nhập', 'Chúng tôi lưu email để đăng nhập và gửi liên kết. Tên hiển thị và lớp là tuỳ chọn. Kế hoạch học được lưu thành một bản trên Supabase, chỉ tài khoản của bạn đọc và ghi được.'),
+      item('Khi đăng nhập', 'Chúng tôi lưu email để đăng nhập và gửi liên kết. Tên hiển thị và lớp là tuỳ chọn. Kế hoạch học được lưu thành một tài liệu trên Firebase Firestore. Quy tắc bảo mật chỉ cho tài khoản của bạn đọc và ghi dữ liệu đó.'),
       item('Đăng nhập bằng Google', 'Google xác thực bạn. Chúng tôi chỉ nhận email và tên hiển thị do Google cung cấp.'),
-      item('Nhà cung cấp', 'Cloudflare phục vụ trang. Supabase lưu tài khoản và dữ liệu đã đồng bộ. Không có quảng cáo, không có theo dõi bên thứ ba trong khung này.'),
-      item('Xoá dữ liệu', 'Trong Tài khoản, "Xoá dữ liệu học" xoá trên máy và trên đám mây, giữ tài khoản. "Xoá tài khoản" xoá cả tài khoản và mọi dữ liệu liên quan.'),
+      item('Nhà cung cấp', 'Cloudflare phục vụ trang. Google Firebase lưu tài khoản và dữ liệu đã đồng bộ. Không có quảng cáo và không có theo dõi bên thứ ba.'),
+      item('Xoá dữ liệu', 'Trong Tài khoản, "Xoá dữ liệu học" xoá trên máy và trên đám mây, giữ tài khoản. "Xoá tài khoản" xoá dữ liệu trên đám mây trước, rồi xoá tài khoản. Thao tác này cần bạn vừa đăng nhập (trong vòng vài phút).'),
       item('Đăng xuất', 'Đăng xuất không xoá dữ liệu trên máy. Dữ liệu trên đám mây vẫn được giữ cho lần đăng nhập sau. Nếu đăng nhập bằng tài khoản khác trên cùng máy, dữ liệu của tài khoản trước không được đẩy lên tài khoản mới; bản đó vẫn nằm trong bộ nhớ trình duyệt đến khi bạn xoá dữ liệu học.'));
   }
 
   function render() {
     const kind = page.split(':')[0];
     const slug = page.split(':')[1];
+    timer.dispose(); // bộ đếm chỉ chạy khi đang ở trang chủ; plannerView() dựng lại khi cần
+    root.classList.toggle('first-paint', firstPaint);
+    firstPaint = false;
     let body;
     if (kind === 'planner') {
       const m = CUSTOM_HASH.exec(win.location.hash || '');
@@ -489,15 +578,27 @@ export function mountApp(root, { storage, page, win = globalThis, now = () => ne
     if (owner && owner !== cloud.userId()) return syncNow();
     setSync('busy');
     try {
-      await cloud.pushPlan(cloud.userId(), state);
-      setOwner(storage, cloud.userId());
+      const snapshot = state;
+      const uid = cloud.userId();
+      adoptPushed(uid, snapshot, await cloud.pushPlan(uid, snapshot));
+      setOwner(storage, uid);
       setSync('ok');
     } catch (e) {
       setSync('error', e.message);
     }
   }
 
-  // Mở trang hoặc vừa đăng nhập: so mốc thời gian rồi kéo hoặc đẩy.
+  // Mở trang hoặc vừa đăng nhập: so với mốc server của lần đồng bộ trước rồi kéo hoặc đẩy.
+  // Sau khi đẩy: mốc server vừa ghi thành mốc chung. Nếu trong lúc đẩy không sửa gì
+  // thì state lấy đúng mốc đó; nếu có sửa thì state giữ mốc máy để lần sau đẩy tiếp.
+  function adoptPushed(uid, snapshot, at) {
+    if (!at) return;
+    setBase(storage, uid, at);
+    if (state !== snapshot) return;
+    state = { ...state, updated: at };
+    saveOk = saveState(storage, state);
+  }
+
   // Dữ liệu local thuộc tài khoản khác (đã đăng xuất, đăng nhập tài khoản mới) không được đẩy đi.
   async function syncNow() {
     if (!cloud || !cloud.signedIn()) return;
@@ -511,9 +612,12 @@ export function mountApp(root, { storage, page, win = globalThis, now = () => ne
         saveOk = saveState(storage, state);
       }
       const remote = await cloud.pullPlan(uid);
-      const action = decideSync(state.updated, remote && remote.updated_at);
-      if (action === 'pull') applyRemote(remote);
-      else if (action === 'push') await cloud.pushPlan(uid, state);
+      const action = decideSync(state.updated, remote && remote.updated_at, getBase(storage, uid));
+      if (action === 'pull') applyRemote(remote, uid);
+      else if (action === 'push') {
+        const snapshot = state;
+        adoptPushed(uid, snapshot, await cloud.pushPlan(uid, snapshot));
+      } else if (remote && remote.updated_at) setBase(storage, uid, remote.updated_at);
       setOwner(storage, uid);
       setSync('ok');
     } catch (e) {
@@ -521,10 +625,11 @@ export function mountApp(root, { storage, page, win = globalThis, now = () => ne
     }
   }
 
-  function applyRemote(remote) {
+  function applyRemote(remote, uid) {
     const hasLocal = state.tasks.length || state.custom.length || Object.keys(state.progress).length || Object.keys(state.notes).length;
     if (hasLocal) backupForSync(storage, state);
     state = { ...L.normalizeState(remote.state), updated: remote.updated_at };
+    setBase(storage, uid, remote.updated_at);
     saveOk = saveState(storage, state);
     render();
   }
@@ -546,12 +651,12 @@ export function mountApp(root, { storage, page, win = globalThis, now = () => ne
     try {
       profile = await cloud.getProfile(uid);
     } catch (e) {
-      profile = { display_name: '', class_name: '', error: e.message };
+      profile = { displayName: '', className: '', error: e.message };
     }
     render();
   }
 
   render();
   if (cloud && cloud.signedIn()) syncNow();
-  return { render, getState: () => state, syncNow };
+  return { render, getState: () => state, syncNow, dispose: () => timer.dispose() };
 }

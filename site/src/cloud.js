@@ -1,211 +1,273 @@
-// Đám mây: Supabase Auth và REST qua fetch, không cần SDK. Chỉ dùng khoá công khai.
-// Không có cấu hình thì enabled = false và mọi nơi gọi đều phải tự rẽ sang chế độ khách.
-export const SESSION_KEY = 'sf.session.v1';
-export const PLAN_TABLE = 'planner_states';
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const REFRESH_MARGIN_MS = 60_000;
-
-// Đọc phần #access_token=… mà Supabase trả về sau liên kết email hoặc Google.
-export function parseAuthFragment(hash) {
-  const raw = String(hash || '').replace(/^#/, '');
-  if (!raw) return null;
-  const p = new URLSearchParams(raw);
-  const error = p.get('error_description') || p.get('error');
-  if (error) return { error: error.replace(/\+/g, ' ') };
-  const access = p.get('access_token');
-  if (!access) return null;
-  return {
-    access_token: access,
-    refresh_token: p.get('refresh_token') || '',
-    expires_in: Number(p.get('expires_in')) || 3600,
-  };
-}
+// Đám mây: Firebase Auth (liên kết qua email, Google) và Firestore.
+// Module này KHÔNG import SDK Firebase. SDK được truyền vào qua `sdk` (xem firebase-sdk.js),
+// nhờ vậy logic đăng nhập, đồng bộ và xoá dữ liệu kiểm thử được bằng SDK giả, và
+// trình duyệt chỉ tải Firebase khi thật sự cần (khách không tải gì).
+//
+// Cấu trúc dữ liệu (xem docs/FIREBASE-SETUP.md và firestore.rules):
+//   planners/{uid}          { state: "<JSON kế hoạch>", updatedAt: ISO }   — site kế hoạch học
+//   users/{uid}             { displayName, className, grade, updatedAt }   — hồ sơ
+//   users/{uid}/keys/{key}  { value: "<JSON>", updatedAt: ISO }            — dữ liệu Vật lí theo khoá
+export const HINT_KEY = 'sf.account';      // {uid, email}: để biết đã đăng nhập trước khi SDK tải xong
+export const LINK_KEY = 'sf.emailForSignIn'; // email đã nhập để gửi liên kết (đăng nhập trên cùng máy)
+export const PENDING_KEY = 'sf.auth.pending'; // 'google' khi đang chờ quay lại từ Google
+const UID = /^[A-Za-z0-9_-]{1,128}$/;
+const MAX_STATE = 900_000;                 // Firestore giới hạn 1 MiB mỗi tài liệu
+const RECENT_LOGIN_MS = 4 * 60 * 1000;     // Firebase yêu cầu đăng nhập trong ~5 phút để xoá tài khoản
 
 // Quyết định đồng bộ theo mốc thời gian của lần ghi cuối. Trả về 'pull' | 'push' | 'none'.
 // Bên nào mới hơn thắng; bên còn lại được ghi đè (bản local được sao lưu trước khi kéo về).
-export function decideSync(localUpdated, remoteUpdated) {
+// baseUpdated: mốc SERVER của lần đồng bộ gần nhất (null nếu chưa đồng bộ lần nào).
+// Máy có sửa gì không và đám mây có đổi không được so với mốc này bằng chuỗi,
+// nên không phụ thuộc đồng hồ máy. Chỉ khi CẢ HAI bên cùng đổi (sửa lúc offline)
+// mới so thời gian; khi đó bên mới hơn thắng.
+export function decideSync(localUpdated, remoteUpdated, baseUpdated = null) {
   const local = Date.parse(localUpdated);
   const remote = Date.parse(remoteUpdated);
   const hasLocal = Number.isFinite(local);
   const hasRemote = Number.isFinite(remote);
-  if (!hasRemote) return hasLocal ? 'push' : 'none';
-  if (!hasLocal) return 'pull';
+  const localDirty = hasLocal && localUpdated !== baseUpdated;
+  if (!hasRemote) return localDirty ? 'push' : 'none'; // đã xoá trên đám mây thì không tự phục hồi
+  const remoteChanged = remoteUpdated !== baseUpdated;
+  if (!remoteChanged) return localDirty ? 'push' : 'none';
+  if (!localDirty) return 'pull';
   if (remote > local) return 'pull';
   if (remote < local) return 'push';
   return 'none';
 }
 
-export function friendlyError(status, data) {
-  if (status === 429) return 'Gửi quá nhiều yêu cầu. Thử lại sau vài phút.';
-  if (status === 401 || status === 403) return 'Phiên đăng nhập đã hết. Hãy đăng nhập lại.';
-  const msg = data && (data.msg || data.error_description || data.message || data.error);
-  return msg ? String(msg) : 'Máy chủ trả lỗi (' + status + ').';
+// Mã lỗi Firebase → câu tiếng Việt. Không bao giờ hiện mã kỹ thuật cho người dùng.
+const MESSAGES = {
+  'auth/invalid-email': 'Email không hợp lệ.',
+  'auth/missing-email': 'Hãy nhập email.',
+  'auth/too-many-requests': 'Gửi quá nhiều yêu cầu. Thử lại sau vài phút.',
+  'auth/network-request-failed': 'Không có mạng. Dữ liệu vẫn được giữ trên máy.',
+  'auth/invalid-action-code': 'Liên kết đăng nhập không hợp lệ hoặc đã dùng. Hãy gửi lại liên kết.',
+  'auth/expired-action-code': 'Liên kết đăng nhập đã hết hạn. Hãy gửi lại liên kết.',
+  'auth/user-disabled': 'Tài khoản này đã bị khoá.',
+  'auth/operation-not-allowed': 'Cách đăng nhập này chưa được bật trong Firebase.',
+  'auth/unauthorized-domain': 'Tên miền này chưa được thêm vào Authorized domains của Firebase.',
+  'auth/requires-recent-login': 'Vì bảo mật, hãy đăng xuất, đăng nhập lại rồi xoá tài khoản ngay.',
+  'auth/popup-closed-by-user': 'Đăng nhập bị huỷ.',
+  'permission-denied': 'Không có quyền đọc hoặc ghi dữ liệu. Kiểm tra quy tắc Firestore.',
+  'unavailable': 'Máy chủ tạm thời không sẵn sàng. Thử lại sau.',
+  'resource-exhausted': 'Vượt hạn mức miễn phí hôm nay. Thử lại vào ngày mai.',
+  'timeout': 'Quá thời gian chờ. Kiểm tra mạng rồi thử lại.',
+};
+export function friendlyError(code) {
+  return MESSAGES[code] || 'Có lỗi khi kết nối. Thử lại sau.';
 }
 
-export function createCloud({ config, fetchImpl, storage, now = () => Date.now(), redirectTo = '' } = {}) {
-  const enabled = !!(config && config.url && config.key);
-  const f = fetchImpl || ((...a) => globalThis.fetch(...a));
+function codeOf(err) {
+  if (err && typeof err.code === 'string') return err.code;
+  return '';
+}
 
-  function readSession() {
-    if (!storage) return null;
+function withTimeout(promise, ms) {
+  let timer = 0;
+  const limit = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(Object.assign(new Error('timeout'), { code: 'timeout' })), ms);
+  });
+  return Promise.race([promise, limit]).finally(() => clearTimeout(timer));
+}
+
+export function createCloud({ config, sdk, storage, now = () => Date.now(), redirectTo = '', timeoutMs = 15000 } = {}) {
+  const enabled = !!(config && config.projectId && config.apiKey && sdk);
+  let user = null;               // { uid, email } khi đã đăng nhập
+  let emailLinkHref = '';        // liên kết email đang chờ xác nhận email (khi máy khác mở)
+  let unsubscribe = null;
+
+  function setHint(u) {
     try {
-      const s = JSON.parse(storage.getItem(SESSION_KEY) || 'null');
-      return s && typeof s.access_token === 'string' && typeof s.expires_at === 'number' ? s : null;
-    } catch {
-      return null;
-    }
+      if (!storage) return;
+      if (u) storage.setItem(HINT_KEY, JSON.stringify({ uid: u.uid, email: u.email || '' }));
+      else storage.removeItem(HINT_KEY);
+    } catch { /* không ghi được thì lần sau SDK tự kiểm tra */ }
   }
-  function writeSession(s) {
-    if (storage) storage.setItem(SESSION_KEY, JSON.stringify(s));
-  }
-  function clearSession() {
-    if (storage) storage.removeItem(SESSION_KEY);
-  }
+  function getItem(k) { try { return storage ? storage.getItem(k) : null; } catch { return null; } }
+  function setItem(k, v) { try { if (storage) storage.setItem(k, v); } catch { /* bỏ qua */ } }
+  function delItem(k) { try { if (storage) storage.removeItem(k); } catch { /* bỏ qua */ } }
 
-  async function call(method, path, { body, token, prefer, auth = true } = {}) {
-    if (!enabled) throw new Error('Đám mây chưa được bật trên bản này.');
-    const headers = { apikey: config.key };
-    if (body !== undefined) headers['Content-Type'] = 'application/json';
-    if (prefer) headers.Prefer = prefer;
-    if (auth) headers.Authorization = 'Bearer ' + (token || (await freshToken()));
-    const res = await f(config.url + path, {
-      method, headers, body: body === undefined ? undefined : JSON.stringify(body),
-    });
-    const text = await res.text();
-    let data = null;
-    try { data = text ? JSON.parse(text) : null; } catch { data = { msg: text }; }
-    if (!res.ok) {
-      const err = new Error(friendlyError(res.status, data));
-      err.status = res.status;
-      throw err;
-    }
-    return data;
+  function requireUid(uid) {
+    if (!UID.test(String(uid || ''))) throw new Error('Mã tài khoản không hợp lệ.');
+    return uid;
   }
-
-  // Trả về access token còn hạn; làm mới bằng refresh token nếu sắp hết hạn.
-  async function freshToken() {
-    const s = readSession();
-    if (!s) throw new Error('Chưa đăng nhập.');
-    if (s.expires_at - REFRESH_MARGIN_MS > now()) return s.access_token;
+  function requireUser() {
+    if (!user) throw new Error('Chưa đăng nhập.');
+    return user;
+  }
+  // Giữ mã lỗi (code) để lớp bọc ngoài vẫn nhận ra lỗi gốc.
+  function fail(err) {
+    const code = codeOf(err);
+    return Object.assign(new Error(friendlyError(code)), { code });
+  }
+  async function op(promise) {
     try {
-      const data = await call('POST', '/auth/v1/token?grant_type=refresh_token', {
-        body: { refresh_token: s.refresh_token }, auth: false,
-      });
-      writeSession({
-        access_token: data.access_token,
-        refresh_token: data.refresh_token,
-        expires_at: now() + (Number(data.expires_in) || 3600) * 1000,
-        user_id: s.user_id,
-        email: s.email,
-      });
-      return data.access_token;
-    } catch (e) {
-      clearSession();
-      throw new Error('Phiên đăng nhập đã hết. Hãy đăng nhập lại.');
+      return await withTimeout(promise, timeoutMs);
+    } catch (err) {
+      throw fail(err);
     }
   }
 
-  async function fetchUser(token) {
-    return call('GET', '/auth/v1/user', { token });
-  }
-
-  function requireUid() {
-    const s = readSession();
-    if (!s || !UUID.test(s.user_id || '')) throw new Error('Chưa đăng nhập.');
-    return s.user_id;
+  function setUser(u) {
+    user = u ? { uid: u.uid, email: u.email || '' } : null;
+    setHint(user);
   }
 
   const api = {
     enabled,
-    signedIn: () => !!readSession(),
-    userId: () => (readSession() || {}).user_id || null,
-    email: () => (readSession() || {}).email || '',
 
-    // Gửi liên kết đăng nhập tới email. Tự tạo tài khoản nếu chưa có.
-    async sendMagicLink(email) {
-      const to = encodeURIComponent(redirectTo);
-      await call('POST', '/auth/v1/otp?redirect_to=' + to, { body: { email, create_user: true }, auth: false });
-    },
-
-    googleUrl() {
-      return config.url + '/auth/v1/authorize?provider=google&redirect_to=' + encodeURIComponent(redirectTo);
-    },
-
-    // Xử lý #access_token sau khi người dùng quay lại từ email hoặc Google.
-    // Trả về null (không có gì), {ok, text} hoặc {ok:false, text}.
-    async handleCallback(hash) {
-      const parsed = parseAuthFragment(hash);
-      if (!parsed) return null;
-      if (parsed.error) return { ok: false, text: 'Đăng nhập không thành công: ' + parsed.error };
+    // Gọi một lần khi tải trang. Xử lý liên kết email hoặc quay lại từ Google, rồi đồng bộ
+    // trạng thái đăng nhập với SDK. Trả về null hoặc {ok, text, needEmail?}.
+    async init(href) {
+      if (!enabled) return null;
+      let notice = null;
       try {
-        const user = await fetchUser(parsed.access_token);
-        writeSession({
-          access_token: parsed.access_token,
-          refresh_token: parsed.refresh_token,
-          expires_at: now() + parsed.expires_in * 1000,
-          user_id: user.id,
-          email: user.email || '',
-        });
-        return { ok: true, text: 'Đã đăng nhập' + (user.email ? ' bằng ' + user.email : '') + '.' };
-      } catch (e) {
-        clearSession();
-        return { ok: false, text: 'Không xác nhận được tài khoản: ' + e.message };
+        if (!unsubscribe && sdk.onUser) unsubscribe = sdk.onUser(u => { if (!u) { user = null; setHint(null); } });
+        const current = await withTimeout(sdk.authReady(), timeoutMs);
+        setUser(current);
+        if (sdk.isEmailLink(href || '')) {
+          const email = getItem(LINK_KEY) || '';
+          if (email) {
+            notice = await api.finishEmailLink(email, href);
+          } else {
+            emailLinkHref = href;
+            notice = { ok: false, needEmail: true, text: 'Nhập email bạn đã dùng để nhận liên kết, để hoàn tất đăng nhập.' };
+          }
+        } else if (getItem(PENDING_KEY) === 'google') {
+          delItem(PENDING_KEY);
+          const u = await op(sdk.finishRedirect());
+          if (u) {
+            setUser(u);
+            notice = { ok: true, text: 'Đã đăng nhập bằng ' + (u.email || 'Google') + '.' };
+          }
+        }
+      } catch (err) {
+        if (codeOf(err) === 'auth/requires-recent-login') throw err;
+        notice = { ok: false, text: 'Không xác nhận được tài khoản: ' + fail(err).message };
+      }
+      return notice;
+    },
+
+    async finishEmailLink(email, href) {
+      const clean = String(email || '').trim();
+      const link = href || emailLinkHref;
+      if (!clean) return { ok: false, needEmail: true, text: 'Hãy nhập email.' };
+      try {
+        const u = await op(sdk.completeEmailLink(clean, link));
+        delItem(LINK_KEY);
+        emailLinkHref = '';
+        setUser(u);
+        return { ok: true, text: 'Đã đăng nhập bằng ' + u.email + '.' };
+      } catch (err) {
+        return { ok: false, text: 'Không đăng nhập được: ' + fail(err).message };
+      }
+    },
+
+    needsEmail() { return !!emailLinkHref; },
+
+    signedIn: () => !!user,
+    userId: () => (user ? user.uid : null),
+    email: () => (user ? user.email : ''),
+
+    // Gửi liên kết đăng nhập tới email. Firebase tự tạo tài khoản nếu chưa có.
+    async sendEmailLink(email) {
+      if (!enabled) throw new Error('Đám mây chưa được bật trên bản này.');
+      const clean = String(email || '').trim();
+      if (!clean) throw new Error('Hãy nhập email.');
+      try {
+        await op(sdk.sendEmailLink(clean, redirectTo));
+      } catch (err) {
+        throw fail(err);
+      }
+      setItem(LINK_KEY, clean);
+    },
+
+    // Chuyển sang Google. Trang sẽ rời đi và quay lại; init() nhận kết quả.
+    async signInWithGoogle() {
+      if (!enabled) throw new Error('Đám mây chưa được bật trên bản này.');
+      setItem(PENDING_KEY, 'google');
+      try {
+        await sdk.startGoogle(redirectTo);
+      } catch (err) {
+        delItem(PENDING_KEY);
+        throw fail(err);
       }
     },
 
     async signOut() {
-      const s = readSession();
-      if (s && enabled) {
-        try { await call('POST', '/auth/v1/logout', { token: s.access_token, body: {} }); } catch { /* token có thể đã hết hạn */ }
+      try {
+        if (enabled) await op(sdk.signOut());
+      } finally {
+        user = null;
+        setHint(null);
+        delItem(LINK_KEY);
       }
-      clearSession();
     },
 
-    clearSession,
-
     async pullPlan(uid) {
-      if (!UUID.test(uid)) throw new Error('Mã tài khoản không hợp lệ.');
-      const rows = await call('GET', `/rest/v1/${PLAN_TABLE}?select=state,updated_at&user_id=eq.${uid}`);
-      return rows && rows[0] ? rows[0] : null;
+      requireUid(uid);
+      const data = await op(sdk.getDoc('planners/' + uid));
+      if (!data || typeof data.state !== 'string') return null;
+      let state;
+      try { state = JSON.parse(data.state); } catch { throw new Error('Dữ liệu trên đám mây bị hỏng. Bản trên máy vẫn được giữ.'); }
+      return { state, updated_at: data.updatedAt || '' };
     },
 
     async pushPlan(uid, state) {
-      if (!UUID.test(uid)) throw new Error('Mã tài khoản không hợp lệ.');
-      await call('POST', `/rest/v1/${PLAN_TABLE}?on_conflict=user_id`, {
-        body: { user_id: uid, state, updated_at: state.updated || new Date(now()).toISOString() },
-        prefer: 'resolution=merge-duplicates,return=minimal',
-      });
+      requireUid(uid);
+      const json = JSON.stringify(state);
+      if (json.length > MAX_STATE) throw new Error('Kế hoạch quá lớn để đồng bộ. Hãy xoá bớt mục cũ.');
+      await op(sdk.setDoc('planners/' + uid, { state: json, updatedAt: sdk.serverNow() }));
+      // Mốc do MÁY CHỦ ghi: đọc lại đúng tài liệu vừa ghi (máy này có thể lệch giờ).
+      // Trả null nếu không đọc được mốc; khi đó máy giữ mốc cũ và lần sau tự đồng bộ lại.
+      const saved = await op(sdk.getDoc('planners/' + uid));
+      return saved && typeof saved.updatedAt === 'string' ? saved.updatedAt : null;
     },
 
     async deletePlan(uid) {
-      if (!UUID.test(uid)) throw new Error('Mã tài khoản không hợp lệ.');
-      await call('DELETE', `/rest/v1/${PLAN_TABLE}?user_id=eq.${uid}`);
+      requireUid(uid);
+      await op(sdk.deleteDoc('planners/' + uid));
+      await op(sdk.deleteCollection('users/' + uid + '/keys'));
     },
 
     async getProfile(uid) {
-      if (!UUID.test(uid)) throw new Error('Mã tài khoản không hợp lệ.');
-      const rows = await call('GET', `/rest/v1/profiles?select=display_name,class_name&id=eq.${uid}`);
-      return rows && rows[0] ? rows[0] : { display_name: '', class_name: '' };
+      requireUid(uid);
+      const data = await op(sdk.getDoc('users/' + uid));
+      return {
+        displayName: data && typeof data.displayName === 'string' ? data.displayName : '',
+        className: data && typeof data.className === 'string' ? data.className : '',
+      };
     },
 
-    async saveProfile(uid, { display_name, class_name }) {
-      if (!UUID.test(uid)) throw new Error('Mã tài khoản không hợp lệ.');
-      await call('POST', '/rest/v1/profiles?on_conflict=id', {
-        body: {
-          id: uid,
-          display_name: String(display_name || '').slice(0, 60),
-          class_name: String(class_name || '').slice(0, 40),
-          updated_at: new Date(now()).toISOString(),
-        },
-        prefer: 'resolution=merge-duplicates,return=minimal',
-      });
+    async saveProfile(uid, { displayName, className }) {
+      requireUid(uid);
+      await op(sdk.setDoc('users/' + uid, {
+        displayName: String(displayName || '').slice(0, 60),
+        className: String(className || '').slice(0, 40),
+        updatedAt: new Date(now()).toISOString(),
+      }, { merge: true }));
     },
 
-    // Xoá tài khoản và mọi dữ liệu liên quan (RPC delete_my_account, có cascade).
+    // Xoá toàn bộ dữ liệu trước, rồi mới xoá tài khoản. Thứ tự này bắt buộc: sau khi
+    // xoá tài khoản, Firestore không còn cho phép ghi dữ liệu của uid đó.
     async deleteAccount() {
-      requireUid();
-      await call('POST', '/rest/v1/rpc/delete_my_account', { body: {} });
-      clearSession();
+      const u = requireUser();
+      requireUid(u.uid);
+      const last = sdk.lastSignInMs ? sdk.lastSignInMs() : now();
+      if (now() - last > RECENT_LOGIN_MS) {
+        throw new Error(friendlyError('auth/requires-recent-login'));
+      }
+      await op(sdk.deleteDoc('planners/' + u.uid));
+      await op(sdk.deleteCollection('users/' + u.uid + '/keys'));
+      await op(sdk.deleteDoc('users/' + u.uid));
+      try {
+        await op(sdk.deleteAuthUser());
+      } catch (err) {
+        throw fail(err);
+      }
+      user = null;
+      setHint(null);
+      delItem(LINK_KEY);
     },
   };
   return api;

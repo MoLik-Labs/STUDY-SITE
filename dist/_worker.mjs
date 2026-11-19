@@ -5,7 +5,7 @@
 // Mọi tệp tĩnh khác do Cloudflare phục vụ trước, không tốn lượt gọi Worker.
 
 const VERSION = '12.0.0';
-const BUILD = 'b33cada67f43';
+const BUILD = '05ec3d88a62d';
 const BUILT_AT = '1970-01-01T00:00:00Z';
 
 const SECURITY = {

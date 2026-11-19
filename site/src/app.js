@@ -16,6 +16,32 @@ function fmtDay(date) {
   return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}`;
 }
 
+// Khối trang chủ: thứ tự và cỡ (wide = cả hàng, half = nửa hàng trên màn hình rộng).
+const HOME_BLOCKS = {
+  today: { label: 'Hôm nay', size: 'half' },
+  timer: { label: 'Hẹn giờ', size: 'half' },
+  week: { label: 'Lịch tuần', size: 'wide' },
+  courses: { label: 'Môn của tôi', size: 'wide' },
+};
+const HOME_KEY = 'sf.home.v1';
+const HOME_DEFAULT = Object.keys(HOME_BLOCKS);
+
+function homeLayout(storage) {
+  let order = HOME_DEFAULT.slice();
+  try {
+    const raw = storage ? JSON.parse(storage.getItem(HOME_KEY) || 'null') : null;
+    if (Array.isArray(raw) && raw.length === HOME_DEFAULT.length && HOME_DEFAULT.every(id => raw.includes(id))) order = raw;
+  } catch { /* bố cục hỏng: dùng mặc định */ }
+  const put = next => {
+    try { storage?.setItem(HOME_KEY, JSON.stringify(next)); } catch { /* không lưu được thì vẫn chạy trong phiên này */ }
+  };
+  return {
+    get order() { return order; },
+    save(next) { order = next.slice(); put(order); },
+    reset() { order = HOME_DEFAULT.slice(); put(order); },
+  };
+}
+
 export function mountApp(root, { storage, page, win = globalThis, now = () => new Date(), cloud = null, notice = null }) {
   const doc = root.ownerDocument;
 
@@ -52,6 +78,9 @@ export function mountApp(root, { storage, page, win = globalThis, now = () => ne
   let uploadTimer = 0;
   let profile = null;      // { displayName, className } khi đã tải
   let profileFor = null;   // uid của hồ sơ đã tải, để không tải lại
+  let firstPaint = true;   // khối trang chủ chỉ xuất hiện (animation) ở lần dựng đầu tiên
+  let arranging = false;   // chế độ sắp xếp bố cục trang chủ
+  const home = homeLayout(storage);
 
   function persist(next) {
     state = { ...next, updated: new Date().toISOString() };
@@ -203,10 +232,40 @@ export function mountApp(root, { storage, page, win = globalThis, now = () => ne
       focus);
   }
 
+  // ---------- Bố cục trang chủ: người dùng tự sắp xếp các khối (lưu trên máy) ----------
+  function moveBlock(id, dir) {
+    const order = home.order.slice();
+    const i = order.indexOf(id);
+    const j = i + dir;
+    if (i < 0 || j < 0 || j >= order.length) return;
+    [order[i], order[j]] = [order[j], order[i]];
+    home.save(order);
+    render();
+    // Giữ tiêu điểm trên đúng nút vừa bấm, dù khối đã được dựng lại.
+    const pick = root.querySelector(`[data-block="${id}"] .move button:${dir < 0 ? 'first' : 'last'}-child`);
+    const any = root.querySelector(`[data-block="${id}"] .move button:not([disabled])`);
+    (pick && !pick.disabled ? pick : any)?.focus();
+  }
+
+  function homeBlock(id, body, idx) {
+    const info = HOME_BLOCKS[id];
+    const last = home.order.length - 1;
+    const moves = arranging ? h('div', { class: 'move' },
+      h('button', { type: 'button', class: 'ghost sm', disabled: idx === 0, 'aria-label': `Đưa khối ${info.label} lên trên`, onclick: () => moveBlock(id, -1) }, '↑ Lên'),
+      h('button', { type: 'button', class: 'ghost sm', disabled: idx === last, 'aria-label': `Đưa khối ${info.label} xuống dưới`, onclick: () => moveBlock(id, 1) }, '↓ Xuống')) : null;
+    return h('div', { class: 'block', 'data-block': id, 'data-size': info.size, 'data-arranging': arranging ? 'true' : null }, moves, body);
+  }
+
   function plannerView() {
+    const parts = { today: todayPanel(), timer: timer.element(), week: weekView(), courses: sidebar() };
     return h('div', { class: 'planner' }, alertBox(),
-      h('div', { class: 'planner-top' }, todayPanel(), timer.element()),
-      h('div', { class: 'planner-grid' }, weekView(), sidebar()));
+      h('div', { class: 'home-tools' },
+        h('p', { class: 'meta' }, arranging ? 'Dùng nút Lên và Xuống để đổi thứ tự các khối.' : null),
+        h('div', { class: 'home-actions' },
+          arranging ? h('button', { type: 'button', class: 'ghost sm', onclick: () => { home.reset(); render(); } }, 'Đặt lại bố cục') : null,
+          h('button', { type: 'button', class: 'ghost sm', 'aria-pressed': arranging ? 'true' : 'false',
+            onclick: () => { arranging = !arranging; render(); } }, arranging ? 'Xong' : 'Sắp xếp trang'))),
+      h('div', { class: 'home' }, home.order.map((id, i) => homeBlock(id, parts[id], i))));
   }
 
   // ---------- Trang môn có sẵn ----------
@@ -479,6 +538,8 @@ export function mountApp(root, { storage, page, win = globalThis, now = () => ne
     const kind = page.split(':')[0];
     const slug = page.split(':')[1];
     timer.dispose(); // bộ đếm chỉ chạy khi đang ở trang chủ; plannerView() dựng lại khi cần
+    root.classList.toggle('first-paint', firstPaint);
+    firstPaint = false;
     let body;
     if (kind === 'planner') {
       const m = CUSTOM_HASH.exec(win.location.hash || '');

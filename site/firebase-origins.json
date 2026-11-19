@@ -1,0 +1,19 @@
+{
+  "connect": [
+    "https://identitytoolkit.googleapis.com",
+    "https://securetoken.googleapis.com",
+    "https://firestore.googleapis.com",
+    "https://www.googleapis.com",
+    "https://*.firebaseapp.com",
+    "https://content-firebaseappcheck.googleapis.com"
+  ],
+  "script": [
+    "https://apis.google.com",
+    "https://www.google.com",
+    "https://www.gstatic.com"
+  ],
+  "frame": [
+    "https://*.firebaseapp.com",
+    "https://www.google.com"
+  ]
+}

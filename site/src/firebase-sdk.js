@@ -3,10 +3,12 @@
 // Cấu hình (apiKey, authDomain, projectId, appId) là khoá CÔNG KHAI của web app, không phải bí mật;
 // bảo vệ dữ liệu nằm ở firestore.rules, không nằm ở khoá này.
 import { initializeApp } from 'firebase/app';
+import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
 import {
   initializeAuth, indexedDBLocalPersistence, browserLocalPersistence, browserPopupRedirectResolver,
   GoogleAuthProvider, signInWithRedirect, getRedirectResult, sendSignInLinkToEmail,
   isSignInWithEmailLink, signInWithEmailLink, onAuthStateChanged, signOut, deleteUser,
+  createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification,
 } from 'firebase/auth';
 import {
   getFirestore, doc, getDoc, setDoc, deleteDoc, collection, getDocs, writeBatch, query, where, orderBy,
@@ -25,12 +27,21 @@ export function createSdk(config) {
     projectId: config.projectId,
     appId: config.appId,
   });
+  // App Check (reCAPTCHA v3, miễn phí): gắn token vào mọi yêu cầu tới Auth và Firestore để chặn
+  // client giả dùng khoá công khai. Chỉ bật khi có khoá site key. Lỗi khởi tạo KHÔNG được làm
+  // hỏng đăng nhập: app vẫn chạy, chỉ thiếu token. Bật "Enforce" là việc của chủ dự án (xem FIREBASE-SETUP).
+  if (config.appCheckKey) {
+    try {
+      initializeAppCheck(app, { provider: new ReCaptchaV3Provider(config.appCheckKey), isTokenAutoRefreshEnabled: true });
+    } catch { /* bỏ qua: đăng nhập vẫn chạy */ }
+  }
   // IndexedDB trước, localStorage dự phòng. Không dùng popup: _headers đặt COOP same-origin,
   // và đăng nhập Google đi bằng chuyển hướng (signInWithRedirect) nên không cần cửa sổ phụ.
   const auth = initializeAuth(app, {
     persistence: [indexedDBLocalPersistence, browserLocalPersistence],
     popupRedirectResolver: browserPopupRedirectResolver,
   });
+  auth.languageCode = 'vi'; // email xác nhận và trang đặt lại mật khẩu của Firebase bằng tiếng Việt
   const db = getFirestore(app);
   const userOf = u => (u ? { uid: u.uid, email: u.email || '', lastSignInMs: Date.parse(u.metadata && u.metadata.lastSignInTime) || 0 } : null);
 
@@ -62,6 +73,19 @@ export function createSdk(config) {
     },
     async sendEmailLink(email, url) {
       await sendSignInLinkToEmail(auth, email, { url, handleCodeInApp: true });
+    },
+    async signUpWithPassword(email, password, url) {
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      // Email xác nhận là phụ: lỗi gửi không làm hỏng việc tạo tài khoản.
+      try { await sendEmailVerification(cred.user, { url }); } catch { /* bỏ qua */ }
+      return userOf(cred.user);
+    },
+    async signInWithPassword(email, password) {
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      return userOf(cred.user);
+    },
+    async sendPasswordReset(email, url) {
+      await sendPasswordResetEmail(auth, email, { url });
     },
     async startGoogle() {
       const provider = new GoogleAuthProvider();

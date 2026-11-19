@@ -10,6 +10,7 @@
 export const HINT_KEY = 'sf.account';      // {uid, email}: để biết đã đăng nhập trước khi SDK tải xong
 export const LINK_KEY = 'sf.emailForSignIn'; // email đã nhập để gửi liên kết (đăng nhập trên cùng máy)
 export const PENDING_KEY = 'sf.auth.pending'; // 'google' khi đang chờ quay lại từ Google
+export const MIN_PASSWORD = 8;                 // tối thiểu phía client; Firebase có thể yêu cầu cao hơn
 const UID = /^[A-Za-z0-9_-]{1,128}$/;
 const MAX_STATE = 900_000;                 // Firestore giới hạn 1 MiB mỗi tài liệu
 const RECENT_LOGIN_MS = 4 * 60 * 1000;     // Firebase yêu cầu đăng nhập trong ~5 phút để xoá tài khoản
@@ -48,6 +49,18 @@ const MESSAGES = {
   'auth/unauthorized-domain': 'Tên miền này chưa được thêm vào Authorized domains của Firebase.',
   'auth/requires-recent-login': 'Vì bảo mật, hãy đăng xuất, đăng nhập lại rồi xoá tài khoản ngay.',
   'auth/popup-closed-by-user': 'Đăng nhập bị huỷ.',
+  // Email + mật khẩu. "invalid-credential" gộp cả sai email lẫn sai mật khẩu (bật Email enumeration
+  // protection trong Firebase), nên câu thông báo cũng không tiết lộ email đã đăng ký hay chưa.
+  'auth/invalid-credential': 'Email hoặc mật khẩu chưa đúng.',
+  'auth/wrong-password': 'Email hoặc mật khẩu chưa đúng.',
+  'auth/user-not-found': 'Email hoặc mật khẩu chưa đúng.',
+  'auth/weak-password': 'Mật khẩu quá yếu. Dùng ít nhất 8 ký tự.',
+  'auth/email-already-in-use': 'Email này đã có tài khoản. Hãy đăng nhập.',
+  'auth/password-does-not-meet-requirements': 'Mật khẩu chưa đủ yêu cầu (ít nhất 8 ký tự, có chữ và số).',
+  'auth/missing-password': 'Hãy nhập mật khẩu.',
+  'auth/user-token-expired': 'Phiên đăng nhập đã hết hạn. Hãy đăng nhập lại.',
+  // Hết lượt gửi email của gói miễn phí trong ngày (tính chung cả dự án).
+  'auth/quota-exceeded': 'Hết lượt gửi email hôm nay trên gói miễn phí. Thử lại ngày mai.',
   'permission-denied': 'Không có quyền đọc hoặc ghi dữ liệu. Kiểm tra quy tắc Firestore.',
   'unavailable': 'Máy chủ tạm thời không sẵn sàng. Thử lại sau.',
   'resource-exhausted': 'Vượt hạn mức miễn phí hôm nay. Thử lại vào ngày mai.',
@@ -180,6 +193,36 @@ export function createCloud({ config, sdk, storage, now = () => Date.now(), redi
         throw fail(err);
       }
       setItem(LINK_KEY, clean);
+    },
+
+    // Email + mật khẩu (tài khoản tạo mới phải có mật khẩu đủ mạnh; Firebase tự kiểm tối thiểu).
+    // Tạo tài khoản: gửi email xác nhận (lỗi gửi không làm hỏng việc tạo tài khoản).
+    async signUpWithPassword(email, password) {
+      if (!enabled) throw new Error('Đám mây chưa được bật trên bản này.');
+      const clean = String(email || '').trim();
+      const pw = String(password || '');
+      if (!clean) throw Object.assign(new Error(friendlyError('auth/missing-email')), { code: 'auth/missing-email' });
+      if (pw.length < MIN_PASSWORD) throw Object.assign(new Error(friendlyError('auth/weak-password')), { code: 'auth/weak-password' });
+      const u = await op(sdk.signUpWithPassword(clean, pw, redirectTo));
+      setUser(u);
+      return { ok: true, text: 'Đã tạo tài khoản ' + u.email + '. Email xác nhận đã được gửi (nếu chưa thấy, kiểm tra thư rác).' };
+    },
+    async signInWithPassword(email, password) {
+      if (!enabled) throw new Error('Đám mây chưa được bật trên bản này.');
+      const clean = String(email || '').trim();
+      if (!clean) throw Object.assign(new Error(friendlyError('auth/missing-email')), { code: 'auth/missing-email' });
+      if (!password) throw Object.assign(new Error(friendlyError('auth/missing-password')), { code: 'auth/missing-password' });
+      const u = await op(sdk.signInWithPassword(clean, String(password)));
+      setUser(u);
+      return { ok: true, text: 'Đã đăng nhập bằng ' + u.email + '.' };
+    },
+    // Gửi thư đặt lại mật khẩu. Luôn trả cùng một thông báo, không tiết lộ email có tồn tại hay không.
+    async sendPasswordReset(email) {
+      if (!enabled) throw new Error('Đám mây chưa được bật trên bản này.');
+      const clean = String(email || '').trim();
+      if (!clean) throw Object.assign(new Error(friendlyError('auth/missing-email')), { code: 'auth/missing-email' });
+      await op(sdk.sendPasswordReset(clean, redirectTo));
+      return { ok: true, text: 'Nếu email này đã đăng ký, thư đặt lại mật khẩu đã được gửi.' };
     },
 
     // Chuyển sang Google. Trang sẽ rời đi và quay lại; init() nhận kết quả.

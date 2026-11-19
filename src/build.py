@@ -98,7 +98,12 @@ ver_js = "/* phiên bản — sinh từ src/build.py */\nconst APP_VERSION = '" 
 # ================================================================
 # Cấu hình Firebase KHÔNG nằm trong bản build: tài khoản.js đọc /assets/config.js lúc chạy
 # (Worker phục vụ từ biến môi trường FIREBASE_*). Bản build chỉ có chế độ khách nếu thiếu cấu hình.
-CLOUD_ORIGIN = ''  # CSP connect-src tới Firebase do site/build.mjs thêm vào
+# Máy chủ Firebase và reCAPTCHA: cùng danh sách với site/build.mjs (một nguồn, site/firebase-origins.json).
+import json as _json
+_ORIGINS = _json.load(io.open(os.path.join(ROOT, 'site', 'firebase-origins.json'), encoding='utf-8'))
+CONNECT_ORIGINS = ' '.join(_ORIGINS['connect'])
+SCRIPT_ORIGINS = ' '.join(_ORIGINS['script'])
+FRAME_ORIGINS = ' '.join(_ORIGINS['frame'])
 
 MODULES = [
     ('DỮ LIỆU LỘ TRÌNH', 'data',
@@ -321,15 +326,15 @@ build_id = hashlib.sha256(html.encode('utf-8')).hexdigest()[:12]
 #     vẫn giữ 'unsafe-inline' để giao diện không vỡ trên trình duyệt cũ.
 csp = '; '.join([
     "default-src 'self'",
-    "script-src 'self' " + script_hashes,
+    "script-src 'self' " + SCRIPT_ORIGINS + ' ' + script_hashes,
     "style-src 'self' 'unsafe-inline'",
     "style-src-elem 'self' " + style_hash,
     "style-src-attr 'unsafe-inline'",
     "font-src 'self'",
     "img-src 'self' data: https://i.ytimg.com https://*.ytimg.com blob:",
     "media-src 'self' blob: https:",
-    "frame-src https://www.youtube-nocookie.com https://www.youtube.com",
-    "connect-src 'self'" + (' ' + CLOUD_ORIGIN if CLOUD_ORIGIN else ''),
+    "frame-src " + FRAME_ORIGINS + " https://www.youtube-nocookie.com https://www.youtube.com",
+    "connect-src 'self' " + CONNECT_ORIGINS,
     "worker-src 'self'",
     "manifest-src 'self'",
     "object-src 'none'",

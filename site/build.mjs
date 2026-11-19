@@ -5,6 +5,7 @@
 // app shell + các chunk tải lười (Firebase chỉ tải khi cần), bản Vật lí tại /physic/ (do src/build.py
 // --physics-only sinh), _headers với CSP băm, sw.js, _worker.mjs, 404.html.
 // Cấu hình Firebase KHÔNG nằm trong dist/: Worker đọc biến môi trường lúc chạy (xem /assets/config.js).
+import { readFileSync } from 'node:fs';
 import { cp, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
@@ -56,30 +57,32 @@ export async function buildPhysics(out) {
   return csp;
 }
 
-// Máy chủ Firebase mà trình duyệt cần gọi. Cố định trong CSP vì _headers là tệp tĩnh.
-// Đăng nhập Google và liên kết email đi qua <project>.firebaseapp.com (authDomain mặc định).
-// Nếu bạn dùng authDomain riêng, thêm tên miền đó vào frame-src và connect-src (xem docs/FIREBASE-SETUP.md).
-const FIREBASE_CONNECT = [
-  'https://identitytoolkit.googleapis.com',
-  'https://securetoken.googleapis.com',
-  'https://firestore.googleapis.com',
-  'https://www.googleapis.com',
-  'https://*.firebaseapp.com',
-];
-const FIREBASE_SCRIPT = ['https://apis.google.com'];
-const FIREBASE_FRAME = ['https://*.firebaseapp.com'];
+// Máy chủ Firebase và reCAPTCHA (App Check) mà trình duyệt cần gọi. Danh sách nằm trong
+// firebase-origins.json, dùng chung với src/build.py: meta CSP của bản Vật lí và header của site
+// phải giống nhau. Trình duyệt áp dụng cả hai, nên thiếu ở một chỗ là chặn hết kết nối.
+const ORIGINS = JSON.parse(readFileSync(path.join(HERE, 'firebase-origins.json'), 'utf8'));
 
-// CSP của site = CSP của bản Vật lí, với các máy chủ Firebase được mở thêm.
+// Thêm các origin còn thiếu vào một directive (không nhân đôi). connect-src và script-src phải có sẵn
+// (thiếu là lỗi cấu hình). frame-src thiếu thì thêm mới, vì bản Vật lí không luôn có directive này.
+function withOrigins(csp, directive, origins) {
+  const re = new RegExp('(^|; )' + directive + ' ([^;]*)');
+  const m = csp.match(re);
+  if (!m) {
+    if (directive === 'frame-src') return csp + '; frame-src ' + origins.join(' ');
+    throw new Error('CSP không có ' + directive);
+  }
+  const have = new Set(m[2].split(/\s+/));
+  const add = origins.filter(o => !have.has(o));
+  if (!add.length) return csp;
+  return csp.replace(re, (all, pre, list) => pre + directive + ' ' + list + ' ' + add.join(' '));
+}
+
+// CSP của site = CSP của bản Vật lí, với các máy chủ Firebase/reCAPTCHA đảm bảo có mặt.
 // Script vẫn bị giới hạn 'self' + băm; không có 'unsafe-inline' hay 'unsafe-eval'.
 export function siteCsp(physicsCsp) {
-  let next = physicsCsp.replace(/connect-src 'self'[^;]*/, "connect-src 'self' " + FIREBASE_CONNECT.join(' '));
-  if (next === physicsCsp) throw new Error('CSP bản Vật lí không có connect-src \'self\' để thay');
-  const before = next;
-  next = next.replace(/script-src 'self'/, "script-src 'self' " + FIREBASE_SCRIPT.join(' '));
-  if (next === before) throw new Error('CSP bản Vật lí không có script-src \'self\' để thay');
-  // Không thêm frame-src thứ hai (trình duyệt bỏ qua directive trùng): gộp vào frame-src đã có.
-  if (/frame-src /.test(next)) return next.replace(/frame-src /, 'frame-src ' + FIREBASE_FRAME.join(' ') + ' ');
-  return next + '; frame-src ' + FIREBASE_FRAME.join(' ');
+  let next = withOrigins(physicsCsp, 'connect-src', ORIGINS.connect);
+  next = withOrigins(next, 'script-src', ORIGINS.script);
+  return withOrigins(next, 'frame-src', ORIGINS.frame);
 }
 
 // Gom JS của site: boot.js (trang) và firebase-sdk.js (Firebase, tải lười) là hai entry; phần dùng chung thành chunk.

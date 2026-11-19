@@ -73,6 +73,7 @@ export function mountApp(root, { storage, page, win = globalThis, now = () => ne
   let saveOk = loaded.available;
   let anchor = now();
   let armedDelete = null;
+  let authMode = 'signin'; // 'signin' | 'signup' — form email + mật khẩu
   let accountMsg = notice; // { ok, text } từ lần đăng nhập vừa quay lại hoặc thao tác gần nhất
   let syncInfo = { status: 'idle', at: null, error: '' };
   let uploadTimer = 0;
@@ -404,20 +405,34 @@ export function mountApp(root, { storage, page, win = globalThis, now = () => ne
           h('label', {}, 'Email', confirm),
           h('button', { type: 'submit' }, 'Hoàn tất đăng nhập')));
     }
+    // Email + mật khẩu là cách chính. Email link (5 lượt/ngày toàn dự án trên gói miễn phí) và Google
+    // là phương án phụ.
+    const signup = authMode === 'signup';
     const email = h('input', { type: 'email', name: 'email', required: true, autocomplete: 'email', placeholder: 'ban@example.com', 'aria-label': 'Email' });
+    const pw = h('input', {
+      type: 'password', name: 'password', required: true, ...(signup ? { minlength: 8 } : {}),
+      autocomplete: signup ? 'new-password' : 'current-password',
+      placeholder: signup ? 'Ít nhất 8 ký tự' : 'Mật khẩu', 'aria-label': 'Mật khẩu',
+    });
+    const tab = (mode, label) => h('button', {
+      type: 'button', class: mode === authMode ? 'chip is-on' : 'chip', 'aria-pressed': mode === authMode ? 'true' : 'false',
+      onclick: () => { authMode = mode; accountMsg = null; render(); },
+    }, label);
+    const busy = (btn, text) => { btn.disabled = true; btn.textContent = text; };
     return h('div', { class: 'auth-card' },
       h('h2', {}, 'Đăng nhập để đồng bộ'),
       h('p', { class: 'fine' }, 'Đăng nhập để dùng kế hoạch trên nhiều thiết bị. Không đăng nhập vẫn dùng đầy đủ, dữ liệu chỉ nằm trên máy này.'),
+      h('div', { class: 'auth-seg', role: 'group', 'aria-label': 'Cách đăng nhập' }, tab('signin', 'Đăng nhập'), tab('signup', 'Tạo tài khoản')),
       h('form', {
         class: 'stack-form',
         onsubmit: async e => {
           e.preventDefault();
-          const value = email.value.trim();
-          accountMsg = { ok: true, text: 'Đang gửi liên kết…' };
-          render();
+          const btn = e.submitter || e.target.querySelector('button[type=submit]');
+          busy(btn, signup ? 'Đang tạo…' : 'Đang đăng nhập…');
           try {
-            await cloud.sendEmailLink(value);
-            accountMsg = { ok: true, text: 'Đã gửi liên kết đăng nhập tới ' + value + '. Mở liên kết trong email trên cùng trình duyệt này.' };
+            accountMsg = signup
+              ? await cloud.signUpWithPassword(email.value, pw.value)
+              : await cloud.signInWithPassword(email.value, pw.value);
           } catch (err) {
             accountMsg = { ok: false, text: err.message };
           }
@@ -425,7 +440,41 @@ export function mountApp(root, { storage, page, win = globalThis, now = () => ne
         },
       },
         h('label', {}, 'Email', email),
-        h('button', { type: 'submit' }, 'Gửi liên kết đăng nhập')),
+        h('label', {}, 'Mật khẩu', pw),
+        h('button', { type: 'submit' }, signup ? 'Tạo tài khoản' : 'Đăng nhập')),
+      h('button', {
+        type: 'button', class: 'ghost wide',
+        onclick: async () => {
+          const value = email.value.trim();
+          if (!value) { accountMsg = { ok: false, text: 'Nhập email ở trên, rồi bấm lại để nhận thư đặt lại mật khẩu.' }; render(); return; }
+          try {
+            accountMsg = await cloud.sendPasswordReset(value);
+          } catch (err) {
+            accountMsg = { ok: false, text: err.message };
+          }
+          render();
+        },
+      }, 'Quên mật khẩu?'),
+      h('div', { class: 'or' }, 'hoặc'),
+      h('details', { class: 'fine' },
+        h('summary', {}, 'Đăng nhập không cần mật khẩu'),
+        h('p', { class: 'fine' }, 'Gửi liên kết tới email. Gói miễn phí chỉ cho phép một số lượt gửi mỗi ngày trên toàn dự án, nên nếu không nhận được liên kết, hãy dùng mật khẩu hoặc thử lại ngày mai.'),
+        h('button', {
+          type: 'button', class: 'ghost wide',
+          onclick: async () => {
+            const value = email.value.trim();
+            if (!value) { accountMsg = { ok: false, text: 'Nhập email ở trên trước.' }; render(); return; }
+            accountMsg = { ok: true, text: 'Đang gửi liên kết…' };
+            render();
+            try {
+              await cloud.sendEmailLink(value);
+              accountMsg = { ok: true, text: 'Đã gửi liên kết đăng nhập tới ' + value + '. Mở liên kết trong email trên cùng trình duyệt này.' };
+            } catch (err) {
+              accountMsg = { ok: false, text: err.message };
+            }
+            render();
+          },
+        }, 'Gửi liên kết tới email')),
       h('div', { class: 'or' }, 'hoặc'),
       h('button', {
         type: 'button', class: 'ghost wide',

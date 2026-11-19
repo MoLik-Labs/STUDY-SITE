@@ -22,7 +22,7 @@ service cloud.firestore {
       allow create, update: if signedInAs(uid)
         && request.resource.data.keys().hasOnly(['state', 'updatedAt'])
         && text(request.resource.data.state, 900000)
-        && text(request.resource.data.updatedAt, 40);
+        && request.resource.data.updatedAt == request.time;
     }
 
     // Hồ sơ: tên hiển thị, lớp (site); khối lớp và tên hiển thị cũ (Vật lí).
@@ -42,7 +42,7 @@ service cloud.firestore {
           && key.matches('^[A-Za-z0-9_-]{1,40}$')
           && request.resource.data.keys().hasOnly(['value', 'updatedAt'])
           && text(request.resource.data.value, 900000)
-          && text(request.resource.data.updatedAt, 40);
+          && request.resource.data.updatedAt == request.time;
       }
     }
 

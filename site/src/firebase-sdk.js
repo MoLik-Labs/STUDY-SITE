@@ -10,6 +10,7 @@ import {
 } from 'firebase/auth';
 import {
   getFirestore, doc, getDoc, setDoc, deleteDoc, collection, getDocs, writeBatch, query, where, orderBy,
+  serverTimestamp, Timestamp,
 } from 'firebase/firestore/lite';
 
 import { friendlyError } from './cloud.js';
@@ -76,9 +77,15 @@ export function createSdk(config) {
     async deleteAuthUser() {
       if (auth.currentUser) await deleteUser(auth.currentUser);
     },
+    // updatedAt do máy chủ ghi (Timestamp) được trả về dạng chuỗi ISO, như listDocs.
     async getDoc(path) {
       const snap = await getDoc(doc(db, path));
-      return snap.exists() ? snap.data() : null;
+      if (!snap.exists()) return null;
+      const data = snap.data();
+      if (data.updatedAt && typeof data.updatedAt.toDate === 'function') {
+        data.updatedAt = data.updatedAt.toDate().toISOString();
+      }
+      return data;
     },
     setDoc(path, data, opts) {
       return setDoc(doc(db, path), data, opts || {});
@@ -86,11 +93,22 @@ export function createSdk(config) {
     deleteDoc: path => deleteDoc(doc(db, path)),
     deleteCollection: deleteDocs,
     friendly: friendlyError,
-    // Các tài liệu trong một thư mục (ví dụ users/{uid}/keys). since: chỉ lấy tài liệu có updatedAt > since (ISO).
+    // Dấu thời gian do MÁY CHỦ ghi (không dựa vào đồng hồ từng máy: máy lệch giờ sẽ làm mất thay đổi).
+    serverNow: () => serverTimestamp(),
+    // Các tài liệu trong một thư mục (ví dụ users/{uid}/keys). since (ISO): chỉ lấy tài liệu có updatedAt > since.
+    // updatedAt trả về dưới dạng chuỗi ISO để phía trên không phải biết về Timestamp.
     async listDocs(path, since) {
       const ref = collection(db, path);
-      const snap = await getDocs(since ? query(ref, where('updatedAt', '>', since), orderBy('updatedAt')) : ref);
-      return snap.docs.map(d => ({ id: d.id, data: d.data() }));
+      const q = since
+        ? query(ref, where('updatedAt', '>', Timestamp.fromDate(new Date(since))), orderBy('updatedAt'))
+        : ref;
+      const snap = await getDocs(q);
+      return snap.docs.map(d => {
+        const data = d.data();
+        const ts = data.updatedAt;
+        const iso = ts && typeof ts.toDate === 'function' ? ts.toDate().toISOString() : (typeof ts === 'string' ? ts : '');
+        return { id: d.id, data: { ...data, updatedAt: iso } };
+      });
     },
     // Ghi nhiều tài liệu trong một lô (tối đa BATCH mỗi lô).
     async setDocs(items) {

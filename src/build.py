@@ -170,7 +170,7 @@ if PHYSICS_ONLY:
     # đặt...) đưa về #/physics. Trình nghe được gắn trước app.js nên chặn được
     # cả việc app vẽ trang cũ. Lần đầu dùng replaceState (không sinh sự kiện).
     ENTRY_JS = r"""(function(){
-var OK=/^#\/(physics|solve|build|builder|sim|calc|flash|qa|discover|papers|exam|review|stats|library|notes|read|lesson)(\/|\?|$)/;
+var OK=/^#\/(physics|account|solve|build|builder|sim|calc|flash|qa|discover|papers|exam|review|stats|library|notes|read|lesson)(\/|\?|$)/;
 if(!OK.test(location.hash||'')){history.replaceState(null,'',location.pathname+'#/physics');}
 window.addEventListener('hashchange',function(e){
   if(!OK.test(location.hash||'')){e.stopImmediatePropagation();location.hash='#/physics';}

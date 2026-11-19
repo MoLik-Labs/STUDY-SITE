@@ -16,13 +16,20 @@ const RECENT_LOGIN_MS = 4 * 60 * 1000;     // Firebase yêu cầu đăng nhập 
 
 // Quyết định đồng bộ theo mốc thời gian của lần ghi cuối. Trả về 'pull' | 'push' | 'none'.
 // Bên nào mới hơn thắng; bên còn lại được ghi đè (bản local được sao lưu trước khi kéo về).
-export function decideSync(localUpdated, remoteUpdated) {
+// baseUpdated: mốc SERVER của lần đồng bộ gần nhất (null nếu chưa đồng bộ lần nào).
+// Máy có sửa gì không và đám mây có đổi không được so với mốc này bằng chuỗi,
+// nên không phụ thuộc đồng hồ máy. Chỉ khi CẢ HAI bên cùng đổi (sửa lúc offline)
+// mới so thời gian; khi đó bên mới hơn thắng.
+export function decideSync(localUpdated, remoteUpdated, baseUpdated = null) {
   const local = Date.parse(localUpdated);
   const remote = Date.parse(remoteUpdated);
   const hasLocal = Number.isFinite(local);
   const hasRemote = Number.isFinite(remote);
-  if (!hasRemote) return hasLocal ? 'push' : 'none';
-  if (!hasLocal) return 'pull';
+  const localDirty = hasLocal && localUpdated !== baseUpdated;
+  if (!hasRemote) return localDirty ? 'push' : 'none'; // đã xoá trên đám mây thì không tự phục hồi
+  const remoteChanged = remoteUpdated !== baseUpdated;
+  if (!remoteChanged) return localDirty ? 'push' : 'none';
+  if (!localDirty) return 'pull';
   if (remote > local) return 'pull';
   if (remote < local) return 'push';
   return 'none';
@@ -210,7 +217,11 @@ export function createCloud({ config, sdk, storage, now = () => Date.now(), redi
       requireUid(uid);
       const json = JSON.stringify(state);
       if (json.length > MAX_STATE) throw new Error('Kế hoạch quá lớn để đồng bộ. Hãy xoá bớt mục cũ.');
-      await op(sdk.setDoc('planners/' + uid, { state: json, updatedAt: new Date(now()).toISOString() }));
+      await op(sdk.setDoc('planners/' + uid, { state: json, updatedAt: sdk.serverNow() }));
+      // Mốc do MÁY CHỦ ghi: đọc lại đúng tài liệu vừa ghi (máy này có thể lệch giờ).
+      // Trả null nếu không đọc được mốc; khi đó máy giữ mốc cũ và lần sau tự đồng bộ lại.
+      const saved = await op(sdk.getDoc('planners/' + uid));
+      return saved && typeof saved.updatedAt === 'string' ? saved.updatedAt : null;
     },
 
     async deletePlan(uid) {

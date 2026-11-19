@@ -2,8 +2,8 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-4/MmPVf0Mr3TyED0Mh1LdOAWgphUND7BIXbI89UowzE=' 'sha256-bG06IHf8q1JxTaRB+a0o1jIY3+RlI51d5FLPEcKmUow=' 'sha256-CVgmugMy9TWKCz0mYkLD7pECAcciabLcLfhp88vbBaU=' 'sha256-3tSK5oOt7ZtKE2JWKIdqprAOQe4ZOGVIQ+7XgzbaagE=' 'sha256-sOd0y4SOPXrpawQP+aOf40rzyxeyxGOkz0h0cVXa3zU=' 'sha256-9NY09AQ6qbJ7knzGyIB9B5WpFI/h2McqCUeTYPox2vU=' 'sha256-5S5eUaonxJbMpPzJY1/gaRSMS+BNMpPg1Vt8BbSxbdU='; style-src 'self' 'unsafe-inline'; style-src-elem 'self' 'sha256-xXVJlLofPNeaujXTGKlDUvBsBMFLPC5/zfv0XiFeozk='; style-src-attr 'unsafe-inline'; font-src 'self'; img-src 'self' data: https://i.ytimg.com https://*.ytimg.com blob:; media-src 'self' blob: https:; frame-src https://www.youtube-nocookie.com https://www.youtube.com; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests">
-<meta name="build-id" content="af77b6ddfd53">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-onf9VX7FJtEb/civ7NxSTTbxdNvz4es05Pgd1wU0cdE=' 'sha256-bG06IHf8q1JxTaRB+a0o1jIY3+RlI51d5FLPEcKmUow=' 'sha256-CVgmugMy9TWKCz0mYkLD7pECAcciabLcLfhp88vbBaU=' 'sha256-3tSK5oOt7ZtKE2JWKIdqprAOQe4ZOGVIQ+7XgzbaagE=' 'sha256-hE2Roa17Xm1AGIc0iVgZUWd3I1bW7PjUujutY3ACpP8=' 'sha256-3CyHmwAhauNgU03O7DzoPmUxNrbw5xrKAzFOCLNILjE=' 'sha256-5S5eUaonxJbMpPzJY1/gaRSMS+BNMpPg1Vt8BbSxbdU='; style-src 'self' 'unsafe-inline'; style-src-elem 'self' 'sha256-xXVJlLofPNeaujXTGKlDUvBsBMFLPC5/zfv0XiFeozk='; style-src-attr 'unsafe-inline'; font-src 'self'; img-src 'self' data: https://i.ytimg.com https://*.ytimg.com blob:; media-src 'self' blob: https:; frame-src https://www.youtube-nocookie.com https://www.youtube.com; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests">
+<meta name="build-id" content="1e72f340f6b8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Vật lí — Học mọi thứ</title>
 <meta name="app-version" content="12.0">
@@ -3605,7 +3605,7 @@ body{line-height:var(--lh)}
 <!-- ===== ĐIỂM VÀO VẬT LÍ ===== -->
 <script>/* ---- điểm vào ---- */
 (function(){
-var OK=/^#\/(physics|solve|build|builder|sim|calc|flash|qa|discover|papers|exam|review|stats|library|notes|read|lesson)(\/|\?|$)/;
+var OK=/^#\/(physics|account|solve|build|builder|sim|calc|flash|qa|discover|papers|exam|review|stats|library|notes|read|lesson)(\/|\?|$)/;
 if(!OK.test(location.hash||'')){history.replaceState(null,'',location.pathname+'#/physics');}
 window.addEventListener('hashchange',function(e){
   if(!OK.test(location.hash||'')){e.stopImmediatePropagation();location.hash='#/physics';}
@@ -5666,9 +5666,12 @@ const COOKIE = 'vnl9core';
 const MAX_IMPORT = 4 * 1024 * 1024;
 /* Chỉ những khoá này được nhập từ tệp. Danh sách trắng, không phải danh sách
    đen: mọi thứ khác (kể cả __proto__, constructor) bị bỏ luôn tại cửa. */
+/* Gồm cả dữ liệu học do người dùng tạo (sổ điểm, thời khoá biểu, ôn tập, kế hoạch tuần,
+   đấu trường, khám phá). Thiếu khoá nào thì khoá đó không bao giờ được đồng bộ, không báo lỗi. */
 const SAFE_KEYS = ['done', 'watched', 'ans', 'mine', 'note', 'runs', 'days', 'calc', 'book',
-  'sheet', 'music', 'pomo', 'build', 'lab', 'cir', 'sim', 'school', 'pane', 'last', 'exam',
-  'goal', 'doneAt', 'prefs', 'pomoCfg', 'seenWelcome'];
+  'sheet', 'music', 'pomo', 'build', 'buildName', 'lab', 'cir', 'sim', 'school', 'pane', 'last', 'exam',
+  'goal', 'doneAt', 'prefs', 'pomoCfg', 'seenWelcome',
+  'grades', 'sched', 'study', 'weekly', 'game', 'explore'];
 const UNSAFE_KEY = /^(__proto__|prototype|constructor)$/;
 
 /* Sao chép sâu có kiểm soát: bỏ khoá nguy hiểm, chặn vòng lặp, chặn độ sâu
@@ -6275,6 +6278,7 @@ const Account = (() => {
   const PULL_SLACK = 60000;           /* lùi 60 giây: hai lần ghi lệch thứ tự không bị bỏ sót */
   const SKIP = ['prefs', 'pane', 'last', 'seenWelcome']; /* trạng thái riêng từng máy */
   const BATCH = 400;                  /* Firestore: một lô tối đa 500 thao tác */
+  const MAX_VALUE = 900000;           /* firestore.rules: value ≤ 900 000 ký tự */
   const PUSH_DELAY = 1500;
   const PULL_EVERY = 120000;
   const ERR_KEY = 'vnl9.acct_err';    /* lỗi cần hiện sau khi tải lại trang */
@@ -6284,8 +6288,9 @@ const Account = (() => {
   const CFG_URL = '/assets/config.js';   /* Worker phục vụ lúc chạy từ biến môi trường */
   const SDK_URL = '/assets/firebase-sdk.js';
 
-  let cloudCfg = null;
-  const cfgReady = import(CFG_URL).then(m => { cloudCfg = m.CLOUD || null; return cloudCfg; }, () => null);
+  let cloudCfg = null, cfgLoaded = false, askDelete = false;
+  const cfgReady = import(CFG_URL).then(m => { cloudCfg = m.CLOUD || null; return cloudCfg; }, () => null)
+    .then(v => { cfgLoaded = true; return v; });
   const enabled = () => !!(cloudCfg && cloudCfg.apiKey);
   let sdkPromise = null, sdkNow = null;
   const sdkOf = () => sdkPromise || (sdkPromise = import(SDK_URL).then(m => (sdkNow = m.createSdk(cloudCfg))));
@@ -6476,15 +6481,23 @@ const Account = (() => {
       const st = localState();
       const base = get(BASE_KEY) || {};
       const changed = syncKeys(st).filter(k => base[k] !== hashOf(st[k]));
-      for (let i = 0; i < changed.length; i += BATCH) {
-        const slice = changed.slice(i, i + BATCH);
-        const at = new Date().toISOString();
-        await sdk.setDocs(slice.map(k => ({
-          path: 'users/' + uid + '/keys/' + k,
-          data: { value: JSON.stringify(st[k] === undefined ? null : st[k]), updatedAt: at },
+      /* Một khoá quá lớn làm cả lô bị từ chối. Tách ra: khoá đó báo riêng, các khoá còn lại vẫn đẩy. */
+      const items = changed.map(k => ({ k, value: JSON.stringify(st[k] === undefined ? null : st[k]) }));
+      const tooBig = items.filter(it => it.value.length > MAX_VALUE).map(it => it.k);
+      const fit = items.filter(it => it.value.length <= MAX_VALUE);
+      for (let i = 0; i < fit.length; i += BATCH) {
+        const slice = fit.slice(i, i + BATCH);
+        await sdk.setDocs(slice.map(it => ({
+          path: 'users/' + uid + '/keys/' + it.k,
+          data: { value: it.value, updatedAt: sdk.serverNow() },
         })));
-        slice.forEach(k => { base[k] = hashOf(st[k]); });
+        slice.forEach(it => { base[it.k] = hashOf(st[it.k]); });
         put(BASE_KEY, base);
+      }
+      if (tooBig.length) {
+        lastError = 'Mục ' + tooBig.join(', ') + ' quá lớn để đồng bộ. Hãy xoá bớt dữ liệu cũ; các mục khác vẫn được đồng bộ.';
+        setSync('error');
+        return;
       }
       put(TIME_KEY, Date.now());
       lastError = '';
@@ -6608,6 +6621,8 @@ const Account = (() => {
     c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
   function view(s) {
+    /* cấu hình nạp bất đồng bộ: chưa xong thì chưa biết có bật đồng bộ không */
+    if (!cfgLoaded) return '<p class="muted">Đang tải…</p>';
     if (!s.enabled) {
       return `<p class="acct-lead">Đồng bộ đám mây chưa bật trên bản này.</p>
         <p class="muted">Bạn vẫn dùng đầy đủ mọi tính năng ở chế độ khách: dữ liệu nằm trên máy này.</p>`;
@@ -6646,7 +6661,10 @@ const Account = (() => {
       </form>
       <div class="acct-danger">
         <span>Xoá tài khoản sẽ xoá dữ liệu trên máy chủ. Dữ liệu trên máy này vẫn còn.</span>
-        <button class="btn ghost sm" type="button" data-acct="delete">Xoá tài khoản trên máy chủ</button>
+        ${askDelete
+          ? `<div class="acct-row"><button class="btn sm" type="button" data-acct="delete-yes">Xoá vĩnh viễn</button>
+        <button class="btn ghost sm" type="button" data-acct="delete-no">Huỷ</button></div>`
+          : `<button class="btn ghost sm" type="button" data-acct="delete">Xoá tài khoản trên máy chủ</button>`}
       </div>
       <p class="muted acct-msg" data-acct-msg role="status">${escH(s.error)}</p>`;
   }
@@ -6666,12 +6684,13 @@ const Account = (() => {
         if (what === 'sync') { await push(); say(syncState === 'error' ? lastError : 'Đã đồng bộ.'); }
         if (what === 'reload') { location.reload(); }
         if (what === 'out') { await signOut(); }
-        if (what === 'delete') {
-          uiConfirm('Xoá tài khoản', 'Xoá tài khoản và toàn bộ dữ liệu trên máy chủ? Dữ liệu trên máy này vẫn còn.',
-            async () => {
-              try { await deleteAccount(); render(true); }
-              catch (e) { say(e && e.message ? e.message : 'Không xoá được tài khoản lúc này. Thử lại sau.'); }
-            }, { danger: true, okText: 'Xoá tài khoản' });
+        /* xác nhận nội tuyến, không dùng hộp thoại chung: bản Vật lí không có module đó */
+        if (what === 'delete') { askDelete = true; render(true); return; }
+        if (what === 'delete-no') { askDelete = false; render(true); return; }
+        if (what === 'delete-yes') {
+          askDelete = false;
+          try { await deleteAccount(); render(true); }
+          catch (e) { render(true); say(e && e.message ? e.message : 'Không xoá được tài khoản lúc này. Thử lại sau.'); }
           return;
         }
       } catch (e) {
@@ -6726,6 +6745,7 @@ const Account = (() => {
     host = el;
     bind(el);
     render(true);
+    cfgReady.then(() => render(true));
     del(ERR_KEY);
   }
 
@@ -6775,6 +6795,20 @@ const Account = (() => {
     wipeCloud,
   };
 })();
+
+/* Trang #/account của bản Vật lí: cùng khối tài khoản với mục Cài đặt, mở trực tiếp được.
+   Bản Vật lí không có trang Cài đặt, nên không có trang này thì không ai đăng nhập được. */
+function renderAccountPage() {
+  $('#main').innerHTML = `<section class="wrap ab-page" aria-labelledby="acctTitle">
+    <div class="ab-card">
+      <span class="kicker">Tài khoản &amp; đồng bộ</span>
+      <h1 id="acctTitle">giữ tiến độ<br><em>trên mọi máy</em></h1>
+      <p class="ab-lead">Không đăng nhập vẫn học đầy đủ. Đăng nhập chỉ để đồng bộ tiến độ, ghi chú và câu sai giữa các máy.</p>
+      <div id="acctRoot" class="acct" aria-live="polite"></div>
+    </div>
+  </section>`;
+  Account.mount($('#acctRoot'));
+}
 
 
 /* ---- khung ứng dụng ---- */
@@ -8437,6 +8471,7 @@ function render(){
   if(p[0]==='progress') return routeOut(renderProgress());
   if(p[0]==='game') return routeOut(renderGame());
   if(p[0]==='physics') return routeOut(renderPhysics());
+  if(p[0]==='account') return routeOut(renderAccountPage());
   if(p[0]==='special') return routeOut(renderSpecial());
   if(p[0]==='share'&&p[1]==='lesson'&&p[2]&&p[3]) return routeOut(renderShareLesson(p[2],p[3]));
   if(p[0]==='share') return routeOut(renderShare());
@@ -9567,6 +9602,7 @@ const EXPLORE_GROUPS = [
     items: [
       { href: '#/subjects', vi: 'Chọn lớp & môn', en: 'Subjects', need: 'Cửa vào toàn bộ bài học theo lớp, theo môn', kw: 'khoa hoc lop mon bai hoc' },
       { href: '#/physics', vi: 'Mục Vật lí', en: 'Physics', need: 'Một chỗ cho cả Vật lí: lộ trình, 8 công cụ, công thức, chủ đề yếu', kw: 'vat li physics vat ly' },
+      { href: '#/account', vi: 'Tài khoản & đồng bộ', en: 'Account & sync', need: 'Đăng nhập để giữ tiến độ trên mọi máy. Không đăng nhập vẫn học đầy đủ', kw: 'tai khoan dang nhap dong bo sync google email' },
       { href: '#/library', vi: 'Thư viện bài giảng', en: 'Lectures', need: '236 bài giảng đã chọn lọc, lọc được theo chủ đề', kw: 'thu vien bai giang video' },
       { href: '#/notes', vi: 'Sổ tay công thức', en: 'Formula sheet', need: 'Tra 57 công thức, in ra được', kw: 'so tay cong thuc tra cuu' },
       { href: '#/papers', vi: 'Đề thi & lời giải', en: 'Papers', need: '54 bộ đề chuyên kèm hướng dẫn', kw: 'de thi chuyen hsg loi giai' },

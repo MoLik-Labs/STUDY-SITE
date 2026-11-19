@@ -115,9 +115,9 @@ Lệnh này chỉ đẩy quy tắc, không tạo gì khác và không mất phí
 
 | Đường dẫn | Nội dung | Ai dùng |
 |---|---|---|
-| `planners/{uid}` | `{ state: "<JSON>", updatedAt }` kế hoạch học | Trang chủ (lịch tuần) |
-| `users/{uid}` | `{ displayName, className, grade, updatedAt }` hồ sơ | Tài khoản, Vật lí |
-| `users/{uid}/keys/{khoá}` | `{ value: "<JSON>", updatedAt }` dữ liệu Vật lí theo khoá | Vật lí |
+| `planners/{uid}` | `{ state: "<JSON>", updatedAt }` kế hoạch học. `updatedAt` do máy chủ ghi (không dựa đồng hồ máy) | Trang chủ (lịch tuần) |
+| `users/{uid}` | `{ displayName, className, grade, updatedAt }` hồ sơ. `className` là tên lớp tự do (ví dụ 11A2), `grade` là khối lớp 1–12. Hai bên ghi bằng `merge`, không xoá trường của nhau | Tài khoản, Vật lí |
+| `users/{uid}/keys/{khoá}` | `{ value: "<JSON>", updatedAt }` dữ liệu Vật lí theo khoá (`updatedAt` do máy chủ ghi). Mỗi khoá tối đa 900 000 ký tự | Vật lí |
 
 ### 6.3. Kiểm tra quy tắc (tuỳ chọn)
 Trong **Firestore → Rules**, Firebase hiển thị bản đang chạy. Bạn có thể dùng **Rules Playground** để thử: đặt `auth` là một uid, đường dẫn `planners/<uid>`, thao tác `get` và `update`. Kết quả phải là "Allow" khi uid khớp, "Deny" khi không khớp.

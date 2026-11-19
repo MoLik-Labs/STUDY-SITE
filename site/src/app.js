@@ -2,7 +2,7 @@
 // Toàn bộ DOM được dựng bằng h() với textContent, nên dữ liệu người dùng không bao giờ được hiểu là HTML.
 import { COURSES, COURSE_BY_SLUG } from './courses.js';
 import * as L from './logic.js';
-import { backupForSync, clearStorage, getOwner, loadState, saveState, setOwner } from './store.js';
+import { backupForSync, clearStorage, getBase, getOwner, loadState, saveState, setBase, setOwner } from './store.js';
 import { decideSync } from './cloud.js';
 import { createTimer } from './timer.js';
 
@@ -578,15 +578,27 @@ export function mountApp(root, { storage, page, win = globalThis, now = () => ne
     if (owner && owner !== cloud.userId()) return syncNow();
     setSync('busy');
     try {
-      await cloud.pushPlan(cloud.userId(), state);
-      setOwner(storage, cloud.userId());
+      const snapshot = state;
+      const uid = cloud.userId();
+      adoptPushed(uid, snapshot, await cloud.pushPlan(uid, snapshot));
+      setOwner(storage, uid);
       setSync('ok');
     } catch (e) {
       setSync('error', e.message);
     }
   }
 
-  // Mở trang hoặc vừa đăng nhập: so mốc thời gian rồi kéo hoặc đẩy.
+  // Mở trang hoặc vừa đăng nhập: so với mốc server của lần đồng bộ trước rồi kéo hoặc đẩy.
+  // Sau khi đẩy: mốc server vừa ghi thành mốc chung. Nếu trong lúc đẩy không sửa gì
+  // thì state lấy đúng mốc đó; nếu có sửa thì state giữ mốc máy để lần sau đẩy tiếp.
+  function adoptPushed(uid, snapshot, at) {
+    if (!at) return;
+    setBase(storage, uid, at);
+    if (state !== snapshot) return;
+    state = { ...state, updated: at };
+    saveOk = saveState(storage, state);
+  }
+
   // Dữ liệu local thuộc tài khoản khác (đã đăng xuất, đăng nhập tài khoản mới) không được đẩy đi.
   async function syncNow() {
     if (!cloud || !cloud.signedIn()) return;
@@ -600,9 +612,12 @@ export function mountApp(root, { storage, page, win = globalThis, now = () => ne
         saveOk = saveState(storage, state);
       }
       const remote = await cloud.pullPlan(uid);
-      const action = decideSync(state.updated, remote && remote.updated_at);
-      if (action === 'pull') applyRemote(remote);
-      else if (action === 'push') await cloud.pushPlan(uid, state);
+      const action = decideSync(state.updated, remote && remote.updated_at, getBase(storage, uid));
+      if (action === 'pull') applyRemote(remote, uid);
+      else if (action === 'push') {
+        const snapshot = state;
+        adoptPushed(uid, snapshot, await cloud.pushPlan(uid, snapshot));
+      } else if (remote && remote.updated_at) setBase(storage, uid, remote.updated_at);
       setOwner(storage, uid);
       setSync('ok');
     } catch (e) {
@@ -610,10 +625,11 @@ export function mountApp(root, { storage, page, win = globalThis, now = () => ne
     }
   }
 
-  function applyRemote(remote) {
+  function applyRemote(remote, uid) {
     const hasLocal = state.tasks.length || state.custom.length || Object.keys(state.progress).length || Object.keys(state.notes).length;
     if (hasLocal) backupForSync(storage, state);
     state = { ...L.normalizeState(remote.state), updated: remote.updated_at };
+    setBase(storage, uid, remote.updated_at);
     saveOk = saveState(storage, state);
     render();
   }

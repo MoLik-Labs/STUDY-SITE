@@ -51,6 +51,7 @@ const EXPLORE_GROUPS = [
     items: [
       { href: '#/subjects', vi: 'Chọn lớp & môn', en: 'Subjects', need: 'Cửa vào toàn bộ bài học theo lớp, theo môn', kw: 'khoa hoc lop mon bai hoc' },
       { href: '#/physics', vi: 'Mục Vật lí', en: 'Physics', need: 'Một chỗ cho cả Vật lí: lộ trình, 8 công cụ, công thức, chủ đề yếu', kw: 'vat li physics vat ly' },
+      { href: '#/account', vi: 'Tài khoản & đồng bộ', en: 'Account & sync', need: 'Đăng nhập để giữ tiến độ trên mọi máy. Không đăng nhập vẫn học đầy đủ', kw: 'tai khoan dang nhap dong bo sync google email' },
       { href: '#/library', vi: 'Thư viện bài giảng', en: 'Lectures', need: '236 bài giảng đã chọn lọc, lọc được theo chủ đề', kw: 'thu vien bai giang video' },
       { href: '#/notes', vi: 'Sổ tay công thức', en: 'Formula sheet', need: 'Tra 57 công thức, in ra được', kw: 'so tay cong thuc tra cuu' },
       { href: '#/papers', vi: 'Đề thi & lời giải', en: 'Papers', need: '54 bộ đề chuyên kèm hướng dẫn', kw: 'de thi chuyen hsg loi giai' },

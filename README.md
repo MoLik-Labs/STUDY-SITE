@@ -33,7 +33,7 @@ Kiểm thử trình duyệt (cần Chromium và Playwright): `tools/browser/acco
 Biến môi trường trên Worker (không đặt trong repo):
 
 - `FIREBASE_API_KEY`, `FIREBASE_PROJECT_ID`, `FIREBASE_APP_ID` (tuỳ chọn `FIREBASE_AUTH_DOMAIN`): bật đăng nhập và đồng bộ. Thiếu thì chế độ khách.
-- Khoá bí mật (`sb_secret_…`, `service_role`) bị Worker từ chối.
+- Không đặt khoá bí mật của Firebase (service account, Admin SDK) vào Worker. App chỉ dùng khoá web công khai; dữ liệu được bảo vệ bởi `firestore.rules`.
 
 Chi tiết: `docs/FIREBASE-SETUP.md`, `docs/CLOUDFLARE.md`.
 

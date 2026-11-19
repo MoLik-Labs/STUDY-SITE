@@ -23,6 +23,7 @@ const Account = (() => {
   const PULL_SLACK = 60000;           /* lùi 60 giây: hai lần ghi lệch thứ tự không bị bỏ sót */
   const SKIP = ['prefs', 'pane', 'last', 'seenWelcome']; /* trạng thái riêng từng máy */
   const BATCH = 400;                  /* Firestore: một lô tối đa 500 thao tác */
+  const MAX_VALUE = 900000;           /* firestore.rules: value ≤ 900 000 ký tự */
   const PUSH_DELAY = 1500;
   const PULL_EVERY = 120000;
   const ERR_KEY = 'vnl9.acct_err';    /* lỗi cần hiện sau khi tải lại trang */
@@ -32,8 +33,9 @@ const Account = (() => {
   const CFG_URL = '/assets/config.js';   /* Worker phục vụ lúc chạy từ biến môi trường */
   const SDK_URL = '/assets/firebase-sdk.js';
 
-  let cloudCfg = null;
-  const cfgReady = import(CFG_URL).then(m => { cloudCfg = m.CLOUD || null; return cloudCfg; }, () => null);
+  let cloudCfg = null, cfgLoaded = false, askDelete = false;
+  const cfgReady = import(CFG_URL).then(m => { cloudCfg = m.CLOUD || null; return cloudCfg; }, () => null)
+    .then(v => { cfgLoaded = true; return v; });
   const enabled = () => !!(cloudCfg && cloudCfg.apiKey);
   let sdkPromise = null, sdkNow = null;
   const sdkOf = () => sdkPromise || (sdkPromise = import(SDK_URL).then(m => (sdkNow = m.createSdk(cloudCfg))));
@@ -224,15 +226,23 @@ const Account = (() => {
       const st = localState();
       const base = get(BASE_KEY) || {};
       const changed = syncKeys(st).filter(k => base[k] !== hashOf(st[k]));
-      for (let i = 0; i < changed.length; i += BATCH) {
-        const slice = changed.slice(i, i + BATCH);
-        const at = new Date().toISOString();
-        await sdk.setDocs(slice.map(k => ({
-          path: 'users/' + uid + '/keys/' + k,
-          data: { value: JSON.stringify(st[k] === undefined ? null : st[k]), updatedAt: at },
+      /* Một khoá quá lớn làm cả lô bị từ chối. Tách ra: khoá đó báo riêng, các khoá còn lại vẫn đẩy. */
+      const items = changed.map(k => ({ k, value: JSON.stringify(st[k] === undefined ? null : st[k]) }));
+      const tooBig = items.filter(it => it.value.length > MAX_VALUE).map(it => it.k);
+      const fit = items.filter(it => it.value.length <= MAX_VALUE);
+      for (let i = 0; i < fit.length; i += BATCH) {
+        const slice = fit.slice(i, i + BATCH);
+        await sdk.setDocs(slice.map(it => ({
+          path: 'users/' + uid + '/keys/' + it.k,
+          data: { value: it.value, updatedAt: sdk.serverNow() },
         })));
-        slice.forEach(k => { base[k] = hashOf(st[k]); });
+        slice.forEach(it => { base[it.k] = hashOf(st[it.k]); });
         put(BASE_KEY, base);
+      }
+      if (tooBig.length) {
+        lastError = 'Mục ' + tooBig.join(', ') + ' quá lớn để đồng bộ. Hãy xoá bớt dữ liệu cũ; các mục khác vẫn được đồng bộ.';
+        setSync('error');
+        return;
       }
       put(TIME_KEY, Date.now());
       lastError = '';
@@ -356,6 +366,8 @@ const Account = (() => {
     c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
   function view(s) {
+    /* cấu hình nạp bất đồng bộ: chưa xong thì chưa biết có bật đồng bộ không */
+    if (!cfgLoaded) return '<p class="muted">Đang tải…</p>';
     if (!s.enabled) {
       return `<p class="acct-lead">Đồng bộ đám mây chưa bật trên bản này.</p>
         <p class="muted">Bạn vẫn dùng đầy đủ mọi tính năng ở chế độ khách: dữ liệu nằm trên máy này.</p>`;
@@ -394,7 +406,10 @@ const Account = (() => {
       </form>
       <div class="acct-danger">
         <span>Xoá tài khoản sẽ xoá dữ liệu trên máy chủ. Dữ liệu trên máy này vẫn còn.</span>
-        <button class="btn ghost sm" type="button" data-acct="delete">Xoá tài khoản trên máy chủ</button>
+        ${askDelete
+          ? `<div class="acct-row"><button class="btn sm" type="button" data-acct="delete-yes">Xoá vĩnh viễn</button>
+        <button class="btn ghost sm" type="button" data-acct="delete-no">Huỷ</button></div>`
+          : `<button class="btn ghost sm" type="button" data-acct="delete">Xoá tài khoản trên máy chủ</button>`}
       </div>
       <p class="muted acct-msg" data-acct-msg role="status">${escH(s.error)}</p>`;
   }
@@ -414,12 +429,13 @@ const Account = (() => {
         if (what === 'sync') { await push(); say(syncState === 'error' ? lastError : 'Đã đồng bộ.'); }
         if (what === 'reload') { location.reload(); }
         if (what === 'out') { await signOut(); }
-        if (what === 'delete') {
-          uiConfirm('Xoá tài khoản', 'Xoá tài khoản và toàn bộ dữ liệu trên máy chủ? Dữ liệu trên máy này vẫn còn.',
-            async () => {
-              try { await deleteAccount(); render(true); }
-              catch (e) { say(e && e.message ? e.message : 'Không xoá được tài khoản lúc này. Thử lại sau.'); }
-            }, { danger: true, okText: 'Xoá tài khoản' });
+        /* xác nhận nội tuyến, không dùng hộp thoại chung: bản Vật lí không có module đó */
+        if (what === 'delete') { askDelete = true; render(true); return; }
+        if (what === 'delete-no') { askDelete = false; render(true); return; }
+        if (what === 'delete-yes') {
+          askDelete = false;
+          try { await deleteAccount(); render(true); }
+          catch (e) { render(true); say(e && e.message ? e.message : 'Không xoá được tài khoản lúc này. Thử lại sau.'); }
           return;
         }
       } catch (e) {
@@ -474,6 +490,7 @@ const Account = (() => {
     host = el;
     bind(el);
     render(true);
+    cfgReady.then(() => render(true));
     del(ERR_KEY);
   }
 
@@ -523,3 +540,17 @@ const Account = (() => {
     wipeCloud,
   };
 })();
+
+/* Trang #/account của bản Vật lí: cùng khối tài khoản với mục Cài đặt, mở trực tiếp được.
+   Bản Vật lí không có trang Cài đặt, nên không có trang này thì không ai đăng nhập được. */
+function renderAccountPage() {
+  $('#main').innerHTML = `<section class="wrap ab-page" aria-labelledby="acctTitle">
+    <div class="ab-card">
+      <span class="kicker">Tài khoản &amp; đồng bộ</span>
+      <h1 id="acctTitle">giữ tiến độ<br><em>trên mọi máy</em></h1>
+      <p class="ab-lead">Không đăng nhập vẫn học đầy đủ. Đăng nhập chỉ để đồng bộ tiến độ, ghi chú và câu sai giữa các máy.</p>
+      <div id="acctRoot" class="acct" aria-live="polite"></div>
+    </div>
+  </section>`;
+  Account.mount($('#acctRoot'));
+}

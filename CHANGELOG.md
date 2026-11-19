@@ -11,6 +11,11 @@ Mọi thay đổi lớn đều có kiểm thử: `npm test` (check tĩnh + CSP +
 - Lỗi tải Firebase không còn làm trắng trang: rơi về chế độ khách và báo một dòng.
 - Bộ hẹn giờ Pomodoro và bấm giờ (`site/src/timer*.js`): đếm bằng mốc thời gian nên đóng và mở lại trang vẫn đúng; phiên học lưu theo ngày.
 - Gỡ Supabase: xoá `supabase/migrations/` và `docs/SUPABASE-SETUP.md`.
+- Vật lí: thêm trang `#/account` (Tài khoản & đồng bộ). Trước đó bản Vật lí không có lối vào, nên không đăng nhập được.
+- Tài khoản: khối đăng nhập không còn hiện sai "chưa bật" khi tải trang; xoá tài khoản xác nhận ngay trong khối, không phụ thuộc hộp thoại chung.
+- Đồng bộ Vật lí: thêm các dữ liệu học còn thiếu (sổ điểm, thời khoá biểu, ôn tập, kế hoạch tuần, đấu trường, khám phá). Một mục quá lớn không chặn các mục khác.
+- Đồng bộ kế hoạch: mốc thời gian do máy chủ ghi và so với mốc của lần đồng bộ gần nhất, nên máy lệch giờ không làm mất thay đổi.
+- `firestore.rules`: `planners.updatedAt` phải bằng `request.time`.
 
 ## [12.0.0] — 2026-11-18
 

@@ -9,7 +9,7 @@
 //   FIREBASE_APP_ID              1:…:web:…                          (tuỳ chọn)
 //   FIREBASE_AUTH_DOMAIN        <project-id>.firebaseapp.com       (tuỳ chọn)
 // Thiếu một trong hai thì app chạy ở chế độ khách, không lỗi.
-// Khoá bí mật (sb_secret_, service_role) bị Worker từ chối, không bao giờ phục vụ.
+// Không đặt khoá bí mật (service account, Admin SDK) ở đây: app chỉ cần khoá web công khai.
 {
   "$schema": "https://raw.githubusercontent.com/cloudflare/workers-sdk/main/packages/wrangler/config-schema.json",
 

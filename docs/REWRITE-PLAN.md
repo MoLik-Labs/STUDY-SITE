@@ -1,54 +1,31 @@
 # Kế hoạch viết lại: giao diện và backend
 
-Nhánh: `arena/d12df461-study-site` (từ `main` @ `eb9d7e8`).
-Trạng thái: **giai đoạn 1 xong (backend), giai đoạn 2–5 chưa bắt đầu.**
+Nhánh: `arena/16228fa4-study-site` (PR #10 vào `main`).
+Trạng thái: backend đã chuyển sang Firebase. Giao diện và đồng bộ đang ở bước kiểm định cuối.
 
-## Quyết định đã chốt (từ hỏi đáp)
+## Quyết định đã chốt
 
 | Chủ đề | Lựa chọn |
 |---|---|
-| Cách làm | Viết lại theo giai đoạn trên nhánh này; mỗi giai đoạn có test và build xanh |
-| Phạm vi | Viết lại **toàn bộ UI/UX**; giữ toàn bộ tính năng và nội dung bài giảng; gộp về 6–8 khu vực |
-| Hình ảnh | Không dùng ảnh stock (sandbox không truy cập được kho ảnh). Dùng giao diện sản phẩm thật (HTML/CSS) làm hình minh hoạ |
-| Backend | Bảng riêng theo nghiệp vụ, mỗi bảng có RLS. Không dùng key-value nữa |
-| Dữ liệu cũ | Bảng `user_state` và `profiles` chưa có dòng dữ liệu nào và chưa có tài khoản auth nào, nên không cần chuyển dữ liệu |
-| Migration `allow_null_state_value` | Giữ |
-| Xoá dữ liệu | "Xoá toàn bộ dữ liệu" xoá cả trên máy lẫn trên đám mây (Firestore) |
-| Backend | Firebase (Auth + Firestore). Xem `docs/FIREBASE-SETUP.md`. Supabase đã gỡ hoàn toàn |
+| Cách làm | Viết lại theo giai đoạn; mỗi giai đoạn có test và build xanh |
+| Phạm vi | Giữ Vật lí (`/physic/`) và 8 môn, mỗi môn một `/ten_web`. Gộp về 6–8 khu vực |
+| Hình ảnh | Không dùng ảnh stock. Dùng giao diện sản phẩm thật (HTML/CSS) |
+| Backend | Firebase: Auth (email link, Google) và Firestore. Xem `docs/FIREBASE-SETUP.md` |
+| Đăng nhập | Email link và Google. Không SMS (Phone Auth cần gói trả phí), không ẩn danh |
+| Hosting | Cloudflare Workers (Static Assets) |
+| Supabase | Đã gỡ hoàn toàn khỏi repo. Đã đếm 0 dòng ở `auth.users`, `user_state`, `planner_states`, `profiles`, `lesson_progress`, `notes`, `layouts` (chưa đếm `answers`, `review_cards`) |
+| Xoá dữ liệu | Xoá trên máy và trên Firestore, giữ tài khoản. Xoá tài khoản là thao tác riêng, cần đăng nhập gần đây |
 
-## Giai đoạn 1 — Backend (xong)
+## Kiến trúc hiện tại
 
-- Bản Supabase cũ (migration SQL) đã bị xoá khỏi repo sau khi chuyển sang Firebase; lịch sử nằm trong git.
-- Bảng mới: `lesson_progress`, `answers`, `notes`, `review_cards`, `layouts`. Thêm cột `class_name` vào `profiles`.
-- Cả 7 bảng `public` đều bật RLS. Mỗi bảng mới có 4 chính sách (select/insert/update/delete) cho `authenticated`, với điều kiện `auth.uid() = user_id`.
-- `anon` bị thu hồi mọi quyền trên các bảng mới.
-- `updated_at` do trigger đặt phía máy chủ.
-- Chưa kiểm thử hành vi RLS với một người dùng đã đăng nhập thật. Mới kiểm tra cấu trúc.
-
-## Giai đoạn 2 — Hệ thống thiết kế và vỏ ứng dụng
-
-- Tokens theo phong cách editorial, gọn kiểu công cụ (`tool_editorial`), áp dụng nguyên tắc của taste-skill:
-  một hệ thống nút, một kiểu thẻ, một thang bán kính, một bộ chữ.
-- Vỏ ứng dụng: router hash, thanh điều hướng 6–8 khu vực, trang chủ có bố cục cá nhân hoá.
-- Module tải lười (`import()`); build tách thành nhiều tệp JS, vẫn giữ CSP bằng hash.
-
-## Giai đoạn 3 — Chuyển module theo khu vực
-
-Mỗi khu vực được viết lại và có test riêng. Trang cũ chuyển hướng sang khu mới và giữ dữ liệu của người dùng.
-
-## Giai đoạn 4 — Đồng bộ mới và xoá dữ liệu
-
-- `src/account.js` đổi từ `user_state` sang các bảng mới. Có xoá `user_state` sau khi client mới chạy ổn.
-- Xoá toàn bộ dữ liệu: xoá cục bộ và xoá dữ liệu trên Firestore.
-
-## Giai đoạn 5 — Kiểm định cuối
-
-- `npm test`, kiểm thử trình duyệt thật (`tools/browser/audit.py`) ở 1440 và 390 px.
-- Lighthouse ≥ 90 trên mobile và desktop (đo qua máy chủ có nén gzip).
-- Bump phiên bản, CHANGELOG, trang quyền riêng tư.
+- Vỏ ứng dụng (router hash, thanh điều hướng) và module tải lười (`import()`). Build tách tệp JS, CSP bằng hash.
+- Đồng bộ site: `planners/{uid}` (một tài liệu JSON). Mốc `updatedAt` do máy chủ ghi. Mốc server của lần đồng bộ gần nhất lưu cục bộ (`sf.plan.v2.base`), nên đồng hồ máy lệch không làm mất thay đổi.
+- Đồng bộ Vật lí: `users/{uid}/keys/{khoá}`, mỗi khoá một tài liệu, chỉ gửi phần đã đổi. Khoá quá lớn được báo riêng, không chặn các khoá khác.
+- Hồ sơ `users/{uid}`: `displayName`, `className` (tên lớp, site), `grade` (khối lớp, Vật lí). Hai bên ghi bằng `merge`.
 
 ## Việc còn mở
 
-- Thiết kế lại giao diện và chuyển module: chưa bắt đầu.
-- Kiểm thử RLS với người dùng thật.
-- Quyết định khi xoá `user_state`: lên lịch sau khi client mới đã triển khai.
+- Kiểm thử trên Firebase thật (emulator không chạy được trong sandbox): đăng nhập, quy tắc, đồng bộ hai máy.
+- Kiểm thử RLS với người dùng thật sau khi triển khai `firestore.rules`.
+- Script chuyển dữ liệu từ Supabase: chờ người dùng quyết định (số dòng đã đếm bằng 0).
+- Xoá project Supabase trên dashboard: việc của chủ tài khoản, không làm từ repo.

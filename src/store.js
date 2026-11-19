@@ -19,9 +19,12 @@ const COOKIE = 'vnl9core';
 const MAX_IMPORT = 4 * 1024 * 1024;
 /* Chỉ những khoá này được nhập từ tệp. Danh sách trắng, không phải danh sách
    đen: mọi thứ khác (kể cả __proto__, constructor) bị bỏ luôn tại cửa. */
+/* Gồm cả dữ liệu học do người dùng tạo (sổ điểm, thời khoá biểu, ôn tập, kế hoạch tuần,
+   đấu trường, khám phá). Thiếu khoá nào thì khoá đó không bao giờ được đồng bộ, không báo lỗi. */
 const SAFE_KEYS = ['done', 'watched', 'ans', 'mine', 'note', 'runs', 'days', 'calc', 'book',
-  'sheet', 'music', 'pomo', 'build', 'lab', 'cir', 'sim', 'school', 'pane', 'last', 'exam',
-  'goal', 'doneAt', 'prefs', 'pomoCfg', 'seenWelcome'];
+  'sheet', 'music', 'pomo', 'build', 'buildName', 'lab', 'cir', 'sim', 'school', 'pane', 'last', 'exam',
+  'goal', 'doneAt', 'prefs', 'pomoCfg', 'seenWelcome',
+  'grades', 'sched', 'study', 'weekly', 'game', 'explore'];
 const UNSAFE_KEY = /^(__proto__|prototype|constructor)$/;
 
 /* Sao chép sâu có kiểm soát: bỏ khoá nguy hiểm, chặn vòng lặp, chặn độ sâu

@@ -5,7 +5,8 @@ import { createCloud, decideSync, friendlyError, HINT_KEY, LINK_KEY, PENDING_KEY
 const UID = 'AbC123_uid-000000000000000001';
 const CFG = { apiKey: 'AIzaTEST0123456789012345678901234567', authDomain: 'proj.firebaseapp.com', projectId: 'proj', appId: '1:2:web:abc' };
 const REDIRECT = 'https://site.test/tai-khoan/';
-const NOW = Date.parse('2026-11-18T10:00:00Z');
+const NOW = Date.parse('2026-11-18T10:00:00Z');   // giờ của MÁY trong test
+const SERVER_MS = NOW + 3 * 3600 * 1000;           // giờ của MÁY CHỦ: máy này chậm 3 tiếng
 
 function memStorage(init = {}) {
   const m = new Map(Object.entries(init));
@@ -36,7 +37,13 @@ function fakeSdk(over = {}) {
     lastSignInMs: () => (over.lastSignInMs !== undefined ? over.lastSignInMs : NOW),
     deleteAuthUser: rec('deleteAuthUser'),
     getDoc: over.getDoc || (async path => (path in docs ? docs[path] : null)),
-    setDoc: over.setDoc || (async (path, data, opts) => { calls.push(['setDoc', path, data, opts]); docs[path] = { ...(opts && opts.merge ? docs[path] : {}), ...data }; }),
+    serverNow: () => ({ __serverTime: true }),
+    setDoc: over.setDoc || (async (path, data, opts) => {
+      calls.push(['setDoc', path, data, opts]);
+      const d = { ...data };
+      if (d.updatedAt && d.updatedAt.__serverTime) d.updatedAt = new Date(SERVER_MS).toISOString();
+      docs[path] = { ...(opts && opts.merge ? docs[path] : {}), ...d };
+    }),
     deleteDoc: async path => { calls.push(['deleteDoc', path]); delete docs[path]; },
     deleteCollection: async path => { calls.push(['deleteCollection', path]); },
   };
@@ -57,6 +64,33 @@ test('decideSync: bên mới hơn thắng, thiếu mốc thì xử lý an toàn'
   assert.equal(decideSync('2026-11-18T09:00:00Z', ''), 'push');
   assert.equal(decideSync('', '2026-11-18T09:00:00Z'), 'pull');
   assert.equal(decideSync('', ''), 'none');
+});
+
+test('decideSync theo mốc server: đồng hồ máy lệch không làm mất thay đổi', () => {
+  const B = '2026-11-18T10:00:00Z';                 // mốc server của lần đồng bộ gần nhất
+  assert.equal(decideSync(B, B, B), 'none', 'không ai đổi thì không làm gì');
+  assert.equal(decideSync('2026-11-18T10:05:00Z', B, B), 'push', 'chỉ máy này sửa');
+  assert.equal(decideSync(B, '2026-11-18T10:01:00Z', B), 'pull', 'chỉ đám mây đổi');
+  // máy chậm 3 tiếng: lần sửa mới nhất mang giờ 07:30 vẫn phải được đẩy lên
+  assert.equal(decideSync('2026-11-18T07:30:00Z', B, B), 'push', 'máy lệch giờ vẫn đẩy được');
+});
+
+test('decideSync: cả hai bên cùng đổi (sửa lúc offline) thì bên mới hơn thắng', () => {
+  const B = '2026-11-18T10:00:00Z';
+  assert.equal(decideSync('2026-11-18T10:05:00Z', '2026-11-18T10:01:00Z', B), 'push');
+  assert.equal(decideSync('2026-11-18T10:01:00Z', '2026-11-18T10:05:00Z', B), 'pull');
+});
+
+test('decideSync: đã xoá trên đám mây thì không tự phục hồi bản sạch; bản đã sửa vẫn đẩy', () => {
+  const B = '2026-11-18T10:00:00Z';
+  assert.equal(decideSync(B, '', B), 'none');
+  assert.equal(decideSync('2026-11-18T10:05:00Z', '', B), 'push');
+});
+
+test('decideSync: lần đầu đồng bộ (chưa có mốc) vẫn an toàn', () => {
+  assert.equal(decideSync('2026-11-18T10:00:00Z', '2026-11-18T09:00:00Z', null), 'push');
+  assert.equal(decideSync('', '2026-11-18T09:00:00Z', null), 'pull');
+  assert.equal(decideSync('', '', null), 'none');
 });
 
 test('friendlyError: mã Firebase đổi sang tiếng Việt, mã lạ có câu chung', () => {
@@ -162,6 +196,13 @@ test('pullPlan / pushPlan: đường dẫn theo uid, state là JSON, kiểm đ�
   const back = await cloud.pullPlan(UID);
   assert.deepEqual(back.state, { tasks: [1], updated: 'x' });
   assert.equal(back.updated_at, saved.updatedAt);
+  // mốc là của MÁY CHỦ (SERVER_MS), không phải đồng hồ máy (NOW)
+  assert.equal(saved.updatedAt, new Date(SERVER_MS).toISOString());
+});
+
+test('pushPlan: không đọc được mốc server thì trả null, không bịa mốc từ đồng hồ máy', async () => {
+  const { cloud } = make({ over: { getDoc: async () => null } });
+  assert.equal(await cloud.pushPlan(UID, { a: 1 }), null);
 });
 
 test('pushPlan: từ chối kế hoạch quá lớn (giới hạn tài liệu Firestore)', async () => {
@@ -233,4 +274,18 @@ test('deleteAccount: không có người dùng thì báo chưa đăng nhập', a
 test('mạng treo: thao tác quá thời gian chờ báo lỗi, không treo giao diện', async () => {
   const { cloud } = make({ timeoutMs: 20, over: { getDoc: () => new Promise(() => {}) } });
   await assert.rejects(cloud.getProfile(UID), /Quá thời gian chờ/);
+});
+
+test('getBase/setBase: mốc gắn với uid, tài khoản khác không dùng nhầm; xoá được', async () => {
+  const { getBase, setBase, clearStorage } = await import('../src/store.js');
+  const st = memStorage();
+  assert.equal(getBase(st, UID), null, 'chưa có mốc');
+  setBase(st, UID, '2026-11-18T10:00:00Z');
+  assert.equal(getBase(st, UID), '2026-11-18T10:00:00Z');
+  assert.equal(getBase(st, 'uid-khac'), null, 'uid khác không thấy mốc của UID');
+  setBase(st, UID, '');
+  assert.equal(getBase(st, UID), null, 'at rỗng thì xoá mốc');
+  setBase(st, UID, '2026-11-18T11:00:00Z');
+  clearStorage(st);
+  assert.equal(getBase(st, UID), null, 'xoá dữ liệu học thì xoá cả mốc');
 });

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>4. Bật đăng nhập — Cấu hình Firebase cho STUDY-SITE</title>
+<meta name="description" content="Mục 4 của hướng dẫn cấu hình Firebase: Bật đăng nhập.">
+<link rel="stylesheet" href="assets/docs.css">
+</head>
+<body>
+<a class="skip" href="#main">Bỏ qua menu</a>
+<header class="top">
+  <a class="brand" href="index.html">Cấu hình Firebase cho STUDY-SITE</a>
+  <nav class="ext" aria-label="Liên kết ngoài">
+    <a href="https://console.firebase.google.com" rel="noopener">Firebase Console</a>
+    <a href="https://github.com/MoLik-Labs/STUDY-SITE" rel="noopener">GitHub</a>
+  </nav>
+</header>
+<div class="layout">
+<aside class="side" aria-label="Danh sách mục">
+  <p class="side-title">Các mục</p>
+  <ol>
+<li><a href="index.html">Tổng quan</a></li>
+<li><a href="00-truoc-khi-bat-dau-ban-can-gi.html"><span class="num">0</span>Trước khi bắt đầu: bạn cần gì</a></li>
+<li><a href="01-tao-du-an-firebase.html"><span class="num">1</span>Tạo dự án Firebase</a></li>
+<li><a href="02-goi-spark-blaze-va-gioi-han.html"><span class="num">2</span>Gói Spark, Blaze và giới hạn</a></li>
+<li><a href="03-dang-ky-ung-dung-web-va-lay-cau-hinh.html"><span class="num">3</span>Đăng ký ứng dụng web và lấy cấu hình</a></li>
+<li><a href="04-bat-dang-nhap.html" class="on" aria-current="page"><span class="num">4</span>Bật đăng nhập</a></li>
+<li><a href="05-mien-duoc-phep-authorized-domains.html"><span class="num">5</span>Miền được phép (Authorized domains)</a></li>
+<li><a href="06-firestore-va-quy-tac-bao-mat.html"><span class="num">6</span>Firestore và quy tắc bảo mật</a></li>
+<li><a href="07-app-check-chong-bot-va-client-gia-nen-lam.html"><span class="num">7</span>App Check: chống bot và client giả (nên làm)</a></li>
+<li><a href="08-cau-hinh-cloudflare-workers.html"><span class="num">8</span>Cấu hình Cloudflare Workers</a></li>
+<li><a href="09-kiem-tra-tung-luong.html"><span class="num">9</span>Kiểm tra từng luồng</a></li>
+<li><a href="10-han-muc-theo-doi-va-ngan-sach.html"><span class="num">10</span>Hạn mức, theo dõi và ngân sách</a></li>
+<li><a href="11-xoa-tai-khoan.html"><span class="num">11</span>Xoá tài khoản</a></li>
+<li><a href="12-dang-nhap-bang-sms-tuy-chon-co-phi.html"><span class="num">12</span>Đăng nhập bằng SMS (tuỳ chọn, có phí)</a></li>
+<li><a href="13-apple-va-github-tuy-chon.html"><span class="num">13</span>Apple và GitHub (tuỳ chọn)</a></li>
+<li><a href="14-xu-ly-su-co.html"><span class="num">14</span>Xử lý sự cố</a></li>
+<li><a href="15-bao-mat-tom-tat.html"><span class="num">15</span>Bảo mật, tóm tắt</a></li>
+<li><a href="16-kiem-chung-va-checklist-cuoi.html"><span class="num">16</span>Kiểm chứng và checklist cuối</a></li>
+  </ol>
+</aside>
+<main id="main">
+<article>
+<h1>4. Bật đăng nhập</h1>
+<p>Vào <strong>Build → Authentication → Get started</strong>, rồi chọn tab <strong>Sign-in method</strong>. Bật ba cách sau.</p>
+<h2 id="4-1-email-va-mat-khau-duong-chinh">4.1. Email và mật khẩu (đường chính)</h2>
+<ol>
+<li>Bấm <strong>Email/Password</strong> → bật công tắc <strong>Enable</strong>.</li>
+<li>Bật thêm <strong>Email link (passwordless sign-in)</strong>. Đây là phương án phụ, và giới hạn 5 thư/ngày vẫn áp dụng. Bật cả hai là bình thường.</li>
+<li><strong>Save</strong>.</li>
+</ol>
+<p>Sau đó vào <strong>Authentication → Settings</strong> và làm tiếp:</p>
+<ul>
+<li><strong>User actions → Email enumeration protection</strong>: <strong>bật</strong>. Khi bật, Firebase trả cùng một lỗi cho &quot;sai email&quot; và &quot;sai mật khẩu&quot;, nên người lạ không dò được email nào đã đăng ký. Ứng dụng đã hiển thị đúng một câu chung cho cả hai trường hợp.</li>
+<li><strong>Password policy</strong> (nếu console có mục này): đặt tối thiểu <strong>8 ký tự</strong>, khớp với ứng dụng. Khi tạo tài khoản, ứng dụng kiểm 8 ký tự ngay trên trình duyệt. Firebase có thể yêu cầu cao hơn và sẽ báo lỗi tương ứng.</li>
+<li><strong>Templates</strong> (thư xác nhận và đặt lại mật khẩu): ứng dụng đặt ngôn ngữ <code>vi</code>, nên Firebase dùng bản tiếng Việt khi có sẵn. Bạn có thể sửa nội dung thư ở đây. Đường dẫn trong thư là tên miền bạn đã thêm ở mục 5.</li>
+</ul>
+<p><strong>Xong khi:</strong> trong <strong>Sign-in method</strong>, dòng <strong>Email/Password</strong> hiện trạng thái <strong>Enabled</strong>, và <strong>Enable email enumeration protection</strong> đã bật.</p>
+<p><strong>Nếu lỗi:</strong> &quot;Cách đăng nhập này chưa được bật trong Firebase&quot; nghĩa là bạn chưa bấm Enable ở bước 1.</p>
+<h2 id="4-2-google">4.2. Google</h2>
+<ol>
+<li>Bấm <strong>Google</strong> → bật <strong>Enable</strong>.</li>
+<li>Chọn <strong>Project support email</strong> là email của bạn.</li>
+<li><strong>Save</strong>. Firebase tự tạo màn hình đồng ý OAuth, không cần cấu hình thêm.</li>
+</ol>
+<p><strong>Xong khi:</strong> dòng <strong>Google</strong> hiện <strong>Enabled</strong>.</p>
+<p><strong>Nếu lỗi:</strong> nếu Google báo lỗi về &quot;support email&quot;, chọn lại email trong danh sách rồi Save.</p>
+<h2 id="4-3-cac-cach-khac-de-tat">4.3. Các cách khác: để TẮT</h2>
+<ul>
+<li><strong>Phone (SMS)</strong>: xem mục 12. Chỉ bật khi đã nâng lên Blaze.</li>
+<li><strong>Anonymous</strong>: để tắt. Ứng dụng không dùng, và quy tắc bảo mật từ chối tài khoản ẩn danh.</li>
+<li><strong>Apple, GitHub</strong>: xem mục 13.</li>
+</ul>
+
+</article>
+<nav class="pager" aria-label="Chuyển trang"><a class="prev" href="03-dang-ky-ung-dung-web-va-lay-cau-hinh.html"><span>← Trước</span>Đăng ký ứng dụng web và lấy cấu hình</a><a class="next" href="05-mien-duoc-phep-authorized-domains.html"><span>Tiếp →</span>Miền được phép (Authorized domains)</a></nav>
+</main>
+<aside class="toc" aria-label="Mục trong trang"><p class="toc-title">Trong trang này</p><ul><li><a href="#4-1-email-va-mat-khau-duong-chinh">4.1. Email và mật khẩu (đường chính)</a></li><li><a href="#4-2-google">4.2. Google</a></li><li><a href="#4-3-cac-cach-khac-de-tat">4.3. Các cách khác: để TẮT</a></li></ul></aside>
+</div>
+<footer class="foot">Tài liệu này được dựng từ <code>docs/FIREBASE-SETUP.md</code>. Sửa nguồn đó rồi chạy <code>npm run docs</code>.</footer>
+<script src="assets/docs.js" defer></script>
+</body>
+</html>

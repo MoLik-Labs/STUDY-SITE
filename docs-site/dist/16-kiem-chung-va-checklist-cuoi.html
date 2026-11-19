@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>16. Kiểm chứng và checklist cuối — Cấu hình Firebase cho STUDY-SITE</title>
+<meta name="description" content="Mục 16 của hướng dẫn cấu hình Firebase: Kiểm chứng và checklist cuối.">
+<link rel="stylesheet" href="assets/docs.css">
+</head>
+<body>
+<a class="skip" href="#main">Bỏ qua menu</a>
+<header class="top">
+  <a class="brand" href="index.html">Cấu hình Firebase cho STUDY-SITE</a>
+  <nav class="ext" aria-label="Liên kết ngoài">
+    <a href="https://console.firebase.google.com" rel="noopener">Firebase Console</a>
+    <a href="https://github.com/MoLik-Labs/STUDY-SITE" rel="noopener">GitHub</a>
+  </nav>
+</header>
+<div class="layout">
+<aside class="side" aria-label="Danh sách mục">
+  <p class="side-title">Các mục</p>
+  <ol>
+<li><a href="index.html">Tổng quan</a></li>
+<li><a href="00-truoc-khi-bat-dau-ban-can-gi.html"><span class="num">0</span>Trước khi bắt đầu: bạn cần gì</a></li>
+<li><a href="01-tao-du-an-firebase.html"><span class="num">1</span>Tạo dự án Firebase</a></li>
+<li><a href="02-goi-spark-blaze-va-gioi-han.html"><span class="num">2</span>Gói Spark, Blaze và giới hạn</a></li>
+<li><a href="03-dang-ky-ung-dung-web-va-lay-cau-hinh.html"><span class="num">3</span>Đăng ký ứng dụng web và lấy cấu hình</a></li>
+<li><a href="04-bat-dang-nhap.html"><span class="num">4</span>Bật đăng nhập</a></li>
+<li><a href="05-mien-duoc-phep-authorized-domains.html"><span class="num">5</span>Miền được phép (Authorized domains)</a></li>
+<li><a href="06-firestore-va-quy-tac-bao-mat.html"><span class="num">6</span>Firestore và quy tắc bảo mật</a></li>
+<li><a href="07-app-check-chong-bot-va-client-gia-nen-lam.html"><span class="num">7</span>App Check: chống bot và client giả (nên làm)</a></li>
+<li><a href="08-cau-hinh-cloudflare-workers.html"><span class="num">8</span>Cấu hình Cloudflare Workers</a></li>
+<li><a href="09-kiem-tra-tung-luong.html"><span class="num">9</span>Kiểm tra từng luồng</a></li>
+<li><a href="10-han-muc-theo-doi-va-ngan-sach.html"><span class="num">10</span>Hạn mức, theo dõi và ngân sách</a></li>
+<li><a href="11-xoa-tai-khoan.html"><span class="num">11</span>Xoá tài khoản</a></li>
+<li><a href="12-dang-nhap-bang-sms-tuy-chon-co-phi.html"><span class="num">12</span>Đăng nhập bằng SMS (tuỳ chọn, có phí)</a></li>
+<li><a href="13-apple-va-github-tuy-chon.html"><span class="num">13</span>Apple và GitHub (tuỳ chọn)</a></li>
+<li><a href="14-xu-ly-su-co.html"><span class="num">14</span>Xử lý sự cố</a></li>
+<li><a href="15-bao-mat-tom-tat.html"><span class="num">15</span>Bảo mật, tóm tắt</a></li>
+<li><a href="16-kiem-chung-va-checklist-cuoi.html" class="on" aria-current="page"><span class="num">16</span>Kiểm chứng và checklist cuối</a></li>
+  </ol>
+</aside>
+<main id="main">
+<article>
+<h1>16. Kiểm chứng và checklist cuối</h1>
+<p>Mã nguồn có test cho logic đăng nhập bằng mật khẩu và liên kết, đồng bộ, xoá dữ liệu, giao diện đăng nhập và cấu hình Worker/CSP (<code>npm test</code>). Các test đó dùng SDK giả, nên <strong>không thay thế việc thử trên dự án Firebase thật</strong>. Hãy làm mục 9 sau khi cấu hình xong.</p>
+<p>Đánh dấu từng dòng khi xong:</p>
+<ul>
+<li class="task-list-item"><input disabled="" type="checkbox"> Mục 1: tạo dự án, ghi lại project ID</li>
+<li class="task-list-item"><input disabled="" type="checkbox"> Mục 3: có đủ 4 giá trị cấu hình</li>
+<li class="task-list-item"><input disabled="" type="checkbox"> Mục 4.1: Email/Password bật, email enumeration protection bật</li>
+<li class="task-list-item"><input disabled="" type="checkbox"> Mục 4.2: Google bật</li>
+<li class="task-list-item"><input disabled="" type="checkbox"> Mục 5: Authorized domains có tên miền Worker</li>
+<li class="task-list-item"><input disabled="" type="checkbox"> Mục 6.1–6.2: Firestore đã tạo, quy tắc đã publish</li>
+<li class="task-list-item"><input disabled="" type="checkbox"> Mục 6.4: Rules Playground cho đúng ba kết quả</li>
+<li class="task-list-item"><input disabled="" type="checkbox"> Mục 7: App Check đã đăng ký (Unenforced trước)</li>
+<li class="task-list-item"><input disabled="" type="checkbox"> Mục 8: năm biến đã đặt, <code>/assets/config.js</code> đúng</li>
+<li class="task-list-item"><input disabled="" type="checkbox"> Mục 9: cả 11 luồng đã thử</li>
+<li class="task-list-item"><input disabled="" type="checkbox"> Mục 10: đã biết cách xem Usage</li>
+<li class="task-list-item"><input disabled="" type="checkbox"> Mục 7 (sau vài ngày): đã xem số Verified và quyết định bật Enforce hay chưa</li>
+</ul>
+
+</article>
+<nav class="pager" aria-label="Chuyển trang"><a class="prev" href="15-bao-mat-tom-tat.html"><span>← Trước</span>Bảo mật, tóm tắt</a><span></span></nav>
+</main>
+
+</div>
+<footer class="foot">Tài liệu này được dựng từ <code>docs/FIREBASE-SETUP.md</code>. Sửa nguồn đó rồi chạy <code>npm run docs</code>.</footer>
+<script src="assets/docs.js" defer></script>
+</body>
+</html>

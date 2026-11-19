@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>6. Firestore và quy tắc bảo mật — Cấu hình Firebase cho STUDY-SITE</title>
+<meta name="description" content="Mục 6 của hướng dẫn cấu hình Firebase: Firestore và quy tắc bảo mật.">
+<link rel="stylesheet" href="assets/docs.css">
+</head>
+<body>
+<a class="skip" href="#main">Bỏ qua menu</a>
+<header class="top">
+  <a class="brand" href="index.html">Cấu hình Firebase cho STUDY-SITE</a>
+  <nav class="ext" aria-label="Liên kết ngoài">
+    <a href="https://console.firebase.google.com" rel="noopener">Firebase Console</a>
+    <a href="https://github.com/MoLik-Labs/STUDY-SITE" rel="noopener">GitHub</a>
+  </nav>
+</header>
+<div class="layout">
+<aside class="side" aria-label="Danh sách mục">
+  <p class="side-title">Các mục</p>
+  <ol>
+<li><a href="index.html">Tổng quan</a></li>
+<li><a href="00-truoc-khi-bat-dau-ban-can-gi.html"><span class="num">0</span>Trước khi bắt đầu: bạn cần gì</a></li>
+<li><a href="01-tao-du-an-firebase.html"><span class="num">1</span>Tạo dự án Firebase</a></li>
+<li><a href="02-goi-spark-blaze-va-gioi-han.html"><span class="num">2</span>Gói Spark, Blaze và giới hạn</a></li>
+<li><a href="03-dang-ky-ung-dung-web-va-lay-cau-hinh.html"><span class="num">3</span>Đăng ký ứng dụng web và lấy cấu hình</a></li>
+<li><a href="04-bat-dang-nhap.html"><span class="num">4</span>Bật đăng nhập</a></li>
+<li><a href="05-mien-duoc-phep-authorized-domains.html"><span class="num">5</span>Miền được phép (Authorized domains)</a></li>
+<li><a href="06-firestore-va-quy-tac-bao-mat.html" class="on" aria-current="page"><span class="num">6</span>Firestore và quy tắc bảo mật</a></li>
+<li><a href="07-app-check-chong-bot-va-client-gia-nen-lam.html"><span class="num">7</span>App Check: chống bot và client giả (nên làm)</a></li>
+<li><a href="08-cau-hinh-cloudflare-workers.html"><span class="num">8</span>Cấu hình Cloudflare Workers</a></li>
+<li><a href="09-kiem-tra-tung-luong.html"><span class="num">9</span>Kiểm tra từng luồng</a></li>
+<li><a href="10-han-muc-theo-doi-va-ngan-sach.html"><span class="num">10</span>Hạn mức, theo dõi và ngân sách</a></li>
+<li><a href="11-xoa-tai-khoan.html"><span class="num">11</span>Xoá tài khoản</a></li>
+<li><a href="12-dang-nhap-bang-sms-tuy-chon-co-phi.html"><span class="num">12</span>Đăng nhập bằng SMS (tuỳ chọn, có phí)</a></li>
+<li><a href="13-apple-va-github-tuy-chon.html"><span class="num">13</span>Apple và GitHub (tuỳ chọn)</a></li>
+<li><a href="14-xu-ly-su-co.html"><span class="num">14</span>Xử lý sự cố</a></li>
+<li><a href="15-bao-mat-tom-tat.html"><span class="num">15</span>Bảo mật, tóm tắt</a></li>
+<li><a href="16-kiem-chung-va-checklist-cuoi.html"><span class="num">16</span>Kiểm chứng và checklist cuối</a></li>
+  </ol>
+</aside>
+<main id="main">
+<article>
+<h1>6. Firestore và quy tắc bảo mật</h1>
+<h2 id="6-1-tao-co-so-du-lieu">6.1. Tạo cơ sở dữ liệu</h2>
+<ol>
+<li><strong>Build → Firestore Database → Create database</strong>.</li>
+<li>Chọn <strong>Native mode</strong>.</li>
+<li>Chọn vị trí. Vị trí <strong>không đổi được</strong> sau khi tạo. Gợi ý <code>asia-southeast1</code> (Singapore), gần Việt Nam.</li>
+<li>Chọn <strong>Production mode</strong>. Quy tắc sẽ được triển khai ở bước 6.2, nên không cần chế độ thử nghiệm.</li>
+</ol>
+<p><strong>Xong khi:</strong> trang <strong>Firestore Database</strong> hiện một cơ sở dữ liệu trống.</p>
+<p><strong>Nếu lỗi:</strong> cơ sở dữ liệu đã có sẵn thì bỏ qua bước tạo, chỉ cần làm 6.2.</p>
+<h2 id="6-2-trien-khai-quy-tac-bao-mat">6.2. Triển khai quy tắc bảo mật</h2>
+<p>Quy tắc nằm trong repo, tệp <code>firestore.rules</code>. Chọn <strong>một</strong> trong hai cách.</p>
+<p><strong>Cách A: dán bằng giao diện web (không cần cài gì).</strong></p>
+<ol>
+<li>Mở tệp <code>firestore.rules</code> trên GitHub (<code>MoLik-Labs/STUDY-SITE</code>) và sao chép toàn bộ nội dung.</li>
+<li>Trong Firebase Console, vào <strong>Firestore Database → Rules</strong>.</li>
+<li>Xoá nội dung cũ, dán nội dung vừa sao chép.</li>
+<li>Bấm <strong>Publish</strong>.</li>
+</ol>
+<p><strong>Cách B: dòng lệnh (nếu đã có Node.js).</strong></p>
+<div class="codewrap"><pre><code class="language-bash">npm install -g firebase-tools     # hoặc dùng: npx firebase-tools ...
+firebase login                    # đăng nhập bằng tài khoản Google của bạn
+cd STUDY-SITE
+firebase use &lt;project-id&gt;         # mã dự án ở mục 1
+firebase deploy --only firestore:rules
+</code></pre></div>
+<p>Cả hai cách chỉ đẩy quy tắc. Không tạo gì khác và không mất phí trên Spark.</p>
+<p><strong>Quy tắc làm gì.</strong> Chỉ tài khoản đã đăng nhập (và không phải ẩn danh) mới đọc hoặc ghi được dữ liệu có mã <code>uid</code> trùng với mã của chính họ. Quy tắc cũng kiểm tra kiểu dữ liệu và độ dài: tên hiển thị tối đa 60 ký tự, lớp tối đa 40 ký tự, kế hoạch tối đa khoảng 900 KB. Mọi đường dẫn khác bị từ chối.</p>
+<p><strong>Xong khi:</strong> trang <strong>Rules</strong> hiện nội dung mới, có ngày publish gần đây.</p>
+<p><strong>Nếu lỗi:</strong> nếu Publish báo lỗi cú pháp, kiểm tra xem đã sao chép đủ toàn bộ tệp chưa, đặc biệt dấu <code>}</code> cuối cùng.</p>
+<h2 id="6-3-cau-truc-du-lieu">6.3. Cấu trúc dữ liệu</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Đường dẫn</th>
+<th>Nội dung</th>
+<th>Ai dùng</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>planners/{uid}</code></td>
+<td><code>{ state: &quot;&lt;JSON&gt;&quot;, updatedAt }</code>: kế hoạch học. <code>updatedAt</code> do máy chủ ghi, không dựa vào đồng hồ máy</td>
+<td>Trang chủ (lịch tuần)</td>
+</tr>
+<tr>
+<td><code>users/{uid}</code></td>
+<td><code>{ displayName, className, grade, updatedAt }</code>: hồ sơ. <code>className</code> là tên lớp tự do (ví dụ 11A2), <code>grade</code> là khối lớp 1–12. Hai bên ghi bằng <code>merge</code>, không xoá trường của nhau</td>
+<td>Tài khoản, Vật lí</td>
+</tr>
+<tr>
+<td><code>users/{uid}/keys/{khoá}</code></td>
+<td><code>{ value: &quot;&lt;JSON&gt;&quot;, updatedAt }</code>: dữ liệu Vật lí theo từng khoá. Mỗi khoá tối đa 900 000 ký tự</td>
+<td>Vật lí</td>
+</tr>
+</tbody></table></div>
+<h2 id="6-4-kiem-tra-quy-tac-bang-rules-playground">6.4. Kiểm tra quy tắc bằng Rules Playground</h2>
+<ol>
+<li>Trong <strong>Firestore → Rules</strong>, bấm <strong>Rules Playground</strong>.</li>
+<li>Đặt <strong>Authenticated</strong> là một uid giả, ví dụ <code>test-uid-123</code>.</li>
+<li>Đường dẫn: <code>planners/test-uid-123</code>, thao tác <code>get</code>. Kết quả phải là <strong>Allow</strong>.</li>
+<li>Đổi đường dẫn thành <code>planners/nguoi-khac</code>, vẫn thao tác <code>get</code>. Kết quả phải là <strong>Deny</strong>.</li>
+<li>Thử thêm đường dẫn <code>secret/abc</code>. Kết quả phải là <strong>Deny</strong>.</li>
+</ol>
+<p><strong>Xong khi:</strong> ba kết quả trên đúng như mô tả.</p>
+<p><strong>Nếu lỗi:</strong> nếu kết quả khác, quy tắc chưa được publish đúng. Quay lại mục 6.2.</p>
+
+</article>
+<nav class="pager" aria-label="Chuyển trang"><a class="prev" href="05-mien-duoc-phep-authorized-domains.html"><span>← Trước</span>Miền được phép (Authorized domains)</a><a class="next" href="07-app-check-chong-bot-va-client-gia-nen-lam.html"><span>Tiếp →</span>App Check: chống bot và client giả (nên làm)</a></nav>
+</main>
+<aside class="toc" aria-label="Mục trong trang"><p class="toc-title">Trong trang này</p><ul><li><a href="#6-1-tao-co-so-du-lieu">6.1. Tạo cơ sở dữ liệu</a></li><li><a href="#6-2-trien-khai-quy-tac-bao-mat">6.2. Triển khai quy tắc bảo mật</a></li><li><a href="#6-3-cau-truc-du-lieu">6.3. Cấu trúc dữ liệu</a></li><li><a href="#6-4-kiem-tra-quy-tac-bang-rules-playground">6.4. Kiểm tra quy tắc bằng Rules Playground</a></li></ul></aside>
+</div>
+<footer class="foot">Tài liệu này được dựng từ <code>docs/FIREBASE-SETUP.md</code>. Sửa nguồn đó rồi chạy <code>npm run docs</code>.</footer>
+<script src="assets/docs.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>14. Xử lý sự cố — Cấu hình Firebase cho STUDY-SITE</title>
+<meta name="description" content="Mục 14 của hướng dẫn cấu hình Firebase: Xử lý sự cố.">
+<link rel="stylesheet" href="assets/docs.css">
+</head>
+<body>
+<a class="skip" href="#main">Bỏ qua menu</a>
+<header class="top">
+  <a class="brand" href="index.html">Cấu hình Firebase cho STUDY-SITE</a>
+  <nav class="ext" aria-label="Liên kết ngoài">
+    <a href="https://console.firebase.google.com" rel="noopener">Firebase Console</a>
+    <a href="https://github.com/MoLik-Labs/STUDY-SITE" rel="noopener">GitHub</a>
+  </nav>
+</header>
+<div class="layout">
+<aside class="side" aria-label="Danh sách mục">
+  <p class="side-title">Các mục</p>
+  <ol>
+<li><a href="index.html">Tổng quan</a></li>
+<li><a href="00-truoc-khi-bat-dau-ban-can-gi.html"><span class="num">0</span>Trước khi bắt đầu: bạn cần gì</a></li>
+<li><a href="01-tao-du-an-firebase.html"><span class="num">1</span>Tạo dự án Firebase</a></li>
+<li><a href="02-goi-spark-blaze-va-gioi-han.html"><span class="num">2</span>Gói Spark, Blaze và giới hạn</a></li>
+<li><a href="03-dang-ky-ung-dung-web-va-lay-cau-hinh.html"><span class="num">3</span>Đăng ký ứng dụng web và lấy cấu hình</a></li>
+<li><a href="04-bat-dang-nhap.html"><span class="num">4</span>Bật đăng nhập</a></li>
+<li><a href="05-mien-duoc-phep-authorized-domains.html"><span class="num">5</span>Miền được phép (Authorized domains)</a></li>
+<li><a href="06-firestore-va-quy-tac-bao-mat.html"><span class="num">6</span>Firestore và quy tắc bảo mật</a></li>
+<li><a href="07-app-check-chong-bot-va-client-gia-nen-lam.html"><span class="num">7</span>App Check: chống bot và client giả (nên làm)</a></li>
+<li><a href="08-cau-hinh-cloudflare-workers.html"><span class="num">8</span>Cấu hình Cloudflare Workers</a></li>
+<li><a href="09-kiem-tra-tung-luong.html"><span class="num">9</span>Kiểm tra từng luồng</a></li>
+<li><a href="10-han-muc-theo-doi-va-ngan-sach.html"><span class="num">10</span>Hạn mức, theo dõi và ngân sách</a></li>
+<li><a href="11-xoa-tai-khoan.html"><span class="num">11</span>Xoá tài khoản</a></li>
+<li><a href="12-dang-nhap-bang-sms-tuy-chon-co-phi.html"><span class="num">12</span>Đăng nhập bằng SMS (tuỳ chọn, có phí)</a></li>
+<li><a href="13-apple-va-github-tuy-chon.html"><span class="num">13</span>Apple và GitHub (tuỳ chọn)</a></li>
+<li><a href="14-xu-ly-su-co.html" class="on" aria-current="page"><span class="num">14</span>Xử lý sự cố</a></li>
+<li><a href="15-bao-mat-tom-tat.html"><span class="num">15</span>Bảo mật, tóm tắt</a></li>
+<li><a href="16-kiem-chung-va-checklist-cuoi.html"><span class="num">16</span>Kiểm chứng và checklist cuối</a></li>
+  </ol>
+</aside>
+<main id="main">
+<article>
+<h1>14. Xử lý sự cố</h1>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Triệu chứng</th>
+<th>Nguyên nhân thường gặp</th>
+<th>Cách sửa</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/assets/config.js</code> hiện <code>CLOUD = null</code></td>
+<td>Biến sai định dạng hoặc thiếu</td>
+<td>Mục 8, phần &quot;Nếu lỗi&quot;</td>
+</tr>
+<tr>
+<td>&quot;Tên miền này chưa được thêm vào Authorized domains&quot;</td>
+<td>Thiếu tên miền</td>
+<td>Mục 5</td>
+</tr>
+<tr>
+<td>&quot;Cách đăng nhập này chưa được bật&quot;</td>
+<td>Chưa bật provider</td>
+<td>Mục 4</td>
+</tr>
+<tr>
+<td>&quot;Email hoặc mật khẩu chưa đúng&quot; dù chắc chắn đúng</td>
+<td>Tài khoản tạo bằng liên kết email hoặc Google nên chưa có mật khẩu</td>
+<td>Bấm <strong>Quên mật khẩu?</strong> để đặt mật khẩu. Hoặc kiểm tra Email/Password đã Enable (mục 4.1)</td>
+</tr>
+<tr>
+<td>Không thấy thư xác nhận hoặc đặt lại mật khẩu</td>
+<td>Thư nằm trong mục rác, hoặc hết lượt trong ngày (mục 10), hoặc thiếu Authorized domains</td>
+<td>Kiểm tra thư rác. Chờ ngày mai nếu hết lượt. Kiểm tra mục 5</td>
+</tr>
+<tr>
+<td>&quot;Hết lượt gửi email hôm nay&quot;</td>
+<td>Hết hạn mức 150 thư đặt lại hoặc 5 liên kết email mỗi ngày trên Spark</td>
+<td>Chờ ngày mai. Người có mật khẩu vẫn đăng nhập được</td>
+</tr>
+<tr>
+<td>&quot;Không có quyền đọc hoặc ghi dữ liệu&quot;</td>
+<td>Quy tắc chưa publish, hoặc App Check đang Enforce mà token không hợp lệ</td>
+<td>Mục 6.2. Nếu vừa bật Enforce, chuyển về Unenforced và kiểm tra mục 7</td>
+</tr>
+<tr>
+<td>Đăng nhập được nhưng không đồng bộ</td>
+<td>Quy tắc sai, hoặc đang đăng nhập bằng tài khoản khác</td>
+<td>Xem Firestore → Rules và trang Tài khoản</td>
+</tr>
+<tr>
+<td>reCAPTCHA báo site key không hợp lệ hoặc sai domain</td>
+<td>Domain chưa thêm vào trang reCAPTCHA, hoặc site key sai</td>
+<td>Mục 7, bước 2 và 3</td>
+</tr>
+<tr>
+<td>Google quay về trang trắng</td>
+<td>Trình duyệt chặn cookie bên thứ ba, hoặc tên miền sai</td>
+<td>Cho phép cookie. Kiểm tra <code>authDomain</code></td>
+</tr>
+<tr>
+<td>Console báo CSP chặn <code>firebaseapp</code>, <code>googleapis</code>, <code>apis.google.com</code> hoặc reCAPTCHA</td>
+<td>CSP không khớp</td>
+<td>Firebase dùng <code>authDomain</code> mặc định. Danh sách máy chủ nằm trong <code>site/firebase-origins.json</code>, dùng chung cho trang chính và trang Vật lí. Nếu dùng tên miền riêng, thêm vào đó rồi build lại</td>
+</tr>
+<tr>
+<td>&quot;Vì bảo mật, hãy đăng nhập lại&quot;</td>
+<td>Đăng nhập đã quá lâu</td>
+<td>Đăng xuất, đăng nhập lại, rồi xoá ngay</td>
+</tr>
+<tr>
+<td>&quot;Vượt hạn mức miễn phí hôm nay&quot;</td>
+<td>Spark hết hạn mức Firestore</td>
+<td>Chờ làm mới, hoặc xem mục 10</td>
+</tr>
+</tbody></table></div>
+
+</article>
+<nav class="pager" aria-label="Chuyển trang"><a class="prev" href="13-apple-va-github-tuy-chon.html"><span>← Trước</span>Apple và GitHub (tuỳ chọn)</a><a class="next" href="15-bao-mat-tom-tat.html"><span>Tiếp →</span>Bảo mật, tóm tắt</a></nav>
+</main>
+
+</div>
+<footer class="foot">Tài liệu này được dựng từ <code>docs/FIREBASE-SETUP.md</code>. Sửa nguồn đó rồi chạy <code>npm run docs</code>.</footer>
+<script src="assets/docs.js" defer></script>
+</body>
+</html>

@@ -529,7 +529,7 @@ export function mountApp(root, { storage, page, win = globalThis, now = () => ne
       return h('article', { class: 'account' },
         h('header', { class: 'course-head' }, h('h1', {}, 'Tài khoản')),
         h('p', { class: 'lead' }, 'Đám mây chưa được bật trên bản này. Bạn vẫn dùng đầy đủ ở chế độ khách, dữ liệu nằm trên máy này.'),
-        h('p', { class: 'fine' }, 'Quản trị viên cần cấu hình các biến FIREBASE_API_KEY, FIREBASE_AUTH_DOMAIN, FIREBASE_PROJECT_ID, FIREBASE_APP_ID trên Cloudflare Workers. Xem docs/FIREBASE-SETUP.md.'));
+        h('p', { class: 'fine' }, 'Khi quản trị viên bật đám mây cho bản này, phần đăng nhập và đồng bộ sẽ hiện ở đây.'));
     }
     if (!cloud.signedIn()) {
       return h('article', { class: 'account' },

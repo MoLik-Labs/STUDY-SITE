@@ -227,6 +227,8 @@ with sync_playwright() as p:
     ctx, page, errs = new_page(browser)
     page.add_init_script("window.__failMail = true")
     open_account(page)
+    # Form email nằm trong <details> đóng mặc định: mở ra trước khi điền.
+    page.locator('details:has([data-acct=mail]) > summary').click()
     page.locator('[data-acct=mail] input[name=email]').fill('hs@example.com')
     page.locator('[data-acct=mail] button[type=submit]').click()
     page.wait_for_timeout(700)

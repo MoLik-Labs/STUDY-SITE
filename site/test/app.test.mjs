@@ -238,3 +238,87 @@ test('xoá dữ liệu học cũng xoá trạng thái bấm giờ', async () => 
   clearStorage(storage);
   assert.equal(storage.getItem('sf.timer.v1'), null);
 });
+
+// ---- Đăng nhập email + mật khẩu trên trang Tài khoản của site ----
+function accountSetup(cloudOver = {}) {
+  const dom = new JSDOM('<!doctype html><main id="main"></main>', { url: 'https://site.test/account' });
+  const win = dom.window;
+  const root = win.document.getElementById('main');
+  const calls = [];
+  const base = {
+    enabled: true, signedIn: () => false, needsEmail: () => false, email: () => '', userId: () => null,
+    signUpWithPassword: async (e, p) => { calls.push(['up', e, p]); return { ok: true, text: 'Đã tạo tài khoản ' + e + '.' }; },
+    signInWithPassword: async (e, p) => { calls.push(['in', e, p]); return { ok: true, text: 'Đã đăng nhập bằng ' + e + '.' }; },
+    sendPasswordReset: async (e) => { calls.push(['reset', e]); return { ok: true, text: 'Nếu email này đã đăng ký, thư đặt lại mật khẩu đã được gửi.' }; },
+    sendEmailLink: async () => {}, signInWithGoogle: async () => {}, signOut: async () => {},
+  };
+  // Phương thức không liên quan trả về null thay vì lỗi.
+  const cloud = new Proxy(Object.assign({}, base, cloudOver), {
+    get: (t, p) => (p in t ? t[p] : async () => null),
+  });
+  const app = mountApp(root, { storage: win.localStorage, page: 'account', win, now: NOW, cloud });
+  const $ = sel => root.querySelector(sel);
+  const tick = () => new Promise(r => setTimeout(r, 0));
+  const submit = form => form.dispatchEvent(new win.Event('submit', { bubbles: true, cancelable: true }));
+  return { win, root, app, $, calls, tick, submit };
+}
+
+test('đăng nhập bằng mật khẩu: có ô mật khẩu, nút Quên mật khẩu, và gọi đúng hàm', async () => {
+  const t = accountSetup();
+  const form = t.$('form.auth-pw, form[data-pw], .auth-card form');
+  assert.ok(form, 'có form đăng nhập');
+  assert.ok(t.$('input[type=password]'), 'có ô mật khẩu');
+  assert.equal(t.$('input[type=password]').getAttribute('minlength'), null, 'đăng nhập không ép độ dài (mật khẩu cũ có thể ngắn)');
+  const reset = [...t.root.querySelectorAll('button')].find(b => b.textContent === 'Quên mật khẩu?');
+  assert.ok(reset, 'có nút Quên mật khẩu?');
+
+  const f = t.$('.auth-card form');
+  f.elements.email.value = 'an@example.com';
+  f.elements.password.value = 'matkhau123';
+  t.submit(f);
+  await t.tick();
+  assert.deepEqual(t.calls[0], ['in', 'an@example.com', 'matkhau123']);
+  assert.match(t.$('.msg.ok').textContent, /Đã đăng nhập bằng an@example\.com/);
+});
+
+test('tạo tài khoản: chuyển tab đổi nút và bắt mật khẩu tối thiểu 8 ký tự', async () => {
+  const t = accountSetup();
+  const tab = [...t.root.querySelectorAll('button')].find(b => b.textContent === 'Tạo tài khoản');
+  tab.click();
+  await t.tick();
+  const pw = t.$('input[type=password]');
+  assert.equal(pw.getAttribute('minlength'), '8');
+  assert.equal(pw.getAttribute('autocomplete'), 'new-password');
+  const f = t.$('.auth-card form');
+  f.elements.email.value = 'moi@example.com';
+  f.elements.password.value = 'matkhau123';
+  t.submit(f);
+  await t.tick();
+  assert.deepEqual(t.calls[0], ['up', 'moi@example.com', 'matkhau123']);
+});
+
+test('sai mật khẩu: hiện câu lỗi chung (không tiết lộ email có tồn tại)', async () => {
+  const t = accountSetup({ signInWithPassword: async () => { throw new Error('Email hoặc mật khẩu chưa đúng.'); } });
+  const f = t.$('.auth-card form');
+  f.elements.email.value = 'an@example.com';
+  f.elements.password.value = 'sai';
+  t.submit(f);
+  await t.tick();
+  await t.tick();
+  assert.match(t.$('.msg.err').textContent, /Email hoặc mật khẩu chưa đúng\./);
+});
+
+test('quên mật khẩu: chưa nhập email thì nhắc, không gọi mạng; có email thì gửi', async () => {
+  const t = accountSetup();
+  const reset = [...t.root.querySelectorAll('button')].find(b => b.textContent === 'Quên mật khẩu?');
+  reset.click();
+  await t.tick();
+  assert.equal(t.calls.length, 0, 'không gọi khi chưa có email');
+  assert.match(t.$('.msg.err').textContent, /Nhập email/);
+  t.$('.auth-card form').elements.email.value = 'an@example.com';
+  [...t.root.querySelectorAll('button')].find(b => b.textContent === 'Quên mật khẩu?').click();
+  await t.tick();
+  await t.tick();
+  assert.deepEqual(t.calls[0], ['reset', 'an@example.com']);
+  assert.match(t.$('.msg.ok').textContent, /Nếu email này đã đăng ký/);
+});

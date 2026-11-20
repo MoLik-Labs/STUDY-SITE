@@ -2,8 +2,8 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-onf9VX7FJtEb/civ7NxSTTbxdNvz4es05Pgd1wU0cdE=' 'sha256-bG06IHf8q1JxTaRB+a0o1jIY3+RlI51d5FLPEcKmUow=' 'sha256-CVgmugMy9TWKCz0mYkLD7pECAcciabLcLfhp88vbBaU=' 'sha256-3tSK5oOt7ZtKE2JWKIdqprAOQe4ZOGVIQ+7XgzbaagE=' 'sha256-hE2Roa17Xm1AGIc0iVgZUWd3I1bW7PjUujutY3ACpP8=' 'sha256-3CyHmwAhauNgU03O7DzoPmUxNrbw5xrKAzFOCLNILjE=' 'sha256-5S5eUaonxJbMpPzJY1/gaRSMS+BNMpPg1Vt8BbSxbdU='; style-src 'self' 'unsafe-inline'; style-src-elem 'self' 'sha256-xXVJlLofPNeaujXTGKlDUvBsBMFLPC5/zfv0XiFeozk='; style-src-attr 'unsafe-inline'; font-src 'self'; img-src 'self' data: https://i.ytimg.com https://*.ytimg.com blob:; media-src 'self' blob: https:; frame-src https://www.youtube-nocookie.com https://www.youtube.com; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests">
-<meta name="build-id" content="1e72f340f6b8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://apis.google.com https://www.google.com https://www.gstatic.com 'sha256-onf9VX7FJtEb/civ7NxSTTbxdNvz4es05Pgd1wU0cdE=' 'sha256-bG06IHf8q1JxTaRB+a0o1jIY3+RlI51d5FLPEcKmUow=' 'sha256-CVgmugMy9TWKCz0mYkLD7pECAcciabLcLfhp88vbBaU=' 'sha256-3tSK5oOt7ZtKE2JWKIdqprAOQe4ZOGVIQ+7XgzbaagE=' 'sha256-Ug5tZAcAf8f3jRHqvrzsYOl84Zr8tiBaKRCNeQpQpAY=' 'sha256-3CyHmwAhauNgU03O7DzoPmUxNrbw5xrKAzFOCLNILjE=' 'sha256-5S5eUaonxJbMpPzJY1/gaRSMS+BNMpPg1Vt8BbSxbdU='; style-src 'self' 'unsafe-inline'; style-src-elem 'self' 'sha256-xXVJlLofPNeaujXTGKlDUvBsBMFLPC5/zfv0XiFeozk='; style-src-attr 'unsafe-inline'; font-src 'self'; img-src 'self' data: https://i.ytimg.com https://*.ytimg.com blob:; media-src 'self' blob: https:; frame-src https://*.firebaseapp.com https://www.google.com https://www.youtube-nocookie.com https://www.youtube.com; connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://www.googleapis.com https://*.firebaseapp.com https://content-firebaseappcheck.googleapis.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests">
+<meta name="build-id" content="367d417e6bc2">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Vật lí — Học mọi thứ</title>
 <meta name="app-version" content="12.0">
@@ -6301,6 +6301,7 @@ const Account = (() => {
   const rawWrite = AppStore.write;
 
   let session = null, timer = 0, running = false, again = false, wiping = false;
+  let authMode = 'in';   /* 'in' đăng nhập bằng mật khẩu | 'up' tạo tài khoản — chỉ là giao diện */
   let lastError = '', syncState = 'idle', host = null, lastSig = '';
 
   /* ---------- lưu trữ nhỏ ---------- */
@@ -6358,6 +6359,40 @@ const Account = (() => {
       del(PENDING_KEY);
       throw new Error(friendly(e));
     }
+  }
+
+  /* Email + mật khẩu: nhận phiên ngay (không chuyển hướng), rồi tải lại có chủ đích để áp dụng dữ liệu
+     tài khoản trước khi app đọc kho lưu. Không dùng location.replace: URL chỉ đổi hash nên trình duyệt
+     không tải lại trang. */
+  async function passwordAuth(mode, email, password) {
+    const sdk = await sdkOf();
+    let user;
+    try {
+      user = mode === 'up'
+        ? await sdk.signUpWithPassword(email, password, backUrl())
+        : await sdk.signInWithPassword(email, password);
+    } catch (e) {
+      throw new Error(friendly(e));
+    }
+    setSession(user);
+    try {
+      await prepareFirstSync();
+    } catch (e) {
+      clearSession();
+      throw new Error('Đã đăng nhập nhưng chưa tải được dữ liệu. Thử đăng nhập lại.');
+    }
+    location.reload();
+  }
+
+  /* Luôn cùng một thông báo, không tiết lộ email có tồn tại hay không. */
+  async function resetPassword(email) {
+    const sdk = await sdkOf();
+    try {
+      await sdk.sendPasswordReset(email, backUrl());
+    } catch (e) {
+      throw new Error(friendly(e));
+    }
+    return 'Nếu email này đã đăng ký, thư đặt lại mật khẩu đã được gửi.';
   }
 
   /* Quay về từ liên kết email hoặc Google: nhận phiên rồi tải lại trang sạch. */
@@ -6609,6 +6644,7 @@ const Account = (() => {
     return {
       enabled: enabled(),
       signedIn: !!session,
+      mode: authMode,
       email: session ? session.user.email : '',
       pending: !!get(REMOTE_KEY),
       syncedAt: get(TIME_KEY) || 0,
@@ -6630,11 +6666,28 @@ const Account = (() => {
     if (!s.signedIn) {
       return `<p class="acct-lead">Đăng nhập để đồng bộ giữa các thiết bị.</p>
         <p class="muted">Không bắt buộc. Chế độ khách vẫn lưu mọi thứ trên máy này. Khi đăng nhập, chỉ lưu email, tên hiển thị, lớp và dữ liệu học.</p>
-        <form class="acct-form" data-acct="mail">
+        <div class="acct-row" role="group" aria-label="Cách đăng nhập">
+          <button class="btn ${s.mode === 'in' ? '' : 'ghost'} sm" type="button" data-acct="mode-in" aria-pressed="${s.mode === 'in'}">Đăng nhập</button>
+          <button class="btn ${s.mode === 'up' ? '' : 'ghost'} sm" type="button" data-acct="mode-up" aria-pressed="${s.mode === 'up'}">Tạo tài khoản</button>
+        </div>
+        <form class="acct-form" data-acct="pw">
           <label class="acct-field">Email
             <input type="email" name="email" required autocomplete="email" maxlength="254"></label>
-          <button class="btn sm" type="submit">Gửi liên kết đăng nhập</button>
+          <label class="acct-field">Mật khẩu
+            <input type="password" name="password" required maxlength="128" ${s.mode === 'up' ? 'minlength="8"' : ''} autocomplete="${s.mode === 'up' ? 'new-password' : 'current-password'}"
+              placeholder="${s.mode === 'up' ? 'Ít nhất 8 ký tự' : ''}"></label>
+          <button class="btn sm" type="submit">${s.mode === 'up' ? 'Tạo tài khoản' : 'Đăng nhập'}</button>
         </form>
+        <button class="btn ghost sm" type="button" data-acct="reset">Quên mật khẩu?</button>
+        <details class="acct-alt">
+          <summary class="muted">Đăng nhập không cần mật khẩu</summary>
+          <p class="muted">Gói miễn phí chỉ cho phép một số lượt gửi liên kết mỗi ngày trên toàn dự án. Nếu không nhận được, hãy dùng mật khẩu hoặc thử lại ngày mai.</p>
+          <form class="acct-form" data-acct="mail">
+            <label class="acct-field">Email
+              <input type="email" name="email" required autocomplete="email" maxlength="254"></label>
+            <button class="btn ghost sm" type="submit">Gửi liên kết đăng nhập</button>
+          </form>
+        </details>
         <button class="btn ghost sm" type="button" data-acct="google">Tiếp tục với Google</button>
         <p class="muted acct-msg" data-acct-msg role="status">${escH(s.error)}</p>`;
     }
@@ -6680,6 +6733,15 @@ const Account = (() => {
       if (!b) return;
       const what = b.dataset.acct;
       try {
+        if (what === 'mode-in' || what === 'mode-up') { authMode = what === 'mode-up' ? 'up' : 'in'; render(true); return; }
+        if (what === 'reset') {
+          const f = host.querySelector('[data-acct="pw"]');
+          const email = f ? f.elements.email.value.trim() : '';
+          if (!email) { say('Nhập email ở trên, rồi bấm lại để nhận thư đặt lại mật khẩu.'); return; }
+          say('Đang gửi…');
+          say(await resetPassword(email));
+          return;
+        }
         if (what === 'google') { say('Đang chuyển sang Google…'); await signInGoogle(); }
         if (what === 'sync') { await push(); say(syncState === 'error' ? lastError : 'Đã đồng bộ.'); }
         if (what === 'reload') { location.reload(); }
@@ -6703,6 +6765,11 @@ const Account = (() => {
       ev.preventDefault();
       const f = ev.target;
       try {
+        if (f.dataset.acct === 'pw') {
+          const email = f.elements.email.value.trim();
+          say(authMode === 'up' ? 'Đang tạo tài khoản…' : 'Đang đăng nhập…');
+          await passwordAuth(authMode === 'up' ? 'up' : 'in', email, f.elements.password.value);
+        }
         if (f.dataset.acct === 'mail') {
           const email = f.elements.email.value.trim();
           say('Đang gửi…');

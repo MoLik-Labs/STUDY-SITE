@@ -82,7 +82,8 @@ test('CSP header: chống nhúng khung; ngoài YouTube và Firebase/Google khôn
   assert.match(headers, /frame-ancestors 'self'/);
   assert.match(headers, /object-src 'none'/);
   assert.match(headers, /connect-src 'self'/);
-  const allowed = /^https:\/\/([a-z0-9.-]*\.)?(googleapis\.com|firebaseapp\.com|apis\.google\.com|youtube\.com|youtube-nocookie\.com|ytimg\.com)$|^https:\/\/\*\.(firebaseapp\.com|ytimg\.com)$/;
+  // google.com và gstatic.com: chỉ cho reCAPTCHA (App Check) — script/frame của Google, không phải domain tuỳ ý.
+  const allowed = /^https:\/\/([a-z0-9.-]*\.)?(googleapis\.com|firebaseapp\.com|apis\.google\.com|youtube\.com|youtube-nocookie\.com|ytimg\.com)$|^https:\/\/(www\.)?(google\.com|gstatic\.com)$|^https:\/\/\*\.(firebaseapp\.com|ytimg\.com)$/;
   const hosts = [...headers.matchAll(/https:\/\/[^ ;']+/g)].map(m => m[0]);
   const bad = hosts.filter(h => !allowed.test(h));
   assert.deepEqual(bad, [], 'mọi máy chủ ngoài đều phải là Google/Firebase/YouTube');

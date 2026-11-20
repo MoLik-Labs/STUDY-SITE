@@ -120,7 +120,7 @@ test('_headers: CSP băm, mở đúng máy chủ Firebase, một frame-src, sw.j
   assert.match(csp, /connect-src 'self' https:\/\/identitytoolkit\.googleapis\.com/);
   assert.match(csp, /https:\/\/securetoken\.googleapis\.com/);
   assert.match(csp, /https:\/\/firestore\.googleapis\.com/);
-  assert.match(csp, /script-src 'self' https:\/\/apis\.google\.com 'sha256-/);
+  assert.match(csp, /script-src 'self' https:\/\/apis\.google\.com [^;]*'sha256-/);
   assert.equal((csp.match(/frame-src /g) || []).length, 1, 'chỉ một frame-src (directive trùng bị trình duyệt bỏ qua)');
   assert.match(csp, /frame-src https:\/\/\*\.firebaseapp\.com/);
   assert.match(csp, /frame-src [^;]*youtube/);
@@ -136,6 +136,32 @@ test('siteCsp: từ chối CSP không có connect-src \'self\'', () => {
   assert.throws(() => siteCsp("default-src 'self'"), /connect-src/);
   const out1 = siteCsp("script-src 'self' 'sha256-A'; connect-src 'self'; x 1");
   assert.match(out1, /connect-src 'self' https:\/\/identitytoolkit/);
-  assert.match(out1, /script-src 'self' https:\/\/apis\.google\.com 'sha256-A'/);
-  assert.match(out1, /; x 1; frame-src https:\/\/\*\.firebaseapp\.com$/);
+  assert.match(out1, /script-src 'self' 'sha256-A' https:\/\/apis\.google\.com/);
+  assert.match(out1, /; x 1; frame-src https:\/\/\*\.firebaseapp\.com/);
+  assert.match(out1, /https:\/\/content-firebaseappcheck\.googleapis\.com/, 'App Check mở đúng máy chủ');
+  // chạy lại không nhân đôi origin
+  const twice = siteCsp(out1);
+  assert.equal(twice.split('https://apis.google.com').length - 1, 1, 'không nhân đôi origin');
+});
+
+test('config: khoá App Check (reCAPTCHA) hợp lệ được đưa vào; sai định dạng thì bỏ, app vẫn chạy', async () => {
+  const KEY = '6LdExampleSiteKey_0123456789abcdef';
+  const good = await (await get('/assets/config.js', { ...GOOD, FIREBASE_APPCHECK_SITE_KEY: KEY })).text();
+  assert.equal(JSON.parse(/CLOUD = Object\.freeze\((\{.*\})\);/.exec(good)[1]).appCheckKey, KEY);
+  const bad = await (await get('/assets/config.js', { ...GOOD, FIREBASE_APPCHECK_SITE_KEY: '<script>' })).text();
+  const cfg = JSON.parse(/CLOUD = Object\.freeze\((\{.*\})\);/.exec(bad)[1]);
+  assert.equal(cfg.appCheckKey, undefined, 'khoá sai định dạng bị bỏ');
+  assert.equal(cfg.apiKey, GOOD.FIREBASE_API_KEY, 'cấu hình Firebase vẫn còn');
+});
+
+test('Vật lí: meta CSP trong trang (áp dụng cùng header) cho phép máy chủ Firebase và reCAPTCHA', async () => {
+  const html = await readFile(path.join(out, 'physic', 'index.html'), 'utf8');
+  const meta = /http-equiv="Content-Security-Policy" content="([^"]*)"/.exec(html);
+  assert.ok(meta, 'có meta CSP');
+  const csp = meta[1];
+  assert.match(csp, /connect-src 'self' https:\/\/identitytoolkit\.googleapis\.com/, 'Vật lí gọi được Auth và Firestore');
+  assert.match(csp, /connect-src [^;]*https:\/\/firestore\.googleapis\.com/);
+  assert.match(csp, /connect-src [^;]*https:\/\/content-firebaseappcheck\.googleapis\.com/);
+  assert.match(csp, /script-src 'self' https:\/\/apis\.google\.com/);
+  assert.match(csp, /frame-src [^;]*https:\/\/\*\.firebaseapp\.com/);
 });

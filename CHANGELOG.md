@@ -8,9 +8,12 @@ Mọi thay đổi lớn đều có kiểm thử: `npm test` (check tĩnh + CSP +
 - **Chuyển backend từ Supabase sang Firebase** (Auth + Firestore). Đăng nhập bằng email (liên kết) và Google;
   chế độ khách vẫn chạy đầy đủ. Quy tắc bảo mật ở `firestore.rules`. Hướng dẫn A–Z: `docs/FIREBASE-SETUP.md`.
 - Cấu hình bằng biến `FIREBASE_*` trên Worker, đọc lúc chạy (`/assets/config.js`).
+- Đăng nhập bằng **email + mật khẩu** (tạo tài khoản, đăng nhập, quên mật khẩu) là cách chính; liên kết qua email và Google là phương án phụ.
+- App Check (reCAPTCHA v3), bật qua biến tuỳ chọn `FIREBASE_APPCHECK_SITE_KEY`. Không bật Enforce trong mã; hướng dẫn ở `docs/FIREBASE-SETUP.md` mục 6.4.
+- Danh sách máy chủ Firebase/reCAPTCHA cho CSP nằm trong `site/firebase-origins.json`, dùng chung cho trang chính và trang Vật lí. Trước đó meta CSP của Vật lí chỉ cho `'self'`, nên mọi kết nối Firebase từ `/physic/` đều bị chặn.
 - Lỗi tải Firebase không còn làm trắng trang: rơi về chế độ khách và báo một dòng.
 - Bộ hẹn giờ Pomodoro và bấm giờ (`site/src/timer*.js`): đếm bằng mốc thời gian nên đóng và mở lại trang vẫn đúng; phiên học lưu theo ngày.
-- Gỡ Supabase: xoá `supabase/migrations/` và `docs/SUPABASE-SETUP.md`.
+- Gỡ Supabase: xoá `supabase/migrations/` và `docs/SUPABASE-SETUP.md`. Project Supabase cũng đã được xoá (trước đó đã đếm 0 dòng ở mọi bảng).
 - Vật lí: thêm trang `#/account` (Tài khoản & đồng bộ). Trước đó bản Vật lí không có lối vào, nên không đăng nhập được.
 - Tài khoản: khối đăng nhập không còn hiện sai "chưa bật" khi tải trang; xoá tài khoản xác nhận ngay trong khối, không phụ thuộc hộp thoại chung.
 - Đồng bộ Vật lí: thêm các dữ liệu học còn thiếu (sổ điểm, thời khoá biểu, ôn tập, kế hoạch tuần, đấu trường, khám phá). Một mục quá lớn không chặn các mục khác.

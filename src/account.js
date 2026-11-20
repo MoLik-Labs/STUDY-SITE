@@ -46,6 +46,7 @@ const Account = (() => {
   const rawWrite = AppStore.write;
 
   let session = null, timer = 0, running = false, again = false, wiping = false;
+  let authMode = 'in';   /* 'in' đăng nhập bằng mật khẩu | 'up' tạo tài khoản — chỉ là giao diện */
   let lastError = '', syncState = 'idle', host = null, lastSig = '';
 
   /* ---------- lưu trữ nhỏ ---------- */
@@ -103,6 +104,40 @@ const Account = (() => {
       del(PENDING_KEY);
       throw new Error(friendly(e));
     }
+  }
+
+  /* Email + mật khẩu: nhận phiên ngay (không chuyển hướng), rồi tải lại có chủ đích để áp dụng dữ liệu
+     tài khoản trước khi app đọc kho lưu. Không dùng location.replace: URL chỉ đổi hash nên trình duyệt
+     không tải lại trang. */
+  async function passwordAuth(mode, email, password) {
+    const sdk = await sdkOf();
+    let user;
+    try {
+      user = mode === 'up'
+        ? await sdk.signUpWithPassword(email, password, backUrl())
+        : await sdk.signInWithPassword(email, password);
+    } catch (e) {
+      throw new Error(friendly(e));
+    }
+    setSession(user);
+    try {
+      await prepareFirstSync();
+    } catch (e) {
+      clearSession();
+      throw new Error('Đã đăng nhập nhưng chưa tải được dữ liệu. Thử đăng nhập lại.');
+    }
+    location.reload();
+  }
+
+  /* Luôn cùng một thông báo, không tiết lộ email có tồn tại hay không. */
+  async function resetPassword(email) {
+    const sdk = await sdkOf();
+    try {
+      await sdk.sendPasswordReset(email, backUrl());
+    } catch (e) {
+      throw new Error(friendly(e));
+    }
+    return 'Nếu email này đã đăng ký, thư đặt lại mật khẩu đã được gửi.';
   }
 
   /* Quay về từ liên kết email hoặc Google: nhận phiên rồi tải lại trang sạch. */
@@ -354,6 +389,7 @@ const Account = (() => {
     return {
       enabled: enabled(),
       signedIn: !!session,
+      mode: authMode,
       email: session ? session.user.email : '',
       pending: !!get(REMOTE_KEY),
       syncedAt: get(TIME_KEY) || 0,
@@ -375,11 +411,28 @@ const Account = (() => {
     if (!s.signedIn) {
       return `<p class="acct-lead">Đăng nhập để đồng bộ giữa các thiết bị.</p>
         <p class="muted">Không bắt buộc. Chế độ khách vẫn lưu mọi thứ trên máy này. Khi đăng nhập, chỉ lưu email, tên hiển thị, lớp và dữ liệu học.</p>
-        <form class="acct-form" data-acct="mail">
+        <div class="acct-row" role="group" aria-label="Cách đăng nhập">
+          <button class="btn ${s.mode === 'in' ? '' : 'ghost'} sm" type="button" data-acct="mode-in" aria-pressed="${s.mode === 'in'}">Đăng nhập</button>
+          <button class="btn ${s.mode === 'up' ? '' : 'ghost'} sm" type="button" data-acct="mode-up" aria-pressed="${s.mode === 'up'}">Tạo tài khoản</button>
+        </div>
+        <form class="acct-form" data-acct="pw">
           <label class="acct-field">Email
             <input type="email" name="email" required autocomplete="email" maxlength="254"></label>
-          <button class="btn sm" type="submit">Gửi liên kết đăng nhập</button>
+          <label class="acct-field">Mật khẩu
+            <input type="password" name="password" required maxlength="128" ${s.mode === 'up' ? 'minlength="8"' : ''} autocomplete="${s.mode === 'up' ? 'new-password' : 'current-password'}"
+              placeholder="${s.mode === 'up' ? 'Ít nhất 8 ký tự' : ''}"></label>
+          <button class="btn sm" type="submit">${s.mode === 'up' ? 'Tạo tài khoản' : 'Đăng nhập'}</button>
         </form>
+        <button class="btn ghost sm" type="button" data-acct="reset">Quên mật khẩu?</button>
+        <details class="acct-alt">
+          <summary class="muted">Đăng nhập không cần mật khẩu</summary>
+          <p class="muted">Gói miễn phí chỉ cho phép một số lượt gửi liên kết mỗi ngày trên toàn dự án. Nếu không nhận được, hãy dùng mật khẩu hoặc thử lại ngày mai.</p>
+          <form class="acct-form" data-acct="mail">
+            <label class="acct-field">Email
+              <input type="email" name="email" required autocomplete="email" maxlength="254"></label>
+            <button class="btn ghost sm" type="submit">Gửi liên kết đăng nhập</button>
+          </form>
+        </details>
         <button class="btn ghost sm" type="button" data-acct="google">Tiếp tục với Google</button>
         <p class="muted acct-msg" data-acct-msg role="status">${escH(s.error)}</p>`;
     }
@@ -425,6 +478,15 @@ const Account = (() => {
       if (!b) return;
       const what = b.dataset.acct;
       try {
+        if (what === 'mode-in' || what === 'mode-up') { authMode = what === 'mode-up' ? 'up' : 'in'; render(true); return; }
+        if (what === 'reset') {
+          const f = host.querySelector('[data-acct="pw"]');
+          const email = f ? f.elements.email.value.trim() : '';
+          if (!email) { say('Nhập email ở trên, rồi bấm lại để nhận thư đặt lại mật khẩu.'); return; }
+          say('Đang gửi…');
+          say(await resetPassword(email));
+          return;
+        }
         if (what === 'google') { say('Đang chuyển sang Google…'); await signInGoogle(); }
         if (what === 'sync') { await push(); say(syncState === 'error' ? lastError : 'Đã đồng bộ.'); }
         if (what === 'reload') { location.reload(); }
@@ -448,6 +510,11 @@ const Account = (() => {
       ev.preventDefault();
       const f = ev.target;
       try {
+        if (f.dataset.acct === 'pw') {
+          const email = f.elements.email.value.trim();
+          say(authMode === 'up' ? 'Đang tạo tài khoản…' : 'Đang đăng nhập…');
+          await passwordAuth(authMode === 'up' ? 'up' : 'in', email, f.elements.password.value);
+        }
         if (f.dataset.acct === 'mail') {
           const email = f.elements.email.value.trim();
           say('Đang gửi…');

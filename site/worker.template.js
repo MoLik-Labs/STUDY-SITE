@@ -19,6 +19,8 @@ const API_KEY = /^AIza[0-9A-Za-z_-]{35}$/;
 const PROJECT_ID = /^[a-z0-9][a-z0-9-]{4,28}[a-z0-9]$/;
 const APP_ID = /^\d+:\d+:web:[0-9a-f]+$/;
 const AUTH_DOMAIN = /^[a-z0-9-]+(\.[a-z0-9-]+)+$/;
+// Khoá site reCAPTCHA v3 cho App Check (công khai). Sai định dạng thì bỏ, app vẫn chạy không có App Check.
+const APPCHECK_KEY = /^[0-9A-Za-z_-]{20,100}$/;
 // Khoá dịch vụ (service account) có private_key. Không bao giờ được đặt vào biến này.
 const SECRET_HINT = /private_key|BEGIN [A-Z ]*PRIVATE KEY|"type"\s*:\s*"service_account"/;
 
@@ -33,7 +35,10 @@ export function cloudFromEnv(env) {
   const authDomain = read('FIREBASE_AUTH_DOMAIN') || (projectId + '.firebaseapp.com');
   if (!API_KEY.test(apiKey) || !PROJECT_ID.test(projectId) || !APP_ID.test(appId)) return null;
   if (!AUTH_DOMAIN.test(authDomain)) return null;
-  return { apiKey, authDomain, projectId, appId };
+  const cfg = { apiKey, authDomain, projectId, appId };
+  const appCheckKey = read('FIREBASE_APPCHECK_SITE_KEY');
+  if (APPCHECK_KEY.test(appCheckKey)) cfg.appCheckKey = appCheckKey;
+  return cfg;
 }
 
 export function configJs(env) {

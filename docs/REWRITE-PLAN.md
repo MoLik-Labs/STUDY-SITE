@@ -11,9 +11,9 @@ Trạng thái: backend đã chuyển sang Firebase. Giao diện và đồng bộ
 | Phạm vi | Giữ Vật lí (`/physic/`) và 8 môn, mỗi môn một `/ten_web`. Gộp về 6–8 khu vực |
 | Hình ảnh | Không dùng ảnh stock. Dùng giao diện sản phẩm thật (HTML/CSS) |
 | Backend | Firebase: Auth (email link, Google) và Firestore. Xem `docs/FIREBASE-SETUP.md` |
-| Đăng nhập | Email link và Google. Không SMS (Phone Auth cần gói trả phí), không ẩn danh |
+| Đăng nhập | Email + mật khẩu (chính), email link và Google (phụ). Không SMS (Phone Auth cần gói trả phí), không ẩn danh |
 | Hosting | Cloudflare Workers (Static Assets) |
-| Supabase | Đã gỡ hoàn toàn khỏi repo. Đã đếm 0 dòng ở `auth.users`, `user_state`, `planner_states`, `profiles`, `lesson_progress`, `notes`, `layouts` (chưa đếm `answers`, `review_cards`) |
+| Supabase | Đã gỡ khỏi repo và đã xoá project `study-focus-fox`. Trước khi xoá, đã đếm 0 dòng ở mọi bảng và 0 file storage, nên không có dữ liệu cần chuyển. Khoá Supabase cũ mất hiệu lực cùng project |
 | Xoá dữ liệu | Xoá trên máy và trên Firestore, giữ tài khoản. Xoá tài khoản là thao tác riêng, cần đăng nhập gần đây |
 
 ## Kiến trúc hiện tại
@@ -27,5 +27,4 @@ Trạng thái: backend đã chuyển sang Firebase. Giao diện và đồng bộ
 
 - Kiểm thử trên Firebase thật (emulator không chạy được trong sandbox): đăng nhập, quy tắc, đồng bộ hai máy.
 - Kiểm thử RLS với người dùng thật sau khi triển khai `firestore.rules`.
-- Script chuyển dữ liệu từ Supabase: chờ người dùng quyết định (số dòng đã đếm bằng 0).
-- Xoá project Supabase trên dashboard: việc của chủ tài khoản, không làm từ repo.
+- Không còn việc Supabase: project đã xoá, không có dữ liệu cần chuyển.

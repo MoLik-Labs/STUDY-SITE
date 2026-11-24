@@ -1,3 +1,4 @@
+import { handleApi } from './src/api.js';
 // Worker của site — sinh tự động bởi site/build.mjs (đừng sửa tay bản trong dist/).
 // Chỉ hai đường dẫn chạy mã này (xem run_worker_first trong wrangler.jsonc):
 //   /__version          JSON phiên bản, có ETag và 304.
@@ -90,6 +91,9 @@ export default {
     const path = new URL(request.url).pathname.replace(/\/+$/, '') || '/';
     if (path === '/__version') return version(request);
     if (path === '/assets/config.js') return config(request, env);
+    if (path === '/api' || path.startsWith('/api/')) {
+      return handleApi(request, { projectId: (cloudFromEnv(env) || {}).projectId || null });
+    }
     return new Response('Không tìm thấy', {
       status: 404,
       headers: Object.assign({ 'Content-Type': 'text/plain; charset=utf-8' }, SECURITY),

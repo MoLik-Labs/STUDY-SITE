@@ -26,6 +26,7 @@ self.addEventListener('fetch', event => {
   const req = event.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
+  if (url.pathname.startsWith('/api/')) return; // dữ liệu riêng tư: không cache, không đi qua SW
   if (!sameOrigin(url)) return; // đám mây Firebase không bao giờ đi qua cache
 
   // Trang điều hướng: mạng trước để nhận bản mới; mất mạng thì dùng bản đã cache.

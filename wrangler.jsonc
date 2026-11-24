@@ -28,7 +28,7 @@
     "not_found_handling": "404-page",
     // /index.html → /, /tai-khoan/index.html → /tai-khoan/.
     "html_handling": "auto-trailing-slash",
-    "run_worker_first": ["/__version", "/assets/config.js"]
+    "run_worker_first": ["/__version", "/assets/config.js", "/api/*"]
   },
 
   "workers_dev": true,

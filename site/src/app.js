@@ -22,6 +22,8 @@ const HOME_BLOCKS = {
   today: { label: 'Hôm nay', size: 'half' },
   timer: { label: 'Hẹn giờ', size: 'half' },
   review: { label: 'Ôn tập', size: 'wide' },
+  exams: { label: 'Kỳ thi', size: 'half' },
+  progress: { label: 'Tiến độ 7 ngày', size: 'half' },
   week: { label: 'Lịch tuần', size: 'wide' },
   courses: { label: 'Môn của tôi', size: 'wide' },
 };
@@ -32,7 +34,11 @@ function homeLayout(storage) {
   let order = HOME_DEFAULT.slice();
   try {
     const raw = storage ? JSON.parse(storage.getItem(HOME_KEY) || 'null') : null;
-    if (Array.isArray(raw) && raw.length === HOME_DEFAULT.length && HOME_DEFAULT.every(id => raw.includes(id))) order = raw;
+    // Giữ thứ tự người dùng đã chọn; khối mới thêm sau thì nối vào cuối (không reset bố cục).
+    if (Array.isArray(raw)) {
+      const known = [...new Set(raw.filter(id => HOME_DEFAULT.includes(id)))];
+      order = [...known, ...HOME_DEFAULT.filter(id => !known.includes(id))];
+    }
   } catch { /* bố cục hỏng: dùng mặc định */ }
   const put = next => {
     try { storage?.setItem(HOME_KEY, JSON.stringify(next)); } catch { /* không lưu được thì vẫn chạy trong phiên này */ }
@@ -259,7 +265,7 @@ export function mountApp(root, { storage, page, win = globalThis, now = () => ne
   }
 
   function plannerView() {
-    const parts = { today: todayPanel(), timer: timer.element(), review: reviewBlock(), week: weekView(), courses: sidebar() };
+    const parts = { today: todayPanel(), timer: timer.element(), review: reviewBlock(), exams: examsBlock(), progress: progressBlock(), week: weekView(), courses: sidebar() };
     return h('div', { class: 'planner' }, alertBox(),
       h('div', { class: 'home-tools' },
         h('p', { class: 'meta' }, arranging ? 'Dùng nút Lên và Xuống để đổi thứ tự các khối.' : null),
@@ -272,6 +278,50 @@ export function mountApp(root, { storage, page, win = globalThis, now = () => ne
 
   // ---------- Ôn tập thẻ ghi nhớ ----------
   let review = null; // { queue: [id], pos, shown } của phiên đang chạy
+
+  function examsBlock() {
+    const todayIso = L.isoOf(now());
+    const list = L.upcomingExams(state, todayIso);
+    const shown = list.slice(0, 3);
+    const title = h('input', { type: 'text', name: 'title', required: true, maxlength: 120, placeholder: 'Ví dụ: Giữa kỳ Kinh tế lượng', 'aria-label': 'Tên kỳ thi' });
+    const course = h('select', { name: 'course', 'aria-label': 'Môn của kỳ thi' }, courseOptions());
+    const date = h('input', { type: 'date', name: 'date', required: true, 'aria-label': 'Ngày thi', min: todayIso });
+    const form = h('form', {
+      class: 'add-exam',
+      onsubmit: e => {
+        e.preventDefault();
+        const next = L.addExam(state, { title: title.value, course: course.value, date: date.value });
+        if (next === state) { title.focus(); return; }
+        commit(next);
+      },
+    }, title, course, date, h('button', { type: 'submit' }, 'Thêm kỳ thi'));
+    return h('section', { class: 'today', 'aria-label': 'Kỳ thi' },
+      h('h2', {}, 'Kỳ thi'),
+      shown.length
+        ? h('ul', { class: 'exam-list' }, shown.map(e => h('li', { class: 'exam' },
+            h('span', { class: 'exam-days' }, e.daysLeft === 0 ? 'Hôm nay' : `Còn ${e.daysLeft} ngày`),
+            h('span', { class: 'exam-name' }, e.title, e.course ? ` · ${courseName(e.course)}` : ''),
+            h('button', { type: 'button', class: 'ghost sm', 'aria-label': `Xoá kỳ thi ${e.title}`, onclick: () => commit(L.removeExam(state, e.id)) }, 'Xoá'))))
+        : h('p', { class: 'meta' }, 'Chưa có kỳ thi nào. Thêm để theo dõi ngày còn lại.'),
+      h('details', {}, h('summary', {}, 'Thêm kỳ thi'), form));
+  }
+
+  function progressBlock() {
+    const p = L.weeklyProgress(state, L.isoOf(now()));
+    const names = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+    return h('section', { class: 'today', 'aria-label': 'Tiến độ 7 ngày' },
+      h('h2', {}, 'Tiến độ 7 ngày'),
+      p.total
+        ? h('p', { class: 'meta' }, `Đã xong ${p.done}/${p.total} việc (${p.rate}%).`)
+        : h('p', { class: 'meta' }, 'Chưa có việc nào trong 7 ngày gần đây.'),
+      h('progress', { max: 100, value: p.rate, 'aria-label': `Hoàn thành ${p.rate}% trong 7 ngày` }),
+      h('ol', { class: 'week-bars', 'aria-label': 'Việc đã xong theo ngày' }, p.days.map(d => {
+        const dow = names[L.parseIso(d.date).getDay()];
+        return h('li', { class: 'day-bar' + (d.total === 0 ? ' is-empty' : '') },
+          h('span', { class: 'bar-day' }, dow),
+          h('span', { class: 'bar-count' }, d.total ? `${d.done}/${d.total}` : '–'));
+      })));
+  }
 
   function reviewBlock() {
     const s = L.cardStats(state, L.isoOf(now()));

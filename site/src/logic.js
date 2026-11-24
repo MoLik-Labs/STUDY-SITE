@@ -73,7 +73,7 @@ export function newId(prefix) {
 
 // updated: thời điểm ghi cuối (ISO). Dùng để quyết định bên nào mới hơn khi đồng bộ.
 export function emptyState() {
-  return { v: 2, updated: null, tasks: [], custom: [], progress: {}, notes: {}, cards: [] };
+  return { v: 2, updated: null, tasks: [], custom: [], progress: {}, notes: {}, cards: [], exams: [] };
 }
 
 function safeMap(obj, fn) {
@@ -131,6 +131,7 @@ export function normalizeState(raw) {
 
   state.notes = safeMap(raw.notes, text => (typeof text === 'string' ? sanitizeNote(text) : undefined));
   state.cards = normalizeCards(raw.cards);
+  state.exams = normalizeExams(raw.exams);
   return state;
 }
 
@@ -309,4 +310,59 @@ export function cardStats(state, todayIso) {
     due: cards.filter(c => c.due <= todayIso).length,
     learned: cards.filter(c => c.box === CARD_INTERVALS.length - 1).length,
   };
+}
+
+// ---------- Kỳ thi (đếm ngược) ----------
+export const EXAM_LIMIT = 30;
+
+function normalizeExams(raw) {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .filter(e => e && typeof e.id === 'string' && parseIso(e.date))
+    .map(e => ({
+      id: sanitizeText(e.id, 80),
+      title: sanitizeText(e.title, 120),
+      course: sanitizeText(e.course, 80),
+      date: e.date,
+    }))
+    .filter(e => e.id && e.title)
+    .slice(0, EXAM_LIMIT);
+}
+
+export function addExam(state, { title, course, date }, id = newId('e')) {
+  const text = sanitizeText(title, 120);
+  const exams = state.exams || [];
+  if (!text || !parseIso(date) || exams.length >= EXAM_LIMIT) return state;
+  return { ...state, exams: [...exams, { id, title: text, course: sanitizeText(course, 80), date }] };
+}
+
+export function removeExam(state, id) {
+  return { ...state, exams: (state.exams || []).filter(e => e.id !== id) };
+}
+
+// Kỳ thi chưa qua (từ hôm nay trở đi), gần nhất trước, kèm số ngày còn lại.
+export function upcomingExams(state, todayIso) {
+  return (state.exams || [])
+    .filter(e => e.date >= todayIso)
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .map(e => ({ ...e, daysLeft: daysBetween(todayIso, e.date) }));
+}
+
+function daysBetween(fromIso, toIso) {
+  // Làm tròn: lệch một giờ khi đổi giờ mùa hè không làm sai số ngày.
+  return Math.round((parseIso(toIso).getTime() - parseIso(fromIso).getTime()) / 86400000);
+}
+
+// ---------- Tiến độ 7 ngày gần nhất ----------
+// Đếm việc theo ngày (đã xong / tổng) trong 7 ngày kết thúc hôm nay. Không tính việc tương lai.
+export function weeklyProgress(state, todayIso) {
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const iso = isoOf(addDays(parseIso(todayIso), -i));
+    const tasks = state.tasks.filter(t => t.date === iso);
+    days.push({ date: iso, total: tasks.length, done: tasks.filter(t => t.done).length });
+  }
+  const total = days.reduce((n, d) => n + d.total, 0);
+  const done = days.reduce((n, d) => n + d.done, 0);
+  return { days, total, done, rate: total ? Math.round((done / total) * 100) : 0 };
 }

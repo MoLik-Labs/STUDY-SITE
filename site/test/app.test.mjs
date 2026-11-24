@@ -360,3 +360,32 @@ test('trang chủ có khối Ôn tập với số thẻ cần ôn', () => {
   assert.ok($('[data-block="review"]'));
   app.dispose();
 });
+
+test('kỳ thi: thêm qua form, hiện số ngày còn lại; xoá được', () => {
+  const t = setup();
+  const form = t.$('form.add-exam');
+  form.elements.title.value = 'Giữa kỳ Kinh tế lượng';
+  form.elements.course.value = 'kinh-te-luong';
+  form.elements.date.value = '2026-11-26';
+  t.submit(form);
+  assert.ok(t.$('.exam-list').textContent.includes('Còn 10 ngày'));
+  assert.ok(t.$('.exam-list').textContent.includes('Giữa kỳ Kinh tế lượng'));
+  t.$('button[aria-label^="Xoá kỳ thi"]').click();
+  assert.equal(t.$('.exam-list'), null);
+});
+
+test('tiến độ 7 ngày: hiện số việc đã xong và tỉ lệ', () => {
+  const t = setup({ storageInit: { [KEY]: JSON.stringify({ v: 2, tasks: [
+    { id: 'a', title: 'Một', course: '', date: '2026-11-16', done: true },
+    { id: 'b', title: 'Hai', course: '', date: '2026-11-15', done: false },
+  ] }) } });
+  assert.ok(t.root.textContent.includes('Đã xong 1/2 việc (50%).'));
+  assert.equal(t.$$('.week-bars .day-bar').length, 7);
+});
+
+test('bố cục trang chủ cũ (5 khối) vẫn giữ thứ tự, khối mới nối cuối', () => {
+  const t = setup({ storageInit: { 'sf.home.v1': JSON.stringify(['courses', 'today', 'week', 'timer', 'review']) } });
+  const order = t.$$('[data-block]').map(b => b.getAttribute('data-block'));
+  assert.deepEqual(order.slice(0, 5), ['courses', 'today', 'week', 'timer', 'review']);
+  assert.deepEqual(order.slice(5).sort(), ['exams', 'progress']);
+});

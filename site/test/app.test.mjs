@@ -322,3 +322,41 @@ test('quên mật khẩu: chưa nhập email thì nhắc, không gọi mạng; c
   assert.deepEqual(t.calls[0], ['reset', 'an@example.com']);
   assert.match(t.$('.msg.ok').textContent, /Nếu email này đã đăng ký/);
 });
+
+test('ôn tập: thêm thẻ, hiện đáp án, chấm nhớ rồi thẻ biến khỏi hàng đến hạn', () => {
+  const { root, $, $$, submit, app, storage } = setup({ hash: '#/on-tap' });
+  assert.ok($('.review h1'), 'có tiêu đề Ôn tập');
+  assert.match(root.textContent, /Chưa có thẻ nào/);
+  const form = $('.card-form');
+  form.querySelector('textarea[name=front]').value = 'Econometrics là gì?';
+  form.querySelector('textarea[name=back]').value = 'Kinh tế lượng.';
+  submit(form);
+  assert.match(root.textContent, /1 cần ôn hôm nay/);
+  assert.equal($('.card-front').textContent, 'Econometrics là gì?');
+  assert.equal($('.card-back'), null, 'đáp án ẩn cho đến khi bấm');
+  $$('button').find(b => b.textContent === 'Hiện đáp án').click();
+  assert.equal($('.card-back').textContent, 'Kinh tế lượng.');
+  $$('button').find(b => b.textContent === 'Nhớ rồi').click();
+  assert.match(root.textContent, /Xong 1 thẻ hôm nay/);
+  const saved = JSON.parse(storage.getItem(KEY));
+  assert.equal(saved.cards[0].box, 1);
+  assert.equal(saved.cards[0].due, '2026-11-18');
+  app.dispose();
+});
+
+test('ôn tập: thẻ quên thì quay lại ngày mai, không hiện trong phiên hôm nay', () => {
+  const { root, $, $$, submit, app } = setup({ hash: '#/on-tap' });
+  const form = $('.card-form');
+  form.querySelector('textarea[name=front]').value = 'Từ mới';
+  submit(form);
+  $$('button').find(b => b.textContent === 'Hiện đáp án').click();
+  $$('button').find(b => b.textContent === 'Chưa nhớ').click();
+  assert.match(root.textContent, /Thẻ quên sẽ quay lại ngày mai/);
+  app.dispose();
+});
+
+test('trang chủ có khối Ôn tập với số thẻ cần ôn', () => {
+  const { $, submit, app } = setup({ hash: '' });
+  assert.ok($('[data-block="review"]'));
+  app.dispose();
+});

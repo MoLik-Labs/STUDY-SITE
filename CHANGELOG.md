@@ -5,6 +5,10 @@ Mọi thay đổi lớn đều có kiểm thử: `npm test` (check tĩnh + CSP +
 
 ## [Chưa phát hành]
 
+- **Ôn tập thẻ ghi nhớ** (`#/on-tap`, nút trên thanh điều hướng và khối trên trang chủ). Lịch Leitner 5 ngăn:
+  nhớ thì ôn sau 2, 4, 8, 16 ngày; quên thì ôn ngày mai. Thẻ lưu cùng dữ liệu kế hoạch (đồng bộ khi đăng nhập).
+  Giới hạn 1000 thẻ. Logic thuần trong `site/src/logic.js`, có test.
+- Thanh điều hướng xuống dòng trên màn hình hẹp (không còn tràn ngang khi thêm mục).
 - **Chuyển backend từ Supabase sang Firebase** (Auth + Firestore). Đăng nhập bằng email (liên kết) và Google;
   chế độ khách vẫn chạy đầy đủ. Quy tắc bảo mật ở `firestore.rules`. Hướng dẫn A–Z: `docs/FIREBASE-SETUP.md`.
 - Cấu hình bằng biến `FIREBASE_*` trên Worker, đọc lúc chạy (`/assets/config.js`).

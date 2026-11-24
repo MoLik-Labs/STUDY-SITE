@@ -1,4 +1,5 @@
 import { handleApi } from './src/api.js';
+import { parseServiceAccount } from './src/google-auth.js';
 // Worker của site — sinh tự động bởi site/build.mjs (đừng sửa tay bản trong dist/).
 // Chỉ hai đường dẫn chạy mã này (xem run_worker_first trong wrangler.jsonc):
 //   /__version          JSON phiên bản, có ETag và 304.
@@ -23,6 +24,7 @@ const AUTH_DOMAIN = /^[a-z0-9-]+(\.[a-z0-9-]+)+$/;
 // Khoá site reCAPTCHA v3 cho App Check (công khai). Sai định dạng thì bỏ, app vẫn chạy không có App Check.
 const APPCHECK_KEY = /^[0-9A-Za-z_-]{20,100}$/;
 // Khoá dịch vụ (service account) có private_key. Không bao giờ được đặt vào biến này.
+// Khoá dịch vụ nằm trong SECRET FIREBASE_SERVICE_ACCOUNT (chỉ cho API, không bao giờ trả ra trang).
 const SECRET_HINT = /private_key|BEGIN [A-Z ]*PRIVATE KEY|"type"\s*:\s*"service_account"/;
 
 // Trả về { apiKey, authDomain, projectId, appId } hoặc null. Thiếu hoặc sai một trường thì null (chế độ khách).
@@ -92,7 +94,10 @@ export default {
     if (path === '/__version') return version(request);
     if (path === '/assets/config.js') return config(request, env);
     if (path === '/api' || path.startsWith('/api/')) {
-      return handleApi(request, { projectId: (cloudFromEnv(env) || {}).projectId || null });
+      return handleApi(request, {
+        projectId: (cloudFromEnv(env) || {}).projectId || null,
+        serviceAccount: parseServiceAccount(env && env.FIREBASE_SERVICE_ACCOUNT),
+      });
     }
     return new Response('Không tìm thấy', {
       status: 404,

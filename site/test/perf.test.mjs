@@ -14,7 +14,7 @@ const { buildSite } = await import(pathToFileURL(path.join(HERE, '..', 'build.mj
 const BUDGET_KB = {
   'assets/boot.js': 22,        // JS của mọi trang (gzip)
   'assets/styles.css': 7,      // CSS của mọi trang (gzip)
-  '_worker.mjs': 8,            // Worker gồm API v1 và logic dùng chung (gzip, ~6 KB; chừa chỗ cho MCP)
+  '_worker.mjs': 12,           // Worker gồm API v1, MCP, mã kết nối và logic dùng chung (gzip, ~10 KB)
   'sw.js': 4,                  // service worker (gzip)
 };
 const PAGE_BUDGET_KB = 8;      // mỗi trang HTML của site (gzip)

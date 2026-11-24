@@ -12,7 +12,7 @@ Kích thước gzip (bản build hiện tại):
 
 - `assets/boot.js` 16,9 KB (ngân sách 22 KB)
 - `assets/styles.css` 5,1 KB (ngân sách 7 KB)
-- `_worker.mjs` 6,1 KB (ngân sách 8 KB; tăng từ 2,1 KB do gom API v1 và logic dùng chung)
+- `_worker.mjs` 9,8 KB (ngân sách 12 KB; tăng từ 2,1 KB do gom API v1, MCP, mã kết nối và logic dùng chung)
 - Firebase SDK `assets/firebase-sdk.js` 73,7 KB: chỉ tải khi đăng nhập, trang chủ không tải.
 
 ## Đã làm

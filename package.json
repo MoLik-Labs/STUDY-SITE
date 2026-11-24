@@ -40,5 +40,8 @@
   },
   "dependencies": {
     "firebase": "13.4.0"
+  },
+  "overrides": {
+    "@grpc/grpc-js": "1.14.7"
   }
 }

@@ -37,7 +37,10 @@ jobs:
       - name: Dựng web hướng dẫn (link chết sẽ làm lỗi bước này)
         run: npm run docs:build
 
+      # enablement: tự bật GitHub Pages (nguồn: GitHub Actions) nếu chưa bật; cần quyền quản trị repo.
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -2,7 +2,9 @@
 
 Sau chương này bạn có một bản sao đầy đủ của dự án trên máy, chạy được trang web và kiểm thử. Đây là điểm xuất phát cho mọi việc sửa đổi.
 
-> **Lưu ý:** Bạn cần quyền truy cập repo `MoLik-Labs/STUDY-SITE`. Nếu chưa có, nhờ chủ dự án thêm bạn vào repo trước.
+::: info Lưu ý
+Bạn cần quyền truy cập repo `MoLik-Labs/STUDY-SITE`. Nếu chưa có, nhờ chủ dự án thêm bạn vào repo trước.
+:::
 
 ## 1. Clone repo
 
@@ -59,7 +61,9 @@ Bạn sẽ thấy trang lịch tuần. Thử các trang khác: `/kinh-te-luong/`
 
 Để dừng máy chủ, nhấn `Ctrl + C` trong cửa sổ Terminal.
 
-> **Mẹo:** Máy chủ thử chỉ phục vụ những gì đã được dựng vào `dist/`. Sau khi sửa mã trong `site/`, hãy chạy `npm run build` rồi tải lại trang.
+::: tip Mẹo
+Máy chủ thử chỉ phục vụ những gì đã được dựng vào `dist/`. Sau khi sửa mã trong `site/`, hãy chạy `npm run build` rồi tải lại trang.
+:::
 
 ## 5. Các lệnh bạn sẽ dùng hằng ngày
 
@@ -78,4 +82,4 @@ Web hướng dẫn này nằm tại `/huong-dan/` trên trang đã dựng. Sau k
 - **`EADDRINUSE` hoặc cổng 8124 đã bận**: một máy chủ khác đang chạy. Đóng cửa sổ đó hoặc đổi cổng trong lệnh `serve`.
 - **Trang trắng hoặc thiếu nội dung**: chạy `npm run build` rồi tải lại trang.
 
-Tiếp theo: [upload file lên GitHub bằng trình duyệt](03-upload-tren-web.html).
+Tiếp theo: [upload file lên GitHub bằng trình duyệt](03-upload-tren-web.md).

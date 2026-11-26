@@ -26,7 +26,9 @@ Cách mở: trên trang repo, bấm **Code → Codespaces → Create codespace o
 
 Về chi phí, theo tài liệu billing của GitHub: tài khoản cá nhân miễn phí được **120 core-hours mỗi tháng** và **15 GB-tháng lưu trữ**. Đơn vị là core-hour, không phải giờ đồng hồ: 120 core-hours là **60 giờ** trên máy 2 lõi, **30 giờ** trên máy 4 lõi. Chọn máy nhỏ nhất đủ dùng để tiết kiệm. Con số có thể đổi, nên kiểm tra lại trong trang billing của GitHub trước khi dùng nhiều.
 
-> **Mẹo:** Đóng Codespace khi không dùng. Máy đang chạy tính tiền; máy đã dừng chỉ tốn phí lưu trữ nhỏ.
+::: tip Mẹo
+Đóng Codespace khi không dùng. Máy đang chạy tính tiền; máy đã dừng chỉ tốn phí lưu trữ nhỏ.
+:::
 
 ## Cách 3: VS Code trên máy
 
@@ -85,4 +87,4 @@ Sau đó gõ `git st` thay cho `git status`, `git lg` để xem cây lịch sử
 - Chạy `git status` để biết trạng thái hiện tại trước khi thử lệnh mới.
 - Đừng thử ngẫu nhiên các lệnh có chữ `--force` hay `--hard`. Xem chương 09 để biết cách xử lý an toàn.
 
-Tiếp theo: [xử lý sự cố thường gặp](09-su-co-thuong-gap.html).
+Tiếp theo: [xử lý sự cố thường gặp](09-su-co-thuong-gap.md).

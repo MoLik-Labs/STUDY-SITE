@@ -61,7 +61,9 @@ Bạn không cần nhớ hết, nhưng nên biết những thư mục chính:
 | `firestore.rules` | Quy tắc bảo mật dữ liệu | Cẩn thận, phải kiểm tra kỹ |
 | `package.json` | Danh sách thư viện và lệnh (`npm run ...`) | Cẩn thận |
 
-> **Lưu ý:** `dist/` được commit cùng mã nguồn một cách có chủ đích. Chương 07 giải thích vì sao.
+::: info Lưu ý
+`dist/` được commit cùng mã nguồn một cách có chủ đích. Chương 07 giải thích vì sao.
+:::
 
 ## Bạn sẽ làm được gì sau khi đọc
 
@@ -72,4 +74,4 @@ Bạn không cần nhớ hết, nhưng nên biết những thư mục chính:
 - Chọn cách làm việc phù hợp: trình duyệt, Codespaces, VS Code hoặc terminal.
 - Tránh các lỗi thường gặp và không làm lộ khoá bí mật.
 
-Tiếp theo: [chuẩn bị máy và tài khoản](01-chuan-bi.html).
+Tiếp theo: [chuẩn bị máy và tài khoản](01-chuan-bi.md).

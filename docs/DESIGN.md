@@ -1,6 +1,7 @@
 # Thiết kế giao diện site (Kế hoạch học)
 
-Nguồn chân lý cho token và quy tắc: `site/src/styles.css`. Tài liệu này giải thích lý do.
+Nguồn chân lý cho token và quy tắc: `site/src/styles.css` (site chính) và `tutorial/.vitepress/theme/custom.css`
+(web hướng dẫn). Hai bảng màu phải trùng nhau; `site/test/theme.test.mjs` kiểm tra điều đó.
 
 ## Chế độ và đối tượng
 
@@ -11,18 +12,27 @@ Nguồn chân lý cho token và quy tắc: `site/src/styles.css`. Tài liệu n�
 
 ## Màu
 
-- Một màu nhấn (xanh rêu `#2f5d50`), dùng cho hành động chính, trạng thái đang chọn và liên kết.
-- Nền giấy ấm, bề mặt trắng, viền xám ấm. Không gradient, không màu trang trí.
+- Năm theme, chọn ở Tài khoản (site) hoặc ở thanh điều hướng (hướng dẫn): **Latte** và **Mocha** (Catppuccin),
+  **Rừng** (Everforest Dark), **Nord**, **Gruvbox**. Mặc định **Theo máy**: Latte khi máy sáng, Mocha khi máy tối.
+- Mỗi theme là một bộ token (`--paper`, `--surface`, `--ink`, `--accent`…) khai báo theo `data-theme` trên `<html>`.
+  Màu nền mềm (`--accent-soft`, `--ok-soft`…) suy ra bằng `color-mix` từ token gốc, nên không cần khai báo riêng.
+- Một màu nhấn mỗi theme (ví dụ Mocha dùng xanh dương `#89b4fa`), dùng cho hành động chính, trạng thái đang chọn và liên kết.
+- Lựa chọn lưu trên máy (`sf.theme.v1`), không đồng bộ lên đám mây. Script áp theme (`theme-init.js`) chạy trong
+  `<head>` để trang không chớp sai màu.
+- Một số giá trị đã được tinh chỉnh nhẹ so với bảng gốc để đạt tương phản chữ (ví dụ muted của Latte `#63667a`,
+  đỏ cảnh báo của Gruvbox `#fc7c6d`). Mọi giá trị vẫn nằm trong họ màu của theme đó.
+- Không gradient, không màu trang trí.
 - Màu ngữ nghĩa có cặp nền nhạt: `ok`, `warn`, `danger`. Không dùng màu một mình để báo trạng thái;
   luôn có chữ đi kèm.
 - Màu môn học (6 màu) hiện bằng một chấm tròn, không bằng thanh viền.
-- Mọi cặp chữ/nền đạt WCAG AA (≥ 4.5:1) ở cả hai chế độ. Kiểm bằng công thức độ tương phản WCAG
-  trên đúng giá trị token. Chạy lại: `python3 tools/design/contrast.py` (in `FAIL: []` khi đạt).
+- Mọi cặp chữ/nền (chữ, chữ phụ, muted, liên kết, chữ trên nút, ok/warn/danger trên thẻ) đạt WCAG AA
+  (≥ 4.5:1) ở **cả năm theme**. Test tự động: `site/test/theme.test.mjs` (chạy trong `npm test`).
 
 ## Chữ
 
-- Tiêu đề: serif hệ thống (Iowan, Palatino, Georgia). Không tải font ngoài (CSP chỉ cho `self`).
-- Nội dung: sans hệ thống. Đồng hồ Pomodoro: serif, số dạng bảng (`tabular-nums`) để không nhảy.
+- Một họ chữ: font hệ thống (`system-ui`, Segoe UI, Roboto…). Không tải font ngoài (CSP chỉ cho `self`,
+  và web hướng dẫn cũng không tải font).
+- Đồng hồ Pomodoro và số đếm dùng số dạng bảng (`tabular-nums`) để không nhảy khi đổi.
 - Độ rộng đoạn văn tối đa 62ch.
 
 ## Bề mặt và chiều sâu
@@ -55,7 +65,9 @@ trạng thái rỗng, và lỗi (`.alert`, `.msg.err`). Vùng chạm tối thi�
 
 ## Phạm vi đã làm và chưa làm
 
-- Đã làm: token sáng/tối, trình duyệt (vùng chọn, thanh cuộn, con trỏ), nút, thẻ "Hôm nay",
-  thẻ môn, ô "Nên học tiếp", ngày hôm nay trong lịch tuần.
-- Chưa làm: bố cục lại trang môn, lịch tuần (kéo thả), trang Tài khoản, trang Quyền riêng tư.
-- Vật lí (`/physic/`) là app riêng (~20 000 dòng), chưa đổi giao diện trong đợt này.
+- Đã làm: năm theme + Theo máy, trình duyệt (vùng chọn, thanh cuộn, con trỏ), nút, thẻ "Hôm nay",
+  thẻ môn, ô "Nên học tiếp", ngày hôm nay trong lịch tuần, mục Giao diện ở Tài khoản.
+- Web hướng dẫn (`tutorial/`, VitePress): cùng bảng màu, dùng khối cảnh báo chuẩn của VitePress
+  (Mẹo, Lưu ý, Cảnh báo). Triển khai qua GitHub Pages.
+- Chưa làm: bố cục lại trang môn, lịch tuần (kéo thả), trang Quyền riêng tư.
+- Vật lí (`/physic/`) là app riêng (~20 000 dòng), chưa đổi theo theme trong đợt này.

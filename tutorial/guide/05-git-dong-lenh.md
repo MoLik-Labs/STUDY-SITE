@@ -41,7 +41,9 @@ git commit -m "Sửa ví dụ lệnh git pull trong chương 5"
 git push
 ```
 
-> **Mẹo:** Dùng `git add tên-file` cho từng file thay vì `git add .`. Cách này tránh commit nhầm file không liên quan.
+::: tip Mẹo
+Dùng `git add tên-file` cho từng file thay vì `git add .`. Cách này tránh commit nhầm file không liên quan.
+:::
 
 ## Xem lại thay đổi trước khi commit
 
@@ -117,4 +119,4 @@ git stash pop
 - `git reset --hard`: xoá mọi thay đổi chưa commit, không khôi phục được. Đừng dùng khi chưa chắc.
 - `git commit --amend`: sửa commit gần nhất. An toàn **trước khi push**. Sau khi đã push thì không nên.
 
-Tiếp theo: [làm việc theo nhánh và pull request](06-nhanh-va-pull-request.html).
+Tiếp theo: [làm việc theo nhánh và pull request](06-nhanh-va-pull-request.md).

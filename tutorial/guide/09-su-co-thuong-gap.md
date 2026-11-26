@@ -36,7 +36,9 @@ git rebase --continue
 
 Nếu đang trong `git pull` thông thường (không rebase), thay bước cuối bằng `git commit`.
 
-> **Mẹo:** Trong VS Code, khi có xung đột sẽ có nút **Accept Current / Incoming / Both**. Dùng nó để tránh sai sót khi sửa tay.
+::: tip Mẹo
+Trong VS Code, khi có xung đột sẽ có nút **Accept Current / Incoming / Both**. Dùng nó để tránh sai sót khi sửa tay.
+:::
 
 Muốn huỷ hẳn lần rebase và quay lại trạng thái trước đó: `git rebase --abort`.
 
@@ -114,10 +116,12 @@ Git giữ lịch sử, nên hầu hết mọi thứ đều khôi phục được
 - File đã commit bị xoá nhầm: `git restore --source=HEAD~1 tên-file` hoặc xem `git log -- tên-file` để tìm commit cũ.
 - Đã push một commit sai, chưa ai dùng: tạo commit mới để hoàn tác, thay vì xoá lịch sử. Lệnh `git revert <mã-commit>` làm đúng việc này.
 
-> **Cảnh báo:** Tránh `git push --force` lên nhánh chung. Nếu bắt buộc phải dùng, đó là việc của người có quyền và phải báo cho nhóm trước.
+::: warning Cảnh báo
+Tránh `git push --force` lên nhánh chung. Nếu bắt buộc phải dùng, đó là việc của người có quyền và phải báo cho nhóm trước.
+:::
 
 ## Vẫn không giải quyết được
 
 Chuẩn bị ba thông tin rồi hỏi chủ dự án: lệnh vừa chạy, toàn bộ thông báo lỗi, và kết quả của `git status`. Thông tin này thường đủ để tìm nguyên nhân nhanh.
 
-Tiếp theo: [bảo mật khi làm việc](10-bao-mat.html).
+Tiếp theo: [bảo mật khi làm việc](10-bao-mat.md).

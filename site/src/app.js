@@ -5,6 +5,7 @@ import * as L from './logic.js';
 import { backupForSync, clearStorage, getBase, getOwner, loadState, saveState, setBase, setOwner } from './store.js';
 import { decideSync } from './cloud.js';
 import { createTimer } from './timer.js';
+import { THEMES, applyTheme, readTheme, resolveTheme, saveTheme } from './theme.js';
 
 const WEEKDAYS = ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ nhật'];
 const COLOR_NAMES = {
@@ -663,21 +664,44 @@ export function mountApp(root, { storage, page, win = globalThis, now = () => ne
     }, armedDelete === id ? armedLabel : label);
   }
 
+  // Chọn giao diện: danh sách nút chọn. Có hiệu lực ngay, lưu trên máy này, không đồng bộ.
+  function themeSection() {
+    const current = readTheme(storage);
+    const prefersDark = () => !!(win.matchMedia && win.matchMedia('(prefers-color-scheme: dark)').matches);
+    return h('section', { class: 'theme-pick', 'aria-labelledby': 'theme-title' },
+      h('h2', { id: 'theme-title' }, 'Giao diện'),
+      h('div', { class: 'theme-grid', role: 'radiogroup', 'aria-labelledby': 'theme-title' },
+        THEMES.map(t => h('label', { class: t.id === current ? 'theme-opt is-on' : 'theme-opt' },
+          h('input', {
+            type: 'radio', name: 'theme', value: t.id, checked: t.id === current,
+            onchange: () => {
+              saveTheme(storage, t.id);
+              applyTheme(win.document.documentElement, t.id, prefersDark());
+              render();
+            },
+          }),
+          h('span', { class: 'theme-name' }, t.label),
+          h('span', { class: 'theme-desc' }, t.desc)))),
+      h('p', { class: 'fine' }, `Đang dùng: ${THEMES.find(t => t.id === resolveTheme(current, prefersDark())).label}.`));
+  }
+
   function accountView() {
     if (!cloud || !cloud.enabled) {
       return h('article', { class: 'account' },
         h('header', { class: 'course-head' }, h('h1', {}, 'Tài khoản')),
         h('p', { class: 'lead' }, 'Đám mây chưa được bật trên bản này. Bạn vẫn dùng đầy đủ ở chế độ khách, dữ liệu nằm trên máy này.'),
-        h('p', { class: 'fine' }, 'Khi quản trị viên bật đám mây cho bản này, phần đăng nhập và đồng bộ sẽ hiện ở đây.'));
+        h('p', { class: 'fine' }, 'Khi quản trị viên bật đám mây cho bản này, phần đăng nhập và đồng bộ sẽ hiện ở đây.'),
+        themeSection());
     }
     if (!cloud.signedIn()) {
       return h('article', { class: 'account' },
         h('header', { class: 'course-head' }, h('h1', {}, 'Tài khoản')),
-        msgBox(), guestForm());
+        msgBox(), guestForm(), themeSection());
     }
     return h('article', { class: 'account' },
       h('header', { class: 'course-head' }, h('h1', {}, 'Tài khoản'), h('p', { class: 'lead' }, cloud.email())),
       msgBox(),
+      themeSection(),
       h('p', { class: 'sync', role: 'status' }, syncLine()),
       profileForm(),
       h('section', { class: 'acct-actions', 'aria-labelledby': 'acct-actions-title' },

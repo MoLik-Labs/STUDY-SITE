@@ -32,7 +32,9 @@ Sau khi xong, ứng dụng mở repo. Bạn sẽ thấy tên nhánh hiện tại
 5. Bấm **Commit to main** (hoặc tên nhánh bạn đang dùng).
 6. Bấm **Push origin** để đưa lên GitHub.
 
-> **Mẹo:** Không nên làm việc trực tiếp trên `main`. Xem chương 06 để biết cách tạo nhánh riêng trong GitHub Desktop bằng **Current branch → New branch**.
+::: tip Mẹo
+Không nên làm việc trực tiếp trên `main`. Xem chương 06 để biết cách tạo nhánh riêng trong GitHub Desktop bằng **Current branch → New branch**.
+:::
 
 ## 5. Tạo pull request từ GitHub Desktop
 
@@ -49,6 +51,8 @@ Sau khi push một nhánh riêng:
 - **File không hiện trong Changes**: file có thể nằm trong `.gitignore`. Ví dụ `node_modules/` là cố ý bị bỏ qua.
 - **Commit nhầm file**: chưa push thì chọn commit gần nhất, bấm chuột phải vào file và **Uncommit**.
 
-> **Cảnh báo:** Chỉ bấm *Discard changes* khi thật chắc chắn. Thao tác này xoá vĩnh viễn thay đổi chưa commit.
+::: warning Cảnh báo
+Chỉ bấm *Discard changes* khi thật chắc chắn. Thao tác này xoá vĩnh viễn thay đổi chưa commit.
+:::
 
-Tiếp theo: [làm việc với dòng lệnh Git](05-git-dong-lenh.html).
+Tiếp theo: [làm việc với dòng lệnh Git](05-git-dong-lenh.md).

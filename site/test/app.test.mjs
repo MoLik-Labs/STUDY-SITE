@@ -389,3 +389,23 @@ test('bố cục trang chủ cũ (5 khối) vẫn giữ thứ tự, khối mới
   assert.deepEqual(order.slice(0, 5), ['courses', 'today', 'week', 'timer', 'review']);
   assert.deepEqual(order.slice(5).sort(), ['exams', 'progress']);
 });
+
+// ---- Giao diện: chọn theme trên trang Tài khoản ----
+test('Tài khoản: có 6 lựa chọn giao diện, lưu theme và đặt data-theme ngay khi chọn', () => {
+  const dom = new JSDOM('<!doctype html><main id="main"></main>', { url: 'https://site.test/account' });
+  const win = dom.window;
+  const root = win.document.getElementById('main');
+  mountApp(root, { storage: win.localStorage, page: 'account', win, now: NOW });
+  const radios = [...root.querySelectorAll('.theme-pick input[type=radio]')];
+  assert.deepEqual(radios.map(r => r.value), ['system', 'latte', 'mocha', 'forest', 'nord', 'gruvbox']);
+  assert.equal(root.querySelector('.theme-pick input[value=system]').checked, true, 'mặc định là theo máy');
+  const mocha = root.querySelector('.theme-pick input[value=mocha]');
+  mocha.checked = true;
+  mocha.dispatchEvent(new win.Event('change', { bubbles: true }));
+  assert.equal(win.localStorage.getItem('sf.theme.v1'), 'mocha');
+  assert.equal(win.document.documentElement.dataset.theme, 'mocha');
+  // Sau khi vẽ lại, lựa chọn đã lưu được đánh dấu đúng.
+  const again = root.querySelector('.theme-pick input[value=mocha]');
+  assert.equal(again.checked, true);
+  assert.ok(again.closest('.theme-opt').classList.contains('is-on'));
+});

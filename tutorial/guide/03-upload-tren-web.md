@@ -33,7 +33,9 @@ Với file lớn hơn hoặc số lượng nhiều hơn, dùng GitHub Desktop ho
    - **Create a new branch for this commit and start a pull request**: tạo nhánh riêng và mở pull request. **Đây là lựa chọn an toàn hơn**, đặc biệt khi làm việc chung.
 8. Bấm **Commit changes** hoặc **Propose changes**.
 
-> **Mẹo:** Luôn chọn tuỳ chọn tạo nhánh mới. Nếu có gì sai, người khác có thể xem và góp ý trước khi gộp vào `main`.
+::: tip Mẹo
+Luôn chọn tuỳ chọn tạo nhánh mới. Nếu có gì sai, người khác có thể xem và góp ý trước khi gộp vào `main`.
+:::
 
 ## Sửa một file có sẵn trên web
 
@@ -50,6 +52,8 @@ Nhấn phím `.` (dấu chấm) khi đang xem repo trên GitHub để mở trìn
 - Nếu là pull request, xem tab **Checks** để biết CI có chạy xong không.
 - Kiểm tra đường dẫn file đúng thư mục bạn muốn.
 
-> **Cảnh báo:** Commit đã đẩy lên GitHub không xoá được hoàn toàn khỏi lịch sử. Nếu lỡ upload thứ không nên (mật khẩu, khoá bí mật), đừng chỉ xoá file: làm theo chương 10 để thu hồi khoá trước.
+::: warning Cảnh báo
+Commit đã đẩy lên GitHub không xoá được hoàn toàn khỏi lịch sử. Nếu lỡ upload thứ không nên (mật khẩu, khoá bí mật), đừng chỉ xoá file: làm theo chương 10 để thu hồi khoá trước.
+:::
 
-Tiếp theo: [dùng GitHub Desktop để commit và push](04-github-desktop.html).
+Tiếp theo: [dùng GitHub Desktop để commit và push](04-github-desktop.md).

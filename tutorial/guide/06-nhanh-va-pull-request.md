@@ -88,6 +88,8 @@ git branch -d docs/huong-dan-upload
 
 Xoá nhánh trên GitHub thường được thực hiện bằng nút **Delete branch** hiện ngay sau khi gộp.
 
-> **Mẹo:** Giữ nhánh ngắn. Một nhánh chỉ nên làm một việc và sống vài ngày. Nhánh sống lâu dễ xung đột với `main` và khó xem lại.
+::: tip Mẹo
+Giữ nhánh ngắn. Một nhánh chỉ nên làm một việc và sống vài ngày. Nhánh sống lâu dễ xung đột với `main` và khó xem lại.
+:::
 
-Tiếp theo: [quy trình riêng của dự án STUDY-SITE](07-quy-trinh-du-an.html).
+Tiếp theo: [quy trình riêng của dự án STUDY-SITE](07-quy-trinh-du-an.md).

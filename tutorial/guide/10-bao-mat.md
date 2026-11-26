@@ -35,7 +35,9 @@ Thứ tự quan trọng. Làm đúng thứ tự, theo đúng thời gian:
 4. **Xoá khỏi repo** nếu cần. Nhưng nhớ rằng lịch sử git vẫn giữ nó, nên bước 1 mới là bước cứu cánh.
 5. **Báo chủ dự án.**
 
-> **Cảnh báo:** Xoá file rồi commit lại không làm mất bí mật khỏi lịch sử. Chỉ việc thu hồi bí mật mới đảm bảo an toàn.
+::: warning Cảnh báo
+Xoá file rồi commit lại không làm mất bí mật khỏi lịch sử. Chỉ việc thu hồi bí mật mới đảm bảo an toàn.
+:::
 
 ## Các công cụ GitHub hỗ trợ
 
@@ -64,4 +66,4 @@ Không gửi bí mật qua chat, email hay ảnh. Thay vào đó:
 - Dùng trình quản lý mật khẩu có chia sẻ có kiểm soát.
 - Hoặc để người có quyền tự tạo bí mật trên dịch vụ đó.
 
-Tiếp theo: [thuật ngữ thường gặp](11-thuat-ngu.html).
+Tiếp theo: [thuật ngữ thường gặp](11-thuat-ngu.md).

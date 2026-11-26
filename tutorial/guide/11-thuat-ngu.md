@@ -37,4 +37,4 @@ Tra cứu nhanh. Thuật ngữ được xếp theo bảng chữ cái tiếng Anh
 | **Secret** | Biến bí mật trên Cloudflare, Worker đọc được nhưng không hiện trong mã trang. |
 | **Worker** | Mã chạy trên máy chủ Cloudflare, xử lý yêu cầu của trình duyệt. |
 
-Quay lại [trang tổng quan](index.html) để đọc lại từ đầu, hoặc đi tới [chương 00](00-gioi-thieu.html).
+Quay lại [trang tổng quan](/) để đọc lại từ đầu, hoặc đi tới [chương 00](00-gioi-thieu.md).

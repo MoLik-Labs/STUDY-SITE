@@ -24,7 +24,9 @@ CI kiểm tra lại: dist/ khớp nguồn, test xanh, cấu hình Cloudflare h�
 
 Hệ quả: **nếu bạn sửa mã nguồn mà quên dựng lại `dist/`, CI sẽ đỏ** ở bước *Bản dist/ phải khớp với bản đã commit*. Cách sửa là chạy `npm run build`, thêm `dist/` vào commit, rồi push lại.
 
-> **Quy tắc:** Không sửa tay file trong `dist/`. Sửa nguồn trong `site/` hoặc `tutorial/`, rồi dựng lại.
+::: danger Quy tắc
+Không sửa tay file trong `dist/`. Sửa nguồn trong `site/` hoặc `tutorial/`, rồi dựng lại.
+:::
 
 ## Lệnh `npm ci` làm gì ngoài việc cài thư viện?
 
@@ -82,4 +84,4 @@ Thứ tự này giúp lỗi nằm đúng chỗ, và giữ logic có thể kiểm
 - [ ] Không có file `.env`, khoá JSON, hay mật khẩu trong danh sách.
 - [ ] Thông điệp commit rõ ràng.
 
-Tiếp theo: [các cách làm việc hiệu quả](08-lam-viec-hieu-qua.html).
+Tiếp theo: [các cách làm việc hiệu quả](08-lam-viec-hieu-qua.md).

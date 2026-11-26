@@ -8,7 +8,9 @@ Chương này làm đúng một lần: tạo tài khoản GitHub, cài Git, Node
 2. Chọn tên người dùng ngắn, dễ nhớ. Tên này xuất hiện trong mọi commit của bạn.
 3. Bật xác thực hai lớp ở **Settings → Password and authentication**. Đây là bước bảo vệ tài khoản quan trọng nhất.
 
-> **Mẹo:** Trong **Settings → Emails**, bật tuỳ chọn *Keep my email addresses private*. Khi cấu hình Git, dùng địa chỉ dạng `...@users.noreply.github.com` để email thật không lộ trong lịch sử công khai.
+::: tip Mẹo
+Trong **Settings → Emails**, bật tuỳ chọn *Keep my email addresses private*. Khi cấu hình Git, dùng địa chỉ dạng `...@users.noreply.github.com` để email thật không lộ trong lịch sử công khai.
+:::
 
 ## 2. Cài Git
 
@@ -68,7 +70,9 @@ gh auth login
 
 Chọn GitHub.com, HTTPS, rồi đăng nhập bằng trình duyệt. Không cần tự tạo mật khẩu thủ công. Nếu dùng GitHub Desktop (chương 04), ứng dụng tự làm bước này.
 
-> **Cảnh báo:** Không bao giờ dán mật khẩu, token truy cập hay khoá bí mật vào chat, vào file trong repo hay vào commit. Chương 10 nói kỹ hơn.
+::: warning Cảnh báo
+Không bao giờ dán mật khẩu, token truy cập hay khoá bí mật vào chat, vào file trong repo hay vào commit. Chương 10 nói kỹ hơn.
+:::
 
 ## 6. Kiểm tra toàn bộ
 
@@ -84,4 +88,4 @@ gh --version
 
 Nếu lệnh nào báo *command not found*, quay lại bước tương ứng ở trên.
 
-Tiếp theo: [tải dự án về máy và chạy thử](02-tai-ve-may.html).
+Tiếp theo: [tải dự án về máy và chạy thử](02-tai-ve-may.md).

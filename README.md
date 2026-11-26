@@ -23,7 +23,12 @@ npm run build          # node site/build.mjs → dist/
 npm run serve          # máy chủ thử tại :8124 (đọc biến FIREBASE_* từ môi trường)
 npm test               # build tạm + kiểm thử site (node:test + jsdom)
 npm run deploy         # build + npx wrangler deploy
+npm run docs:dev       # web hướng dẫn (VitePress) tại :5173
+npm run docs:build     # dựng web hướng dẫn → tutorial/.vitepress/dist (link chết làm lỗi)
 ```
+
+Web hướng dẫn GitHub nằm ở `tutorial/` (VitePress), triển khai qua GitHub Pages bởi
+`.github/workflows/pages.yml` khi merge vào `main`. Trên Pages, bật: Settings → Pages → Source: GitHub Actions.
 
 Kiểm thử trình duyệt (cần Chromium và Playwright): `tools/browser/account_flow.py`,
 `tools/browser/site_checks.py`. Cài trình duyệt: `bash tools/browser/install.sh`.
@@ -49,7 +54,8 @@ src/               mã nguồn Vật lí (build.py --physics-only) và module d�
 dist/              đầu ra đã commit (CI kiểm tra khớp với nguồn)
 firestore.rules     quy tắc bảo mật Firestore (lớp bảo vệ dữ liệu thật)
 tools/browser/     kiểm thử trình duyệt
-docs/              tài liệu (HANDOFF, CLOUDFLARE, FIREBASE-SETUP, COURSE-RESOURCES, REWRITE-PLAN)
+docs/              tài liệu (DESIGN, PERFORMANCE, HANDOFF, CLOUDFLARE, FIREBASE-SETUP, COURSE-RESOURCES, REWRITE-PLAN)
+tutorial/          web hướng dẫn GitHub (VitePress): guide/NN-*.md là nội dung, .vitepress/ là cấu hình và theme
 ```
 
 ## Ghi chú

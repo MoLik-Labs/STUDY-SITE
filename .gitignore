@@ -34,3 +34,10 @@ node_modules
 dev.vars
 .wrangler/
 site-dist/
+
+# bản dựng thử cũ của web hướng dẫn (đã chuyển vào dist/huong-dan/)
+tutorial/dist/
+
+# web hướng dẫn (VitePress): bản dựng và bộ nhớ đệm, triển khai qua GitHub Pages
+tutorial/.vitepress/dist/
+tutorial/.vitepress/cache/

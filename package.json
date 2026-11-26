@@ -23,10 +23,13 @@
   "scripts": {
     "build": "node site/build.mjs",
     "prepare": "node site/build.mjs",
-    "check": "node --test site/test/*.test.mjs docs-site/test/*.test.mjs",
-    "test": "node site/build.mjs --out /tmp/sf-test-dist && node docs-site/build.mjs && node --test site/test/*.test.mjs docs-site/test/*.test.mjs",
+    "check": "node --test site/test/*.test.mjs docs-site/test/*.test.mjs tutorial/test/*.test.mjs",
+    "test": "node site/build.mjs --out /tmp/sf-test-dist && node docs-site/build.mjs && node --test site/test/*.test.mjs docs-site/test/*.test.mjs tutorial/test/*.test.mjs",
     "serve": "node site/test/serve.mjs --port 8124",
     "docs": "node docs-site/build.mjs",
+    "docs:dev": "vitepress dev tutorial",
+    "docs:build": "vitepress build tutorial",
+    "docs:preview": "vitepress preview tutorial",
     "deploy": "node site/build.mjs && npx wrangler deploy",
     "preview": "node site/build.mjs && npx wrangler dev"
   },
@@ -36,9 +39,13 @@
   "devDependencies": {
     "esbuild": "0.28.2",
     "jsdom": "^25.0.1",
-    "marked": "^15.0.12"
+    "marked": "^15.0.12",
+    "vitepress": "1.6.4"
   },
   "dependencies": {
     "firebase": "13.4.0"
+  },
+  "overrides": {
+    "@grpc/grpc-js": "1.14.7"
   }
 }

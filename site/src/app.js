@@ -5,12 +5,14 @@ import * as L from './logic.js';
 import { backupForSync, clearStorage, getBase, getOwner, loadState, saveState, setBase, setOwner } from './store.js';
 import { decideSync } from './cloud.js';
 import { createTimer } from './timer.js';
+import { THEMES, applyTheme, readTheme, resolveTheme, saveTheme } from './theme.js';
 
 const WEEKDAYS = ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ nhật'];
 const COLOR_NAMES = {
   green: 'Xanh lá', ochre: 'Vàng đất', blue: 'Xanh dương', rust: 'Đỏ gạch', plum: 'Tím', slate: 'Xám xanh',
 };
 const CUSTOM_HASH = /^#\/c\/([A-Za-z0-9_-]{1,80})$/;
+const REVIEW_HASH = '#/on-tap';
 
 function fmtDay(date) {
   return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}`;
@@ -20,6 +22,9 @@ function fmtDay(date) {
 const HOME_BLOCKS = {
   today: { label: 'Hôm nay', size: 'half' },
   timer: { label: 'Hẹn giờ', size: 'half' },
+  review: { label: 'Ôn tập', size: 'wide' },
+  exams: { label: 'Kỳ thi', size: 'half' },
+  progress: { label: 'Tiến độ 7 ngày', size: 'half' },
   week: { label: 'Lịch tuần', size: 'wide' },
   courses: { label: 'Môn của tôi', size: 'wide' },
 };
@@ -30,7 +35,11 @@ function homeLayout(storage) {
   let order = HOME_DEFAULT.slice();
   try {
     const raw = storage ? JSON.parse(storage.getItem(HOME_KEY) || 'null') : null;
-    if (Array.isArray(raw) && raw.length === HOME_DEFAULT.length && HOME_DEFAULT.every(id => raw.includes(id))) order = raw;
+    // Giữ thứ tự người dùng đã chọn; khối mới thêm sau thì nối vào cuối (không reset bố cục).
+    if (Array.isArray(raw)) {
+      const known = [...new Set(raw.filter(id => HOME_DEFAULT.includes(id)))];
+      order = [...known, ...HOME_DEFAULT.filter(id => !known.includes(id))];
+    }
   } catch { /* bố cục hỏng: dùng mặc định */ }
   const put = next => {
     try { storage?.setItem(HOME_KEY, JSON.stringify(next)); } catch { /* không lưu được thì vẫn chạy trong phiên này */ }
@@ -223,9 +232,8 @@ export function mountApp(root, { storage, page, win = globalThis, now = () => ne
     if (g.dueToday.length) facts.push(h('li', {}, `${g.dueToday.length} việc đến hạn hôm nay`));
     const focus = g.focus
       ? h('a', { class: 'focus', href: g.focus.href },
-        h('span', { class: 'focus-k' }, 'Nên học tiếp'),
         h('span', { class: 'focus-t' }, g.focus.next || g.focus.name),
-        h('span', { class: 'meta' }, `${g.focus.name} · ${g.focus.percent}%`))
+        h('span', { class: 'meta' }, `Nên học tiếp · ${g.focus.name} · ${g.focus.percent}%`))
       : h('p', { class: 'focus-done' }, 'Đã học hết các tài liệu có sẵn. Thêm môn hoặc mục mới để tiếp tục.');
     return h('section', { class: 'today', 'aria-label': 'Hôm nay' },
       h('h2', {}, 'Hôm nay'),
@@ -258,7 +266,7 @@ export function mountApp(root, { storage, page, win = globalThis, now = () => ne
   }
 
   function plannerView() {
-    const parts = { today: todayPanel(), timer: timer.element(), week: weekView(), courses: sidebar() };
+    const parts = { today: todayPanel(), timer: timer.element(), review: reviewBlock(), exams: examsBlock(), progress: progressBlock(), week: weekView(), courses: sidebar() };
     return h('div', { class: 'planner' }, alertBox(),
       h('div', { class: 'home-tools' },
         h('p', { class: 'meta' }, arranging ? 'Dùng nút Lên và Xuống để đổi thứ tự các khối.' : null),
@@ -267,6 +275,138 @@ export function mountApp(root, { storage, page, win = globalThis, now = () => ne
           h('button', { type: 'button', class: 'ghost sm', 'aria-pressed': arranging ? 'true' : 'false',
             onclick: () => { arranging = !arranging; render(); } }, arranging ? 'Xong' : 'Sắp xếp trang'))),
       h('div', { class: 'home' }, home.order.map((id, i) => homeBlock(id, parts[id], i))));
+  }
+
+  // ---------- Ôn tập thẻ ghi nhớ ----------
+  let review = null; // { queue: [id], pos, shown } của phiên đang chạy
+
+  function examsBlock() {
+    const todayIso = L.isoOf(now());
+    const list = L.upcomingExams(state, todayIso);
+    const shown = list.slice(0, 3);
+    const title = h('input', { type: 'text', name: 'title', required: true, maxlength: 120, placeholder: 'Ví dụ: Giữa kỳ Kinh tế lượng', 'aria-label': 'Tên kỳ thi' });
+    const course = h('select', { name: 'course', 'aria-label': 'Môn của kỳ thi' }, courseOptions());
+    const date = h('input', { type: 'date', name: 'date', required: true, 'aria-label': 'Ngày thi', min: todayIso });
+    const form = h('form', {
+      class: 'add-exam',
+      onsubmit: e => {
+        e.preventDefault();
+        const next = L.addExam(state, { title: title.value, course: course.value, date: date.value });
+        if (next === state) { title.focus(); return; }
+        commit(next);
+      },
+    }, title, course, date, h('button', { type: 'submit' }, 'Thêm kỳ thi'));
+    return h('section', { class: 'today', 'aria-label': 'Kỳ thi' },
+      h('h2', {}, 'Kỳ thi'),
+      shown.length
+        ? h('ul', { class: 'exam-list' }, shown.map(e => h('li', { class: 'exam' },
+            h('span', { class: 'exam-days' }, e.daysLeft === 0 ? 'Hôm nay' : `Còn ${e.daysLeft} ngày`),
+            h('span', { class: 'exam-name' }, e.title, e.course ? ` · ${courseName(e.course)}` : ''),
+            h('button', { type: 'button', class: 'ghost sm', 'aria-label': `Xoá kỳ thi ${e.title}`, onclick: () => commit(L.removeExam(state, e.id)) }, 'Xoá'))))
+        : h('p', { class: 'meta' }, 'Chưa có kỳ thi nào. Thêm để theo dõi ngày còn lại.'),
+      h('details', {}, h('summary', {}, 'Thêm kỳ thi'), form));
+  }
+
+  function progressBlock() {
+    const p = L.weeklyProgress(state, L.isoOf(now()));
+    const names = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+    return h('section', { class: 'today', 'aria-label': 'Tiến độ 7 ngày' },
+      h('h2', {}, 'Tiến độ 7 ngày'),
+      p.total
+        ? h('p', { class: 'meta' }, `Đã xong ${p.done}/${p.total} việc (${p.rate}%).`)
+        : h('p', { class: 'meta' }, 'Chưa có việc nào trong 7 ngày gần đây.'),
+      h('progress', { max: 100, value: p.rate, 'aria-label': `Hoàn thành ${p.rate}% trong 7 ngày` }),
+      h('ol', { class: 'week-bars', 'aria-label': 'Việc đã xong theo ngày' }, p.days.map(d => {
+        const dow = names[L.parseIso(d.date).getDay()];
+        return h('li', { class: 'day-bar' + (d.total === 0 ? ' is-empty' : '') },
+          h('span', { class: 'bar-day' }, dow),
+          h('span', { class: 'bar-count' }, d.total ? `${d.done}/${d.total}` : '–'));
+      })));
+  }
+
+  function reviewBlock() {
+    const s = L.cardStats(state, L.isoOf(now()));
+    const text = s.due ? `${s.due} thẻ cần ôn hôm nay.`
+      : s.total ? 'Hôm nay không có thẻ nào đến hạn.'
+        : 'Chưa có thẻ nào. Thêm thẻ để bắt đầu ôn.';
+    return h('section', { class: 'today', 'aria-label': 'Ôn tập' },
+      h('h2', {}, 'Ôn tập'),
+      h('p', { class: 'meta' }, text),
+      h('div', {}, h('a', { class: 'btn sm', href: REVIEW_HASH }, s.due ? 'Ôn ngay' : 'Mở ôn tập')));
+  }
+
+  function reviewView() {
+    const today = L.isoOf(now());
+    const stats = L.cardStats(state, today);
+    if (!review) review = { queue: L.dueCards(state, today).map(c => c.id), pos: 0, shown: false, done: 0 };
+    const byId = new Map(state.cards.map(c => [c.id, c]));
+    // Bỏ qua thẻ đã bị xoá giữa phiên.
+    while (review.pos < review.queue.length && !byId.has(review.queue[review.pos])) review.pos++;
+    const current = review.pos < review.queue.length ? byId.get(review.queue[review.pos]) : null;
+
+    let session;
+    if (current) {
+      const total = review.queue.length;
+      session = h('section', { class: 'card-session', 'aria-label': 'Phiên ôn' },
+        h('p', { class: 'meta' }, `Thẻ ${review.done + 1} trên ${total} hôm nay`),
+        h('p', { class: 'card-front' }, current.front),
+        review.shown
+          ? h('div', { class: 'card-answer' },
+            h('p', { class: 'card-back' }, current.back || 'Thẻ này không có đáp án.'),
+            h('div', { class: 'action-row' },
+              h('button', { type: 'button', class: 'danger', onclick: () => grade(current.id, false, today) }, 'Chưa nhớ'),
+              h('button', { type: 'button', onclick: () => grade(current.id, true, today) }, 'Nhớ rồi')))
+          : h('div', { class: 'action-row' },
+            h('button', { type: 'button', onclick: () => { review.shown = true; render(); } }, 'Hiện đáp án')));
+    } else if (review.done) {
+      session = h('p', { class: 'msg ok', role: 'status' }, `Xong ${review.done} thẻ hôm nay. Thẻ quên sẽ quay lại ngày mai.`);
+    } else {
+      session = h('p', { class: 'meta' }, stats.total ? 'Hôm nay không có thẻ nào đến hạn.' : 'Chưa có thẻ nào. Thêm thẻ bên dưới để bắt đầu.');
+    }
+
+    return h('div', { class: 'review' },
+      h('p', { class: 'crumb' }, h('a', { href: '/' }, '← Lịch tuần')),
+      h('h1', {}, 'Ôn tập'),
+      h('p', { class: 'lead' }, 'Thẻ quay lại theo lịch: nhớ thì ôn lâu hơn, quên thì ôn lại ngày mai.'),
+      h('p', { class: 'meta' }, `${stats.due} cần ôn hôm nay · ${stats.total} thẻ · ${stats.learned} đã thuộc`),
+      session,
+      h('h2', {}, 'Thêm thẻ'),
+      cardForm(),
+      h('h2', {}, 'Tất cả thẻ'),
+      cardList());
+  }
+
+  function grade(id, remembered, today) {
+    review.pos++;
+    review.shown = false;
+    review.done++;
+    commit(L.reviewCard(state, id, remembered, today));
+  }
+
+  function cardForm() {
+    const front = h('textarea', { name: 'front', required: true, maxlength: 300, rows: 2, 'aria-label': 'Mặt trước', placeholder: 'Mặt trước: câu hỏi hoặc từ cần nhớ' });
+    const back = h('textarea', { name: 'back', maxlength: 800, rows: 2, 'aria-label': 'Mặt sau', placeholder: 'Mặt sau: đáp án (không bắt buộc)' });
+    const course = h('select', { name: 'course', 'aria-label': 'Môn' }, courseOptions());
+    return h('form', {
+      class: 'stack-form card-form',
+      onsubmit: e => {
+        e.preventDefault();
+        const next = L.addCard(state, { front: front.value, back: back.value, course: course.value }, L.isoOf(now()));
+        if (next === state) { front.focus(); return; }
+        // Thẻ mới luôn đến hạn hôm nay: đưa vào cuối phiên đang chạy (giữ tiến độ), không làm lại phiên.
+        if (review) review.queue.push(next.cards[next.cards.length - 1].id);
+        commit(next);
+      },
+    }, front, back, course, h('button', { type: 'submit' }, 'Thêm thẻ'));
+  }
+
+  function cardList() {
+    const cards = state.cards.slice().sort((a, b) => a.due.localeCompare(b.due));
+    if (!cards.length) return h('p', { class: 'meta' }, 'Chưa có thẻ nào.');
+    return h('ul', { class: 'tasks card-list' }, cards.map(c => h('li', { class: 'card-row' },
+      h('span', { class: 'card-row-text' }, c.front),
+      h('span', { class: 'tag' }, `Ngăn ${c.box + 1}/5 · ôn ${fmtDay(L.parseIso(c.due))}`),
+      h('button', { type: 'button', class: 'ghost sm', 'aria-label': `Xoá thẻ: ${c.front}`, onclick: () => commit(L.removeCard(state, c.id)) }, 'Xoá'))));
   }
 
   // ---------- Trang môn có sẵn ----------
@@ -524,21 +664,44 @@ export function mountApp(root, { storage, page, win = globalThis, now = () => ne
     }, armedDelete === id ? armedLabel : label);
   }
 
+  // Chọn giao diện: danh sách nút chọn. Có hiệu lực ngay, lưu trên máy này, không đồng bộ.
+  function themeSection() {
+    const current = readTheme(storage);
+    const prefersDark = () => !!(win.matchMedia && win.matchMedia('(prefers-color-scheme: dark)').matches);
+    return h('section', { class: 'theme-pick', 'aria-labelledby': 'theme-title' },
+      h('h2', { id: 'theme-title' }, 'Giao diện'),
+      h('div', { class: 'theme-grid', role: 'radiogroup', 'aria-labelledby': 'theme-title' },
+        THEMES.map(t => h('label', { class: t.id === current ? 'theme-opt is-on' : 'theme-opt' },
+          h('input', {
+            type: 'radio', name: 'theme', value: t.id, checked: t.id === current,
+            onchange: () => {
+              saveTheme(storage, t.id);
+              applyTheme(win.document.documentElement, t.id, prefersDark());
+              render();
+            },
+          }),
+          h('span', { class: 'theme-name' }, t.label),
+          h('span', { class: 'theme-desc' }, t.desc)))),
+      h('p', { class: 'fine' }, `Đang dùng: ${THEMES.find(t => t.id === resolveTheme(current, prefersDark())).label}.`));
+  }
+
   function accountView() {
     if (!cloud || !cloud.enabled) {
       return h('article', { class: 'account' },
         h('header', { class: 'course-head' }, h('h1', {}, 'Tài khoản')),
         h('p', { class: 'lead' }, 'Đám mây chưa được bật trên bản này. Bạn vẫn dùng đầy đủ ở chế độ khách, dữ liệu nằm trên máy này.'),
-        h('p', { class: 'fine' }, 'Khi quản trị viên bật đám mây cho bản này, phần đăng nhập và đồng bộ sẽ hiện ở đây.'));
+        h('p', { class: 'fine' }, 'Khi quản trị viên bật đám mây cho bản này, phần đăng nhập và đồng bộ sẽ hiện ở đây.'),
+        themeSection());
     }
     if (!cloud.signedIn()) {
       return h('article', { class: 'account' },
         h('header', { class: 'course-head' }, h('h1', {}, 'Tài khoản')),
-        msgBox(), guestForm());
+        msgBox(), guestForm(), themeSection());
     }
     return h('article', { class: 'account' },
       h('header', { class: 'course-head' }, h('h1', {}, 'Tài khoản'), h('p', { class: 'lead' }, cloud.email())),
       msgBox(),
+      themeSection(),
       h('p', { class: 'sync', role: 'status' }, syncLine()),
       profileForm(),
       h('section', { class: 'acct-actions', 'aria-labelledby': 'acct-actions-title' },
@@ -591,8 +754,10 @@ export function mountApp(root, { storage, page, win = globalThis, now = () => ne
     firstPaint = false;
     let body;
     if (kind === 'planner') {
-      const m = CUSTOM_HASH.exec(win.location.hash || '');
-      body = m ? customView(m[1]) : plannerView();
+      const hash = win.location.hash || '';
+      const m = CUSTOM_HASH.exec(hash);
+      if (hash !== REVIEW_HASH) review = null; // phiên ôn chỉ sống trong lúc ở trang Ôn tập
+      body = m ? customView(m[1]) : hash === REVIEW_HASH ? reviewView() : plannerView();
     } else if (kind === 'course' && COURSE_BY_SLUG[slug]) {
       body = courseView(COURSE_BY_SLUG[slug]);
     } else if (kind === 'physics') {

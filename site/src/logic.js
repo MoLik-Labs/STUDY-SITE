@@ -73,7 +73,7 @@ export function newId(prefix) {
 
 // updated: thời điểm ghi cuối (ISO). Dùng để quyết định bên nào mới hơn khi đồng bộ.
 export function emptyState() {
-  return { v: 2, updated: null, tasks: [], custom: [], progress: {}, notes: {} };
+  return { v: 2, updated: null, tasks: [], custom: [], progress: {}, notes: {}, cards: [], exams: [] };
 }
 
 function safeMap(obj, fn) {
@@ -130,6 +130,8 @@ export function normalizeState(raw) {
     : undefined));
 
   state.notes = safeMap(raw.notes, text => (typeof text === 'string' ? sanitizeNote(text) : undefined));
+  state.cards = normalizeCards(raw.cards);
+  state.exams = normalizeExams(raw.exams);
   return state;
 }
 
@@ -234,4 +236,133 @@ export function suggestToday(state, courses, todayIso) {
   candidates.sort((a, b) => a.percent - b.percent || a.order - b.order);
 
   return { overdue, dueToday, focus: candidates[0] || null, remaining: candidates.length };
+}
+
+// ---------- Thẻ ghi nhớ (lịch Leitner, 5 ngăn) ----------
+// Nhớ: thẻ lên một ngăn và quay lại sau CARD_INTERVALS[ngăn mới] ngày.
+// Quên: thẻ về ngăn 1 và quay lại ngày mai. Ngăn 5 là "đã thuộc".
+export const CARD_INTERVALS = Object.freeze([1, 2, 4, 8, 16]);
+export const CARD_LIMIT = 1000;
+const FRONT_MAX = 300;
+const BACK_MAX = 800;
+
+function normalizeCards(raw) {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .filter(c => c && typeof c.id === 'string' && typeof c.due === 'string' && parseIso(c.due))
+    .map(c => ({
+      id: sanitizeText(c.id, 80),
+      front: sanitizeText(c.front, FRONT_MAX),
+      back: sanitizeNote(c.back).slice(0, BACK_MAX),
+      course: sanitizeText(c.course, 80),
+      box: Number.isInteger(c.box) && c.box >= 0 && c.box < CARD_INTERVALS.length ? c.box : 0,
+      due: c.due,
+    }))
+    .filter(c => c.id && c.front)
+    .slice(0, CARD_LIMIT);
+}
+
+// Trả về state mới, hoặc chính state đó nếu thẻ không hợp lệ hoặc đã đủ CARD_LIMIT.
+export function addCard(state, { front, back, course }, todayIso, id = newId('k')) {
+  const text = sanitizeText(front, FRONT_MAX);
+  const cards = state.cards || [];
+  if (!text || cards.length >= CARD_LIMIT || !parseIso(todayIso)) return state;
+  const card = {
+    id,
+    front: text,
+    back: sanitizeNote(back).slice(0, BACK_MAX),
+    course: sanitizeText(course, 80),
+    box: 0,
+    due: todayIso,
+  };
+  return { ...state, cards: [...cards, card] };
+}
+
+export function reviewCard(state, id, remembered, todayIso) {
+  const today = parseIso(todayIso);
+  if (!today) return state;
+  return {
+    ...state,
+    cards: (state.cards || []).map(c => {
+      if (c.id !== id) return c;
+      if (!remembered) return { ...c, box: 0, due: isoOf(addDays(today, 1)) };
+      const box = Math.min(c.box + 1, CARD_INTERVALS.length - 1);
+      return { ...c, box, due: isoOf(addDays(today, CARD_INTERVALS[box])) };
+    }),
+  };
+}
+
+export function removeCard(state, id) {
+  return { ...state, cards: (state.cards || []).filter(c => c.id !== id) };
+}
+
+// Thẻ đến hạn (due <= hôm nay), thẻ quá hạn lâu nhất đứng trước.
+export function dueCards(state, todayIso) {
+  return (state.cards || [])
+    .filter(c => c.due <= todayIso)
+    .sort((a, b) => a.due.localeCompare(b.due) || a.box - b.box);
+}
+
+export function cardStats(state, todayIso) {
+  const cards = state.cards || [];
+  return {
+    total: cards.length,
+    due: cards.filter(c => c.due <= todayIso).length,
+    learned: cards.filter(c => c.box === CARD_INTERVALS.length - 1).length,
+  };
+}
+
+// ---------- Kỳ thi (đếm ngược) ----------
+export const EXAM_LIMIT = 30;
+
+function normalizeExams(raw) {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .filter(e => e && typeof e.id === 'string' && parseIso(e.date))
+    .map(e => ({
+      id: sanitizeText(e.id, 80),
+      title: sanitizeText(e.title, 120),
+      course: sanitizeText(e.course, 80),
+      date: e.date,
+    }))
+    .filter(e => e.id && e.title)
+    .slice(0, EXAM_LIMIT);
+}
+
+export function addExam(state, { title, course, date }, id = newId('e')) {
+  const text = sanitizeText(title, 120);
+  const exams = state.exams || [];
+  if (!text || !parseIso(date) || exams.length >= EXAM_LIMIT) return state;
+  return { ...state, exams: [...exams, { id, title: text, course: sanitizeText(course, 80), date }] };
+}
+
+export function removeExam(state, id) {
+  return { ...state, exams: (state.exams || []).filter(e => e.id !== id) };
+}
+
+// Kỳ thi chưa qua (từ hôm nay trở đi), gần nhất trước, kèm số ngày còn lại.
+export function upcomingExams(state, todayIso) {
+  return (state.exams || [])
+    .filter(e => e.date >= todayIso)
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .map(e => ({ ...e, daysLeft: daysBetween(todayIso, e.date) }));
+}
+
+function daysBetween(fromIso, toIso) {
+  // Làm tròn: lệch một giờ khi đổi giờ mùa hè không làm sai số ngày.
+  return Math.round((parseIso(toIso).getTime() - parseIso(fromIso).getTime()) / 86400000);
+}
+
+// ---------- Tiến độ 7 ngày gần nhất ----------
+// Đếm việc theo ngày (đã xong / tổng) trong 7 ngày kết thúc hôm nay. Không tính việc tương lai.
+export function weeklyProgress(state, todayIso) {
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const iso = isoOf(addDays(parseIso(todayIso), -i));
+    const tasks = state.tasks.filter(t => t.date === iso);
+    days.push({ date: iso, total: tasks.length, done: tasks.filter(t => t.done).length });
+  }
+  const total = days.reduce((n, d) => n + d.total, 0);
+  const done = days.reduce((n, d) => n + d.done, 0);
+  return { days, total, done, rate: total ? Math.round((done / total) * 100) : 0 };
 }

@@ -322,3 +322,90 @@ test('quên mật khẩu: chưa nhập email thì nhắc, không gọi mạng; c
   assert.deepEqual(t.calls[0], ['reset', 'an@example.com']);
   assert.match(t.$('.msg.ok').textContent, /Nếu email này đã đăng ký/);
 });
+
+test('ôn tập: thêm thẻ, hiện đáp án, chấm nhớ rồi thẻ biến khỏi hàng đến hạn', () => {
+  const { root, $, $$, submit, app, storage } = setup({ hash: '#/on-tap' });
+  assert.ok($('.review h1'), 'có tiêu đề Ôn tập');
+  assert.match(root.textContent, /Chưa có thẻ nào/);
+  const form = $('.card-form');
+  form.querySelector('textarea[name=front]').value = 'Econometrics là gì?';
+  form.querySelector('textarea[name=back]').value = 'Kinh tế lượng.';
+  submit(form);
+  assert.match(root.textContent, /1 cần ôn hôm nay/);
+  assert.equal($('.card-front').textContent, 'Econometrics là gì?');
+  assert.equal($('.card-back'), null, 'đáp án ẩn cho đến khi bấm');
+  $$('button').find(b => b.textContent === 'Hiện đáp án').click();
+  assert.equal($('.card-back').textContent, 'Kinh tế lượng.');
+  $$('button').find(b => b.textContent === 'Nhớ rồi').click();
+  assert.match(root.textContent, /Xong 1 thẻ hôm nay/);
+  const saved = JSON.parse(storage.getItem(KEY));
+  assert.equal(saved.cards[0].box, 1);
+  assert.equal(saved.cards[0].due, '2026-11-18');
+  app.dispose();
+});
+
+test('ôn tập: thẻ quên thì quay lại ngày mai, không hiện trong phiên hôm nay', () => {
+  const { root, $, $$, submit, app } = setup({ hash: '#/on-tap' });
+  const form = $('.card-form');
+  form.querySelector('textarea[name=front]').value = 'Từ mới';
+  submit(form);
+  $$('button').find(b => b.textContent === 'Hiện đáp án').click();
+  $$('button').find(b => b.textContent === 'Chưa nhớ').click();
+  assert.match(root.textContent, /Thẻ quên sẽ quay lại ngày mai/);
+  app.dispose();
+});
+
+test('trang chủ có khối Ôn tập với số thẻ cần ôn', () => {
+  const { $, submit, app } = setup({ hash: '' });
+  assert.ok($('[data-block="review"]'));
+  app.dispose();
+});
+
+test('kỳ thi: thêm qua form, hiện số ngày còn lại; xoá được', () => {
+  const t = setup();
+  const form = t.$('form.add-exam');
+  form.elements.title.value = 'Giữa kỳ Kinh tế lượng';
+  form.elements.course.value = 'kinh-te-luong';
+  form.elements.date.value = '2026-11-26';
+  t.submit(form);
+  assert.ok(t.$('.exam-list').textContent.includes('Còn 10 ngày'));
+  assert.ok(t.$('.exam-list').textContent.includes('Giữa kỳ Kinh tế lượng'));
+  t.$('button[aria-label^="Xoá kỳ thi"]').click();
+  assert.equal(t.$('.exam-list'), null);
+});
+
+test('tiến độ 7 ngày: hiện số việc đã xong và tỉ lệ', () => {
+  const t = setup({ storageInit: { [KEY]: JSON.stringify({ v: 2, tasks: [
+    { id: 'a', title: 'Một', course: '', date: '2026-11-16', done: true },
+    { id: 'b', title: 'Hai', course: '', date: '2026-11-15', done: false },
+  ] }) } });
+  assert.ok(t.root.textContent.includes('Đã xong 1/2 việc (50%).'));
+  assert.equal(t.$$('.week-bars .day-bar').length, 7);
+});
+
+test('bố cục trang chủ cũ (5 khối) vẫn giữ thứ tự, khối mới nối cuối', () => {
+  const t = setup({ storageInit: { 'sf.home.v1': JSON.stringify(['courses', 'today', 'week', 'timer', 'review']) } });
+  const order = t.$$('[data-block]').map(b => b.getAttribute('data-block'));
+  assert.deepEqual(order.slice(0, 5), ['courses', 'today', 'week', 'timer', 'review']);
+  assert.deepEqual(order.slice(5).sort(), ['exams', 'progress']);
+});
+
+// ---- Giao diện: chọn theme trên trang Tài khoản ----
+test('Tài khoản: có 6 lựa chọn giao diện, lưu theme và đặt data-theme ngay khi chọn', () => {
+  const dom = new JSDOM('<!doctype html><main id="main"></main>', { url: 'https://site.test/account' });
+  const win = dom.window;
+  const root = win.document.getElementById('main');
+  mountApp(root, { storage: win.localStorage, page: 'account', win, now: NOW });
+  const radios = [...root.querySelectorAll('.theme-pick input[type=radio]')];
+  assert.deepEqual(radios.map(r => r.value), ['system', 'latte', 'mocha', 'forest', 'nord', 'gruvbox']);
+  assert.equal(root.querySelector('.theme-pick input[value=system]').checked, true, 'mặc định là theo máy');
+  const mocha = root.querySelector('.theme-pick input[value=mocha]');
+  mocha.checked = true;
+  mocha.dispatchEvent(new win.Event('change', { bubbles: true }));
+  assert.equal(win.localStorage.getItem('sf.theme.v1'), 'mocha');
+  assert.equal(win.document.documentElement.dataset.theme, 'mocha');
+  // Sau khi vẽ lại, lựa chọn đã lưu được đánh dấu đúng.
+  const again = root.querySelector('.theme-pick input[value=mocha]');
+  assert.equal(again.checked, true);
+  assert.ok(again.closest('.theme-opt').classList.contains('is-on'));
+});

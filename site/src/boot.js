@@ -3,6 +3,7 @@
 // từ liên kết đăng nhập thì không tải gì ngoài app.
 import { mountApp } from './app.js';
 import { HINT_KEY, PENDING_KEY, LINK_KEY } from './cloud.js';
+import { applyTheme, readTheme } from './theme.js';
 
 // Cấu hình Firebase do Worker phục vụ từ biến môi trường. Thiếu cấu hình thì chạy chế độ khách.
 async function loadCloudConfig() {
@@ -32,8 +33,18 @@ function needsCloud(storage, page) {
   return false;
 }
 
+// Theo máy: khi hệ điều hành đổi sáng/tối thì đổi theo (chỉ khi người dùng chọn "Theo máy").
+function followSystemTheme(storage) {
+  if (!window.matchMedia) return;
+  const mq = window.matchMedia('(prefers-color-scheme: dark)');
+  const sync = () => { if (storage && readTheme(storage) === 'system') applyTheme(document.documentElement, 'system', mq.matches); };
+  sync();
+  if (mq.addEventListener) mq.addEventListener('change', sync);
+}
+
 async function start() {
   const storage = safeStorage();
+  followSystemTheme(storage);
   const root = document.getElementById('main');
   const page = root.dataset.page;
   const config = await loadCloudConfig();

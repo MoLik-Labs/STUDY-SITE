@@ -86,7 +86,17 @@ export function siteCsp(physicsCsp) {
 }
 
 // Gom JS của site: boot.js (trang) và firebase-sdk.js (Firebase, tải lười) là hai entry; phần dùng chung thành chunk.
+// Script áp theme đồng bộ trong <head> (trước khi vẽ): một tệp độc lập, không chia chunk.
+async function bundleThemeInit(out) {
+  await esbuild({
+    entryPoints: [path.join(SRC, 'theme-init.js')],
+    outfile: path.join(out, 'assets', 'theme-init.js'),
+    bundle: true, format: 'iife', minify: true, target: ['es2020'], legalComments: 'none', logLevel: 'warning',
+  });
+}
+
 export async function bundleSite(out) {
+  await bundleThemeInit(out);
   await esbuild({
     // firebase-sdk.js là entry riêng: bản Vật lí (src/account.js) tải nó bằng import() từ /assets/.
     entryPoints: [path.join(SRC, 'boot.js'), path.join(SRC, 'firebase-sdk.js')],
@@ -175,11 +185,17 @@ export async function buildSite({ out = DEFAULT_OUT } = {}) {
   const build = await buildId(out);
   const epoch = Number(process.env.SOURCE_DATE_EPOCH || 0);
   const builtAt = new Date(epoch * 1000).toISOString().replace('.000Z', 'Z');
-  const worker = (await readFile(path.join(HERE, 'worker.template.js'), 'utf8'))
+  const workerSrc = (await readFile(path.join(HERE, 'worker.template.js'), 'utf8'))
     .replace('__VERSION__', version)
     .replace('__BUILD_ID__', build)
     .replace('__BUILT_AT__', builtAt);
-  await writeFile(path.join(out, '_worker.mjs'), worker);
+  // Worker gom cả logic.js và api.js thành một tệp (không có import ngoài).
+  const bundled = await esbuild({
+    stdin: { contents: workerSrc, resolveDir: HERE, sourcefile: 'worker.template.js', loader: 'js' },
+    bundle: true, format: 'esm', platform: 'neutral', target: 'es2022', write: false,
+    legalComments: 'none', minify: true,
+  });
+  await writeFile(path.join(out, '_worker.mjs'), bundled.outputFiles[0].text);
 
   // Danh sách precache: mọi trang, bản Vật lí và mọi tệp trong assets/ (gồm chunk Firebase).
   const assetFiles = (await readdir(path.join(out, 'assets'))).filter(f => /\.(js|css)$/.test(f)).map(f => '/assets/' + f);

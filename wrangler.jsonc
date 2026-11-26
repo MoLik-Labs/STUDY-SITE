@@ -10,7 +10,9 @@
 //   FIREBASE_AUTH_DOMAIN        <project-id>.firebaseapp.com       (tuỳ chọn)
 //   FIREBASE_APPCHECK_SITE_KEY  6L…  (reCAPTCHA v3, công khai)     (tuỳ chọn: App Check)
 // Thiếu một trong hai thì app chạy ở chế độ khách, không lỗi.
-// Không đặt khoá bí mật (service account, Admin SDK) ở đây: app chỉ cần khoá web công khai.
+// Khoá bí mật KHÔNG đặt ở đây. Secret (Settings → Variables and Secrets, loại Secret):
+//   FIREBASE_SERVICE_ACCOUNT     JSON tài khoản dịch vụ (vai trò Cloud Datastore User) — chỉ cho API mã kết nối.
+//                                Thiếu thì phần mã kết nối trả 503; API đăng nhập trên trang vẫn chạy. Xem docs/API.md.
 {
   "$schema": "https://raw.githubusercontent.com/cloudflare/workers-sdk/main/packages/wrangler/config-schema.json",
 
@@ -28,7 +30,7 @@
     "not_found_handling": "404-page",
     // /index.html → /, /tai-khoan/index.html → /tai-khoan/.
     "html_handling": "auto-trailing-slash",
-    "run_worker_first": ["/__version", "/assets/config.js"]
+    "run_worker_first": ["/__version", "/assets/config.js", "/api/*"]
   },
 
   "workers_dev": true,

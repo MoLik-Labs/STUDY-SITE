@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chuẩn bị máy và tài khoản — Hướng dẫn làm việc với STUDY-SITE</title>
+<meta name="description" content="Chương này làm đúng một lần: tạo tài khoản GitHub, cài Git, Node.js và một trình soạn thảo. Mất khoảng 30 phút nếu máy chưa có gì.">
+<link rel="stylesheet" href="assets/tutorial.css">
+</head>
+<body>
+<a class="skip" href="#main">Bỏ qua menu</a>
+<header class="top">
+  <a class="brand" href="index.html">Hướng dẫn làm việc với STUDY-SITE</a>
+  <nav class="ext" aria-label="Liên kết">
+    <a href="/">Về trang học</a>
+    <a href="https://github.com/MoLik-Labs/STUDY-SITE" rel="noopener">GitHub</a>
+  </nav>
+</header>
+<div class="layout">
+<nav class="side" aria-label="Các chương">
+  <p class="side-title">Các chương</p>
+  <ol>
+<li><a href="00-gioi-thieu.html"><span class="num">00</span>Bắt đầu từ đâu: dự án, Git và GitHub</a></li>
+<li><a href="01-chuan-bi.html" class="on" aria-current="page"><span class="num">01</span>Chuẩn bị máy và tài khoản</a></li>
+<li><a href="02-tai-ve-may.html"><span class="num">02</span>Tải dự án về máy và chạy thử</a></li>
+<li><a href="03-upload-tren-web.html"><span class="num">03</span>Upload file lên GitHub bằng trình duyệt</a></li>
+<li><a href="04-github-desktop.html"><span class="num">04</span>Commit và push bằng GitHub Desktop</a></li>
+<li><a href="05-git-dong-lenh.html"><span class="num">05</span>Làm việc với dòng lệnh Git</a></li>
+<li><a href="06-nhanh-va-pull-request.html"><span class="num">06</span>Làm việc theo nhánh và pull request</a></li>
+<li><a href="07-quy-trinh-du-an.html"><span class="num">07</span>Quy trình riêng của STUDY-SITE</a></li>
+<li><a href="08-lam-viec-hieu-qua.html"><span class="num">08</span>Các cách làm việc hiệu quả</a></li>
+<li><a href="09-su-co-thuong-gap.html"><span class="num">09</span>Xử lý sự cố thường gặp</a></li>
+<li><a href="10-bao-mat.html"><span class="num">10</span>Bảo mật khi làm việc</a></li>
+<li><a href="11-thuat-ngu.html"><span class="num">11</span>Thuật ngữ thường gặp</a></li>
+  </ol>
+</nav>
+<main id="main">
+<article>
+<h1>Chuẩn bị máy và tài khoản</h1>
+<p class="lead">Chương này làm đúng một lần: tạo tài khoản GitHub, cài Git, Node.js và một trình soạn thảo. Mất khoảng 30 phút nếu máy chưa có gì.</p>
+<p>Chương này làm đúng một lần: tạo tài khoản GitHub, cài Git, Node.js và một trình soạn thảo. Mất khoảng 30 phút nếu máy chưa có gì.</p>
+<h2 id="1-tao-tai-khoan-github">1. Tạo tài khoản GitHub</h2>
+<ol>
+<li>Vào <a href="https://github.com">github.com</a> và chọn <strong>Sign up</strong>.</li>
+<li>Chọn tên người dùng ngắn, dễ nhớ. Tên này xuất hiện trong mọi commit của bạn.</li>
+<li>Bật xác thực hai lớp ở <strong>Settings → Password and authentication</strong>. Đây là bước bảo vệ tài khoản quan trọng nhất.</li>
+</ol>
+<aside class="callout callout-tip" aria-label="Mẹo"><p class="callout-label">Mẹo</p>
+<p>Trong <strong>Settings → Emails</strong>, bật tuỳ chọn <em>Keep my email addresses private</em>. Khi cấu hình Git, dùng địa chỉ dạng <code>...@users.noreply.github.com</code> để email thật không lộ trong lịch sử công khai.</p>
+</aside>
+<h2 id="2-cai-git">2. Cài Git</h2>
+<p>Git là công cụ ghi lại lịch sử thay đổi. Kiểm tra xem máy đã có chưa:</p>
+<div class="codewrap"><pre><code class="language-bash">git --version
+</code></pre></div>
+<p>Nếu hiện một số phiên bản (ví dụ <code>git version 2.45.0</code>) thì bạn đã có Git. Nếu chưa, cài theo hệ điều hành:</p>
+<ul>
+<li><strong>Windows</strong>: tải <em>Git for Windows</em> tại <a href="https://git-scm.com">git-scm.com</a>. Giữ tuỳ chọn mặc định khi cài. Sau đó dùng <strong>Git Bash</strong> để gõ lệnh.</li>
+<li><strong>macOS</strong>: mở Terminal và gõ <code>xcode-select --install</code>, hoặc cài từ <a href="https://git-scm.com">git-scm.com</a>.</li>
+<li><strong>Linux (Ubuntu/Debian)</strong>: <code>sudo apt install git</code>.</li>
+</ul>
+<h3 id="cau-hinh-git-lan-dau">Cấu hình Git lần đầu</h3>
+<p>Git cần biết tên và email để ghi vào mỗi commit. Chạy hai lệnh này một lần, thay bằng thông tin của bạn:</p>
+<div class="codewrap"><pre><code class="language-bash">git config --global user.name &quot;Tên của bạn&quot;
+git config --global user.email &quot;ten-nguoi-dung@users.noreply.github.com&quot;
+</code></pre></div>
+<p>Kiểm tra lại:</p>
+<div class="codewrap"><pre><code class="language-bash">git config --global --list
+</code></pre></div>
+<h2 id="3-cai-node-js">3. Cài Node.js</h2>
+<p>Dự án dùng Node.js để dựng trang và chạy kiểm thử. CI của dự án dùng <strong>Node.js 20</strong>; tối thiểu là 18.</p>
+<ol>
+<li>Vào <a href="https://nodejs.org">nodejs.org</a> và tải bản <strong>LTS</strong> (hỗ trợ dài hạn).</li>
+<li>Cài theo hướng dẫn, giữ mặc định.</li>
+<li>Kiểm tra:</li>
+</ol>
+<div class="codewrap"><pre><code class="language-bash">node -v
+npm -v
+</code></pre></div>
+<h2 id="4-cai-mot-trinh-soan-thao">4. Cài một trình soạn thảo</h2>
+<p><strong>Visual Studio Code</strong> là lựa chọn phổ biến và miễn phí, tải tại <a href="https://code.visualstudio.com">code.visualstudio.com</a>. Sau khi cài, nên thêm tiện ích <strong>GitLens</strong> để xem lịch sử từng dòng code.</p>
+<p>Nếu chỉ muốn sửa nhanh, bạn có thể bỏ qua bước này và dùng trình duyệt (xem chương 08).</p>
+<h2 id="5-dang-nhap-github-tu-may-ban">5. Đăng nhập GitHub từ máy bạn</h2>
+<p>Khi push lần đầu, Git sẽ hỏi xác thực. Cách dễ nhất là dùng <strong>GitHub CLI</strong> (<code>gh</code>):</p>
+<div class="codewrap"><pre><code class="language-bash">gh auth login
+</code></pre></div>
+<p>Chọn GitHub.com, HTTPS, rồi đăng nhập bằng trình duyệt. Không cần tự tạo mật khẩu thủ công. Nếu dùng GitHub Desktop (chương 04), ứng dụng tự làm bước này.</p>
+<aside class="callout callout-warn" aria-label="Cảnh báo"><p class="callout-label">Cảnh báo</p>
+<p>Không bao giờ dán mật khẩu, token truy cập hay khoá bí mật vào chat, vào file trong repo hay vào commit. Chương 10 nói kỹ hơn.</p>
+</aside>
+<h2 id="6-kiem-tra-toan-bo">6. Kiểm tra toàn bộ</h2>
+<p>Chạy lần lượt. Tất cả phải có kết quả:</p>
+<div class="codewrap"><pre><code class="language-bash">git --version
+node -v
+npm -v
+git config --global user.name
+gh --version
+</code></pre></div>
+<p>Nếu lệnh nào báo <em>command not found</em>, quay lại bước tương ứng ở trên.</p>
+<p>Tiếp theo: <a href="02-tai-ve-may.html">tải dự án về máy và chạy thử</a>.</p>
+
+</article>
+<nav class="pager" aria-label="Chuyển chương"><a class="prev" href="00-gioi-thieu.html"><span>← Trước</span>Bắt đầu từ đâu: dự án, Git và GitHub</a><a class="next" href="02-tai-ve-may.html"><span>Tiếp →</span>Tải dự án về máy và chạy thử</a></nav>
+</main>
+<aside class="toc" aria-label="Mục trong trang"><p class="toc-title">Trong trang này</p><ul><li class="d2"><a href="#1-tao-tai-khoan-github">1. Tạo tài khoản GitHub</a></li><li class="d2"><a href="#2-cai-git">2. Cài Git</a></li><li class="d3"><a href="#cau-hinh-git-lan-dau">Cấu hình Git lần đầu</a></li><li class="d2"><a href="#3-cai-node-js">3. Cài Node.js</a></li><li class="d2"><a href="#4-cai-mot-trinh-soan-thao">4. Cài một trình soạn thảo</a></li><li class="d2"><a href="#5-dang-nhap-github-tu-may-ban">5. Đăng nhập GitHub từ máy bạn</a></li><li class="d2"><a href="#6-kiem-tra-toan-bo">6. Kiểm tra toàn bộ</a></li></ul></aside>
+</div>
+<footer class="foot">Nguồn: <code>tutorial/content/</code>. Sau khi sửa, chạy <code>npm run tutorial</code> để xem thử và <code>npm run build</code> để cập nhật trang trên site.</footer>
+</body>
+</html>

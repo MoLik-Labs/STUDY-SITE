@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bảo mật khi làm việc — Hướng dẫn làm việc với STUDY-SITE</title>
+<meta name="description" content="Mã nguồn công khai có thể bị quét bởi các công cụ tự động trong vài phút sau khi xuất hiện. Chương này nói về những thứ không bao giờ được đưa vào repo, cách lưu chúng đúng chỗ, và việc cần làm khi lỡ làm lộ.">
+<link rel="stylesheet" href="assets/tutorial.css">
+</head>
+<body>
+<a class="skip" href="#main">Bỏ qua menu</a>
+<header class="top">
+  <a class="brand" href="index.html">Hướng dẫn làm việc với STUDY-SITE</a>
+  <nav class="ext" aria-label="Liên kết">
+    <a href="/">Về trang học</a>
+    <a href="https://github.com/MoLik-Labs/STUDY-SITE" rel="noopener">GitHub</a>
+  </nav>
+</header>
+<div class="layout">
+<nav class="side" aria-label="Các chương">
+  <p class="side-title">Các chương</p>
+  <ol>
+<li><a href="00-gioi-thieu.html"><span class="num">00</span>Bắt đầu từ đâu: dự án, Git và GitHub</a></li>
+<li><a href="01-chuan-bi.html"><span class="num">01</span>Chuẩn bị máy và tài khoản</a></li>
+<li><a href="02-tai-ve-may.html"><span class="num">02</span>Tải dự án về máy và chạy thử</a></li>
+<li><a href="03-upload-tren-web.html"><span class="num">03</span>Upload file lên GitHub bằng trình duyệt</a></li>
+<li><a href="04-github-desktop.html"><span class="num">04</span>Commit và push bằng GitHub Desktop</a></li>
+<li><a href="05-git-dong-lenh.html"><span class="num">05</span>Làm việc với dòng lệnh Git</a></li>
+<li><a href="06-nhanh-va-pull-request.html"><span class="num">06</span>Làm việc theo nhánh và pull request</a></li>
+<li><a href="07-quy-trinh-du-an.html"><span class="num">07</span>Quy trình riêng của STUDY-SITE</a></li>
+<li><a href="08-lam-viec-hieu-qua.html"><span class="num">08</span>Các cách làm việc hiệu quả</a></li>
+<li><a href="09-su-co-thuong-gap.html"><span class="num">09</span>Xử lý sự cố thường gặp</a></li>
+<li><a href="10-bao-mat.html" class="on" aria-current="page"><span class="num">10</span>Bảo mật khi làm việc</a></li>
+<li><a href="11-thuat-ngu.html"><span class="num">11</span>Thuật ngữ thường gặp</a></li>
+  </ol>
+</nav>
+<main id="main">
+<article>
+<h1>Bảo mật khi làm việc</h1>
+<p class="lead">Mã nguồn công khai có thể bị quét bởi các công cụ tự động trong vài phút sau khi xuất hiện. Chương này nói về những thứ không bao giờ được đưa vào repo, cách lưu chúng đúng chỗ, và việc cần làm khi lỡ làm lộ.</p>
+<p>Mã nguồn công khai có thể bị quét bởi các công cụ tự động trong vài phút sau khi xuất hiện. Chương này nói về những thứ không bao giờ được đưa vào repo, cách lưu chúng đúng chỗ, và việc cần làm khi lỡ làm lộ.</p>
+<h2 id="nhung-thu-khong-bao-gio-commit">Những thứ không bao giờ commit</h2>
+<ul>
+<li><strong>Mật khẩu</strong> và <strong>token truy cập</strong> (GitHub, Cloudflare, bất kỳ dịch vụ nào).</li>
+<li><strong>Khoá dịch vụ</strong> dạng JSON của Google Cloud (<code>service account</code>), có trường <code>private_key</code>.</li>
+<li><strong>File môi trường</strong> <code>.env</code>, <code>dev.vars</code>, hoặc tương tự.</li>
+<li><strong>Ảnh chụp màn hình</strong> có thông tin đăng nhập hoặc khoá hiện trên màn hình.</li>
+<li><strong>Dữ liệu cá nhân thật</strong> của người dùng.</li>
+</ul>
+<p>Repo đã cấu hình <code>.gitignore</code> để bỏ qua nhiều loại trong số này, nhưng <strong>đó không phải lớp bảo vệ duy nhất</strong>. Luôn kiểm tra <code>git status</code> và danh sách file trước khi commit.</p>
+<h2 id="noi-luu-bi-mat-dung-cach">Nơi lưu bí mật đúng cách</h2>
+<p>Dự án dùng hai loại cấu hình trên Cloudflare Workers:</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Loại</th>
+<th>Dùng cho</th>
+<th>Có hiện ra trong mã trang không?</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Variable</strong> (biến thường)</td>
+<td>Cấu hình công khai, như khoá web Firebase</td>
+<td>Có, và điều đó không sao vì chúng là công khai</td>
+</tr>
+<tr>
+<td><strong>Secret</strong> (bí mật)</td>
+<td>Khoá dịch vụ, mật khẩu, token</td>
+<td>Không. Chỉ Worker đọc được khi chạy</td>
+</tr>
+</tbody></table></div>
+<p>Quy tắc: <strong>nếu giá trị có thể dùng để chiếm quyền hoặc đọc dữ liệu riêng tư, nó là Secret</strong>. Thêm Secret trong Cloudflare: <strong>Workers &amp; Pages → chọn Worker → Settings → Variables and Secrets</strong>.</p>
+<p>Khoá web Firebase (<code>apiKey</code>, <code>appId</code>) là công khai theo thiết kế của Firebase. Bảo vệ dữ liệu thật nằm ở quy tắc <code>firestore.rules</code>, không nằm ở việc giấu khoá.</p>
+<h2 id="bi-mat-da-lo-thi-lam-gi">Bí mật đã lộ thì làm gì</h2>
+<p>Thứ tự quan trọng. Làm đúng thứ tự, theo đúng thời gian:</p>
+<ol>
+<li><strong>Thu hồi hoặc vô hiệu hoá bí mật ngay.</strong> Đây là bước quan trọng nhất. Đừng chờ xoá commit.</li>
+<li><strong>Tạo bí mật mới</strong> và cập nhật nơi đang dùng (Secret trên Cloudflare, cấu hình trên máy).</li>
+<li><strong>Kiểm tra nhật ký</strong> của dịch vụ xem bí mật cũ có bị dùng bất thường không.</li>
+<li><strong>Xoá khỏi repo</strong> nếu cần. Nhưng nhớ rằng lịch sử git vẫn giữ nó, nên bước 1 mới là bước cứu cánh.</li>
+<li><strong>Báo chủ dự án.</strong></li>
+</ol>
+<aside class="callout callout-warn" aria-label="Cảnh báo"><p class="callout-label">Cảnh báo</p>
+<p>Xoá file rồi commit lại không làm mất bí mật khỏi lịch sử. Chỉ việc thu hồi bí mật mới đảm bảo an toàn.</p>
+</aside>
+<h2 id="cac-cong-cu-github-ho-tro">Các công cụ GitHub hỗ trợ</h2>
+<ul>
+<li><strong>Secret scanning</strong> và <strong>push protection</strong>: GitHub có thể chặn push khi phát hiện mẫu khoá quen thuộc. Nếu bạn gặp thông báo này, đừng vòng qua nó. Hãy kiểm tra thứ bị phát hiện, xoá khỏi commit, rồi thử lại.</li>
+<li><strong>Dependabot</strong>: cảnh báo khi thư viện có lỗ hổng bảo mật đã biết.</li>
+</ul>
+<h2 id="quyen-truy-cap">Quyền truy cập</h2>
+<ul>
+<li>Bật xác thực hai lớp cho tài khoản GitHub và Cloudflare.</li>
+<li>Chỉ cấp quyền cho người thật sự cần. Dùng quyền tối thiểu cần thiết.</li>
+<li>Khoá dịch vụ Google chỉ nên có vai trò hẹp nhất. Dự án này dùng vai trò <em>Cloud Datastore User</em>.</li>
+<li>Khi nghỉ dự án hoặc đổi người, thu hồi quyền ngay.</li>
+</ul>
+<h2 id="du-lieu-nguoi-dung">Dữ liệu người dùng</h2>
+<p>Dự án có tính năng đăng nhập và đồng bộ. Khi làm việc với dữ liệu này:</p>
+<ul>
+<li>Không tải dữ liệu thật về máy để thử nghiệm. Dùng dữ liệu giả.</li>
+<li>Không ghi log dữ liệu cá nhân hay nội dung người dùng.</li>
+<li>Đọc <code>docs/FIREBASE-SETUP.md</code> và <code>firestore.rules</code> trước khi đổi bất kỳ quy tắc nào.</li>
+</ul>
+<h2 id="khi-can-chia-se-thong-tin-cho-nguoi-khac">Khi cần chia sẻ thông tin cho người khác</h2>
+<p>Không gửi bí mật qua chat, email hay ảnh. Thay vào đó:</p>
+<ul>
+<li>Dùng trình quản lý mật khẩu có chia sẻ có kiểm soát.</li>
+<li>Hoặc để người có quyền tự tạo bí mật trên dịch vụ đó.</li>
+</ul>
+<p>Tiếp theo: <a href="11-thuat-ngu.html">thuật ngữ thường gặp</a>.</p>
+
+</article>
+<nav class="pager" aria-label="Chuyển chương"><a class="prev" href="09-su-co-thuong-gap.html"><span>← Trước</span>Xử lý sự cố thường gặp</a><a class="next" href="11-thuat-ngu.html"><span>Tiếp →</span>Thuật ngữ thường gặp</a></nav>
+</main>
+<aside class="toc" aria-label="Mục trong trang"><p class="toc-title">Trong trang này</p><ul><li class="d2"><a href="#nhung-thu-khong-bao-gio-commit">Những thứ không bao giờ commit</a></li><li class="d2"><a href="#noi-luu-bi-mat-dung-cach">Nơi lưu bí mật đúng cách</a></li><li class="d2"><a href="#bi-mat-da-lo-thi-lam-gi">Bí mật đã lộ thì làm gì</a></li><li class="d2"><a href="#cac-cong-cu-github-ho-tro">Các công cụ GitHub hỗ trợ</a></li><li class="d2"><a href="#quyen-truy-cap">Quyền truy cập</a></li><li class="d2"><a href="#du-lieu-nguoi-dung">Dữ liệu người dùng</a></li><li class="d2"><a href="#khi-can-chia-se-thong-tin-cho-nguoi-khac">Khi cần chia sẻ thông tin cho người khác</a></li></ul></aside>
+</div>
+<footer class="foot">Nguồn: <code>tutorial/content/</code>. Sau khi sửa, chạy <code>npm run tutorial</code> để xem thử và <code>npm run build</code> để cập nhật trang trên site.</footer>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Xử lý sự cố thường gặp — Hướng dẫn làm việc với STUDY-SITE</title>
+<meta name="description" content="Mỗi mục dưới đây có triệu chứng, nguyên nhân và cách sửa an toàn. Đọc hết phần triệu chứng trước khi làm theo, để chắc đúng vấn đề của bạn.">
+<link rel="stylesheet" href="assets/tutorial.css">
+</head>
+<body>
+<a class="skip" href="#main">Bỏ qua menu</a>
+<header class="top">
+  <a class="brand" href="index.html">Hướng dẫn làm việc với STUDY-SITE</a>
+  <nav class="ext" aria-label="Liên kết">
+    <a href="/">Về trang học</a>
+    <a href="https://github.com/MoLik-Labs/STUDY-SITE" rel="noopener">GitHub</a>
+  </nav>
+</header>
+<div class="layout">
+<nav class="side" aria-label="Các chương">
+  <p class="side-title">Các chương</p>
+  <ol>
+<li><a href="00-gioi-thieu.html"><span class="num">00</span>Bắt đầu từ đâu: dự án, Git và GitHub</a></li>
+<li><a href="01-chuan-bi.html"><span class="num">01</span>Chuẩn bị máy và tài khoản</a></li>
+<li><a href="02-tai-ve-may.html"><span class="num">02</span>Tải dự án về máy và chạy thử</a></li>
+<li><a href="03-upload-tren-web.html"><span class="num">03</span>Upload file lên GitHub bằng trình duyệt</a></li>
+<li><a href="04-github-desktop.html"><span class="num">04</span>Commit và push bằng GitHub Desktop</a></li>
+<li><a href="05-git-dong-lenh.html"><span class="num">05</span>Làm việc với dòng lệnh Git</a></li>
+<li><a href="06-nhanh-va-pull-request.html"><span class="num">06</span>Làm việc theo nhánh và pull request</a></li>
+<li><a href="07-quy-trinh-du-an.html"><span class="num">07</span>Quy trình riêng của STUDY-SITE</a></li>
+<li><a href="08-lam-viec-hieu-qua.html"><span class="num">08</span>Các cách làm việc hiệu quả</a></li>
+<li><a href="09-su-co-thuong-gap.html" class="on" aria-current="page"><span class="num">09</span>Xử lý sự cố thường gặp</a></li>
+<li><a href="10-bao-mat.html"><span class="num">10</span>Bảo mật khi làm việc</a></li>
+<li><a href="11-thuat-ngu.html"><span class="num">11</span>Thuật ngữ thường gặp</a></li>
+  </ol>
+</nav>
+<main id="main">
+<article>
+<h1>Xử lý sự cố thường gặp</h1>
+<p class="lead">Mỗi mục dưới đây có triệu chứng, nguyên nhân và cách sửa an toàn. Đọc hết phần triệu chứng trước khi làm theo, để chắc đúng vấn đề của bạn.</p>
+<p>Mỗi mục dưới đây có <strong>triệu chứng</strong>, <strong>nguyên nhân</strong> và <strong>cách sửa an toàn</strong>. Đọc hết phần triệu chứng trước khi làm theo, để chắc đúng vấn đề của bạn.</p>
+<h2 id="push-bi-tu-choi-quot-rejected-quot-hoac-quot-fetch-first-quot">Push bị từ chối: &quot;rejected&quot; hoặc &quot;fetch first&quot;</h2>
+<p><strong>Triệu chứng:</strong> <code>git push</code> báo <em>rejected (fetch first)</em> hoặc <em>non-fast-forward</em>.</p>
+<p><strong>Nguyên nhân:</strong> Trên GitHub đã có commit mà máy bạn chưa có. Thường là người khác vừa push lên cùng nhánh, hoặc bạn đã làm việc trên máy khác.</p>
+<p><strong>Cách sửa:</strong></p>
+<div class="codewrap"><pre><code class="language-bash">git pull --rebase
+git push
+</code></pre></div>
+<p><code>--rebase</code> đặt commit của bạn lên trên commit mới nhất, giữ lịch sử thẳng. Nếu có xung đột, Git dừng lại và báo file cần sửa. Xem mục tiếp theo.</p>
+<h2 id="xung-dot-conflict">Xung đột (conflict)</h2>
+<p><strong>Triệu chứng:</strong> Git báo <em>CONFLICT</em> và file có các dấu <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>, <code>=======</code>, <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code>.</p>
+<p><strong>Nguyên nhân:</strong> Cùng một đoạn văn bản bị sửa ở cả hai phía, Git không tự quyết được giữ bản nào.</p>
+<p><strong>Cách sửa:</strong></p>
+<ol>
+<li>Mở file. Đoạn giữa <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> và <code>=======</code> là bản của bạn. Đoạn giữa <code>=======</code> và <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code> là bản trên GitHub.</li>
+<li>Chọn giữ một bản, hoặc viết lại đoạn cho đúng. Xoá cả ba dấu.</li>
+<li>Lưu file, rồi:</li>
+</ol>
+<div class="codewrap"><pre><code class="language-bash">git add tên-file
+git rebase --continue
+</code></pre></div>
+<p>Nếu đang trong <code>git pull</code> thông thường (không rebase), thay bước cuối bằng <code>git commit</code>.</p>
+<aside class="callout callout-tip" aria-label="Mẹo"><p class="callout-label">Mẹo</p>
+<p>Trong VS Code, khi có xung đột sẽ có nút <strong>Accept Current / Incoming / Both</strong>. Dùng nó để tránh sai sót khi sửa tay.</p>
+</aside>
+<p>Muốn huỷ hẳn lần rebase và quay lại trạng thái trước đó: <code>git rebase --abort</code>.</p>
+<h2 id="ci-do-o-buoc-quot-ban-dist-phai-khop-quot">CI đỏ ở bước &quot;Bản dist/ phải khớp&quot;</h2>
+<p><strong>Triệu chứng:</strong> PR có bước <em>Bản dist/ phải khớp với bản đã commit</em> màu đỏ.</p>
+<p><strong>Nguyên nhân:</strong> Bạn sửa mã trong <code>site/</code> nhưng không dựng lại <code>dist/</code> trước khi commit.</p>
+<p><strong>Cách sửa:</strong></p>
+<div class="codewrap"><pre><code class="language-bash">npm run build
+git add dist/
+git commit -m &quot;Dựng lại dist sau khi sửa&quot;
+git push
+</code></pre></div>
+<h2 id="ci-do-o-buoc-kiem-thu">CI đỏ ở bước kiểm thử</h2>
+<p><strong>Triệu chứng:</strong> Bước <em>Kiểm thử</em> đỏ, báo <code>fail</code> với tên bài kiểm thử.</p>
+<p><strong>Cách sửa:</strong></p>
+<ol>
+<li>Chạy <code>npm test</code> trên máy, đọc lỗi đầu tiên. Lỗi đầu thường gây ra các lỗi sau.</li>
+<li>Xem bài kiểm thử đó đang kiểm tra điều gì. Có khi là mã sai, có khi là kỳ vọng đã cũ.</li>
+<li>Sửa, rồi chạy lại <code>npm test</code> đến khi <code>fail 0</code>.</li>
+</ol>
+<p>Đừng xoá hoặc bỏ qua bài kiểm thử chỉ để CI xanh. Nếu thật sự cần thay đổi kỳ vọng, nói rõ lý do trong mô tả PR.</p>
+<h2 id="npm-ci-bao-loi-ve-lockfile"><code>npm ci</code> báo lỗi về lockfile</h2>
+<p><strong>Triệu chứng:</strong> <code>npm ci</code> từ chối chạy, nói <em>package-lock.json not found</em> hoặc <em>out of sync</em>.</p>
+<p><strong>Nguyên nhân:</strong> <code>package.json</code> đã đổi nhưng <code>package-lock.json</code> chưa cập nhật, hoặc lockfile bị thiếu.</p>
+<p><strong>Cách sửa:</strong> Không tự sửa lockfile bằng tay. Nếu bạn vừa thêm thư viện bằng <code>npm install</code>, commit cả <code>package.json</code> và <code>package-lock.json</code>. Nếu lỗi xuất hiện sau khi <code>git pull</code>, hãy báo chủ dự án.</p>
+<h2 id="cong-8124-da-bi-chiem">Cổng 8124 đã bị chiếm</h2>
+<p><strong>Triệu chứng:</strong> <code>npm run serve</code> báo <code>EADDRINUSE</code>.</p>
+<p><strong>Cách sửa:</strong> Một máy chủ khác đang chạy. Tìm và dừng nó:</p>
+<ul>
+<li>macOS/Linux: <code>lsof -i :8124</code>, rồi <code>kill &lt;số PID&gt;</code>.</li>
+<li>Windows: <code>netstat -ano | findstr :8124</code>, rồi <code>taskkill /PID &lt;số PID&gt; /F</code>.</li>
+</ul>
+<h2 id="thay-doi-o-khap-noi-crlf-lf">Thay đổi ở khắp nơi (CRLF / LF)</h2>
+<p><strong>Triệu chứng:</strong> Git báo <em>LF will be replaced by CRLF</em> hoặc diff đổi toàn bộ dòng dù chỉ sửa một chữ.</p>
+<p><strong>Nguyên nhân:</strong> Windows và macOS/Linux dùng kiểu xuống dòng khác nhau.</p>
+<p><strong>Cách sửa:</strong> Cài Git với tuỳ chọn mặc định, hoặc đặt:</p>
+<div class="codewrap"><pre><code class="language-bash">git config --global core.autocrlf true
+</code></pre></div>
+<p>trên Windows. Đừng commit một loạt file chỉ vì đổi kiểu xuống dòng; nếu đã làm, hỏi chủ dự án trước khi tiếp tục.</p>
+<h2 id="lo-commit-file-bi-mat">Lỡ commit file bí mật</h2>
+<p><strong>Triệu chứng:</strong> Bạn vừa commit một file có mật khẩu hoặc khoá JSON, chưa push hoặc đã push.</p>
+<p><strong>Cách sửa:</strong></p>
+<ul>
+<li><strong>Chưa push:</strong> <code>git reset --soft HEAD~1</code>, xoá bí mật khỏi file, rồi commit lại.</li>
+<li><strong>Đã push:</strong> Xoá file trong commit mới là chưa đủ. Bí mật vẫn nằm trong lịch sử. <strong>Thu hồi và tạo khoá mới ngay</strong>, rồi báo chủ dự án. Chương 10 nói rõ quy trình.</li>
+</ul>
+<h2 id="lo-xoa-nham-noi-dung">Lỡ xoá nhầm nội dung</h2>
+<p>Git giữ lịch sử, nên hầu hết mọi thứ đều khôi phục được:</p>
+<ul>
+<li>File đã commit bị xoá nhầm: <code>git restore --source=HEAD~1 tên-file</code> hoặc xem <code>git log -- tên-file</code> để tìm commit cũ.</li>
+<li>Đã push một commit sai, chưa ai dùng: tạo commit mới để hoàn tác, thay vì xoá lịch sử. Lệnh <code>git revert &lt;mã-commit&gt;</code> làm đúng việc này.</li>
+</ul>
+<aside class="callout callout-warn" aria-label="Cảnh báo"><p class="callout-label">Cảnh báo</p>
+<p>Tránh <code>git push --force</code> lên nhánh chung. Nếu bắt buộc phải dùng, đó là việc của người có quyền và phải báo cho nhóm trước.</p>
+</aside>
+<h2 id="van-khong-giai-quyet-duoc">Vẫn không giải quyết được</h2>
+<p>Chuẩn bị ba thông tin rồi hỏi chủ dự án: lệnh vừa chạy, toàn bộ thông báo lỗi, và kết quả của <code>git status</code>. Thông tin này thường đủ để tìm nguyên nhân nhanh.</p>
+<p>Tiếp theo: <a href="10-bao-mat.html">bảo mật khi làm việc</a>.</p>
+
+</article>
+<nav class="pager" aria-label="Chuyển chương"><a class="prev" href="08-lam-viec-hieu-qua.html"><span>← Trước</span>Các cách làm việc hiệu quả</a><a class="next" href="10-bao-mat.html"><span>Tiếp →</span>Bảo mật khi làm việc</a></nav>
+</main>
+<aside class="toc" aria-label="Mục trong trang"><p class="toc-title">Trong trang này</p><ul><li class="d2"><a href="#push-bi-tu-choi-quot-rejected-quot-hoac-quot-fetch-first-quot">Push bị từ chối: &quot;rejected&quot; hoặc &quot;fetch first&quot;</a></li><li class="d2"><a href="#xung-dot-conflict">Xung đột (conflict)</a></li><li class="d2"><a href="#ci-do-o-buoc-quot-ban-dist-phai-khop-quot">CI đỏ ở bước &quot;Bản dist/ phải khớp&quot;</a></li><li class="d2"><a href="#ci-do-o-buoc-kiem-thu">CI đỏ ở bước kiểm thử</a></li><li class="d2"><a href="#npm-ci-bao-loi-ve-lockfile">npm ci báo lỗi về lockfile</a></li><li class="d2"><a href="#cong-8124-da-bi-chiem">Cổng 8124 đã bị chiếm</a></li><li class="d2"><a href="#thay-doi-o-khap-noi-crlf-lf">Thay đổi ở khắp nơi (CRLF / LF)</a></li><li class="d2"><a href="#lo-commit-file-bi-mat">Lỡ commit file bí mật</a></li><li class="d2"><a href="#lo-xoa-nham-noi-dung">Lỡ xoá nhầm nội dung</a></li><li class="d2"><a href="#van-khong-giai-quyet-duoc">Vẫn không giải quyết được</a></li></ul></aside>
+</div>
+<footer class="foot">Nguồn: <code>tutorial/content/</code>. Sau khi sửa, chạy <code>npm run tutorial</code> để xem thử và <code>npm run build</code> để cập nhật trang trên site.</footer>
+</body>
+</html>

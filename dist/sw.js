@@ -1,8 +1,8 @@
 // Service worker của site: để dùng offline. Sinh tự động bởi site/build.mjs.
 // Bản cache gắn với mã build, nên mỗi lần deploy là một bộ cache mới; bộ cũ bị xoá khi kích hoạt.
-const BUILD = 'd64dab3cc154';
+const BUILD = 'b5b2d7788cdf';
 const CACHE = 'sf-' + BUILD;
-const PRECACHE = ["/","/404.html","/physic/","/physic/index.html","/tai-khoan/","/quyen-rieng-tu/","/tieng-anh-chuyen-nganh-doc/","/tieng-anh-chuyen-nganh-nghe/","/tieng-trung-doc-viet/","/tieng-trung-noi/","/tieng-trung-nghe/","/kinh-te-luong/","/nguyen-li-ke-toan/","/quan-he-kinh-te-quoc-te/","/assets/boot.js","/assets/chunk-JWHQMGR2.js","/assets/chunk-NUP2XZKH.js","/assets/firebase-sdk.js","/assets/styles.css"];
+const PRECACHE = ["/","/404.html","/physic/","/physic/index.html","/tai-khoan/","/quyen-rieng-tu/","/tieng-anh-chuyen-nganh-doc/","/tieng-anh-chuyen-nganh-nghe/","/tieng-trung-doc-viet/","/tieng-trung-noi/","/tieng-trung-nghe/","/kinh-te-luong/","/nguyen-li-ke-toan/","/quan-he-kinh-te-quoc-te/","/huong-dan/00-gioi-thieu.html","/huong-dan/01-chuan-bi.html","/huong-dan/02-tai-ve-may.html","/huong-dan/03-upload-tren-web.html","/huong-dan/04-github-desktop.html","/huong-dan/05-git-dong-lenh.html","/huong-dan/06-nhanh-va-pull-request.html","/huong-dan/07-quy-trinh-du-an.html","/huong-dan/08-lam-viec-hieu-qua.html","/huong-dan/09-su-co-thuong-gap.html","/huong-dan/10-bao-mat.html","/huong-dan/11-thuat-ngu.html","/huong-dan/","/huong-dan/assets/tutorial.css","/assets/boot.js","/assets/chunk-JWHQMGR2.js","/assets/chunk-NUP2XZKH.js","/assets/firebase-sdk.js","/assets/styles.css"];
 
 self.addEventListener('install', event => {
   event.waitUntil(

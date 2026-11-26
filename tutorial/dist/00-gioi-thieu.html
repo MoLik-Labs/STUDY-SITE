@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bắt đầu từ đâu: dự án, Git và GitHub — Hướng dẫn làm việc với STUDY-SITE</title>
+<meta name="description" content="Trang này giải thích dự án STUDY-SITE là gì, các khái niệm cơ bản (repo, commit, nhánh, push), và bạn sẽ làm được gì sau khi đọc hết hướng dẫn.">
+<link rel="stylesheet" href="assets/tutorial.css">
+</head>
+<body>
+<a class="skip" href="#main">Bỏ qua menu</a>
+<header class="top">
+  <a class="brand" href="index.html">Hướng dẫn làm việc với STUDY-SITE</a>
+  <nav class="ext" aria-label="Liên kết">
+    <a href="/">Về trang học</a>
+    <a href="https://github.com/MoLik-Labs/STUDY-SITE" rel="noopener">GitHub</a>
+  </nav>
+</header>
+<div class="layout">
+<nav class="side" aria-label="Các chương">
+  <p class="side-title">Các chương</p>
+  <ol>
+<li><a href="00-gioi-thieu.html" class="on" aria-current="page"><span class="num">00</span>Bắt đầu từ đâu: dự án, Git và GitHub</a></li>
+<li><a href="01-chuan-bi.html"><span class="num">01</span>Chuẩn bị máy và tài khoản</a></li>
+<li><a href="02-tai-ve-may.html"><span class="num">02</span>Tải dự án về máy và chạy thử</a></li>
+<li><a href="03-upload-tren-web.html"><span class="num">03</span>Upload file lên GitHub bằng trình duyệt</a></li>
+<li><a href="04-github-desktop.html"><span class="num">04</span>Commit và push bằng GitHub Desktop</a></li>
+<li><a href="05-git-dong-lenh.html"><span class="num">05</span>Làm việc với dòng lệnh Git</a></li>
+<li><a href="06-nhanh-va-pull-request.html"><span class="num">06</span>Làm việc theo nhánh và pull request</a></li>
+<li><a href="07-quy-trinh-du-an.html"><span class="num">07</span>Quy trình riêng của STUDY-SITE</a></li>
+<li><a href="08-lam-viec-hieu-qua.html"><span class="num">08</span>Các cách làm việc hiệu quả</a></li>
+<li><a href="09-su-co-thuong-gap.html"><span class="num">09</span>Xử lý sự cố thường gặp</a></li>
+<li><a href="10-bao-mat.html"><span class="num">10</span>Bảo mật khi làm việc</a></li>
+<li><a href="11-thuat-ngu.html"><span class="num">11</span>Thuật ngữ thường gặp</a></li>
+  </ol>
+</nav>
+<main id="main">
+<article>
+<h1>Bắt đầu từ đâu: dự án, Git và GitHub</h1>
+<p class="lead">Trang này giải thích dự án STUDY-SITE là gì, các khái niệm cơ bản (repo, commit, nhánh, push), và bạn sẽ làm được gì sau khi đọc hết hướng dẫn.</p>
+<p>Trang này giải thích <strong>dự án STUDY-SITE là gì</strong>, các khái niệm cơ bản (repo, commit, nhánh, push), và bạn sẽ làm được gì sau khi đọc hết hướng dẫn.</p>
+<h2 id="du-an-nay-la-gi">Dự án này là gì?</h2>
+<p>STUDY-SITE là một trang web miễn phí giúp lập kế hoạch học: lịch tuần, việc cần làm, bấm giờ Pomodoro, ôn tập bằng thẻ ghi nhớ, và tài liệu của 8 môn năm 2. Trang chạy trên <strong>Cloudflare Workers</strong>. Đăng nhập và đồng bộ dùng <strong>Firebase</strong> ở gói miễn phí.</p>
+<p>Mã nguồn nằm trên GitHub tại <code>MoLik-Labs/STUDY-SITE</code>. Toàn bộ lịch sử thay đổi, ai sửa gì và lúc nào, đều được ghi lại.</p>
+<h2 id="bon-khai-niem-cot-loi">Bốn khái niệm cốt lõi</h2>
+<p>Đọc kỹ phần này một lần. Các chương sau đều dựa trên nó.</p>
+<h3 id="repository-repo">Repository (repo)</h3>
+<p>Repo là <strong>thư mục dự án cộng với toàn bộ lịch sử của nó</strong>. Repo có hai bản:</p>
+<ul>
+<li><strong>Trên máy bạn</strong>: thư mục bạn mở bằng VS Code hoặc Finder/File Explorer.</li>
+<li><strong>Trên GitHub</strong>: bản chung mà mọi người cùng dùng, mở bằng trình duyệt.</li>
+</ul>
+<h3 id="commit">Commit</h3>
+<p>Commit là <strong>một ảnh chụp có ghi chú</strong> của dự án tại một thời điểm, kiểu &quot;tôi đã sửa những file này vì lý do này&quot;. Mỗi commit có mã riêng, tác giả, thời gian và một thông điệp mô tả.</p>
+<h3 id="nhanh-branch">Nhánh (branch)</h3>
+<p>Nhánh là <strong>một dòng thay đổi song song</strong>. Nhánh <code>main</code> là bản chính thức. Khi làm việc mới, bạn tạo nhánh riêng, làm xong rồi mới gộp vào <code>main</code>. Nhờ vậy việc đang dở không làm hỏng bản chính.</p>
+<h3 id="push-va-pull">Push và pull</h3>
+<ul>
+<li><strong>Push</strong>: đẩy commit trên máy bạn lên GitHub.</li>
+<li><strong>Pull</strong>: kéo commit mới nhất từ GitHub về máy bạn.</li>
+</ul>
+<h2 id="vong-lam-viec-co-ban">Vòng làm việc cơ bản</h2>
+<p>Hầu như mọi việc đều theo một vòng lặp:</p>
+<ol>
+<li><strong>Kéo</strong> bản mới nhất về (<code>pull</code>).</li>
+<li><strong>Sửa</strong> file.</li>
+<li><strong>Kiểm tra</strong> thay đổi (<code>status</code>, <code>diff</code>).</li>
+<li><strong>Ghi lại</strong> bằng commit.</li>
+<li><strong>Đẩy</strong> lên GitHub (<code>push</code>).</li>
+</ol>
+<p>Các chương sau đi qua từng bước, bằng ba cách: giao diện web, GitHub Desktop và dòng lệnh.</p>
+<h2 id="cau-truc-thu-muc-du-an">Cấu trúc thư mục dự án</h2>
+<p>Bạn không cần nhớ hết, nhưng nên biết những thư mục chính:</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Thư mục / file</th>
+<th>Nội dung</th>
+<th>Có nên sửa tay không?</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>site/</code></td>
+<td>Khung trang web, logic, giao diện, kiểm thử</td>
+<td>Có. Đây là nơi làm việc hằng ngày.</td>
+</tr>
+<tr>
+<td><code>site/src/</code></td>
+<td><code>app.js</code>, <code>logic.js</code>, <code>cloud.js</code>, <code>courses.js</code></td>
+<td>Có</td>
+</tr>
+<tr>
+<td><code>site/test/</code></td>
+<td>Các bài kiểm thử</td>
+<td>Có, khi thêm tính năng</td>
+</tr>
+<tr>
+<td><code>src/</code></td>
+<td>Mã của bản Vật lí (app riêng)</td>
+<td>Chỉ khi làm việc với Vật lí</td>
+</tr>
+<tr>
+<td><code>docs/</code></td>
+<td>Tài liệu kỹ thuật (Firebase, Cloudflare, API)</td>
+<td>Có</td>
+</tr>
+<tr>
+<td><code>dist/</code></td>
+<td>Bản đã dựng sẵn, Cloudflare dùng để triển khai</td>
+<td><strong>Không sửa tay.</strong> Luôn tạo bằng <code>npm run build</code>.</td>
+</tr>
+<tr>
+<td><code>tutorial/</code></td>
+<td>Chính web hướng dẫn này</td>
+<td>Có</td>
+</tr>
+<tr>
+<td><code>wrangler.jsonc</code></td>
+<td>Cấu hình Cloudflare Workers</td>
+<td>Cẩn thận</td>
+</tr>
+<tr>
+<td><code>firestore.rules</code></td>
+<td>Quy tắc bảo mật dữ liệu</td>
+<td>Cẩn thận, phải kiểm tra kỹ</td>
+</tr>
+<tr>
+<td><code>package.json</code></td>
+<td>Danh sách thư viện và lệnh (<code>npm run ...</code>)</td>
+<td>Cẩn thận</td>
+</tr>
+</tbody></table></div>
+<aside class="callout callout-note" aria-label="Lưu ý"><p class="callout-label">Lưu ý</p>
+<p><code>dist/</code> được commit cùng mã nguồn một cách có chủ đích. Chương 07 giải thích vì sao.</p>
+</aside>
+<h2 id="ban-se-lam-duoc-gi-sau-khi-doc">Bạn sẽ làm được gì sau khi đọc</h2>
+<ul>
+<li>Tải dự án về máy và chạy thử trên trình duyệt.</li>
+<li>Upload file lên GitHub chỉ bằng chuột, không cần lệnh.</li>
+<li>Commit và push bằng GitHub Desktop hoặc dòng lệnh.</li>
+<li>Làm việc theo nhánh và pull request để không làm hỏng bản chính.</li>
+<li>Chọn cách làm việc phù hợp: trình duyệt, Codespaces, VS Code hoặc terminal.</li>
+<li>Tránh các lỗi thường gặp và không làm lộ khoá bí mật.</li>
+</ul>
+<p>Tiếp theo: <a href="01-chuan-bi.html">chuẩn bị máy và tài khoản</a>.</p>
+
+</article>
+<nav class="pager" aria-label="Chuyển chương"><a class="prev" href="index.html"><span>← Trước</span>Trang tổng quan</a><a class="next" href="01-chuan-bi.html"><span>Tiếp →</span>Chuẩn bị máy và tài khoản</a></nav>
+</main>
+<aside class="toc" aria-label="Mục trong trang"><p class="toc-title">Trong trang này</p><ul><li class="d2"><a href="#du-an-nay-la-gi">Dự án này là gì?</a></li><li class="d2"><a href="#bon-khai-niem-cot-loi">Bốn khái niệm cốt lõi</a></li><li class="d3"><a href="#repository-repo">Repository (repo)</a></li><li class="d3"><a href="#commit">Commit</a></li><li class="d3"><a href="#nhanh-branch">Nhánh (branch)</a></li><li class="d3"><a href="#push-va-pull">Push và pull</a></li><li class="d2"><a href="#vong-lam-viec-co-ban">Vòng làm việc cơ bản</a></li><li class="d2"><a href="#cau-truc-thu-muc-du-an">Cấu trúc thư mục dự án</a></li><li class="d2"><a href="#ban-se-lam-duoc-gi-sau-khi-doc">Bạn sẽ làm được gì sau khi đọc</a></li></ul></aside>
+</div>
+<footer class="foot">Nguồn: <code>tutorial/content/</code>. Sau khi sửa, chạy <code>npm run tutorial</code> để xem thử và <code>npm run build</code> để cập nhật trang trên site.</footer>
+</body>
+</html>

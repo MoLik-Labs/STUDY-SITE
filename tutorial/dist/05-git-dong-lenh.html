@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Làm việc với dòng lệnh Git — Hướng dẫn làm việc với STUDY-SITE</title>
+<meta name="description" content="Dòng lệnh cho bạn kiểm soát chính xác nhất và chạy nhanh nhất khi đã quen. Chương này dạy vòng lệnh cơ bản, cách viết thông điệp commit tốt, và cách xử lý tình huống thường gặp.">
+<link rel="stylesheet" href="assets/tutorial.css">
+</head>
+<body>
+<a class="skip" href="#main">Bỏ qua menu</a>
+<header class="top">
+  <a class="brand" href="index.html">Hướng dẫn làm việc với STUDY-SITE</a>
+  <nav class="ext" aria-label="Liên kết">
+    <a href="/">Về trang học</a>
+    <a href="https://github.com/MoLik-Labs/STUDY-SITE" rel="noopener">GitHub</a>
+  </nav>
+</header>
+<div class="layout">
+<nav class="side" aria-label="Các chương">
+  <p class="side-title">Các chương</p>
+  <ol>
+<li><a href="00-gioi-thieu.html"><span class="num">00</span>Bắt đầu từ đâu: dự án, Git và GitHub</a></li>
+<li><a href="01-chuan-bi.html"><span class="num">01</span>Chuẩn bị máy và tài khoản</a></li>
+<li><a href="02-tai-ve-may.html"><span class="num">02</span>Tải dự án về máy và chạy thử</a></li>
+<li><a href="03-upload-tren-web.html"><span class="num">03</span>Upload file lên GitHub bằng trình duyệt</a></li>
+<li><a href="04-github-desktop.html"><span class="num">04</span>Commit và push bằng GitHub Desktop</a></li>
+<li><a href="05-git-dong-lenh.html" class="on" aria-current="page"><span class="num">05</span>Làm việc với dòng lệnh Git</a></li>
+<li><a href="06-nhanh-va-pull-request.html"><span class="num">06</span>Làm việc theo nhánh và pull request</a></li>
+<li><a href="07-quy-trinh-du-an.html"><span class="num">07</span>Quy trình riêng của STUDY-SITE</a></li>
+<li><a href="08-lam-viec-hieu-qua.html"><span class="num">08</span>Các cách làm việc hiệu quả</a></li>
+<li><a href="09-su-co-thuong-gap.html"><span class="num">09</span>Xử lý sự cố thường gặp</a></li>
+<li><a href="10-bao-mat.html"><span class="num">10</span>Bảo mật khi làm việc</a></li>
+<li><a href="11-thuat-ngu.html"><span class="num">11</span>Thuật ngữ thường gặp</a></li>
+  </ol>
+</nav>
+<main id="main">
+<article>
+<h1>Làm việc với dòng lệnh Git</h1>
+<p class="lead">Dòng lệnh cho bạn kiểm soát chính xác nhất và chạy nhanh nhất khi đã quen. Chương này dạy vòng lệnh cơ bản, cách viết thông điệp commit tốt, và cách xử lý tình huống thường gặp.</p>
+<p>Dòng lệnh cho bạn kiểm soát chính xác nhất và chạy nhanh nhất khi đã quen. Chương này dạy vòng lệnh cơ bản, cách viết thông điệp commit tốt, và cách xử lý tình huống thường gặp.</p>
+<h2 id="nam-lenh-cot-loi">Năm lệnh cốt lõi</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Lệnh</th>
+<th>Làm gì</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>git status</code></td>
+<td>Cho biết file nào đã đổi, đã thêm vào commit, hoặc chưa theo dõi</td>
+</tr>
+<tr>
+<td><code>git diff</code></td>
+<td>Xem chi tiết thay đổi chưa thêm vào commit</td>
+</tr>
+<tr>
+<td><code>git add &lt;file&gt;</code></td>
+<td>Thêm file vào danh sách sẽ commit (gọi là <em>staging</em>)</td>
+</tr>
+<tr>
+<td><code>git commit -m &quot;...&quot;</code></td>
+<td>Ghi lại các thay đổi đã staging thành một commit</td>
+</tr>
+<tr>
+<td><code>git push</code></td>
+<td>Đẩy commit lên GitHub</td>
+</tr>
+</tbody></table></div>
+<p>Và hai lệnh kéo về:</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Lệnh</th>
+<th>Làm gì</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>git pull</code></td>
+<td>Kéo thay đổi mới nhất từ GitHub về và gộp vào nhánh hiện tại</td>
+</tr>
+<tr>
+<td><code>git fetch</code></td>
+<td>Chỉ tải thông tin về, không gộp. An toàn để xem trước</td>
+</tr>
+</tbody></table></div>
+<h2 id="mot-phien-lam-viec-mau">Một phiên làm việc mẫu</h2>
+<p>Giả sử bạn sửa thông điệp trong một chương hướng dẫn:</p>
+<div class="codewrap"><pre><code class="language-bash"># 1. Bắt đầu: kéo bản mới nhất về
+git pull
+
+# 2. Sửa file bằng trình soạn thảo, rồi xem lại thay đổi
+git status
+git diff
+
+# 3. Thêm đúng file cần commit
+git add tutorial/content/05-git-dong-lenh.md
+
+# 4. Commit với thông điệp rõ ràng
+git commit -m &quot;Sửa ví dụ lệnh git pull trong chương 5&quot;
+
+# 5. Đẩy lên GitHub
+git push
+</code></pre></div>
+<aside class="callout callout-tip" aria-label="Mẹo"><p class="callout-label">Mẹo</p>
+<p>Dùng <code>git add tên-file</code> cho từng file thay vì <code>git add .</code>. Cách này tránh commit nhầm file không liên quan.</p>
+</aside>
+<h2 id="xem-lai-thay-doi-truoc-khi-commit">Xem lại thay đổi trước khi commit</h2>
+<p>Luôn xem <code>git diff</code> trước khi commit. Với thay đổi đã staging, dùng:</p>
+<div class="codewrap"><pre><code class="language-bash">git diff --staged
+</code></pre></div>
+<p>Nếu muốn bỏ thay đổi của một file chưa commit (cẩn thận, không hoàn tác được):</p>
+<div class="codewrap"><pre><code class="language-bash">git restore tên-file
+</code></pre></div>
+<p>Nếu đã <code>git add</code> nhầm mà chưa commit, bỏ khỏi danh sách staging mà giữ nguyên thay đổi:</p>
+<div class="codewrap"><pre><code class="language-bash">git restore --staged tên-file
+</code></pre></div>
+<h2 id="viet-thong-diep-commit-tot">Viết thông điệp commit tốt</h2>
+<p>Một thông điệp tốt trả lời được câu hỏi &quot;commit này làm gì, và vì sao&quot;. Quy ước đơn giản cho dự án:</p>
+<ul>
+<li><strong>Một dòng tiêu đề</strong>, dưới khoảng 70 ký tự, bắt đầu bằng động từ: <code>Thêm</code>, <code>Sửa</code>, <code>Bỏ</code>, <code>Đổi</code>.</li>
+<li>Nếu cần, thêm một dòng trống và vài dòng giải thích <strong>vì sao</strong>.</li>
+</ul>
+<p>Ví dụ tốt:</p>
+<div class="codewrap"><pre><code>Sửa lỗi ngày trong lịch tuần khi chuyển múi giờ
+
+Ngày được tính theo UTC nên lệch một ngày với người dùng Việt Nam.
+Dùng múi giờ +7 khi tính hôm nay.
+</code></pre></div>
+<p>Ví dụ nên tránh: <code>sửa</code>, <code>update</code>, <code>abc</code>, <code>fix</code> không kèm nội dung. Sáu tháng sau, bạn sẽ không nhớ chúng nghĩa là gì.</p>
+<h2 id="xem-lich-su">Xem lịch sử</h2>
+<div class="codewrap"><pre><code class="language-bash">git log --oneline -10
+</code></pre></div>
+<p>In ra 10 commit gần nhất, mỗi commit một dòng. Muốn xem cả nhánh dưới dạng cây:</p>
+<div class="codewrap"><pre><code class="language-bash">git log --oneline --graph --all -20
+</code></pre></div>
+<p>Muốn xem ai sửa dòng nào trong một file:</p>
+<div class="codewrap"><pre><code class="language-bash">git blame tên-file
+</code></pre></div>
+<h2 id="tam-cat-viec-dang-lam">Tạm cất việc đang làm</h2>
+<p>Đang sửa dở mà cần chuyển sang việc khác gấp? Cất tạm bằng <code>stash</code>:</p>
+<div class="codewrap"><pre><code class="language-bash">git stash push -m &quot;dang sua chuong 6&quot;
+# ... làm việc khác ...
+git stash pop
+</code></pre></div>
+<p><code>git stash pop</code> lấy lại thay đổi đã cất. Dùng <code>git stash list</code> để xem các phần đã cất.</p>
+<h2 id="cac-lenh-can-than-trong">Các lệnh cần thận trọng</h2>
+<ul>
+<li><code>git push --force</code>: ghi đè lịch sử trên GitHub, có thể làm mất công việc của người khác. <strong>Tránh dùng.</strong> Nếu thật cần, dùng <code>git push --force-with-lease</code> và báo trước cho cả nhóm.</li>
+<li><code>git reset --hard</code>: xoá mọi thay đổi chưa commit, không khôi phục được. Đừng dùng khi chưa chắc.</li>
+<li><code>git commit --amend</code>: sửa commit gần nhất. An toàn <strong>trước khi push</strong>. Sau khi đã push thì không nên.</li>
+</ul>
+<p>Tiếp theo: <a href="06-nhanh-va-pull-request.html">làm việc theo nhánh và pull request</a>.</p>
+
+</article>
+<nav class="pager" aria-label="Chuyển chương"><a class="prev" href="04-github-desktop.html"><span>← Trước</span>Commit và push bằng GitHub Desktop</a><a class="next" href="06-nhanh-va-pull-request.html"><span>Tiếp →</span>Làm việc theo nhánh và pull request</a></nav>
+</main>
+<aside class="toc" aria-label="Mục trong trang"><p class="toc-title">Trong trang này</p><ul><li class="d2"><a href="#nam-lenh-cot-loi">Năm lệnh cốt lõi</a></li><li class="d2"><a href="#mot-phien-lam-viec-mau">Một phiên làm việc mẫu</a></li><li class="d2"><a href="#xem-lai-thay-doi-truoc-khi-commit">Xem lại thay đổi trước khi commit</a></li><li class="d2"><a href="#viet-thong-diep-commit-tot">Viết thông điệp commit tốt</a></li><li class="d2"><a href="#xem-lich-su">Xem lịch sử</a></li><li class="d2"><a href="#tam-cat-viec-dang-lam">Tạm cất việc đang làm</a></li><li class="d2"><a href="#cac-lenh-can-than-trong">Các lệnh cần thận trọng</a></li></ul></aside>
+</div>
+<footer class="foot">Nguồn: <code>tutorial/content/</code>. Sau khi sửa, chạy <code>npm run tutorial</code> để xem thử và <code>npm run build</code> để cập nhật trang trên site.</footer>
+</body>
+</html>

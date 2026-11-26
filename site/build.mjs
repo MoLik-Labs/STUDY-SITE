@@ -1,7 +1,7 @@
 // Dựng dist/ — thư mục duy nhất mà Cloudflare Workers deploy.
 // Chạy: node site/build.mjs [--out thư-mục]      (mặc định: dist/)
 //
-// Gồm: khung site (lịch tuần, 8 môn, bấm giờ, tài khoản, quyền riêng tư) được esbuild gom thành
+// Gồm: web hướng dẫn tại /huong-dan/ (tutorial/build.mjs), khung site (lịch tuần, 8 môn, bấm giờ, tài khoản, quyền riêng tư) được esbuild gom thành
 // app shell + các chunk tải lười (Firebase chỉ tải khi cần), bản Vật lí tại /physic/ (do src/build.py
 // --physics-only sinh), _headers với CSP băm, sw.js, _worker.mjs, 404.html.
 // Cấu hình Firebase KHÔNG nằm trong dist/: Worker đọc biến môi trường lúc chạy (xem /assets/config.js).
@@ -13,6 +13,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { build as esbuild } from 'esbuild';
+import { buildTutorial } from '../tutorial/build.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..');
@@ -162,6 +163,10 @@ export async function buildSite({ out = DEFAULT_OUT } = {}) {
   await writeFile(path.join(out, '404.html'), renderPage(shell, {
     path: '/404', title: 'Không tìm thấy trang — Kế hoạch học', desc: 'Trang này không tồn tại.', page: 'notfound',
   }));
+  // Web hướng dẫn GitHub (tĩnh, không script) tại /huong-dan/; nguồn ở tutorial/content/.
+  const tutorialOut = path.join(out, 'huong-dan');
+  await buildTutorial({ out: tutorialOut });
+  const tutorialPages = (await readdir(tutorialOut)).filter(f => f.endsWith('.html')).map(f => '/huong-dan/' + (f === 'index.html' ? '' : f));
 
   const physicsCsp = await buildPhysics(out);
   await cp(path.join(ROOT, 'src', 'fonts'), path.join(out, 'physic', 'fonts'), {
@@ -189,7 +194,7 @@ export async function buildSite({ out = DEFAULT_OUT } = {}) {
 
   // Danh sách precache: mọi trang, bản Vật lí và mọi tệp trong assets/ (gồm chunk Firebase).
   const assetFiles = (await readdir(path.join(out, 'assets'))).filter(f => /\.(js|css)$/.test(f)).map(f => '/assets/' + f);
-  const precache = ['/', '/404.html', '/physic/', '/physic/index.html', ...routes.map(r => r.path), ...assetFiles];
+  const precache = ['/', '/404.html', '/physic/', '/physic/index.html', ...routes.map(r => r.path), ...tutorialPages, '/huong-dan/assets/tutorial.css', ...assetFiles];
   const sw = (await readFile(path.join(SRC, 'sw.template.js'), 'utf8'))
     .replace('__BUILD_ID__', build)
     .replace('__PRECACHE__', JSON.stringify([...new Set(precache)]));

@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quy trình riêng của STUDY-SITE — Hướng dẫn làm việc với STUDY-SITE</title>
+<meta name="description" content="Chương này nói về những điều đặc thù của dự án này, và vì sao chúng khác với một dự án web thông thường. Đọc kỹ trước khi sửa mã nguồn lần đầu.">
+<link rel="stylesheet" href="assets/tutorial.css">
+</head>
+<body>
+<a class="skip" href="#main">Bỏ qua menu</a>
+<header class="top">
+  <a class="brand" href="index.html">Hướng dẫn làm việc với STUDY-SITE</a>
+  <nav class="ext" aria-label="Liên kết">
+    <a href="/">Về trang học</a>
+    <a href="https://github.com/MoLik-Labs/STUDY-SITE" rel="noopener">GitHub</a>
+  </nav>
+</header>
+<div class="layout">
+<nav class="side" aria-label="Các chương">
+  <p class="side-title">Các chương</p>
+  <ol>
+<li><a href="00-gioi-thieu.html"><span class="num">00</span>Bắt đầu từ đâu: dự án, Git và GitHub</a></li>
+<li><a href="01-chuan-bi.html"><span class="num">01</span>Chuẩn bị máy và tài khoản</a></li>
+<li><a href="02-tai-ve-may.html"><span class="num">02</span>Tải dự án về máy và chạy thử</a></li>
+<li><a href="03-upload-tren-web.html"><span class="num">03</span>Upload file lên GitHub bằng trình duyệt</a></li>
+<li><a href="04-github-desktop.html"><span class="num">04</span>Commit và push bằng GitHub Desktop</a></li>
+<li><a href="05-git-dong-lenh.html"><span class="num">05</span>Làm việc với dòng lệnh Git</a></li>
+<li><a href="06-nhanh-va-pull-request.html"><span class="num">06</span>Làm việc theo nhánh và pull request</a></li>
+<li><a href="07-quy-trinh-du-an.html" class="on" aria-current="page"><span class="num">07</span>Quy trình riêng của STUDY-SITE</a></li>
+<li><a href="08-lam-viec-hieu-qua.html"><span class="num">08</span>Các cách làm việc hiệu quả</a></li>
+<li><a href="09-su-co-thuong-gap.html"><span class="num">09</span>Xử lý sự cố thường gặp</a></li>
+<li><a href="10-bao-mat.html"><span class="num">10</span>Bảo mật khi làm việc</a></li>
+<li><a href="11-thuat-ngu.html"><span class="num">11</span>Thuật ngữ thường gặp</a></li>
+  </ol>
+</nav>
+<main id="main">
+<article>
+<h1>Quy trình riêng của STUDY-SITE</h1>
+<p class="lead">Chương này nói về những điều đặc thù của dự án này, và vì sao chúng khác với một dự án web thông thường. Đọc kỹ trước khi sửa mã nguồn lần đầu.</p>
+<h2 id="tom-tat-quy-trinh">Tóm tắt quy trình</h2>
+<div class="codewrap"><pre><code>sửa site/ hoặc tutorial/
+   ↓
+npm run build        ← dựng lại dist/
+   ↓
+npm test             ← kiểm thử, phải fail 0
+   ↓
+git add ... (cả dist/)
+   ↓
+git commit, git push
+   ↓
+CI kiểm tra lại: dist/ khớp nguồn, test xanh, cấu hình Cloudflare hợp lệ
+</code></pre></div>
+<h2 id="vi-sao-phai-commit-ca-dist">Vì sao phải commit cả dist/?</h2>
+<p><code>dist/</code> là bản đã dựng sẵn, và Cloudflare Workers triển khai trực tiếp từ thư mục này. Dự án commit nó vì Workers Builds của repo này <strong>không tự chạy build</strong>. Nếu <code>dist/</code> không nằm trong repo, sẽ không có gì để triển khai. Hệ quả tốt kèm theo: mỗi thay đổi trong <code>dist/</code> đều hiện trong pull request, nên ai cũng thấy chính xác cái gì sẽ lên mạng.</p>
+<p>Hệ quả: <strong>nếu bạn sửa mã nguồn mà quên dựng lại <code>dist/</code>, CI sẽ đỏ</strong> ở bước <em>Bản dist/ phải khớp với bản đã commit</em>. Cách sửa là chạy <code>npm run build</code>, thêm <code>dist/</code> vào commit, rồi push lại.</p>
+<aside class="callout callout-rule" aria-label="Quy tắc"><p class="callout-label">Quy tắc</p>
+<p>Không sửa tay file trong <code>dist/</code>. Sửa nguồn trong <code>site/</code> hoặc <code>tutorial/</code>, rồi dựng lại.</p>
+</aside>
+<h2 id="lenh-npm-ci-lam-gi-ngoai-viec-cai-thu-vien">Lệnh <code>npm ci</code> làm gì ngoài việc cài thư viện?</h2>
+<p>Trong <code>package.json</code> có một hook tên <code>prepare</code>. Nó tự chạy sau <code>npm ci</code> và dựng lại <code>dist/</code> từ nguồn. Nếu sau khi cài bạn thấy <code>git status</code> có thay đổi trong <code>dist/</code>, nghĩa là bản commit trước chưa khớp nguồn. Hãy báo cho chủ dự án, hoặc commit phần thay đổi đó nếu bạn chắc đúng.</p>
+<h2 id="cac-buoc-kiem-tra-ci-chay">Các bước kiểm tra CI chạy</h2>
+<p>Theo <code>.github/workflows/check.yml</code>, mỗi PR và mỗi lần push lên <code>main</code> chạy:</p>
+<ol>
+<li><strong>Cài đặt và dựng <code>dist/</code></strong>: <code>npm ci</code>.</li>
+<li><strong>Kiểm tra khớp</strong>: <code>git diff --exit-code -- dist/</code>. Nếu <code>dist/</code> không khớp nguồn, bước này đỏ.</li>
+<li><strong>Kiểm thử</strong>: <code>npm test</code>. Gồm dữ liệu, logic, giao diện, build, Worker, chính sách bảo mật nội dung (CSP), và tài liệu.</li>
+<li><strong>Kiểm tra cấu hình Cloudflare</strong>: chạy <code>wrangler deploy --dry-run</code>. Không triển khai thật, chỉ kiểm tra cấu hình có hợp lệ.</li>
+</ol>
+<p>Bạn xem kết quả ở tab <strong>Checks</strong> của PR. Bấm vào một bước đỏ để đọc lỗi.</p>
+<h2 id="trien-khai-len-mang">Triển khai lên mạng</h2>
+<p>Cloudflare Workers Builds đã được kết nối với repo. Xem trạng thái ở tab <strong>Checks</strong> của PR, hoặc trong trang Workers của tài khoản Cloudflare.</p>
+<p>Lệnh triển khai thủ công chỉ dành cho người có quyền Cloudflare:</p>
+<div class="codewrap"><pre><code class="language-bash">npm run deploy
+</code></pre></div>
+<p>Lệnh này dựng lại và chạy <code>wrangler deploy</code>. Đừng chạy nếu bạn chưa được chủ dự án cho phép.</p>
+<h2 id="nhung-thu-muc-ban-khong-nen-chinh-tay">Những thư mục bạn không nên chỉnh tay</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Thư mục</th>
+<th>Lý do</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>dist/</code></td>
+<td>Sinh tự động từ <code>site/</code> và <code>src/</code>. Sửa tay sẽ bị ghi đè hoặc làm CI đỏ.</td>
+</tr>
+<tr>
+<td><code>package-lock.json</code></td>
+<td>Khoá phiên bản thư viện. Chỉ đổi khi thêm hoặc nâng cấp thư viện bằng <code>npm install</code>.</td>
+</tr>
+<tr>
+<td><code>node_modules/</code></td>
+<td>Thư viện tải về máy. Không bao giờ commit (đã có trong <code>.gitignore</code>).</td>
+</tr>
+</tbody></table></div>
+<h2 id="cau-truc-de-them-tinh-nang">Cấu trúc để thêm tính năng</h2>
+<p>Khi thêm một tính năng vào <code>site/</code>, nên đi theo thứ tự này:</p>
+<ol>
+<li><strong>Logic thuần</strong> trong <code>site/src/logic.js</code>: hàm nhận dữ liệu, trả kết quả, không đụng giao diện. Dễ kiểm thử nhất.</li>
+<li><strong>Test</strong> trong <code>site/test/logic.test.mjs</code> cho hàm đó.</li>
+<li><strong>Giao diện</strong> trong <code>site/src/app.js</code>, kết nối với logic.</li>
+<li><strong>Test giao diện</strong> trong <code>site/test/app.test.mjs</code> nếu cần.</li>
+<li><strong>Dựng lại</strong> với <code>npm run build</code>, rồi <code>npm test</code>.</li>
+</ol>
+<p>Thứ tự này giúp lỗi nằm đúng chỗ, và giữ logic có thể kiểm thử mà không cần trình duyệt.</p>
+<h2 id="kiem-tra-truoc-khi-push-checklist">Kiểm tra trước khi push (checklist)</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Đã <code>git pull</code>, đang ở đúng nhánh.</li>
+<li><input disabled="" type="checkbox"> Đã <code>npm run build</code>.</li>
+<li><input disabled="" type="checkbox"> <code>npm test</code> báo <code>fail 0</code>.</li>
+<li><input disabled="" type="checkbox"> <code>git status</code> chỉ còn những file mình định commit.</li>
+<li><input disabled="" type="checkbox"> Không có file <code>.env</code>, khoá JSON, hay mật khẩu trong danh sách.</li>
+<li><input disabled="" type="checkbox"> Thông điệp commit rõ ràng.</li>
+</ul>
+<p>Tiếp theo: <a href="08-lam-viec-hieu-qua.html">các cách làm việc hiệu quả</a>.</p>
+
+</article>
+<nav class="pager" aria-label="Chuyển chương"><a class="prev" href="06-nhanh-va-pull-request.html"><span>← Trước</span>Làm việc theo nhánh và pull request</a><a class="next" href="08-lam-viec-hieu-qua.html"><span>Tiếp →</span>Các cách làm việc hiệu quả</a></nav>
+</main>
+<aside class="toc" aria-label="Mục trong trang"><p class="toc-title">Trong trang này</p><ul><li class="d2"><a href="#tom-tat-quy-trinh">Tóm tắt quy trình</a></li><li class="d2"><a href="#vi-sao-phai-commit-ca-dist">Vì sao phải commit cả dist/?</a></li><li class="d2"><a href="#lenh-npm-ci-lam-gi-ngoai-viec-cai-thu-vien">Lệnh npm ci làm gì ngoài việc cài thư viện?</a></li><li class="d2"><a href="#cac-buoc-kiem-tra-ci-chay">Các bước kiểm tra CI chạy</a></li><li class="d2"><a href="#trien-khai-len-mang">Triển khai lên mạng</a></li><li class="d2"><a href="#nhung-thu-muc-ban-khong-nen-chinh-tay">Những thư mục bạn không nên chỉnh tay</a></li><li class="d2"><a href="#cau-truc-de-them-tinh-nang">Cấu trúc để thêm tính năng</a></li><li class="d2"><a href="#kiem-tra-truoc-khi-push-checklist">Kiểm tra trước khi push (checklist)</a></li></ul></aside>
+</div>
+<footer class="foot">Nội dung nằm trong <code>tutorial/content/</code>. Sau khi sửa, chạy <code>npm run build</code> rồi <code>npm run serve</code> để xem thử.</footer>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hướng dẫn làm việc với STUDY-SITE</title>
+<meta name="description" content="Hướng dẫn từng bước: tải dự án, upload và push lên GitHub, làm việc theo nhánh, và các cách làm việc hiệu quả.">
+<link rel="stylesheet" href="assets/tutorial.css">
+</head>
+<body>
+<a class="skip" href="#main">Bỏ qua menu</a>
+<header class="top">
+  <a class="brand" href="index.html">Hướng dẫn làm việc với STUDY-SITE</a>
+  <nav class="ext" aria-label="Liên kết">
+    <a href="/">Về trang học</a>
+    <a href="https://github.com/MoLik-Labs/STUDY-SITE" rel="noopener">GitHub</a>
+  </nav>
+</header>
+<div class="layout">
+<nav class="side" aria-label="Các chương">
+  <p class="side-title">Các chương</p>
+  <ol>
+<li><a href="00-gioi-thieu.html"><span class="num">00</span>Bắt đầu từ đâu: dự án, Git và GitHub</a></li>
+<li><a href="01-chuan-bi.html"><span class="num">01</span>Chuẩn bị máy và tài khoản</a></li>
+<li><a href="02-tai-ve-may.html"><span class="num">02</span>Tải dự án về máy và chạy thử</a></li>
+<li><a href="03-upload-tren-web.html"><span class="num">03</span>Upload file lên GitHub bằng trình duyệt</a></li>
+<li><a href="04-github-desktop.html"><span class="num">04</span>Commit và push bằng GitHub Desktop</a></li>
+<li><a href="05-git-dong-lenh.html"><span class="num">05</span>Làm việc với dòng lệnh Git</a></li>
+<li><a href="06-nhanh-va-pull-request.html"><span class="num">06</span>Làm việc theo nhánh và pull request</a></li>
+<li><a href="07-quy-trinh-du-an.html"><span class="num">07</span>Quy trình riêng của STUDY-SITE</a></li>
+<li><a href="08-lam-viec-hieu-qua.html"><span class="num">08</span>Các cách làm việc hiệu quả</a></li>
+<li><a href="09-su-co-thuong-gap.html"><span class="num">09</span>Xử lý sự cố thường gặp</a></li>
+<li><a href="10-bao-mat.html"><span class="num">10</span>Bảo mật khi làm việc</a></li>
+<li><a href="11-thuat-ngu.html"><span class="num">11</span>Thuật ngữ thường gặp</a></li>
+  </ol>
+</nav>
+<main id="main">
+<article>
+<h1>Hướng dẫn làm việc với STUDY-SITE</h1>
+
+<p>Đây là hướng dẫn từng bước cho người mới làm việc với dự án: tải mã về máy, upload và push lên GitHub, làm việc theo nhánh và pull request, và chọn cách làm việc phù hợp.</p>
+<p>Không cần biết lập trình sâu. Mỗi chương có lệnh cụ thể để gõ, và các bước kiểm tra để biết mình làm đúng.</p>
+<h2 id="ban-se-hoc-duoc-gi">Bạn sẽ học được gì</h2>
+<ul>
+<li>Hiểu các khái niệm Git và GitHub: repo, commit, nhánh, push, pull request.</li>
+<li>Upload file lên GitHub bằng trình duyệt, không cần lệnh.</li>
+<li>Commit và push bằng GitHub Desktop hoặc dòng lệnh.</li>
+<li>Làm việc đúng quy trình của dự án, và xử lý lỗi thường gặp.</li>
+<li>Chọn cách làm việc hiệu quả nhất cho mình.</li>
+</ul>
+<h2 id="bat-dau-nhanh">Bắt đầu nhanh</h2>
+<p>Nếu đã có Git và Node.js, bạn có thể chạy thử ngay:</p>
+<div class="codewrap"><pre><code class="language-bash">git clone https://github.com/MoLik-Labs/STUDY-SITE.git
+cd STUDY-SITE
+npm ci
+npm test
+npm run serve
+</code></pre></div>
+<p>Sau đó mở <code>http://localhost:8124</code>. Nếu chưa cài Git hay Node.js, bắt đầu từ chương 01.</p>
+<aside class="callout callout-tip" aria-label="Mẹo"><p class="callout-label">Mẹo</p>
+<p>Đọc chương 00 trước, để hiểu các khái niệm. Mọi chương sau đều dựa vào chúng.</p>
+</aside>
+<h2 id="quy-uoc-doc-trang">Quy ước đọc trang</h2>
+<p>Trong hướng dẫn có các khối được tô màu:</p>
+<aside class="callout callout-tip" aria-label="Mẹo"><p class="callout-label">Mẹo</p>
+<p>gợi ý giúp làm nhanh hơn.</p>
+</aside>
+<aside class="callout callout-note" aria-label="Lưu ý"><p class="callout-label">Lưu ý</p>
+<p>điều cần biết để tránh nhầm lẫn.</p>
+</aside>
+<aside class="callout callout-warn" aria-label="Cảnh báo"><p class="callout-label">Cảnh báo</p>
+<p>việc có thể làm mất dữ liệu hoặc lộ thông tin nhạy cảm. Đọc kỹ.</p>
+</aside>
+<p>Lệnh trong khối mã chạy trong Terminal (macOS, Linux) hoặc Git Bash (Windows).</p>
+
+<h2 id="lo-trinh">Lộ trình</h2>
+<p>Đọc theo thứ tự từ chương 00 đến 11 nếu bạn mới bắt đầu. Đã quen Git thì có thể nhảy thẳng tới chương cần.</p>
+<ol class="cards">
+<li><a class="card" href="00-gioi-thieu.html"><span class="card-num">00</span><span class="card-title">Bắt đầu từ đâu: dự án, Git và GitHub</span><span class="card-desc">Trang này giải thích dự án STUDY-SITE là gì, các khái niệm cơ bản (repo, commit, nhánh, push), và bạn sẽ làm được gì sau khi đọc hết hướng dẫn.</span></a></li>
+<li><a class="card" href="01-chuan-bi.html"><span class="card-num">01</span><span class="card-title">Chuẩn bị máy và tài khoản</span><span class="card-desc">Chương này làm đúng một lần: tạo tài khoản GitHub, cài Git, Node.js và một trình soạn thảo. Mất khoảng 30 phút nếu máy chưa có gì.</span></a></li>
+<li><a class="card" href="02-tai-ve-may.html"><span class="card-num">02</span><span class="card-title">Tải dự án về máy và chạy thử</span><span class="card-desc">Sau chương này bạn có một bản sao đầy đủ của dự án trên máy, chạy được trang web và kiểm thử. Đây là điểm xuất phát cho mọi việc sửa đổi.</span></a></li>
+<li><a class="card" href="03-upload-tren-web.html"><span class="card-num">03</span><span class="card-title">Upload file lên GitHub bằng trình duyệt</span><span class="card-desc">Cách này không cần cài gì, chỉ cần trình duyệt. Phù hợp khi bạn muốn thêm vài file tài liệu, ảnh hoặc sửa nhanh một file văn bản. Không phù hợp để sửa mã nguồn của trang web, vì mã đó cần được dựng và kiểm thử trước khi commit (xem chương 07).</span></a></li>
+<li><a class="card" href="04-github-desktop.html"><span class="card-num">04</span><span class="card-title">Commit và push bằng GitHub Desktop</span><span class="card-desc">GitHub Desktop là ứng dụng miễn phí có giao diện đồ hoạ cho Git. Bạn không cần gõ lệnh, nhưng vẫn có đầy đủ tính năng: xem thay đổi, commit, push, pull, tạo nhánh và mở pull request. Đây là cách đơn giản nhất cho người mới mà vẫn chuyên nghiệp.</span></a></li>
+<li><a class="card" href="05-git-dong-lenh.html"><span class="card-num">05</span><span class="card-title">Làm việc với dòng lệnh Git</span><span class="card-desc">Dòng lệnh cho bạn kiểm soát chính xác nhất và chạy nhanh nhất khi đã quen. Chương này dạy vòng lệnh cơ bản, cách viết thông điệp commit tốt, và cách xử lý tình huống thường gặp.</span></a></li>
+<li><a class="card" href="06-nhanh-va-pull-request.html"><span class="card-num">06</span><span class="card-title">Làm việc theo nhánh và pull request</span><span class="card-desc">Đây là cách làm việc chuyên nghiệp nhất để không làm hỏng bản chính. Mỗi việc mới nằm trên một nhánh riêng. Khi xong, bạn mở một pull request (PR) để người khác xem và gộp vào main.</span></a></li>
+<li><a class="card" href="07-quy-trinh-du-an.html"><span class="card-num">07</span><span class="card-title">Quy trình riêng của STUDY-SITE</span><span class="card-desc">Chương này nói về những điều đặc thù của dự án này, và vì sao chúng khác với một dự án web thông thường. Đọc kỹ trước khi sửa mã nguồn lần đầu.</span></a></li>
+<li><a class="card" href="08-lam-viec-hieu-qua.html"><span class="card-num">08</span><span class="card-title">Các cách làm việc hiệu quả</span><span class="card-desc">Không có một cách duy nhất đúng. Chương này giới thiệu năm cách làm việc phổ biến, khi nào nên chọn cách nào, và các thói quen giúp bạn làm nhanh hơn mà ít lỗi hơn.</span></a></li>
+<li><a class="card" href="09-su-co-thuong-gap.html"><span class="card-num">09</span><span class="card-title">Xử lý sự cố thường gặp</span><span class="card-desc">Mỗi mục dưới đây có triệu chứng, nguyên nhân và cách sửa an toàn. Đọc hết phần triệu chứng trước khi làm theo, để chắc đúng vấn đề của bạn.</span></a></li>
+<li><a class="card" href="10-bao-mat.html"><span class="card-num">10</span><span class="card-title">Bảo mật khi làm việc</span><span class="card-desc">Mã nguồn công khai có thể bị quét bởi các công cụ tự động trong vài phút sau khi xuất hiện. Chương này nói về những thứ không bao giờ được đưa vào repo, cách lưu chúng đúng chỗ, và việc cần làm khi lỡ làm lộ.</span></a></li>
+<li><a class="card" href="11-thuat-ngu.html"><span class="card-num">11</span><span class="card-title">Thuật ngữ thường gặp</span><span class="card-desc">Tra cứu nhanh. Thuật ngữ được xếp theo bảng chữ cái tiếng Anh, vì đó là cách bạn sẽ gặp chúng trong công cụ.</span></a></li>
+</ol>
+</article>
+<nav class="pager" aria-label="Chuyển chương"><span></span><a class="next" href="00-gioi-thieu.html"><span>Tiếp →</span>Bắt đầu từ đâu: dự án, Git và GitHub</a></nav>
+</main>
+<aside class="toc" aria-label="Mục trong trang"><p class="toc-title">Trong trang này</p><ul><li class="d2"><a href="#ban-se-hoc-duoc-gi">Bạn sẽ học được gì</a></li><li class="d2"><a href="#bat-dau-nhanh">Bắt đầu nhanh</a></li><li class="d2"><a href="#quy-uoc-doc-trang">Quy ước đọc trang</a></li></ul></aside>
+</div>
+<footer class="foot">Nguồn: <code>tutorial/content/</code>. Sau khi sửa, chạy <code>npm run tutorial</code> để xem thử và <code>npm run build</code> để cập nhật trang trên site.</footer>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Các cách làm việc hiệu quả — Hướng dẫn làm việc với STUDY-SITE</title>
+<meta name="description" content="Không có một cách duy nhất đúng. Chương này giới thiệu năm cách làm việc phổ biến, khi nào nên chọn cách nào, và các thói quen giúp bạn làm nhanh hơn mà ít lỗi hơn.">
+<link rel="stylesheet" href="assets/tutorial.css">
+</head>
+<body>
+<a class="skip" href="#main">Bỏ qua menu</a>
+<header class="top">
+  <a class="brand" href="index.html">Hướng dẫn làm việc với STUDY-SITE</a>
+  <nav class="ext" aria-label="Liên kết">
+    <a href="/">Về trang học</a>
+    <a href="https://github.com/MoLik-Labs/STUDY-SITE" rel="noopener">GitHub</a>
+  </nav>
+</header>
+<div class="layout">
+<nav class="side" aria-label="Các chương">
+  <p class="side-title">Các chương</p>
+  <ol>
+<li><a href="00-gioi-thieu.html"><span class="num">00</span>Bắt đầu từ đâu: dự án, Git và GitHub</a></li>
+<li><a href="01-chuan-bi.html"><span class="num">01</span>Chuẩn bị máy và tài khoản</a></li>
+<li><a href="02-tai-ve-may.html"><span class="num">02</span>Tải dự án về máy và chạy thử</a></li>
+<li><a href="03-upload-tren-web.html"><span class="num">03</span>Upload file lên GitHub bằng trình duyệt</a></li>
+<li><a href="04-github-desktop.html"><span class="num">04</span>Commit và push bằng GitHub Desktop</a></li>
+<li><a href="05-git-dong-lenh.html"><span class="num">05</span>Làm việc với dòng lệnh Git</a></li>
+<li><a href="06-nhanh-va-pull-request.html"><span class="num">06</span>Làm việc theo nhánh và pull request</a></li>
+<li><a href="07-quy-trinh-du-an.html"><span class="num">07</span>Quy trình riêng của STUDY-SITE</a></li>
+<li><a href="08-lam-viec-hieu-qua.html" class="on" aria-current="page"><span class="num">08</span>Các cách làm việc hiệu quả</a></li>
+<li><a href="09-su-co-thuong-gap.html"><span class="num">09</span>Xử lý sự cố thường gặp</a></li>
+<li><a href="10-bao-mat.html"><span class="num">10</span>Bảo mật khi làm việc</a></li>
+<li><a href="11-thuat-ngu.html"><span class="num">11</span>Thuật ngữ thường gặp</a></li>
+  </ol>
+</nav>
+<main id="main">
+<article>
+<h1>Các cách làm việc hiệu quả</h1>
+<p class="lead">Không có một cách duy nhất đúng. Chương này giới thiệu năm cách làm việc phổ biến, khi nào nên chọn cách nào, và các thói quen giúp bạn làm nhanh hơn mà ít lỗi hơn.</p>
+<p>Không có một cách duy nhất đúng. Chương này giới thiệu năm cách làm việc phổ biến, khi nào nên chọn cách nào, và các thói quen giúp bạn làm nhanh hơn mà ít lỗi hơn.</p>
+<h2 id="chon-cach-lam-viec-phu-hop">Chọn cách làm việc phù hợp</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Cách</th>
+<th>Cần cài gì?</th>
+<th>Tốt khi</th>
+<th>Hạn chế</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Trình duyệt (vscode.dev)</td>
+<td>Không</td>
+<td>Sửa nhanh một hai file, đang ở máy lạ</td>
+<td>Không chạy được <code>npm test</code> trực tiếp</td>
+</tr>
+<tr>
+<td>GitHub Codespaces</td>
+<td>Không (chạy trên đám mây)</td>
+<td>Muốn môi trường đầy đủ, giống nhau trên mọi máy</td>
+<td>Có giới hạn miễn phí, cần tính toán</td>
+</tr>
+<tr>
+<td>VS Code + Git trên máy</td>
+<td>VS Code, Git, Node.js</td>
+<td>Làm việc dài, hằng ngày</td>
+<td>Phải cài và giữ máy đồng bộ</td>
+</tr>
+<tr>
+<td>GitHub Desktop</td>
+<td>GitHub Desktop</td>
+<td>Người mới, thích giao diện</td>
+<td>Ít kiểm soát hơn dòng lệnh</td>
+</tr>
+<tr>
+<td>Terminal + <code>gh</code></td>
+<td>Git, <code>gh</code>, Node.js</td>
+<td>Người quen dòng lệnh, làm tự động</td>
+<td>Cần học lệnh</td>
+</tr>
+</tbody></table></div>
+<h2 id="cach-1-trinh-duyet-voi-vscode-dev">Cách 1: Trình duyệt với vscode.dev</h2>
+<p>Mở repo trên GitHub, nhấn phím <code>.</code> (dấu chấm). Trình soạn thảo VS Code mở ngay trong trình duyệt, với đầy đủ cây thư mục và tìm kiếm.</p>
+<p>Phù hợp cho việc sửa chữ, thêm một chương hướng dẫn, hay xem mã khi đang ở máy khác. Các lệnh <code>npm</code> không chạy trong đó, nên vẫn cần máy thật để kiểm thử.</p>
+<h2 id="cach-2-github-codespaces">Cách 2: GitHub Codespaces</h2>
+<p>Codespaces là một máy ảo Linux trên đám mây, mở bằng VS Code trong trình duyệt hoặc trên máy bạn. Mọi thứ đã cài sẵn, nên không cần cài Node.js hay Git trên máy.</p>
+<p>Cách mở: trên trang repo, bấm <strong>Code → Codespaces → Create codespace on main</strong>. Trong terminal của Codespaces, chạy <code>npm ci</code> rồi <code>npm test</code> như trên máy.</p>
+<p>Về chi phí, theo trang giá của GitHub tại thời điểm viết hướng dẫn: tài khoản miễn phí được <strong>120 giờ lõi (core-hours) mỗi tháng</strong> và <strong>15 GB lưu trữ</strong>. Một máy 2 lõi chạy được khoảng <strong>60 giờ</strong>. Con số có thể đổi, nên kiểm tra lại trên trang giá của GitHub trước khi dùng nhiều.</p>
+<aside class="callout callout-tip" aria-label="Mẹo"><p class="callout-label">Mẹo</p>
+<p>Đóng Codespace khi không dùng. Máy đang chạy tính tiền; máy đã dừng chỉ tốn phí lưu trữ nhỏ.</p>
+</aside>
+<h2 id="cach-3-vs-code-tren-may">Cách 3: VS Code trên máy</h2>
+<p>Đây là cách làm việc hằng ngày phổ biến nhất khi bạn đã cài đủ công cụ ở chương 01.</p>
+<ol>
+<li>Mở thư mục repo trong VS Code: <strong>File → Open Folder</strong>.</li>
+<li>Mở terminal tích hợp: <code>Ctrl + ` </code> (hoặc <code>Cmd + ` </code> trên macOS).</li>
+<li>Chạy <code>npm run serve</code> ở một tab terminal, làm việc ở tab khác.</li>
+<li>Dùng nhánh <strong>Source Control</strong> (biểu tượng ba nút nối) để xem, stage và commit thay đổi bằng chuột.</li>
+</ol>
+<p>Mở đồng thời trang web đang chạy và mã nguồn để thấy kết quả ngay sau khi sửa.</p>
+<h2 id="cach-4-github-desktop">Cách 4: GitHub Desktop</h2>
+<p>Đã mô tả ở chương 04. Ưu điểm là trực quan và có thể làm việc không cần nhớ lệnh. Hợp với người mới, hoặc khi cần xem lịch sử và diff nhanh.</p>
+<h2 id="cach-5-dong-lenh-voi-github-cli">Cách 5: Dòng lệnh với GitHub CLI</h2>
+<p>Khi đã thoải mái với terminal, nhiều việc nhanh hơn nhiều:</p>
+<div class="codewrap"><pre><code class="language-bash">gh repo view --web          # mở repo trên trình duyệt
+gh pr status                # xem các PR của bạn
+gh pr checks                # xem trạng thái CI của PR hiện tại
+gh run watch                # theo dõi một lần chạy CI cho tới khi xong
+gh issue list               # xem danh sách việc cần làm
+</code></pre></div>
+<h2 id="thoi-quen-giup-lam-nhanh-va-it-loi">Thói quen giúp làm nhanh và ít lỗi</h2>
+<p><strong>Pull trước khi bắt đầu.</strong> Thói quen này giảm đáng kể xung đột.</p>
+<p><strong>Commit nhỏ, thường xuyên.</strong> Một commit một ý. Dễ xem lại, dễ hoàn tác, dễ viết thông điệp.</p>
+<p><strong>Để Git nhắc bạn.</strong> Thêm vài alias ngắn cho lệnh thường dùng:</p>
+<div class="codewrap"><pre><code class="language-bash">git config --global alias.st status
+git config --global alias.lg &quot;log --oneline --graph --all -20&quot;
+git config --global alias.co switch
+</code></pre></div>
+<p>Sau đó gõ <code>git st</code> thay cho <code>git status</code>, <code>git lg</code> để xem cây lịch sử.</p>
+<p><strong>Dùng <code>.gitignore</code> đúng cách.</strong> File tạm, thư viện và bí mật phải nằm trong đó. Kiểm tra bằng <code>git status</code> trước khi commit.</p>
+<p><strong>Đọc diff trước khi commit.</strong> Đây là kiểm tra miễn phí, và bắt được phần lớn lỗi chính tả, dòng thừa, và file nhầm.</p>
+<p><strong>Tự động hoá kiểm tra.</strong> Khi quen, bạn có thể chạy <code>npm run build &amp;&amp; npm test</code> trước mỗi lần push bằng một lệnh gộp, hoặc để CI làm việc đó và chỉ xem kết quả.</p>
+<p><strong>Ghi chú lại quyết định.</strong> Khi thay đổi có lý do không hiển nhiên, ghi vào thông điệp commit hoặc phần mô tả PR. Người đọc sau sẽ cảm ơn bạn.</p>
+<h2 id="khi-bi-ket">Khi bị kẹt</h2>
+<ul>
+<li>Đọc lỗi từ đầu đến cuối, đặc biệt dòng đầu tiên và dòng có tên file.</li>
+<li>Chạy <code>git status</code> để biết trạng thái hiện tại trước khi thử lệnh mới.</li>
+<li>Đừng thử ngẫu nhiên các lệnh có chữ <code>--force</code> hay <code>--hard</code>. Xem chương 09 để biết cách xử lý an toàn.</li>
+</ul>
+<p>Tiếp theo: <a href="09-su-co-thuong-gap.html">xử lý sự cố thường gặp</a>.</p>
+
+</article>
+<nav class="pager" aria-label="Chuyển chương"><a class="prev" href="07-quy-trinh-du-an.html"><span>← Trước</span>Quy trình riêng của STUDY-SITE</a><a class="next" href="09-su-co-thuong-gap.html"><span>Tiếp →</span>Xử lý sự cố thường gặp</a></nav>
+</main>
+<aside class="toc" aria-label="Mục trong trang"><p class="toc-title">Trong trang này</p><ul><li class="d2"><a href="#chon-cach-lam-viec-phu-hop">Chọn cách làm việc phù hợp</a></li><li class="d2"><a href="#cach-1-trinh-duyet-voi-vscode-dev">Cách 1: Trình duyệt với vscode.dev</a></li><li class="d2"><a href="#cach-2-github-codespaces">Cách 2: GitHub Codespaces</a></li><li class="d2"><a href="#cach-3-vs-code-tren-may">Cách 3: VS Code trên máy</a></li><li class="d2"><a href="#cach-4-github-desktop">Cách 4: GitHub Desktop</a></li><li class="d2"><a href="#cach-5-dong-lenh-voi-github-cli">Cách 5: Dòng lệnh với GitHub CLI</a></li><li class="d2"><a href="#thoi-quen-giup-lam-nhanh-va-it-loi">Thói quen giúp làm nhanh và ít lỗi</a></li><li class="d2"><a href="#khi-bi-ket">Khi bị kẹt</a></li></ul></aside>
+</div>
+<footer class="foot">Nguồn: <code>tutorial/content/</code>. Sau khi sửa, chạy <code>npm run tutorial</code> để xem thử và <code>npm run build</code> để cập nhật trang trên site.</footer>
+</body>
+</html>
